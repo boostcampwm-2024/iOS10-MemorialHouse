@@ -54,14 +54,38 @@
 		0EE4A0A12CD5DD2400F17FA5 /* MemorialHouse */ = {
 			isa = PBXGroup;
 			children = (
-				0EE4A0982CD5DD2400F17FA5 /* AppDelegate.swift */,
+				0EE4A0AA2CD5E04B00F17FA5 /* Resource */,
+				0EE4A0AB2CD5E05200F17FA5 /* Source */,
+			);
+			path = MemorialHouse;
+			sourceTree = "<group>";
+		};
+		0EE4A0AA2CD5E04B00F17FA5 /* Resource */ = {
+			isa = PBXGroup;
+			children = (
 				0EE4A0992CD5DD2400F17FA5 /* Assets.xcassets */,
 				0EE4A09A2CD5DD2400F17FA5 /* Info.plist */,
 				0EE4A09C2CD5DD2400F17FA5 /* LaunchScreen.storyboard */,
-				0EE4A09F2CD5DD2400F17FA5 /* SceneDelegate.swift */,
+			);
+			path = Resource;
+			sourceTree = "<group>";
+		};
+		0EE4A0AB2CD5E05200F17FA5 /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				0EE4A0AC2CD5E06200F17FA5 /* App */,
 				0EE4A0A02CD5DD2400F17FA5 /* ViewController.swift */,
 			);
-			path = MemorialHouse;
+			path = Source;
+			sourceTree = "<group>";
+		};
+		0EE4A0AC2CD5E06200F17FA5 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				0EE4A0982CD5DD2400F17FA5 /* AppDelegate.swift */,
+				0EE4A09F2CD5DD2400F17FA5 /* SceneDelegate.swift */,
+			);
+			path = App;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
