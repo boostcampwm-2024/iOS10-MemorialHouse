@@ -8,11 +8,28 @@
 
 /* Begin PBXBuildFile section */
 		CE9AEBCD2CD7B60F00F8471D /* Temp.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9AEBCC2CD7B60F00F8471D /* Temp.swift */; };
+		CE9AEC012CD7BA2B00F8471D /* MHFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9AEC002CD7BA2B00F8471D /* MHFoundation.framework */; };
+		CE9AEC022CD7BA2B00F8471D /* MHFoundation.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = CE9AEC002CD7BA2B00F8471D /* MHFoundation.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		CE9AEC032CD7BA2B00F8471D /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				CE9AEC022CD7BA2B00F8471D /* MHFoundation.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		CE9AEBBB2CD7B5EF00F8471D /* MHCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = MHCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE9AEBCC2CD7B60F00F8471D /* Temp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Temp.swift; sourceTree = "<group>"; };
+		CE9AEC002CD7BA2B00F8471D /* MHFoundation.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = MHFoundation.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -20,6 +37,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CE9AEC012CD7BA2B00F8471D /* MHFoundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -30,6 +48,7 @@
 			isa = PBXGroup;
 			children = (
 				CE9AEBC72CD7B5F700F8471D /* MHCore */,
+				CE9AEBFF2CD7BA2B00F8471D /* Frameworks */,
 				CE9AEBBC2CD7B5EF00F8471D /* Products */,
 			);
 			sourceTree = "<group>";
@@ -48,6 +67,14 @@
 				CE9AEBCC2CD7B60F00F8471D /* Temp.swift */,
 			);
 			path = MHCore;
+			sourceTree = "<group>";
+		};
+		CE9AEBFF2CD7BA2B00F8471D /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				CE9AEC002CD7BA2B00F8471D /* MHFoundation.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -71,6 +98,7 @@
 				CE9AEBB72CD7B5EF00F8471D /* Sources */,
 				CE9AEBB82CD7B5EF00F8471D /* Frameworks */,
 				CE9AEBB92CD7B5EF00F8471D /* Resources */,
+				CE9AEC032CD7BA2B00F8471D /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -155,6 +183,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -169,7 +198,7 @@
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_INSTALL_OBJC_HEADER = NO;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -190,6 +219,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -203,7 +233,7 @@
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_INSTALL_OBJC_HEADER = NO;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;

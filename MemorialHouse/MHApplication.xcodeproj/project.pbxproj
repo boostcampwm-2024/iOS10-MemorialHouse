@@ -20,6 +20,8 @@
 		CE9AEBB02CD7B52D00F8471D /* MHPresentation.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = CE9AEBAE2CD7B52D00F8471D /* MHPresentation.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		CE9AEBCA2CD7B60200F8471D /* MHCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9AEBC92CD7B60200F8471D /* MHCore.framework */; };
 		CE9AEBCB2CD7B60200F8471D /* MHCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = CE9AEBC92CD7B60200F8471D /* MHCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		CE9AEBE92CD7B9FC00F8471D /* MHFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9AEBE82CD7B9FC00F8471D /* MHFoundation.framework */; };
+		CE9AEBEA2CD7B9FC00F8471D /* MHFoundation.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = CE9AEBE82CD7B9FC00F8471D /* MHFoundation.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -31,6 +33,7 @@
 			files = (
 				CE9AEB6B2CD7B3DA00F8471D /* MHDomain.framework in Embed Frameworks */,
 				CE9AEBB02CD7B52D00F8471D /* MHPresentation.framework in Embed Frameworks */,
+				CE9AEBEA2CD7B9FC00F8471D /* MHFoundation.framework in Embed Frameworks */,
 				CE9AEBCB2CD7B60200F8471D /* MHCore.framework in Embed Frameworks */,
 				CE9AEB8B2CD7B4A800F8471D /* MHData.framework in Embed Frameworks */,
 			);
@@ -51,6 +54,7 @@
 		CE9AEB892CD7B4A800F8471D /* MHData.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = MHData.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE9AEBAE2CD7B52D00F8471D /* MHPresentation.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = MHPresentation.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE9AEBC92CD7B60200F8471D /* MHCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = MHCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		CE9AEBE82CD7B9FC00F8471D /* MHFoundation.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = MHFoundation.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,6 +64,7 @@
 			files = (
 				CE9AEB6A2CD7B3DA00F8471D /* MHDomain.framework in Frameworks */,
 				CE9AEBAF2CD7B52D00F8471D /* MHPresentation.framework in Frameworks */,
+				CE9AEBE92CD7B9FC00F8471D /* MHFoundation.framework in Frameworks */,
 				CE9AEBCA2CD7B60200F8471D /* MHCore.framework in Frameworks */,
 				CE9AEB8A2CD7B4A800F8471D /* MHData.framework in Frameworks */,
 			);
@@ -125,6 +130,7 @@
 		CE9AEB682CD7B3DA00F8471D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				CE9AEBE82CD7B9FC00F8471D /* MHFoundation.framework */,
 				CE9AEBC92CD7B60200F8471D /* MHCore.framework */,
 				CE9AEBAE2CD7B52D00F8471D /* MHPresentation.framework */,
 				CE9AEB892CD7B4A800F8471D /* MHData.framework */,
@@ -242,6 +248,7 @@
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -250,7 +257,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = kr.codesquad.boostcamp9.MemorialHouse;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -270,6 +277,7 @@
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -278,7 +286,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = kr.codesquad.boostcamp9.MemorialHouse;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
