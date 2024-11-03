@@ -2,6 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:MHCore/MHCore.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "group:MHPresentation/MHPresentation.xcodeproj">
    </FileRef>
    <FileRef
@@ -11,6 +14,6 @@
       location = "container:MHDomain/MHDomain.xcodeproj">
    </FileRef>
    <FileRef
-      location = "container:MemorialHouse/MemorialHouse.xcodeproj">
+      location = "container:MemorialHouse/MHApplication.xcodeproj">
    </FileRef>
 </Workspace>
