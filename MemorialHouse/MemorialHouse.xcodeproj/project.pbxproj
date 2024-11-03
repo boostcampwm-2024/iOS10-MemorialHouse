@@ -12,7 +12,23 @@
 		0EE4A0A42CD5DD2400F17FA5 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EE4A0A02CD5DD2400F17FA5 /* ViewController.swift */; };
 		0EE4A0A52CD5DD2400F17FA5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0EE4A0992CD5DD2400F17FA5 /* Assets.xcassets */; };
 		0EE4A0A72CD5DD2400F17FA5 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0EE4A09C2CD5DD2400F17FA5 /* LaunchScreen.storyboard */; };
+		CE9AEB6A2CD7B3DA00F8471D /* MHDomain.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9AEB692CD7B3DA00F8471D /* MHDomain.framework */; };
+		CE9AEB6B2CD7B3DA00F8471D /* MHDomain.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = CE9AEB692CD7B3DA00F8471D /* MHDomain.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		CE9AEB6C2CD7B3DA00F8471D /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				CE9AEB6B2CD7B3DA00F8471D /* MHDomain.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		0EE4A0802CD5DD1800F17FA5 /* MemorialHouse.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MemorialHouse.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -22,6 +38,7 @@
 		0EE4A09B2CD5DD2400F17FA5 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		0EE4A09F2CD5DD2400F17FA5 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		0EE4A0A02CD5DD2400F17FA5 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		CE9AEB692CD7B3DA00F8471D /* MHDomain.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = MHDomain.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -29,6 +46,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CE9AEB6A2CD7B3DA00F8471D /* MHDomain.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -39,6 +57,7 @@
 			isa = PBXGroup;
 			children = (
 				0EE4A0A12CD5DD2400F17FA5 /* MemorialHouse */,
+				CE9AEB682CD7B3DA00F8471D /* Frameworks */,
 				0EE4A0812CD5DD1800F17FA5 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -88,6 +107,14 @@
 			path = App;
 			sourceTree = "<group>";
 		};
+		CE9AEB682CD7B3DA00F8471D /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				CE9AEB692CD7B3DA00F8471D /* MHDomain.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -98,6 +125,7 @@
 				0EE4A07C2CD5DD1800F17FA5 /* Sources */,
 				0EE4A07D2CD5DD1800F17FA5 /* Frameworks */,
 				0EE4A07E2CD5DD1800F17FA5 /* Resources */,
+				CE9AEB6C2CD7B3DA00F8471D /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
