@@ -2,6 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:MHData/MHData.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "container:MHDomain/MHDomain.xcodeproj">
    </FileRef>
    <FileRef

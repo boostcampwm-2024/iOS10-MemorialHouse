@@ -14,6 +14,8 @@
 		0EE4A0A72CD5DD2400F17FA5 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0EE4A09C2CD5DD2400F17FA5 /* LaunchScreen.storyboard */; };
 		CE9AEB6A2CD7B3DA00F8471D /* MHDomain.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9AEB692CD7B3DA00F8471D /* MHDomain.framework */; };
 		CE9AEB6B2CD7B3DA00F8471D /* MHDomain.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = CE9AEB692CD7B3DA00F8471D /* MHDomain.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		CE9AEB8A2CD7B4A800F8471D /* MHData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9AEB892CD7B4A800F8471D /* MHData.framework */; };
+		CE9AEB8B2CD7B4A800F8471D /* MHData.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = CE9AEB892CD7B4A800F8471D /* MHData.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -24,6 +26,7 @@
 			dstSubfolderSpec = 10;
 			files = (
 				CE9AEB6B2CD7B3DA00F8471D /* MHDomain.framework in Embed Frameworks */,
+				CE9AEB8B2CD7B4A800F8471D /* MHData.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -39,6 +42,7 @@
 		0EE4A09F2CD5DD2400F17FA5 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		0EE4A0A02CD5DD2400F17FA5 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		CE9AEB692CD7B3DA00F8471D /* MHDomain.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = MHDomain.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		CE9AEB892CD7B4A800F8471D /* MHData.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = MHData.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -47,6 +51,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CE9AEB6A2CD7B3DA00F8471D /* MHDomain.framework in Frameworks */,
+				CE9AEB8A2CD7B4A800F8471D /* MHData.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -110,6 +115,7 @@
 		CE9AEB682CD7B3DA00F8471D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				CE9AEB892CD7B4A800F8471D /* MHData.framework */,
 				CE9AEB692CD7B3DA00F8471D /* MHDomain.framework */,
 			);
 			name = Frameworks;
