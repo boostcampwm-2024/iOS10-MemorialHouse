@@ -71,7 +71,7 @@
 		0EE4A0772CD5DD1800F17FA5 = {
 			isa = PBXGroup;
 			children = (
-				0EE4A0A12CD5DD2400F17FA5 /* MemorialHouse */,
+				0EE4A0A12CD5DD2400F17FA5 /* MHApplication */,
 				CE9AEB682CD7B3DA00F8471D /* Frameworks */,
 				0EE4A0812CD5DD1800F17FA5 /* Products */,
 			);
@@ -85,13 +85,13 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		0EE4A0A12CD5DD2400F17FA5 /* MemorialHouse */ = {
+		0EE4A0A12CD5DD2400F17FA5 /* MHApplication */ = {
 			isa = PBXGroup;
 			children = (
 				0EE4A0AA2CD5E04B00F17FA5 /* Resource */,
 				0EE4A0AB2CD5E05200F17FA5 /* Source */,
 			);
-			path = MemorialHouse;
+			path = MHApplication;
 			sourceTree = "<group>";
 		};
 		0EE4A0AA2CD5E04B00F17FA5 /* Resource */ = {
@@ -236,7 +236,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = B3PWYBKFUK;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = MemorialHouse/Resource/Info.plist;
+				INFOPLIST_FILE = MHApplication/Resource/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "기록소";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
@@ -269,7 +269,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = B3PWYBKFUK;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = MemorialHouse/Resource/Info.plist;
+				INFOPLIST_FILE = MHApplication/Resource/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "기록소";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
