@@ -12,7 +12,32 @@
 		0EE4A0A42CD5DD2400F17FA5 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EE4A0A02CD5DD2400F17FA5 /* ViewController.swift */; };
 		0EE4A0A52CD5DD2400F17FA5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0EE4A0992CD5DD2400F17FA5 /* Assets.xcassets */; };
 		0EE4A0A72CD5DD2400F17FA5 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0EE4A09C2CD5DD2400F17FA5 /* LaunchScreen.storyboard */; };
+		CE9AEB6A2CD7B3DA00F8471D /* MHDomain.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9AEB692CD7B3DA00F8471D /* MHDomain.framework */; };
+		CE9AEB6B2CD7B3DA00F8471D /* MHDomain.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = CE9AEB692CD7B3DA00F8471D /* MHDomain.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		CE9AEB8A2CD7B4A800F8471D /* MHData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9AEB892CD7B4A800F8471D /* MHData.framework */; };
+		CE9AEB8B2CD7B4A800F8471D /* MHData.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = CE9AEB892CD7B4A800F8471D /* MHData.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		CE9AEBAF2CD7B52D00F8471D /* MHPresentation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9AEBAE2CD7B52D00F8471D /* MHPresentation.framework */; };
+		CE9AEBB02CD7B52D00F8471D /* MHPresentation.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = CE9AEBAE2CD7B52D00F8471D /* MHPresentation.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		CE9AEBCA2CD7B60200F8471D /* MHCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9AEBC92CD7B60200F8471D /* MHCore.framework */; };
+		CE9AEBCB2CD7B60200F8471D /* MHCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = CE9AEBC92CD7B60200F8471D /* MHCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		CE9AEB6C2CD7B3DA00F8471D /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				CE9AEB6B2CD7B3DA00F8471D /* MHDomain.framework in Embed Frameworks */,
+				CE9AEBB02CD7B52D00F8471D /* MHPresentation.framework in Embed Frameworks */,
+				CE9AEBCB2CD7B60200F8471D /* MHCore.framework in Embed Frameworks */,
+				CE9AEB8B2CD7B4A800F8471D /* MHData.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		0EE4A0802CD5DD1800F17FA5 /* MemorialHouse.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MemorialHouse.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -22,6 +47,10 @@
 		0EE4A09B2CD5DD2400F17FA5 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		0EE4A09F2CD5DD2400F17FA5 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		0EE4A0A02CD5DD2400F17FA5 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		CE9AEB692CD7B3DA00F8471D /* MHDomain.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = MHDomain.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		CE9AEB892CD7B4A800F8471D /* MHData.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = MHData.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		CE9AEBAE2CD7B52D00F8471D /* MHPresentation.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = MHPresentation.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		CE9AEBC92CD7B60200F8471D /* MHCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = MHCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -29,6 +58,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CE9AEB6A2CD7B3DA00F8471D /* MHDomain.framework in Frameworks */,
+				CE9AEBAF2CD7B52D00F8471D /* MHPresentation.framework in Frameworks */,
+				CE9AEBCA2CD7B60200F8471D /* MHCore.framework in Frameworks */,
+				CE9AEB8A2CD7B4A800F8471D /* MHData.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -39,6 +72,7 @@
 			isa = PBXGroup;
 			children = (
 				0EE4A0A12CD5DD2400F17FA5 /* MemorialHouse */,
+				CE9AEB682CD7B3DA00F8471D /* Frameworks */,
 				0EE4A0812CD5DD1800F17FA5 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -88,6 +122,17 @@
 			path = App;
 			sourceTree = "<group>";
 		};
+		CE9AEB682CD7B3DA00F8471D /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				CE9AEBC92CD7B60200F8471D /* MHCore.framework */,
+				CE9AEBAE2CD7B52D00F8471D /* MHPresentation.framework */,
+				CE9AEB892CD7B4A800F8471D /* MHData.framework */,
+				CE9AEB692CD7B3DA00F8471D /* MHDomain.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -98,6 +143,7 @@
 				0EE4A07C2CD5DD1800F17FA5 /* Sources */,
 				0EE4A07D2CD5DD1800F17FA5 /* Frameworks */,
 				0EE4A07E2CD5DD1800F17FA5 /* Resources */,
+				CE9AEB6C2CD7B3DA00F8471D /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -125,7 +171,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 0EE4A07B2CD5DD1800F17FA5 /* Build configuration list for PBXProject "MemorialHouse" */;
+			buildConfigurationList = 0EE4A07B2CD5DD1800F17FA5 /* Build configuration list for PBXProject "MHApplication" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -196,6 +242,7 @@
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -203,8 +250,12 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = kr.codesquad.boostcamp9.MemorialHouse;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -224,6 +275,7 @@
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -231,8 +283,12 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = kr.codesquad.boostcamp9.MemorialHouse;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
@@ -359,7 +415,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		0EE4A07B2CD5DD1800F17FA5 /* Build configuration list for PBXProject "MemorialHouse" */ = {
+		0EE4A07B2CD5DD1800F17FA5 /* Build configuration list for PBXProject "MHApplication" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				0EE4A0962CD5DD1B00F17FA5 /* Debug */,
