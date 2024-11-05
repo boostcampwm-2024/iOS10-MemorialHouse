@@ -7,15 +7,18 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		CE9AEBA82CD7B50600F8471D /* Temp.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9AEBA72CD7B50600F8471D /* Temp.swift */; };
+		0E7F28E82CDA6B90007D4F2B /* 온글잎 베리려원.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0E7F28E72CDA6B90007D4F2B /* 온글잎 베리려원.ttf */; };
+		0E7F28EF2CDA6C3A007D4F2B /* MHLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E7F28EE2CDA6C3A007D4F2B /* MHLabel.swift */; };
 		CE9AEBAB2CD7B51D00F8471D /* MHDomain.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9AEBAA2CD7B51D00F8471D /* MHDomain.framework */; };
 		CE9AEBFA2CD7BA2000F8471D /* MHCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9AEBF92CD7BA2000F8471D /* MHCore.framework */; };
 		DB382CC52CD9B22E000D7689 /* MHFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB382CC42CD9B22E000D7689 /* MHFoundation.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0E7F28E72CDA6B90007D4F2B /* 온글잎 베리려원.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "온글잎 베리려원.ttf"; sourceTree = "<group>"; };
+		0E7F28EC2CDA6C06007D4F2B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		0E7F28EE2CDA6C3A007D4F2B /* MHLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MHLabel.swift; sourceTree = "<group>"; };
 		CE9AEB992CD7B4F200F8471D /* MHPresentation.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = MHPresentation.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		CE9AEBA72CD7B50600F8471D /* Temp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Temp.swift; sourceTree = "<group>"; };
 		CE9AEBAA2CD7B51D00F8471D /* MHDomain.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = MHDomain.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE9AEBF92CD7BA2000F8471D /* MHCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = MHCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DB382CC42CD9B22E000D7689 /* MHFoundation.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = MHFoundation.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -35,6 +38,39 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0E7F28E52CDA6B5E007D4F2B /* Resource */ = {
+			isa = PBXGroup;
+			children = (
+				0E7F28EC2CDA6C06007D4F2B /* Info.plist */,
+				0E7F28E92CDA6B92007D4F2B /* Fonts */,
+			);
+			path = Resource;
+			sourceTree = "<group>";
+		};
+		0E7F28E62CDA6B63007D4F2B /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				0E7F28ED2CDA6C21007D4F2B /* Design */,
+			);
+			path = Source;
+			sourceTree = "<group>";
+		};
+		0E7F28E92CDA6B92007D4F2B /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				0E7F28E72CDA6B90007D4F2B /* 온글잎 베리려원.ttf */,
+			);
+			path = Fonts;
+			sourceTree = "<group>";
+		};
+		0E7F28ED2CDA6C21007D4F2B /* Design */ = {
+			isa = PBXGroup;
+			children = (
+				0E7F28EE2CDA6C3A007D4F2B /* MHLabel.swift */,
+			);
+			path = Design;
+			sourceTree = "<group>";
+		};
 		CE9AEB8F2CD7B4F200F8471D = {
 			isa = PBXGroup;
 			children = (
@@ -55,7 +91,8 @@
 		CE9AEBA52CD7B4FA00F8471D /* MHPresentation */ = {
 			isa = PBXGroup;
 			children = (
-				CE9AEBA72CD7B50600F8471D /* Temp.swift */,
+				0E7F28E52CDA6B5E007D4F2B /* Resource */,
+				0E7F28E62CDA6B63007D4F2B /* Source */,
 			);
 			path = MHPresentation;
 			sourceTree = "<group>";
@@ -146,6 +183,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0E7F28E82CDA6B90007D4F2B /* 온글잎 베리려원.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -176,7 +214,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CE9AEBA82CD7B50600F8471D /* Temp.swift in Sources */,
+				0E7F28EF2CDA6C3A007D4F2B /* MHLabel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -198,6 +236,7 @@
 				ENABLE_MODULE_VERIFIER = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MHPresentation/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
@@ -239,6 +278,7 @@
 				ENABLE_MODULE_VERIFIER = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MHPresentation/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
