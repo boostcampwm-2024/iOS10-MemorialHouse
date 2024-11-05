@@ -146,6 +146,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 0EE4A0932CD5DD1B00F17FA5 /* Build configuration list for PBXNativeTarget "MemorialHouse" */;
 			buildPhases = (
+				CED59DC72CD9E260005BE50D /* Run Script */,
 				0EE4A07C2CD5DD1800F17FA5 /* Sources */,
 				0EE4A07D2CD5DD1800F17FA5 /* Frameworks */,
 				0EE4A07E2CD5DD1800F17FA5 /* Resources */,
@@ -154,6 +155,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				CED59DC52CD9E07B005BE50D /* PBXTargetDependency */,
 			);
 			name = MemorialHouse;
 			packageProductDependencies = (
@@ -186,6 +188,9 @@
 			);
 			mainGroup = 0EE4A0772CD5DD1800F17FA5;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				CED59DC32CD9E053005BE50D /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 0EE4A0812CD5DD1800F17FA5 /* Products */;
 			projectDirPath = "";
@@ -208,6 +213,27 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		CED59DC72CD9E260005BE50D /* Run Script */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Run Script";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "YML=\"../.swiftlint.yml\"\nSWIFT_PACKAGE_DIR=\"${BUILD_DIR%Build/*}SourcePackages/artifacts\"\nSWIFTLINT_CMD=$(ls \"$SWIFT_PACKAGE_DIR\"/swiftlintplugins/SwiftLintBinary/SwiftLintBinary.artifactbundle/swiftlint-*/bin/swiftlint | head -n 1)\n\nif test -f \"$SWIFTLINT_CMD\" 2>&1\nthen\n    \"$SWIFTLINT_CMD\" --config ${YML}\nelse\n    echo \"warning: `swiftlint` command not found - See https://github.com/realm/SwiftLint#installation for installation instructions.\"\nfi\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		0EE4A07C2CD5DD1800F17FA5 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -220,6 +246,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		CED59DC52CD9E07B005BE50D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = CED59DC42CD9E07B005BE50D /* SwiftLintBuildToolPlugin */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		0EE4A09C2CD5DD2400F17FA5 /* LaunchScreen.storyboard */ = {
@@ -336,7 +369,7 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -399,7 +432,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -440,6 +473,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		CED59DC32CD9E053005BE50D /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SimplyDanny/SwiftLintPlugins";
+			requirement = {
+				kind = exactVersion;
+				version = 0.57.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		CED59DC42CD9E07B005BE50D /* SwiftLintBuildToolPlugin */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CED59DC32CD9E053005BE50D /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */;
+			productName = "plugin:SwiftLintBuildToolPlugin";
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 0EE4A0782CD5DD1800F17FA5 /* Project object */;
 }
