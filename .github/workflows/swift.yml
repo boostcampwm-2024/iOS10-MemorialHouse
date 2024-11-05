@@ -16,4 +16,4 @@ jobs:
     - uses: actions/checkout@v4
     - name: Build
       run: |
-        xcodebuild build -project MemorialHouse/MHApplication/MHApplication.xcodeporj
+        swift build -project MemorialHouse/MHApplication/MHApplication.xcodeporj
