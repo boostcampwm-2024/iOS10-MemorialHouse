@@ -1,11 +1,6 @@
 import UIKit
 
 class ViewController: UIViewController {
-    enum HI {
-        enum Good {
-            
-        }
-    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
