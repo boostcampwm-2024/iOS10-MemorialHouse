@@ -10,6 +10,7 @@
 		CE9AEB862CD7B49C00F8471D /* MHDomain.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9AEB852CD7B49C00F8471D /* MHDomain.framework */; };
 		CE9AEB8E2CD7B4B300F8471D /* Temp.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9AEB8C2CD7B4B300F8471D /* Temp.swift */; };
 		CE9AEBF42CD7BA1800F8471D /* MHCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9AEBF32CD7BA1800F8471D /* MHCore.framework */; };
+		DB382CC92CD9B24F000D7689 /* MHFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB382CC82CD9B24F000D7689 /* MHFoundation.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -17,6 +18,7 @@
 		CE9AEB852CD7B49C00F8471D /* MHDomain.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = MHDomain.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE9AEB8C2CD7B4B300F8471D /* Temp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Temp.swift; sourceTree = "<group>"; };
 		CE9AEBF32CD7BA1800F8471D /* MHCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = MHCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		DB382CC82CD9B24F000D7689 /* MHFoundation.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = MHFoundation.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -26,6 +28,7 @@
 			files = (
 				CE9AEBF42CD7BA1800F8471D /* MHCore.framework in Frameworks */,
 				CE9AEB862CD7B49C00F8471D /* MHDomain.framework in Frameworks */,
+				DB382CC92CD9B24F000D7689 /* MHFoundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -52,6 +55,7 @@
 		CE9AEB842CD7B49C00F8471D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				DB382CC82CD9B24F000D7689 /* MHFoundation.framework */,
 				CE9AEBF32CD7BA1800F8471D /* MHCore.framework */,
 				CE9AEB852CD7B49C00F8471D /* MHDomain.framework */,
 			);

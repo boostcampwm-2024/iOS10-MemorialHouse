@@ -9,12 +9,14 @@
 /* Begin PBXBuildFile section */
 		CE9AEB672CD7B3AA00F8471D /* Temp.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9AEB662CD7B3AA00F8471D /* Temp.swift */; };
 		CE9AEBED2CD7BA0C00F8471D /* MHCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9AEBEC2CD7BA0C00F8471D /* MHCore.framework */; };
+		DB382CCD2CD9B257000D7689 /* MHFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB382CCC2CD9B257000D7689 /* MHFoundation.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		CE9AEB4E2CD7B31300F8471D /* MHDomain.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = MHDomain.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE9AEB662CD7B3AA00F8471D /* Temp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Temp.swift; sourceTree = "<group>"; };
 		CE9AEBEC2CD7BA0C00F8471D /* MHCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = MHCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		DB382CCC2CD9B257000D7689 /* MHFoundation.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = MHFoundation.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -22,6 +24,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DB382CCD2CD9B257000D7689 /* MHFoundation.framework in Frameworks */,
 				CE9AEBED2CD7BA0C00F8471D /* MHCore.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -57,6 +60,7 @@
 		CE9AEBEB2CD7BA0C00F8471D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				DB382CCC2CD9B257000D7689 /* MHFoundation.framework */,
 				CE9AEBEC2CD7BA0C00F8471D /* MHCore.framework */,
 			);
 			name = Frameworks;

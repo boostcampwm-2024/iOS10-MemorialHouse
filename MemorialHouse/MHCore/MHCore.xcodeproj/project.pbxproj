@@ -8,11 +8,13 @@
 
 /* Begin PBXBuildFile section */
 		CE9AEBCD2CD7B60F00F8471D /* Temp.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9AEBCC2CD7B60F00F8471D /* Temp.swift */; };
+		DB382CB92CD9B1A6000D7689 /* MHFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB382CB82CD9B1A6000D7689 /* MHFoundation.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		CE9AEBBB2CD7B5EF00F8471D /* MHCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = MHCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE9AEBCC2CD7B60F00F8471D /* Temp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Temp.swift; sourceTree = "<group>"; };
+		DB382CB82CD9B1A6000D7689 /* MHFoundation.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = MHFoundation.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -20,6 +22,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DB382CB92CD9B1A6000D7689 /* MHFoundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -54,6 +57,7 @@
 		CE9AEBFF2CD7BA2B00F8471D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				DB382CB82CD9B1A6000D7689 /* MHFoundation.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
