@@ -146,8 +146,8 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 0EE4A0932CD5DD1B00F17FA5 /* Build configuration list for PBXNativeTarget "MemorialHouse" */;
 			buildPhases = (
+				CED59DC72CD9E260005BE50D /* Run Script */,
 				0EE4A07C2CD5DD1800F17FA5 /* Sources */,
-				CED59DC72CD9E260005BE50D /* ShellScript */,
 				0EE4A07D2CD5DD1800F17FA5 /* Frameworks */,
 				0EE4A07E2CD5DD1800F17FA5 /* Resources */,
 				CE9AEB6C2CD7B3DA00F8471D /* Embed Frameworks */,
@@ -214,7 +214,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		CED59DC72CD9E260005BE50D /* ShellScript */ = {
+		CED59DC72CD9E260005BE50D /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -223,6 +223,7 @@
 			);
 			inputPaths = (
 			);
+			name = "Run Script";
 			outputFileListPaths = (
 			);
 			outputPaths = (
@@ -478,8 +479,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/SimplyDanny/SwiftLintPlugins";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.57.0;
+				kind = exactVersion;
+				version = 0.57.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

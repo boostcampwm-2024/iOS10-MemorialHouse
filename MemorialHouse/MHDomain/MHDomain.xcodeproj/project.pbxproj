@@ -84,6 +84,7 @@
 			buildConfigurationList = CE9AEB542CD7B31300F8471D /* Build configuration list for PBXNativeTarget "MHDomain" */;
 			buildPhases = (
 				CE9AEB492CD7B31300F8471D /* Headers */,
+				0E7F288C2CDA0877007D4F2B /* ShellScript */,
 				CE9AEB4A2CD7B31300F8471D /* Sources */,
 				CE9AEB4B2CD7B31300F8471D /* Frameworks */,
 				CE9AEB4C2CD7B31300F8471D /* Resources */,
@@ -124,6 +125,7 @@
 			mainGroup = CE9AEB442CD7B31300F8471D;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
+				0E7F288D2CDA0881007D4F2B /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = CE9AEB4F2CD7B31300F8471D /* Products */;
@@ -144,6 +146,26 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		0E7F288C2CDA0877007D4F2B /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "YML=\"../.swiftlint.yml\"\nSWIFT_PACKAGE_DIR=\"${BUILD_DIR%Build/*}SourcePackages/artifacts\"\nSWIFTLINT_CMD=$(ls \"$SWIFT_PACKAGE_DIR\"/swiftlintplugins/SwiftLintBinary/SwiftLintBinary.artifactbundle/swiftlint-*/bin/swiftlint | head -n 1)\n\nif test -f \"$SWIFTLINT_CMD\" 2>&1\nthen\n    \"$SWIFTLINT_CMD\" --config ${YML}\nelse\n    echo \"warning: `swiftlint` command not found - See https://github.com/realm/SwiftLint#installation for installation instructions.\"\nfi\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		CE9AEB4A2CD7B31300F8471D /* Sources */ = {
@@ -385,6 +407,17 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		0E7F288D2CDA0881007D4F2B /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SimplyDanny/SwiftLintPlugins";
+			requirement = {
+				kind = exactVersion;
+				version = 0.57.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
 	};
 	rootObject = CE9AEB452CD7B31300F8471D /* Project object */;
 }
