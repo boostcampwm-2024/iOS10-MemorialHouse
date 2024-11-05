@@ -1,9 +1,10 @@
 import UIKit
 
 final class MHLabel: UILabel {
+    private var labelText: String
+    private var size: CGFloat
     private let alignment: NSTextAlignment
     private var color: UIColor
-    private var labelText: String
     
     /// - Parameters:
     ///   - frame: 레이블의 프레임. 기본값은 `.zero`입니다.
@@ -14,15 +15,17 @@ final class MHLabel: UILabel {
     init(
         frame: CGRect = .zero,
         labelText: String = "",
+        size: CGFloat = 25,
         alignment: NSTextAlignment = .justified,
         color: UIColor = .black
     ) {
         self.labelText = labelText
+        self.size = size
         self.alignment = alignment
         self.color = color
         super.init(frame: frame)
         
-        guard let font = UIFont(name: "Ownglyph_BERRY_RW-Rg", size: 25) else { return }
+        guard let font = UIFont(name: "Ownglyph_BERRY_RW-Rg", size: size) else { return }
         self.font = font
         setupAttributes()
     }
@@ -30,11 +33,12 @@ final class MHLabel: UILabel {
     @available(*, unavailable)
     required init?(coder: NSCoder) {
         self.labelText = ""
+        self.size = 25
         self.alignment = .justified
         self.color = .black
         super.init(coder: coder)
         
-        guard let font = UIFont(name: "Ownglyph_BERRY_RW-Rg", size: 25) else { return }
+        guard let font = UIFont(name: "Ownglyph_BERRY_RW-Rg", size: size) else { return }
         self.font = font
         setupAttributes()
     }
@@ -44,7 +48,7 @@ final class MHLabel: UILabel {
         let range = NSRange(location: 0, length: attributedString.length)
         
         // 폰트 설정
-        guard let font = UIFont(name: "Ownglyph_BERRY_RW-Rg", size: 25) else { return }
+        guard let font = UIFont(name: "Ownglyph_BERRY_RW-Rg", size: size) else { return }
         attributedString.addAttribute(
             .font,
             value: font,
