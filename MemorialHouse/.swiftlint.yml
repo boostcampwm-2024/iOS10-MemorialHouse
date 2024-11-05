@@ -1,32 +1,32 @@
 # 사용하지 않는 룰
 disabled_rules:
 # 라인의 마지막에는 빈 여백이 있으면 안 됨 => 라인 마지막에 여백 있어도 됨
-    - trailing_whitespace
+- trailing_whitespace
 
 # 타입은 최대 1단계로 중첩되어야 함 => 타입여러개 중첩돼도 됨
-    - nesting
+- nesting
 
 # 함수 안은 복잡하면 안 됨 (warning: 10, error: 20)
-    - cyclomatic_complexity
+- cyclomatic_complexity
 
 # Protocol은 class-only여야 함.
-    - class_delegate_protocol
+- class_delegate_protocol
 
 # 함수 매개변수들이 여러 개일 경우 세로로 같은 줄에 있어야 함
-    - vertical_parameter_alignment
+- vertical_parameter_alignment
 
 # Void 함수를 호출하기 위해 삼항연산자을 사용하는 것은 피해야 한다.
-    - void_function_in_ternary
+- void_function_in_ternary
 
 # 스위치 문의 케이스는 스위치와 같은 줄에 있어야 함
-    - switch_case_alignment
+- switch_case_alignment
 
 # fileprivate보다 private을 선호함. => fileprivate에 워닝 띄우지 않을꺼다
-    - private_over_fileprivate
+- private_over_fileprivate
 
 analyzer_rules: # => 적용on
 # 모든 선언은 한 번 이상 사용되어야 함
-    - unused_declaration
+- unused_declaration
 
 # 명시적 룰 활성화
 opt_in_rules:
@@ -88,7 +88,7 @@ opt_in_rules:
 - literal_expression_end_indentation
 
 # let, var 선언 시 다른 statments와 한 줄 공백이 필요함
-- let_var_whitespace
+# - let_var_whitespace # private, let, var 별로 뗄 수도 있으니까
 
 # 수직 공백 2줄 이상 사용 지양
 - vertical_whitespace
@@ -102,15 +102,11 @@ opt_in_rules:
 # delegate는 약한 참조 사용 권장
 - weak_delegate
 
-# options
-empty_count:
-  only_after_dot: true
-
 force_try:
   severity: warning # 명시적으로 지정
 
 line_length:
-  warning: 100
+  warning: 120
   ignores_urls: true
   ignores_comments: true
 
