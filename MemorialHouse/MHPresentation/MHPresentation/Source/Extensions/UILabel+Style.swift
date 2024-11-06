@@ -1,13 +1,13 @@
 import UIKit
 
-enum LabelStyle {
-    case `default`
-    case header
-    case body
-}
-
 extension UILabel {
-    convenience init(style: LabelStyle) {
+    enum Style {
+        case `default`
+        case header
+        case body
+    }
+    
+    convenience init(style: Style) {
         self.init(frame: .zero)
         self.translatesAutoresizingMaskIntoConstraints = false
         self.textColor = .title
