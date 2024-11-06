@@ -16,4 +16,4 @@ jobs:
     - uses: actions/checkout@v4
     - name: Build
       run: |
-        xcodebuild -workspace ./MemorialHouse/MemorialHouse.xcworkspace -list
+        xcodebuild -project ./MemorialHouse/MHApplication/MHApplication.xcodeproj -scheme MemorialHouse
