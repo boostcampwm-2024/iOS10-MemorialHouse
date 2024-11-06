@@ -14,18 +14,33 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    
     - name: PWD
       run: |
         pwd
+        
     - name: ll
       run: |
         ls -a
+        
     - name: 🔨 set up xcode version
       run: |
         sudo xcode-select -s /Applications/Xcode_16.1.app
+        
     - name: ✅ check xcode version
       run: |
         sudo xcodebuild -version
+        
+    - name: install swift lint
+      run: |
+        git clone https://github.com/realm/SwiftLint.git
+        cd SwiftLint
+        swift build -c release
+
+    - name: Run SwiftLint
+      run: |
+        ./.build/release/swiftlint lint
+        
     - name: Build
       run: |
         xcodebuild -workspace ./MemorialHouse/MemorialHouse.xcworkspace -scheme MemorialHouse
