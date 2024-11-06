@@ -20,6 +20,12 @@ jobs:
     - name: ll
       run: |
         ls -a
+    - name: 🔨 set up xcode version
+      run: |
+        sudo xcode-select -s /Applications/Xcode_16.1.app
+    - name: ✅ check xcode version
+      run: |
+        sudo xcodebuild -version
     - name: Build
       run: |
         xcodebuild -workspace ./MemorialHouse/MemorialHouse.xcworkspace -scheme MemorialHouse
