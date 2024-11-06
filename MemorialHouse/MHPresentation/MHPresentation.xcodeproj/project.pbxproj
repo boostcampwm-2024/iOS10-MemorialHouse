@@ -12,6 +12,9 @@
 		0E7F291B2CDB530E007D4F2B /* UILabel+Style.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E7F291A2CDB5302007D4F2B /* UILabel+Style.swift */; };
 		0E7F291D2CDB53B5007D4F2B /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0E7F291C2CDB53B5007D4F2B /* Colors.xcassets */; };
 		0E7F291F2CDB5D66007D4F2B /* Colors.xcassets in Headers */ = {isa = PBXBuildFile; fileRef = 0E7F291C2CDB53B5007D4F2B /* Colors.xcassets */; settings = {ATTRIBUTES = (Public, ); }; };
+		A8A32C512CDBB9360078B4F6 /* EditPhotoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8A32C502CDBB9360078B4F6 /* EditPhotoViewController.swift */; };
+		A8A32C532CDBB9980078B4F6 /* CustomAlbumViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8A32C522CDBB9980078B4F6 /* CustomAlbumViewController.swift */; };
+		A8A32C572CDBBB500078B4F6 /* CustomAlbumCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8A32C562CDBBB500078B4F6 /* CustomAlbumCollectionViewCell.swift */; };
 		CE9AEBAB2CD7B51D00F8471D /* MHDomain.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9AEBAA2CD7B51D00F8471D /* MHDomain.framework */; };
 		CE9AEBFA2CD7BA2000F8471D /* MHCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9AEBF92CD7BA2000F8471D /* MHCore.framework */; };
 		DB382CC52CD9B22E000D7689 /* MHFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB382CC42CD9B22E000D7689 /* MHFoundation.framework */; };
@@ -23,6 +26,9 @@
 		0E7F29182CDB52D4007D4F2B /* UIFont+Ownglyph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIFont+Ownglyph.swift"; sourceTree = "<group>"; };
 		0E7F291A2CDB5302007D4F2B /* UILabel+Style.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UILabel+Style.swift"; sourceTree = "<group>"; };
 		0E7F291C2CDB53B5007D4F2B /* Colors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Colors.xcassets; sourceTree = "<group>"; };
+		A8A32C502CDBB9360078B4F6 /* EditPhotoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditPhotoViewController.swift; sourceTree = "<group>"; };
+		A8A32C522CDBB9980078B4F6 /* CustomAlbumViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomAlbumViewController.swift; sourceTree = "<group>"; };
+		A8A32C562CDBBB500078B4F6 /* CustomAlbumCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomAlbumCollectionViewCell.swift; sourceTree = "<group>"; };
 		CE9AEB992CD7B4F200F8471D /* MHPresentation.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = MHPresentation.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE9AEBAA2CD7B51D00F8471D /* MHDomain.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = MHDomain.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE9AEBF92CD7BA2000F8471D /* MHCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = MHCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -56,6 +62,7 @@
 		0E7F28E62CDA6B63007D4F2B /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				A8A32C4F2CDBB91C0078B4F6 /* EditPhoto */,
 				0E7F29172CDB52CC007D4F2B /* Extensions */,
 			);
 			path = Source;
@@ -76,6 +83,32 @@
 				0E7F29182CDB52D4007D4F2B /* UIFont+Ownglyph.swift */,
 			);
 			path = Extensions;
+			sourceTree = "<group>";
+		};
+		A8A32C4F2CDBB91C0078B4F6 /* EditPhoto */ = {
+			isa = PBXGroup;
+			children = (
+				A8A32C542CDBBA730078B4F6 /* View */,
+				A8A32C552CDBBA800078B4F6 /* ViewModel */,
+			);
+			path = EditPhoto;
+			sourceTree = "<group>";
+		};
+		A8A32C542CDBBA730078B4F6 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				A8A32C502CDBB9360078B4F6 /* EditPhotoViewController.swift */,
+				A8A32C522CDBB9980078B4F6 /* CustomAlbumViewController.swift */,
+				A8A32C562CDBBB500078B4F6 /* CustomAlbumCollectionViewCell.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		A8A32C552CDBBA800078B4F6 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = ViewModel;
 			sourceTree = "<group>";
 		};
 		CE9AEB8F2CD7B4F200F8471D = {
@@ -224,6 +257,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				0E7F29192CDB52DE007D4F2B /* UIFont+Ownglyph.swift in Sources */,
+				A8A32C572CDBBB500078B4F6 /* CustomAlbumCollectionViewCell.swift in Sources */,
+				A8A32C532CDBB9980078B4F6 /* CustomAlbumViewController.swift in Sources */,
+				A8A32C512CDBB9360078B4F6 /* EditPhotoViewController.swift in Sources */,
 				0E7F291B2CDB530E007D4F2B /* UILabel+Style.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
