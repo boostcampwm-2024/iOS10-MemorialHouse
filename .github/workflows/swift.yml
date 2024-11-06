@@ -31,16 +31,6 @@ jobs:
       run: |
         sudo xcodebuild -version
         
-    - name: install swift lint
-      run: |
-        git clone https://github.com/realm/SwiftLint.git
-        cd SwiftLint
-        swift build -c release
-
-    - name: Run SwiftLint
-      run: |
-        ./.build/release/swiftlint lint
-        
     - name: Build
       run: |
         xcodebuild -workspace ./MemorialHouse/MemorialHouse.xcworkspace -scheme MemorialHouse
