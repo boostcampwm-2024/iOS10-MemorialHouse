@@ -19,7 +19,7 @@ jobs:
         pwd
     - name: ll
       run: |
-        ll
+        ls -a
     - name: Build
       run: |
         xcodebuild -workspace ./MemorialHouse/MemorialHouse.xcworkspace -scheme MemorialHouse
