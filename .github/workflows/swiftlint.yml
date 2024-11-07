@@ -1,26 +1,19 @@
 name: swiftlint 🔨
 
 on:
-  push:
-    branches:
-      ["ci"]
-    paths:
-      - '.github/workflows/swiftlint.yml'
-      - '.swiftlint.yml'
-      - '**/*.swift'
-  pull_request:
-    paths:
-      - '.github/workflows/swiftlint.yml'
-      - '.swiftlint.yml'
-      - '**/*.swift'
+  # push:
+  #   branches:
+  #     ["ci"]
+  #   paths:
+  #     - '.github/workflows/swiftlint.yml'
+  #     - '.swiftlint.yml'
+  #     - '**/*.swift'
   pull_request:
     paths:
       - '.github/workflows/swiftlint.yml'
       - '.swiftlint.yml'
       - '**/*.swift'
       
-  
-
 jobs:
   SwiftLint:
     runs-on: ubuntu-latest
