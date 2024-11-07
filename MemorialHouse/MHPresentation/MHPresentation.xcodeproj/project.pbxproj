@@ -46,8 +46,8 @@
 		0E7F28E52CDA6B5E007D4F2B /* Resource */ = {
 			isa = PBXGroup;
 			children = (
-				0E7F28EC2CDA6C06007D4F2B /* Info.plist */,
 				0E7F28E92CDA6B92007D4F2B /* Fonts */,
+				0E7F28EC2CDA6C06007D4F2B /* Info.plist */,
 				0E7F291C2CDB53B5007D4F2B /* Colors.xcassets */,
 			);
 			path = Resource;
