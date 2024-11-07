@@ -3,6 +3,13 @@ name: swiftlint 🔨
 on:
   push:
     branches:
+      ["ci-pr-test"]
+    paths:
+      - '.github/workflows/swiftlint.yml'
+      - '.swiftlint.yml'
+      - '**/*.swift'
+  pull_request:
+    branches:
       ["ci"]
     paths:
       - '.github/workflows/swiftlint.yml'
