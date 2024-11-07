@@ -32,13 +32,13 @@
 
 ![image](https://github.com/user-attachments/assets/f976e74e-3433-478e-8ab2-db73f4245baf)
 
-- **View와 비즈니스 로직 분리**를 위해 MVVM 도입
+- View와 비즈니스 로직 분리를 위해 **MVVM 도입**
   
-- **추후 서버 도입 가능성을 고려해** Repository Pattern을 적용하기 위한 Data Layer 도입
+- 추후 서버 도입 가능성을 고려해 **Repository Pattern을 적용하기 위한 Data Layer 도입**
   
-- **ViewModel의 복잡도가 증가할 것을 예상하여** Domain Layer를 두어 Use Case에서 처리
+- ViewModel의 복잡도가 증가할 것을 예상하여 **Domain Layer를 두어 Use Case에서 처리**
 
-- **테스트 가능한 구조를 만들기 위해** Domain Layer에 Repository Interface 구현
+- 테스트 가능한 구조를 만들기 위해 **Domain Layer에 Repository Interface 구현**
 
 ##
 
