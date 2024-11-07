@@ -3,14 +3,16 @@ import Photos
 
 final class CustomAlbumViewController: UIViewController {
     // MARK: - Properties
-    private var asset: PHFetchResult<PHAsset>?
+    private var imageAsset: PHFetchResult<PHAsset>?
     private let imageManager = PHCachingImageManager()
-    private lazy var cellSize = (self.view.bounds.inset(by: self.view.safeAreaInsets).width - 20) / 3
+    private let imagePicker = UIImagePickerController()
+    
     private lazy var albumCollectionView: UICollectionView = {
         let flowLayout = UICollectionViewFlowLayout()
-        flowLayout.itemSize = CGSize(width: self.cellSize, height: self.cellSize)
+        let cellSize = (self.view.bounds.inset(by: self.view.safeAreaInsets).width - 10) / 3
+        flowLayout.itemSize = CGSize(width: cellSize, height: cellSize)
         flowLayout.minimumLineSpacing = 10
-        flowLayout.minimumInteritemSpacing = 10
+        flowLayout.minimumInteritemSpacing = 5
         flowLayout.scrollDirection = .vertical
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: flowLayout)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
@@ -35,7 +37,8 @@ final class CustomAlbumViewController: UIViewController {
         let fetchOptions = PHFetchOptions()
         fetchOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
         
-        asset = PHAsset.fetchAssets(with: fetchOptions)
+        imageAsset = PHAsset.fetchAssets(with: fetchOptions)
+        imagePicker.delegate = self
         albumCollectionView.delegate = self
         albumCollectionView.dataSource = self
         albumCollectionView.register(
@@ -54,12 +57,24 @@ final class CustomAlbumViewController: UIViewController {
             albumCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
     }
+    
+    // MARK: - Open Camera
+    private func openCamera() {
+        if (UIImagePickerController.isSourceTypeAvailable(.camera)) {
+            imagePicker.sourceType = .camera
+            navigationController?.pushViewController(imagePicker, animated: true)
+        } else {
+            // TODO: - 카메라 접근 권한 Alert
+            print("카메라에 접근할 수 없습니다.")
+        }
+    }
 }
 
 // MARK: - UICollectionViewDelegate, UICollectionViewDataSource
 extension CustomAlbumViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return asset?.count ?? 0
+        guard let imageAsset else { return 1 }
+        return imageAsset.count + 1
     }
     
     func collectionView(
@@ -71,18 +86,50 @@ extension CustomAlbumViewController: UICollectionViewDelegate, UICollectionViewD
             for: indexPath
         ) as? CustomAlbumCollectionViewCell else { return UICollectionViewCell() }
         
-        guard let asset = asset?[indexPath.item] else { return cell }
-        cell.representedAssetIdentifier = asset.localIdentifier
-        imageManager.requestImage(
-            for: asset,
-            targetSize: CGSize(width: cellSize, height: cellSize),
-            contentMode: .aspectFill, options: nil
-        ) { image, _ in
-            if cell.representedAssetIdentifier == asset.localIdentifier {
+        if indexPath.item == 0 {
+            cell.setPhoto(.photo)
+        } else {
+            guard let asset = imageAsset?[indexPath.item - 1] else { return cell }
+            let cellSize = cell.bounds.size
+            imageManager.requestImage(
+                for: asset,
+                targetSize: cellSize,
+                contentMode: .aspectFill,
+                options: nil
+            ) { image, _ in
                 cell.setPhoto(image)
             }
         }
         
         return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        if indexPath.item == 0 {
+            self.openCamera()
+        } else {
+            guard let asset = self.imageAsset?[indexPath.item - 1] else { return }
+            imageManager.requestImage(
+                for: asset,
+                targetSize: .zero,
+                contentMode: .default,
+                options: nil
+            ) { image, _ in
+                // TODO: - 이미지 편집 뷰 로 이동
+            }
+        }
+    }
+}
+
+// MARK: - UIImagePickerControllerDelegate, UINavigationControllerDelegate
+extension CustomAlbumViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    func imagePickerController(
+        _ picker: UIImagePickerController,
+        didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]
+    ) {
+        if let image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
+            // TODO: - 이미지 편집 뷰로 이동
+        }
+        dismiss(animated: true, completion: nil)
     }
 }

@@ -3,8 +3,14 @@ import UIKit
 final class CustomAlbumCollectionViewCell: UICollectionViewCell {
     // MARK: - Properties
     static let id = "CustomAlbumCollectionViewCell"
-    private let photoImageView = UIImageView(image: nil)
-    var representedAssetIdentifier: String?
+    private let photoImageView: UIImageView = {
+        let imageView = UIImageView(image: nil)
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.contentMode = .scaleAspectFill
+        imageView.clipsToBounds = true
+        
+        return imageView
+    }()
     
     // MARK: - Initialize
     override init(frame: CGRect) {
@@ -21,15 +27,16 @@ final class CustomAlbumCollectionViewCell: UICollectionViewCell {
         configureConstraints()
     }
     
+    // MARK: - PrepareForReuse
     override func prepareForReuse() {
         super.prepareForReuse()
         
         photoImageView.image = nil
     }
     
-    // MARK: - Setup & Configure
+    // MARK: - Configure
     private func setup() {
-        photoImageView.translatesAutoresizingMaskIntoConstraints = false
+        contentView.backgroundColor = .lightGray
     }
     
     private func configureConstraints() {
