@@ -1,33 +1,28 @@
-name: auto PR swiftLint
+name: SwiftLint
 
 on:
-  pull_request:
-    branches: [ develop ]
+  push:
     paths:
       - '.github/workflows/swiftlint.yml'
       - '.swiftlint.yml'
       - '**/*.swift'
 
 jobs:
-  build:
-
+  SwiftLint:
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v1
-    - name: github action for swiftlint
-      uses: norio-nomura/action-swiftlint@master
-      env:
-        DIFF_BASE: ${{ github.base_ref }}
-
-    - name: Add PR Comment
-      if: ${{ success() }}
-      uses: mshick/add-pr-comment@v1
-      with:
-        message: |
-         ## All File Checked ✅
-         | ✅ 	| Auto Pull Request SwiftLint Success!!!! 	|
-         |---	|----------------------------------------------	|
-        repo-token: ${{ secrets.ACCESS_TOKEN }}
-        repo-token-user-login: 'github-actions[bot]' # The user.login for temporary GitHub tokens
-        allow-repeats: false # This is the default
+      - uses: actions/checkout@v1
+      - name: GitHub Action for SwiftLint
+        uses: norio-nomura/action-swiftlint@3.2.1
+      - name: GitHub Action for SwiftLint with --strict
+        uses: norio-nomura/action-swiftlint@3.2.1
+        with:
+          args: --strict
+      - name: GitHub Action for SwiftLint (Only files changed in the PR)
+        uses: norio-nomura/action-swiftlint@3.2.1
+        env:
+          DIFF_BASE: ${{ github.base_ref }}
+      - name: GitHub Action for SwiftLint (Different working directory)
+        uses: norio-nomura/action-swiftlint@3.2.1
+        env:
+          WORKING_DIRECTORY: Source
