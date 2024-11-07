@@ -106,7 +106,7 @@ force_try:
   severity: warning # 명시적으로 지정
 
 line_length:
-  warning: 120
+  warning: 10
   ignores_urls: true
   ignores_comments: true
 
