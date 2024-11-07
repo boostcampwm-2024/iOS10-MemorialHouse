@@ -4,8 +4,10 @@
 name: My Swift Actions 🚗
 
 on:
-  push:
-    branches: [ "ci" ]
+  # push:
+  #   branches: [ "ci" ]
+  pull_request:
+    branches: ["ci"]
 
 jobs:
   build:
