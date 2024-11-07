@@ -2,6 +2,8 @@ name: swiftlint 🔨
 
 on:
   push:
+    branches:
+      ["ci"]
     paths:
       - '.github/workflows/swiftlint.yml'
       - '.swiftlint.yml'
