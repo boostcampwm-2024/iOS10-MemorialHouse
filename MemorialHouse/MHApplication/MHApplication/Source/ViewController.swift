@@ -1,20 +1,24 @@
 import UIKit
 
-class ViewController: UIViewController {
-    enum HI {
-        enum Good {
-            
-        }
-    }
+final class ViewController: UIViewController {
+    private let label: UILabel = {
+        let label = UILabel()
+        label.text = "🏗️ 집 짓는 중 👷‍♂️"
+        label.textAlignment = .center
+        label.font = UIFont.systemFont(ofSize: 40)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        
+        return label
+    }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-
-        view.backgroundColor = .red
-        let numb = [1, 2, 3,
-                    4, 5, 6]
-        @available(iOS 11.0, *)
-        func hihi() { }
+        view.backgroundColor = .white
+        view.addSubview(label)
+        NSLayoutConstraint.activate([
+            label.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            label.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        ])
     }
 }
