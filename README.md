@@ -19,7 +19,7 @@
 |<img src="https://avatars.githubusercontent.com/u/62226667?v=4" width=150>|<img src="https://avatars.githubusercontent.com/u/129862357?v=4" width=150>|<img src="https://avatars.githubusercontent.com/u/70050038?v=4" width=150>|<img src="https://avatars.githubusercontent.com/u/71179395?v=4" width=150>|
 |:-:|:-:|:-:|:-:|
 |🎨 김영현|🥇 박효준|👓 안윤철|😽 임정현|
-|집주인 내 골드핸즈(= 금손) <br> 초고수 디자이너|우리팀 리-더 <br> 발표 초-고수<br> 황금막내 <br> 분위기 메이커|아이디어 뱅크 <br> 동의, 인정, 공감 장인 <br> MZ|살아있는 네이버 클로바 <br> 루루 집사 <br> 스티브잡스, 워즈니악, 더킹갓제네럴엠페럴초사이언 임정현 let's go|
+|집주인 내 골드핸즈(= 금손) <br> 초고수 디자이너|우리팀 리-더 <br> 발표 초-고수<br> 황금막내 <br> 분위기 메이커|아이디어 뱅크 <br> 동의, 인정, 공감 장인 <br> MZ|살아있는 네이버 클로바 <br> 루루 집사 <br> 스티브잡스, 워즈니악, 그리고<br>더킹갓제네럴엠페럴초사이언 임정현 let's go|
 |[@k2645](https://github.com/k2645)|[@kyxxn](https://github.com/kyxxn)|[@yuncheol-AHN](https://github.com/yuncheol-ahn)|[@iceHood](https://github.com/icehood)|
 
 </div>
@@ -32,13 +32,13 @@
 
 ![image](https://github.com/user-attachments/assets/f976e74e-3433-478e-8ab2-db73f4245baf)
 
-- MVVM을 통해 **View와 비즈니스 로직 분리**
+- **View와 비즈니스 로직 분리**를 위해 MVVM 도입
   
 - **추후 서버 도입 가능성을 고려해** Repository Pattern을 적용하기 위한 Data Layer 도입
   
 - **ViewModel의 복잡도가 증가할 것을 예상하여** Domain Layer를 두어 Use Case에서 처리
 
-- **테스트 가능한 구조**를 만들기 위해 Domain Layer에 Repository Interface 구현
+- **테스트 가능한 구조를 만들기 위해** Domain Layer에 Repository Interface 구현
 
 ##
 
