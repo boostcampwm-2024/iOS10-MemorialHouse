@@ -9,6 +9,7 @@ on:
   #     - '.swiftlint.yml'
   #     - '**/*.swift'
   pull_request:
+    branches: ["ci"]
     paths:
       - '.github/workflows/swiftlint.yml'
       - '.swiftlint.yml'
