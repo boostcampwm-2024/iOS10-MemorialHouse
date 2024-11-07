@@ -62,4 +62,4 @@ jobs:
         
     - name: Build
       run: |
-        xcodebuild -workspace ./MemorialHouse/MemorialHouse.xcworkspace -scheme MemorialHouse
+        xcodebuild -workspace ./MemorialHouse/MemorialHouse.xcworkspace -scheme MemorialHouse -destination 'platform=iOS Simulator,name=iPhone 16 Pro'
