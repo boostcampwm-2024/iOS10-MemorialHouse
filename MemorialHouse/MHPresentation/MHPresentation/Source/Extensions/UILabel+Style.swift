@@ -1,6 +1,6 @@
 import UIKit
 
-extension UILabel {
+public extension UILabel {
     enum Style {
         case `default`
         case header
