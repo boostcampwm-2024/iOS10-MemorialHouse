@@ -9,8 +9,6 @@ on:
       - '.swiftlint.yml'
       - '**/*.swift'
   pull_request:
-    branches:
-      ["ci-pr-test"]
     paths:
       - '.github/workflows/swiftlint.yml'
       - '.swiftlint.yml'
