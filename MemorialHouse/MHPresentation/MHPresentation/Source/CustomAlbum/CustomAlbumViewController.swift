@@ -20,11 +20,7 @@ final class CustomAlbumViewController: UIViewController {
         return collectionView
     }()
     
-    // MARK: - Initialize
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-    }
-    
+    // MARK: - ViewDidLoad
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -43,7 +39,7 @@ final class CustomAlbumViewController: UIViewController {
         albumCollectionView.dataSource = self
         albumCollectionView.register(
             CustomAlbumCollectionViewCell.self,
-            forCellWithReuseIdentifier: CustomAlbumCollectionViewCell.id
+            forCellWithReuseIdentifier: CustomAlbumCollectionViewCell.identifier
         )
     }
     
@@ -65,14 +61,38 @@ final class CustomAlbumViewController: UIViewController {
             navigationController?.pushViewController(imagePicker, animated: true)
         } else {
             // TODO: - 카메라 접근 권한 Alert
-            print("카메라에 접근할 수 없습니다.")
         }
     }
 }
 
-// MARK: - UICollectionViewDelegate, UICollectionViewDataSource
-extension CustomAlbumViewController: UICollectionViewDelegate, UICollectionViewDataSource {
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+// MARK: - UICollectionViewDelegate
+extension CustomAlbumViewController: UICollectionViewDelegate {
+    func collectionView(
+        _ collectionView: UICollectionView,
+        didSelectItemAt indexPath: IndexPath
+    ) {
+        if indexPath.item == 0 {
+            self.openCamera()
+        } else {
+            guard let asset = self.imageAsset?[indexPath.item - 1] else { return }
+            imageManager.requestImage(
+                for: asset,
+                targetSize: .zero,
+                contentMode: .default,
+                options: nil
+            ) { image, _ in
+                // TODO: - 이미지 편집 뷰 로 이동
+            }
+        }
+    }
+}
+
+// MARK: - UICollectionViewDataSource
+extension CustomAlbumViewController: UICollectionViewDataSource {
+    func collectionView(
+        _ collectionView: UICollectionView,
+        numberOfItemsInSection section: Int
+    ) -> Int {
         guard let imageAsset else { return 1 }
         return imageAsset.count + 1
     }
@@ -82,7 +102,7 @@ extension CustomAlbumViewController: UICollectionViewDelegate, UICollectionViewD
         cellForItemAt indexPath: IndexPath
     ) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: CustomAlbumCollectionViewCell.id,
+            withReuseIdentifier: CustomAlbumCollectionViewCell.identifier,
             for: indexPath
         ) as? CustomAlbumCollectionViewCell else { return UICollectionViewCell() }
         
@@ -102,22 +122,6 @@ extension CustomAlbumViewController: UICollectionViewDelegate, UICollectionViewD
         }
         
         return cell
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        if indexPath.item == 0 {
-            self.openCamera()
-        } else {
-            guard let asset = self.imageAsset?[indexPath.item - 1] else { return }
-            imageManager.requestImage(
-                for: asset,
-                targetSize: .zero,
-                contentMode: .default,
-                options: nil
-            ) { image, _ in
-                // TODO: - 이미지 편집 뷰 로 이동
-            }
-        }
     }
 }
 

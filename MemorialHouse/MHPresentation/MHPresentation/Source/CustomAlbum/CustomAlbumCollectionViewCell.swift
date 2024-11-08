@@ -2,7 +2,6 @@ import UIKit
 
 final class CustomAlbumCollectionViewCell: UICollectionViewCell {
     // MARK: - Properties
-    static let id = "CustomAlbumCollectionViewCell"
     private let photoImageView: UIImageView = {
         let imageView = UIImageView(image: nil)
         imageView.translatesAutoresizingMaskIntoConstraints = false
