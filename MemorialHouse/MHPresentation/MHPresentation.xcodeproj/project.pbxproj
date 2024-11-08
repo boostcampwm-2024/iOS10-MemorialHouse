@@ -11,6 +11,7 @@
 		0E7F291B2CDB530E007D4F2B /* UILabel+Style.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E7F291A2CDB5302007D4F2B /* UILabel+Style.swift */; };
 		0E7F291D2CDB53B5007D4F2B /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0E7F291C2CDB53B5007D4F2B /* Colors.xcassets */; };
 		0E7F291F2CDB5D66007D4F2B /* Colors.xcassets in Headers */ = {isa = PBXBuildFile; fileRef = 0E7F291C2CDB53B5007D4F2B /* Colors.xcassets */; settings = {ATTRIBUTES = (Public, ); }; };
+		A840E5932CDE266F002A1C94 /* UICollectionViewCell+Identifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = A840E5922CDE266F002A1C94 /* UICollectionViewCell+Identifier.swift */; };
 		A8A32C532CDBB9980078B4F6 /* CustomAlbumViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8A32C522CDBB9980078B4F6 /* CustomAlbumViewController.swift */; };
 		A8A32C572CDBBB500078B4F6 /* CustomAlbumCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8A32C562CDBBB500078B4F6 /* CustomAlbumCollectionViewCell.swift */; };
 		A8A32C592CDC98D40078B4F6 /* OwnglyphBerry.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A8A32C582CDC98D40078B4F6 /* OwnglyphBerry.ttf */; };
@@ -25,6 +26,7 @@
 		0E7F29182CDB52D4007D4F2B /* UIFont+Ownglyph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIFont+Ownglyph.swift"; sourceTree = "<group>"; };
 		0E7F291A2CDB5302007D4F2B /* UILabel+Style.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UILabel+Style.swift"; sourceTree = "<group>"; };
 		0E7F291C2CDB53B5007D4F2B /* Colors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Colors.xcassets; sourceTree = "<group>"; };
+		A840E5922CDE266F002A1C94 /* UICollectionViewCell+Identifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UICollectionViewCell+Identifier.swift"; sourceTree = "<group>"; };
 		A8A32C522CDBB9980078B4F6 /* CustomAlbumViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomAlbumViewController.swift; sourceTree = "<group>"; };
 		A8A32C562CDBBB500078B4F6 /* CustomAlbumCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomAlbumCollectionViewCell.swift; sourceTree = "<group>"; };
 		A8A32C582CDC98D40078B4F6 /* OwnglyphBerry.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = OwnglyphBerry.ttf; sourceTree = "<group>"; };
@@ -80,6 +82,7 @@
 			children = (
 				0E7F291A2CDB5302007D4F2B /* UILabel+Style.swift */,
 				0E7F29182CDB52D4007D4F2B /* UIFont+Ownglyph.swift */,
+				A840E5922CDE266F002A1C94 /* UICollectionViewCell+Identifier.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -242,6 +245,7 @@
 				0E7F29192CDB52DE007D4F2B /* UIFont+Ownglyph.swift in Sources */,
 				A8A32C572CDBBB500078B4F6 /* CustomAlbumCollectionViewCell.swift in Sources */,
 				A8A32C532CDBB9980078B4F6 /* CustomAlbumViewController.swift in Sources */,
+				A840E5932CDE266F002A1C94 /* UICollectionViewCell+Identifier.swift in Sources */,
 				0E7F291B2CDB530E007D4F2B /* UILabel+Style.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
