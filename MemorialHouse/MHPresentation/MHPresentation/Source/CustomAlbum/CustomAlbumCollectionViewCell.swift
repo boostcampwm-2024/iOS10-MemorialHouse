@@ -4,7 +4,6 @@ final class CustomAlbumCollectionViewCell: UICollectionViewCell {
     // MARK: - Properties
     private let photoImageView: UIImageView = {
         let imageView = UIImageView(image: nil)
-        imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
         
@@ -40,12 +39,7 @@ final class CustomAlbumCollectionViewCell: UICollectionViewCell {
     
     private func configureConstraints() {
         contentView.addSubview(photoImageView)
-        NSLayoutConstraint.activate([
-            photoImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            photoImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            photoImageView.topAnchor.constraint(equalTo: contentView.topAnchor),
-            photoImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
-        ])
+        photoImageView.fillSuperview()
     }
     
     // MARK: - Set Cell Image

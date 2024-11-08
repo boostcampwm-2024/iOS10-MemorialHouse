@@ -15,7 +15,6 @@ final class CustomAlbumViewController: UIViewController {
         flowLayout.minimumInteritemSpacing = 5
         flowLayout.scrollDirection = .vertical
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: flowLayout)
-        collectionView.translatesAutoresizingMaskIntoConstraints = false
         
         return collectionView
     }()
@@ -45,13 +44,7 @@ final class CustomAlbumViewController: UIViewController {
     
     private func configureConstraints() {
         view.addSubview(albumCollectionView)
-        
-        NSLayoutConstraint.activate([
-            albumCollectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            albumCollectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-            albumCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            albumCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
-        ])
+        albumCollectionView.fillSuperview()
     }
     
     // MARK: - Open Camera
