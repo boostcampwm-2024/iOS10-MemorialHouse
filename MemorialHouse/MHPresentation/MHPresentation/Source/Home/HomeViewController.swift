@@ -6,12 +6,6 @@ public final class HomeViewController: UIViewController {
     
     // MARK: - Initializer
     public init() {
-        for family in UIFont.familyNames {
-            print("Font Family: \(family)")
-            for fontName in UIFont.fontNames(forFamilyName: family) {
-                print("   Font Name: \(fontName)")
-            }
-        }
         super.init(nibName: nil, bundle: nil)
     }
     
