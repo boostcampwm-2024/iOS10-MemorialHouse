@@ -53,14 +53,16 @@ extension UIView {
         if let leftTitle {
             let leftLabel = UILabel(style: .default)
             leftLabel.text = leftTitle
-            leftLabel.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+            leftLabel.setContentHuggingPriority(UILayoutPriority(751), for: .horizontal)
+            leftLabel.setContentCompressionResistancePriority(UILayoutPriority(751), for: .horizontal)
             
             wrappedView.insertArrangedSubview(leftLabel, at: 0)
         }
         if let rightTitle {
             let rightLabel = UILabel(style: .default)
             rightLabel.text = rightTitle
-            rightLabel.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+            rightLabel.setContentHuggingPriority(UILayoutPriority(752), for: .horizontal)
+            rightLabel.setContentCompressionResistancePriority(UILayoutPriority(752), for: .horizontal)
             
             wrappedView.addArrangedSubview(rightLabel)
         }
