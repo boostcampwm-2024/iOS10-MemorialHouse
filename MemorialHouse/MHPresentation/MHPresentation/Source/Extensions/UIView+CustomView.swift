@@ -8,4 +8,12 @@ extension UIView {
         
         return line
     }
+    
+    static func dimmedView(opacity: Float) -> UIView {
+        let dim = UIView()
+        dim.backgroundColor = .white
+        dim.layer.opacity = opacity
+        
+        return dim
+    }
 }
