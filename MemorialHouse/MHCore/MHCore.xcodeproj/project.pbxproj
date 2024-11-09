@@ -121,7 +121,7 @@
 			mainGroup = CE9AEBB12CD7B5EF00F8471D;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				0E7F28842CDA07E7007D4F2B /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */,
+				DB4326A22CDD1E9A009C03B8 /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = CE9AEBBC2CD7B5EF00F8471D /* Products */;
@@ -405,7 +405,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		0E7F28842CDA07E7007D4F2B /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */ = {
+		DB4326A22CDD1E9A009C03B8 /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/SimplyDanny/SwiftLintPlugins";
 			requirement = {
