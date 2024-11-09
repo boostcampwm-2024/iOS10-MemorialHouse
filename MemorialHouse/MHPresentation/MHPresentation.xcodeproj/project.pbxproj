@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		0E5C13C62CDE8D1D005406B3 /* UIView+Anchor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E5C13C52CDE8D19005406B3 /* UIView+Anchor.swift */; };
+		0E5C147D2CDF47B2005406B3 /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E5C147C2CDF47B2005406B3 /* HomeViewController.swift */; };
+		0E5C147F2CDF47D4005406B3 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0E5C147E2CDF47D4005406B3 /* Images.xcassets */; };
+		0E5C14842CDF47FF005406B3 /* MHNavigationBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E5C14832CDF47FF005406B3 /* MHNavigationBar.swift */; };
 		0E7F29192CDB52DE007D4F2B /* UIFont+Ownglyph.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E7F29182CDB52D4007D4F2B /* UIFont+Ownglyph.swift */; };
 		0E7F291B2CDB530E007D4F2B /* UILabel+Style.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E7F291A2CDB5302007D4F2B /* UILabel+Style.swift */; };
 		0E7F291D2CDB53B5007D4F2B /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0E7F291C2CDB53B5007D4F2B /* Colors.xcassets */; };
@@ -24,6 +27,9 @@
 
 /* Begin PBXFileReference section */
 		0E5C13C52CDE8D19005406B3 /* UIView+Anchor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Anchor.swift"; sourceTree = "<group>"; };
+		0E5C147C2CDF47B2005406B3 /* HomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
+		0E5C147E2CDF47D4005406B3 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		0E5C14832CDF47FF005406B3 /* MHNavigationBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MHNavigationBar.swift; sourceTree = "<group>"; };
 		0E7F28EC2CDA6C06007D4F2B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0E7F29182CDB52D4007D4F2B /* UIFont+Ownglyph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIFont+Ownglyph.swift"; sourceTree = "<group>"; };
 		0E7F291A2CDB5302007D4F2B /* UILabel+Style.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UILabel+Style.swift"; sourceTree = "<group>"; };
@@ -52,12 +58,29 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0E5C147B2CDF4797005406B3 /* Home */ = {
+			isa = PBXGroup;
+			children = (
+				0E5C147C2CDF47B2005406B3 /* HomeViewController.swift */,
+			);
+			path = Home;
+			sourceTree = "<group>";
+		};
+		0E5C14802CDF47EE005406B3 /* Design */ = {
+			isa = PBXGroup;
+			children = (
+				0E5C14832CDF47FF005406B3 /* MHNavigationBar.swift */,
+			);
+			path = Design;
+			sourceTree = "<group>";
+		};
 		0E7F28E52CDA6B5E007D4F2B /* Resource */ = {
 			isa = PBXGroup;
 			children = (
 				0E7F28E92CDA6B92007D4F2B /* Fonts */,
 				0E7F28EC2CDA6C06007D4F2B /* Info.plist */,
 				0E7F291C2CDB53B5007D4F2B /* Colors.xcassets */,
+				0E5C147E2CDF47D4005406B3 /* Images.xcassets */,
 			);
 			path = Resource;
 			sourceTree = "<group>";
@@ -65,6 +88,8 @@
 		0E7F28E62CDA6B63007D4F2B /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				0E5C14802CDF47EE005406B3 /* Design */,
+				0E5C147B2CDF4797005406B3 /* Home */,
 				A8A32C5C2CDCEBD60078B4F6 /* CustomAlbum */,
 				0E7F29172CDB52CC007D4F2B /* Extensions */,
 			);
@@ -213,6 +238,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0E5C147F2CDF47D4005406B3 /* Images.xcassets in Resources */,
 				0E7F291D2CDB53B5007D4F2B /* Colors.xcassets in Resources */,
 				A8A32C592CDC98D40078B4F6 /* OwnglyphBerry.ttf in Resources */,
 			);
@@ -247,9 +273,11 @@
 			files = (
 				0E7F29192CDB52DE007D4F2B /* UIFont+Ownglyph.swift in Sources */,
 				A8A32C572CDBBB500078B4F6 /* CustomAlbumCollectionViewCell.swift in Sources */,
+				0E5C14842CDF47FF005406B3 /* MHNavigationBar.swift in Sources */,
 				A8A32C532CDBB9980078B4F6 /* CustomAlbumViewController.swift in Sources */,
 				A840E5932CDE266F002A1C94 /* UICollectionViewCell+Identifier.swift in Sources */,
 				0E7F291B2CDB530E007D4F2B /* UILabel+Style.swift in Sources */,
+				0E5C147D2CDF47B2005406B3 /* HomeViewController.swift in Sources */,
 				0E5C13C62CDE8D1D005406B3 /* UIView+Anchor.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
