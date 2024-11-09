@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0E5C13C62CDE8D1D005406B3 /* UIView+Anchor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E5C13C52CDE8D19005406B3 /* UIView+Anchor.swift */; };
 		0E7F29192CDB52DE007D4F2B /* UIFont+Ownglyph.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E7F29182CDB52D4007D4F2B /* UIFont+Ownglyph.swift */; };
 		0E7F291B2CDB530E007D4F2B /* UILabel+Style.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E7F291A2CDB5302007D4F2B /* UILabel+Style.swift */; };
 		0E7F291D2CDB53B5007D4F2B /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0E7F291C2CDB53B5007D4F2B /* Colors.xcassets */; };
@@ -22,6 +23,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0E5C13C52CDE8D19005406B3 /* UIView+Anchor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Anchor.swift"; sourceTree = "<group>"; };
 		0E7F28EC2CDA6C06007D4F2B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0E7F29182CDB52D4007D4F2B /* UIFont+Ownglyph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIFont+Ownglyph.swift"; sourceTree = "<group>"; };
 		0E7F291A2CDB5302007D4F2B /* UILabel+Style.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UILabel+Style.swift"; sourceTree = "<group>"; };
@@ -80,6 +82,7 @@
 		0E7F29172CDB52CC007D4F2B /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
+				0E5C13C52CDE8D19005406B3 /* UIView+Anchor.swift */,
 				0E7F291A2CDB5302007D4F2B /* UILabel+Style.swift */,
 				0E7F29182CDB52D4007D4F2B /* UIFont+Ownglyph.swift */,
 				A840E5922CDE266F002A1C94 /* UICollectionViewCell+Identifier.swift */,
@@ -247,6 +250,7 @@
 				A8A32C532CDBB9980078B4F6 /* CustomAlbumViewController.swift in Sources */,
 				A840E5932CDE266F002A1C94 /* UICollectionViewCell+Identifier.swift in Sources */,
 				0E7F291B2CDB530E007D4F2B /* UILabel+Style.swift in Sources */,
+				0E5C13C62CDE8D1D005406B3 /* UIView+Anchor.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
