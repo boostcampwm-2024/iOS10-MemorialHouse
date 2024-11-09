@@ -99,18 +99,18 @@ extension UIView {
         self.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: constant).isActive = true
     }
     
-    func setWidthAndHeight(width: CGFloat, height: CGFloat = 0) {
+    func setWidthAndHeight(width: CGFloat, height: CGFloat) {
         self.translatesAutoresizingMaskIntoConstraints = false
         self.widthAnchor.constraint(equalToConstant: width).isActive = true
         self.heightAnchor.constraint(equalToConstant: height).isActive = true
     }
     
-    func setHeight(_ height: CGFloat = 0) {
+    func setHeight(_ height: CGFloat) {
         self.translatesAutoresizingMaskIntoConstraints = false
         self.heightAnchor.constraint(equalToConstant: height).isActive = true
     }
     
-    func setWidth(_ width: CGFloat = 0) {
+    func setWidth(_ width: CGFloat) {
         self.translatesAutoresizingMaskIntoConstraints = false
         self.widthAnchor.constraint(equalToConstant: width).isActive = true
     }
