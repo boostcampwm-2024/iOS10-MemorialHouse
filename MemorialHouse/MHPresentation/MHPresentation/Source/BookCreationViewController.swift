@@ -61,14 +61,14 @@ final class BookCreationViewController: UIViewController {
     }()
     
     // MARK: - LifeCycle
-    public override func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
         
         configureConstraints()
     }
     
     // MARK: - TouchEvent
-    public override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         view.endEditing(true)
         
         super.touchesBegan(touches, with: event)
