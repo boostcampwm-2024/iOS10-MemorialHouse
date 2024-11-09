@@ -2,7 +2,7 @@ import UIKit
 
 public final class HomeViewController: UIViewController {
     // MARK: - Property
-    private let navigationBar = MHNavigationBar(title: "효준")
+    private let navigationBar = MHNavigationBar(title: "효준") // TODO: 유저 이름 입력받기
     
     // MARK: - Initializer
     public init() {
@@ -18,11 +18,16 @@ public final class HomeViewController: UIViewController {
         super.viewDidLoad()
         
         setup()
+        configureAddSubView()
         configureConstraints()
     }
     
+    // MARK: - Setup & Configuration
     private func setup() {
         view.backgroundColor = .baseBackground
+    }
+    
+    private func configureAddSubView() {
         view.addSubview(navigationBar)
     }
     
