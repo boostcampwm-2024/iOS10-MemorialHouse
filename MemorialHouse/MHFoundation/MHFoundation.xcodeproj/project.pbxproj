@@ -6,16 +6,30 @@
 	objectVersion = 77;
 	objects = {
 
-/* Begin PBXBuildFile section */
-		DB382CC22CD9B1F5000D7689 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB382CBF2CD9B1F5000D7689 /* main.swift */; };
-		DB382CC32CD9B1F5000D7689 /* MHFoundation.h in Headers */ = {isa = PBXBuildFile; fileRef = DB382CC02CD9B1F5000D7689 /* MHFoundation.h */; settings = {ATTRIBUTES = (Public, ); }; };
-/* End PBXBuildFile section */
-
 /* Begin PBXFileReference section */
-		DB382CBF2CD9B1F5000D7689 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
-		DB382CC02CD9B1F5000D7689 /* MHFoundation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MHFoundation.h; sourceTree = "<group>"; };
 		DB3CB9752CD9B08A008186F4 /* MHFoundation.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = MHFoundation.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		0E5C14B92CDFB758005406B3 /* Exceptions for "MHFoundation" folder in "MHFoundation" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			publicHeaders = (
+				MHFoundation.h,
+			);
+			target = DB3CB9742CD9B08A008186F4 /* MHFoundation */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		0E5C14B62CDFB758005406B3 /* MHFoundation */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				0E5C14B92CDFB758005406B3 /* Exceptions for "MHFoundation" folder in "MHFoundation" target */,
+			);
+			path = MHFoundation;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		DB3CB9722CD9B08A008186F4 /* Frameworks */ = {
@@ -28,19 +42,10 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		DB382CC12CD9B1F5000D7689 /* MHFoundation */ = {
-			isa = PBXGroup;
-			children = (
-				DB382CC02CD9B1F5000D7689 /* MHFoundation.h */,
-				DB382CBF2CD9B1F5000D7689 /* main.swift */,
-			);
-			path = MHFoundation;
-			sourceTree = "<group>";
-		};
 		DB3CB96B2CD9B08A008186F4 = {
 			isa = PBXGroup;
 			children = (
-				DB382CC12CD9B1F5000D7689 /* MHFoundation */,
+				0E5C14B62CDFB758005406B3 /* MHFoundation */,
 				DB3CB9762CD9B08A008186F4 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -60,7 +65,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DB382CC32CD9B1F5000D7689 /* MHFoundation.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -80,6 +84,9 @@
 			buildRules = (
 			);
 			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				0E5C14B62CDFB758005406B3 /* MHFoundation */,
 			);
 			name = MHFoundation;
 			packageProductDependencies = (
@@ -160,7 +167,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DB382CC22CD9B1F5000D7689 /* main.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
