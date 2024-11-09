@@ -7,17 +7,23 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		CE9AEB672CD7B3AA00F8471D /* Temp.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9AEB662CD7B3AA00F8471D /* Temp.swift */; };
 		CE9AEBED2CD7BA0C00F8471D /* MHCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9AEBEC2CD7BA0C00F8471D /* MHCore.framework */; };
 		DB382CCD2CD9B257000D7689 /* MHFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB382CCC2CD9B257000D7689 /* MHFoundation.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		CE9AEB4E2CD7B31300F8471D /* MHDomain.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = MHDomain.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		CE9AEB662CD7B3AA00F8471D /* Temp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Temp.swift; sourceTree = "<group>"; };
 		CE9AEBEC2CD7BA0C00F8471D /* MHCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = MHCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DB382CCC2CD9B257000D7689 /* MHFoundation.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = MHFoundation.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		A8C9336F2CDFBCDD007D932A /* MHDomain */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = MHDomain;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		CE9AEB4B2CD7B31300F8471D /* Frameworks */ = {
@@ -35,7 +41,7 @@
 		CE9AEB442CD7B31300F8471D = {
 			isa = PBXGroup;
 			children = (
-				CE9AEB642CD7B39300F8471D /* MHDomain */,
+				A8C9336F2CDFBCDD007D932A /* MHDomain */,
 				CE9AEBEB2CD7BA0C00F8471D /* Frameworks */,
 				CE9AEB4F2CD7B31300F8471D /* Products */,
 			);
@@ -47,14 +53,6 @@
 				CE9AEB4E2CD7B31300F8471D /* MHDomain.framework */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		CE9AEB642CD7B39300F8471D /* MHDomain */ = {
-			isa = PBXGroup;
-			children = (
-				CE9AEB662CD7B3AA00F8471D /* Temp.swift */,
-			);
-			path = MHDomain;
 			sourceTree = "<group>";
 		};
 		CE9AEBEB2CD7BA0C00F8471D /* Frameworks */ = {
@@ -92,6 +90,9 @@
 			buildRules = (
 			);
 			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				A8C9336F2CDFBCDD007D932A /* MHDomain */,
 			);
 			name = MHDomain;
 			packageProductDependencies = (
@@ -172,7 +173,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CE9AEB672CD7B3AA00F8471D /* Temp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
