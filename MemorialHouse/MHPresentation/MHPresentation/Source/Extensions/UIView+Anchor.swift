@@ -77,16 +77,16 @@ extension UIView {
         self.setTrailing(anchor: layoutGuide.trailingAnchor, constant: constant)
     }
     
-    func setVertical(layoutGuide: UILayoutGuide, constant: CGFloat) {
-        self.translatesAutoresizingMaskIntoConstraints = false
-        self.setTop(anchor: layoutGuide.topAnchor, constant: constant)
-        self.setBottom(anchor: layoutGuide.bottomAnchor, constant: constant)
-    }
-    
     func setVertical(view: UIView, constant: CGFloat) {
         self.translatesAutoresizingMaskIntoConstraints = false
         self.setTop(anchor: view.topAnchor, constant: constant)
         self.setBottom(anchor: view.bottomAnchor, constant: constant)
+    }
+    
+    func setVertical(layoutGuide: UILayoutGuide, constant: CGFloat) {
+        self.translatesAutoresizingMaskIntoConstraints = false
+        self.setTop(anchor: layoutGuide.topAnchor, constant: constant)
+        self.setBottom(anchor: layoutGuide.bottomAnchor, constant: constant)
     }
     
     func setCenterX(view: UIView, constant: CGFloat = 0) {
