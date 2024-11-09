@@ -39,51 +39,51 @@ extension UIView {
         }
     }
     
-    func setTop(anchor: NSLayoutYAxisAnchor, constant: CGFloat) {
+    func setTop(anchor: NSLayoutYAxisAnchor, constant: CGFloat = 0) {
         self.translatesAutoresizingMaskIntoConstraints = false
         self.topAnchor.constraint(equalTo: anchor, constant: constant).isActive = true
     }
     
-    func setLeading(anchor: NSLayoutXAxisAnchor, constant: CGFloat) {
+    func setLeading(anchor: NSLayoutXAxisAnchor, constant: CGFloat = 0) {
         self.translatesAutoresizingMaskIntoConstraints = false
         self.leadingAnchor.constraint(equalTo: anchor, constant: constant).isActive = true
     }
     
-    func setBottom(anchor: NSLayoutYAxisAnchor, constant: CGFloat) {
+    func setBottom(anchor: NSLayoutYAxisAnchor, constant: CGFloat = 0) {
         self.translatesAutoresizingMaskIntoConstraints = false
         self.bottomAnchor.constraint(equalTo: anchor, constant: -constant).isActive = true
     }
     
-    func setTrailing(anchor: NSLayoutXAxisAnchor, constant: CGFloat) {
+    func setTrailing(anchor: NSLayoutXAxisAnchor, constant: CGFloat = 0) {
         self.translatesAutoresizingMaskIntoConstraints = false
         self.trailingAnchor.constraint(equalTo: anchor, constant: -constant).isActive = true
     }
     
-    func setCenter(view: UIView, offset: CGPoint) {
+    func setCenter(view: UIView, offset: CGPoint = CGPoint(x: 0, y: 0)) {
         self.translatesAutoresizingMaskIntoConstraints = false
         self.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: offset.x).isActive = true
         self.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: offset.y).isActive = true
     }
     
-    func setHorizontal(view: UIView, constant: CGFloat) {
+    func setHorizontal(view: UIView, constant: CGFloat = 0) {
         self.translatesAutoresizingMaskIntoConstraints = false
         self.setLeading(anchor: view.leadingAnchor, constant: constant)
         self.setTrailing(anchor: view.trailingAnchor, constant: constant)
     }
     
-    func setHorizontal(layoutGuide: UILayoutGuide, constant: CGFloat) {
+    func setHorizontal(layoutGuide: UILayoutGuide, constant: CGFloat = 0) {
         self.translatesAutoresizingMaskIntoConstraints = false
         self.setLeading(anchor: layoutGuide.leadingAnchor, constant: constant)
         self.setTrailing(anchor: layoutGuide.trailingAnchor, constant: constant)
     }
     
-    func setVertical(view: UIView, constant: CGFloat) {
+    func setVertical(view: UIView, constant: CGFloat = 0) {
         self.translatesAutoresizingMaskIntoConstraints = false
         self.setTop(anchor: view.topAnchor, constant: constant)
         self.setBottom(anchor: view.bottomAnchor, constant: constant)
     }
     
-    func setVertical(layoutGuide: UILayoutGuide, constant: CGFloat) {
+    func setVertical(layoutGuide: UILayoutGuide, constant: CGFloat = 0) {
         self.translatesAutoresizingMaskIntoConstraints = false
         self.setTop(anchor: layoutGuide.topAnchor, constant: constant)
         self.setBottom(anchor: layoutGuide.bottomAnchor, constant: constant)
