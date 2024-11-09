@@ -8,6 +8,9 @@ public final class BookCreationViewController: UIViewController {
         let imageView = UIImageView()
         imageView.image = UIImage(resource: .pinkBook)
         imageView.contentMode = .scaleAspectFit
+        imageView.layer.shadowRadius = 2
+        imageView.layer.shadowOpacity = 0.25
+        imageView.layer.shadowOffset = .init(width: 0, height: 3)
         
         return imageView
     }()
