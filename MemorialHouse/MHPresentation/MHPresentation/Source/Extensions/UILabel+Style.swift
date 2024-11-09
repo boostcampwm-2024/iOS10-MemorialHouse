@@ -9,7 +9,6 @@ public extension UILabel {
     
     convenience init(style: Style) {
         self.init(frame: .zero)
-        self.translatesAutoresizingMaskIntoConstraints = false
         self.textColor = .title
         self.textAlignment = .center
         switch style {
