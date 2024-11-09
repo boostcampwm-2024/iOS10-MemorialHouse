@@ -1,16 +1,11 @@
 import UIKit
 
-public final class BookCreationViewController: UIViewController {
+final class BookCreationViewController: UIViewController {
     // MARK: - Property
-    private let scrollView = UIScrollView()
-    private let contentView = UIView()
     private let bookImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(resource: .pinkBook)
         imageView.contentMode = .scaleAspectFit
-        imageView.layer.shadowRadius = 2
-        imageView.layer.shadowOpacity = 0.25
-        imageView.layer.shadowOffset = .init(width: 0, height: 3)
         
         return imageView
     }()
@@ -26,15 +21,16 @@ public final class BookCreationViewController: UIViewController {
         return textField
     }()
     private let bookColorButtons: [UIButton] = zip(
-        ["분홍", "초록", "파랑", "주황", "베이지", ""],
+        ["분 홍", "초 록", "파 랑", "주 황", "베이지", ""],
         [UIColor.mhPink, .mhGreen, .mhBlue, .mhOrange, .mhBeige, .clear]
-    ).map { title, color in
+    ).map { (title: String, color: UIColor) in
         let button = UIButton(frame: CGRect(origin: .zero, size: .init(width: 66, height: 30)))
         var attributedTitle = AttributedString(stringLiteral: title)
         attributedTitle.font = UIFont.ownglyphBerry(size: 20)
         
         button.setAttributedTitle(NSAttributedString(attributedTitle), for: .normal)
         button.backgroundColor = color
+        
         button.layer.cornerRadius = 15
         button.layer.shadowRadius = 4
         button.layer.shadowOpacity = 0.25
@@ -43,7 +39,7 @@ public final class BookCreationViewController: UIViewController {
         return button
     }
     private let categorySelectionButton: UIButton = {
-        let button = UIButton(type: .custom)
+        let button = UIButton()
         var attributedTitle = AttributedString(stringLiteral: "없음")
         attributedTitle.font = UIFont.ownglyphBerry(size: 25)
         
@@ -70,6 +66,8 @@ public final class BookCreationViewController: UIViewController {
         
         configureConstraints()
     }
+    
+    // MARK: - TouchEvent
     public override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         view.endEditing(true)
         
