@@ -1,7 +1,7 @@
 import UIKit
 import Photos
 
-public final class CustomAlbumViewController: UIViewController {
+final class CustomAlbumViewController: UIViewController {
     // MARK: - Properties
     private let imagePicker = UIImagePickerController()
     private lazy var albumCollectionView: UICollectionView = {
@@ -18,7 +18,7 @@ public final class CustomAlbumViewController: UIViewController {
     private let viewModel: CustomAlbumViewModel
     
     // MARK: - Initializer
-    public init(viewModel: CustomAlbumViewModel) {
+    init(viewModel: CustomAlbumViewModel) {
         self.viewModel = viewModel
         
         super.init(nibName: nil, bundle: nil)
@@ -31,7 +31,7 @@ public final class CustomAlbumViewController: UIViewController {
     }
     
     // MARK: - ViewDidLoad
-    public override func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
         
         setup()
@@ -59,7 +59,7 @@ public final class CustomAlbumViewController: UIViewController {
     private func openCamera() {
         if (UIImagePickerController.isSourceTypeAvailable(.camera)) {
             imagePicker.sourceType = .camera
-            navigationController?.pushViewController(imagePicker, animated: true)
+            navigationController?.show(imagePicker, sender: nil)
         } else {
             // TODO: - 카메라 접근 권한 Alert
         }
@@ -68,7 +68,7 @@ public final class CustomAlbumViewController: UIViewController {
 
 // MARK: - UICollectionViewDelegate
 extension CustomAlbumViewController: UICollectionViewDelegate {
-    public func collectionView(
+    func collectionView(
         _ collectionView: UICollectionView,
         didSelectItemAt indexPath: IndexPath
     ) {
@@ -76,8 +76,11 @@ extension CustomAlbumViewController: UICollectionViewDelegate {
             self.openCamera()
         } else {
             guard let asset = viewModel.photoAsset?[indexPath.item - 1] else { return }
-            LocalPhotoManager.shared.requestIamge(with: asset) { image in
-                // TODO: - Edit Photo View로 이동
+            LocalPhotoManager.shared.requestIamge(with: asset) { [weak self] image in
+                guard let self else { return }
+                let editViewController = EditPhotoViewController()
+                editViewController.setPhoto(image: image)
+                self.navigationController?.pushViewController(editViewController, animated: true)
             }
         }
     }
@@ -85,7 +88,7 @@ extension CustomAlbumViewController: UICollectionViewDelegate {
 
 // MARK: - UICollectionViewDataSource
 extension CustomAlbumViewController: UICollectionViewDataSource {
-    public func collectionView(
+    func collectionView(
         _ collectionView: UICollectionView,
         numberOfItemsInSection section: Int
     ) -> Int {
@@ -93,7 +96,7 @@ extension CustomAlbumViewController: UICollectionViewDataSource {
         return assetNum + 1
     }
     
-    public func collectionView(
+    func collectionView(
         _ collectionView: UICollectionView,
         cellForItemAt indexPath: IndexPath
     ) -> UICollectionViewCell {
@@ -118,13 +121,15 @@ extension CustomAlbumViewController: UICollectionViewDataSource {
 
 // MARK: - UIImagePickerControllerDelegate, UINavigationControllerDelegate
 extension CustomAlbumViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-    public func imagePickerController(
+    func imagePickerController(
         _ picker: UIImagePickerController,
         didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]
     ) {
-        if let image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
-            // TODO: - 이미지 편집 뷰로 이동
-        }
         dismiss(animated: true, completion: nil)
+        if let image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
+            let editViewController = EditPhotoViewController()
+            editViewController.setPhoto(image: image)
+            self.navigationController?.pushViewController(editViewController, animated: true)
+        }
     }
 }

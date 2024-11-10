@@ -6,12 +6,11 @@ enum CustomAlbumViewModelInput {
     case viewDidLoad
 }
 
-public final class CustomAlbumViewModel {
+final class CustomAlbumViewModel {
     // MARK: - Properties
     @Published private(set) var photoAsset: PHFetchResult<PHAsset>?
-    private let photoManager = PHCachingImageManager()
     
-    public init() { }
+    init() { }
     
     func action(_ input: CustomAlbumViewModelInput) {
         switch input {
