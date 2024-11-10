@@ -18,7 +18,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		0E5C14D12CDFB762005406B3 /* MHDomain */ = {
+		A8C9336F2CDFBCDD007D932A /* MHDomain */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = MHDomain;
 			sourceTree = "<group>";
@@ -41,7 +41,7 @@
 		CE9AEB442CD7B31300F8471D = {
 			isa = PBXGroup;
 			children = (
-				0E5C14D12CDFB762005406B3 /* MHDomain */,
+				A8C9336F2CDFBCDD007D932A /* MHDomain */,
 				CE9AEBEB2CD7BA0C00F8471D /* Frameworks */,
 				CE9AEB4F2CD7B31300F8471D /* Products */,
 			);
@@ -92,7 +92,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				0E5C14D12CDFB762005406B3 /* MHDomain */,
+				A8C9336F2CDFBCDD007D932A /* MHDomain */,
 			);
 			name = MHDomain;
 			packageProductDependencies = (

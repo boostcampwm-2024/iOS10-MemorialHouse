@@ -59,7 +59,7 @@ extension UIView {
         self.trailingAnchor.constraint(equalTo: anchor, constant: -constant).isActive = true
     }
     
-    func setCenter(view: UIView, offset: CGPoint) {
+    func setCenter(view: UIView, offset: CGPoint = CGPoint(x: 0, y: 0)) {
         self.translatesAutoresizingMaskIntoConstraints = false
         self.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: offset.x).isActive = true
         self.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: offset.y).isActive = true

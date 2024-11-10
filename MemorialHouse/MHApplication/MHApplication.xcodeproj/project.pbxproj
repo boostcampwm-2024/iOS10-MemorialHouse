@@ -47,7 +47,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		0E5C14CC2CDFB75D005406B3 /* Exceptions for "MHApplication" folder in "MemorialHouse" target */ = {
+		A8C933432CDFBCCB007D932A /* Exceptions for "MHApplication" folder in "MemorialHouse" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Resource/Info.plist,
@@ -57,10 +57,10 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		0E5C14C62CDFB75D005406B3 /* MHApplication */ = {
+		A8C9333B2CDFBCCA007D932A /* MHApplication */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				0E5C14CC2CDFB75D005406B3 /* Exceptions for "MHApplication" folder in "MemorialHouse" target */,
+				A8C933432CDFBCCB007D932A /* Exceptions for "MHApplication" folder in "MemorialHouse" target */,
 			);
 			path = MHApplication;
 			sourceTree = "<group>";
@@ -86,7 +86,7 @@
 		0EE4A0772CD5DD1800F17FA5 = {
 			isa = PBXGroup;
 			children = (
-				0E5C14C62CDFB75D005406B3 /* MHApplication */,
+				A8C9333B2CDFBCCA007D932A /* MHApplication */,
 				CE9AEB682CD7B3DA00F8471D /* Frameworks */,
 				0EE4A0812CD5DD1800F17FA5 /* Products */,
 			);
@@ -130,7 +130,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				0E5C14C62CDFB75D005406B3 /* MHApplication */,
+				A8C9333B2CDFBCCA007D932A /* MHApplication */,
 			);
 			name = MemorialHouse;
 			packageProductDependencies = (

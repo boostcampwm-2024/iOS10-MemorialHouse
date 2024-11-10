@@ -20,7 +20,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		0E5C14B22CDFB74F005406B3 /* Exceptions for "MHPresentation" folder in "MHPresentation" target */ = {
+		A8C933692CDFBCD4007D932A /* Exceptions for "MHPresentation" folder in "MHPresentation" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Resource/Info.plist,
@@ -30,7 +30,7 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
-		0E5C14B32CDFB74F005406B3 /* Exceptions for "MHPresentation" folder in "Headers" phase from "MHPresentation" target */ = {
+		A8C9336A2CDFBCD4007D932A /* Exceptions for "MHPresentation" folder in "Headers" phase from "MHPresentation" target */ = {
 			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
 			attributesByRelativePath = {
 				Resource/Colors.xcassets = (Public, );
@@ -43,11 +43,11 @@
 /* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		0E5C14A42CDFB74F005406B3 /* MHPresentation */ = {
+		A8C9335B2CDFBCD4007D932A /* MHPresentation */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				0E5C14B22CDFB74F005406B3 /* Exceptions for "MHPresentation" folder in "MHPresentation" target */,
-				0E5C14B32CDFB74F005406B3 /* Exceptions for "MHPresentation" folder in "Headers" phase from "MHPresentation" target */,
+				A8C933692CDFBCD4007D932A /* Exceptions for "MHPresentation" folder in "MHPresentation" target */,
+				A8C9336A2CDFBCD4007D932A /* Exceptions for "MHPresentation" folder in "Headers" phase from "MHPresentation" target */,
 			);
 			path = MHPresentation;
 			sourceTree = "<group>";
@@ -71,7 +71,7 @@
 		CE9AEB8F2CD7B4F200F8471D = {
 			isa = PBXGroup;
 			children = (
-				0E5C14A42CDFB74F005406B3 /* MHPresentation */,
+				A8C9335B2CDFBCD4007D932A /* MHPresentation */,
 				CE9AEBA92CD7B51D00F8471D /* Frameworks */,
 				CE9AEB9A2CD7B4F200F8471D /* Products */,
 			);
@@ -113,7 +113,7 @@
 			buildConfigurationList = CE9AEB9F2CD7B4F200F8471D /* Build configuration list for PBXNativeTarget "MHPresentation" */;
 			buildPhases = (
 				CE9AEB942CD7B4F200F8471D /* Headers */,
-				0E7F28882CDA0846007D4F2B /* ShellScript */,
+				0E7F28882CDA0846007D4F2B /* Run Script */,
 				CE9AEB952CD7B4F200F8471D /* Sources */,
 				CE9AEB962CD7B4F200F8471D /* Frameworks */,
 				CE9AEB972CD7B4F200F8471D /* Resources */,
@@ -123,7 +123,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				0E5C14A42CDFB74F005406B3 /* MHPresentation */,
+				A8C9335B2CDFBCD4007D932A /* MHPresentation */,
 			);
 			name = MHPresentation;
 			packageProductDependencies = (
@@ -180,7 +180,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		0E7F28882CDA0846007D4F2B /* ShellScript */ = {
+		0E7F28882CDA0846007D4F2B /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -189,6 +189,7 @@
 			);
 			inputPaths = (
 			);
+			name = "Run Script";
 			outputFileListPaths = (
 			);
 			outputPaths = (

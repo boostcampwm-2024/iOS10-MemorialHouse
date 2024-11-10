@@ -11,7 +11,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		0E5C14B92CDFB758005406B3 /* Exceptions for "MHFoundation" folder in "MHFoundation" target */ = {
+		A8C933492CDFBCD1007D932A /* Exceptions for "MHFoundation" folder in "MHFoundation" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			publicHeaders = (
 				MHFoundation.h,
@@ -21,10 +21,10 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		0E5C14B62CDFB758005406B3 /* MHFoundation */ = {
+		A8C933462CDFBCD1007D932A /* MHFoundation */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				0E5C14B92CDFB758005406B3 /* Exceptions for "MHFoundation" folder in "MHFoundation" target */,
+				A8C933492CDFBCD1007D932A /* Exceptions for "MHFoundation" folder in "MHFoundation" target */,
 			);
 			path = MHFoundation;
 			sourceTree = "<group>";
@@ -45,7 +45,7 @@
 		DB3CB96B2CD9B08A008186F4 = {
 			isa = PBXGroup;
 			children = (
-				0E5C14B62CDFB758005406B3 /* MHFoundation */,
+				A8C933462CDFBCD1007D932A /* MHFoundation */,
 				DB3CB9762CD9B08A008186F4 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -86,7 +86,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				0E5C14B62CDFB758005406B3 /* MHFoundation */,
+				A8C933462CDFBCD1007D932A /* MHFoundation */,
 			);
 			name = MHFoundation;
 			packageProductDependencies = (
