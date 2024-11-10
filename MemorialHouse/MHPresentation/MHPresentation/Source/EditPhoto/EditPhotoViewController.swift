@@ -2,12 +2,18 @@ import UIKit
 
 public final class EditPhotoViewController: UIViewController {
     // MARK: - Properties
-    private let photoView = UIImageView()
     private let clearView = UIView.dimmedView(opacity: 0)
     private let dimmedView1 = UIView.dimmedView(opacity: 0.5)
     private let dimmedView2 = UIView.dimmedView(opacity: 0.5)
     private let dividedLine1 = UIView.dividedLine()
     private let dividedLine2 = UIView.dividedLine()
+    private let photoView: UIImageView = {
+       let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFit
+        imageView.backgroundColor = .clear
+        
+        return imageView
+    }()
     private let captionTextField: UITextField = {
         let textField = UITextField()
         textField.attributedPlaceholder = NSAttributedString(
@@ -75,7 +81,11 @@ public final class EditPhotoViewController: UIViewController {
         navigationController?.navigationBar.titleTextAttributes = [
             NSAttributedString.Key.font: UIFont.ownglyphBerry(size: 17),
             NSAttributedString.Key.foregroundColor: UIColor.white]
-        let leftBarButton = UIBarButtonItem(title: "닫기")
+        let closeAction = UIAction { [weak self] _ in
+            guard let self else { return }
+            self.navigationController?.popViewController(animated: true)
+        }
+        let leftBarButton = UIBarButtonItem(title: "닫기", primaryAction: closeAction)
         leftBarButton.setTitleTextAttributes(
             [NSAttributedString.Key.font: UIFont.ownglyphBerry(size: 17),
              NSAttributedString.Key.foregroundColor: UIColor.white],
@@ -169,6 +179,10 @@ public final class EditPhotoViewController: UIViewController {
         cropButton.addAction(cropButtonAction, for: .touchUpInside)
         rotateButton.addAction(rotateButtonAction, for: .touchUpInside)
         drawButton.addAction(drawButtonAction, for: .touchUpInside)
+    }
+    
+    func setPhoto(image: UIImage?) {
+        photoView.image = image
     }
 }
 
