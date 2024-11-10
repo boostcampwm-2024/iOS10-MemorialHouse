@@ -22,16 +22,16 @@ public final class RegisterViewController: UIViewController {
         return textField
     }()
     private let registerButton: UIButton = {
-        let registerButton = UIButton()
+        let registerButton = UIButton(type: .custom)
         
         var attributedString = AttributedString(stringLiteral: "다음")
         attributedString.font = UIFont.ownglyphBerry(size: registerButtonFontSize)
+        attributedString.strokeColor = UIColor.mhTitle
         
         registerButton.setAttributedTitle(NSAttributedString(attributedString), for: .normal)
         
-        registerButton.titleLabel?.textColor = #colorLiteral(red: 0.1843137255, green: 0.1843137255, blue: 0.1843137255, alpha: 1)
-        registerButton.backgroundColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
-        registerButton.layer.borderColor = #colorLiteral(red: 0.7019607843, green: 0.1490196078, blue: 0.1176470588, alpha: 1)
+        registerButton.backgroundColor = UIColor.mhSection
+        registerButton.layer.borderColor = UIColor.mhBorder.cgColor
         registerButton.layer.borderWidth = 1
         registerButton.layer.cornerRadius = registerButtonFontSize
                 

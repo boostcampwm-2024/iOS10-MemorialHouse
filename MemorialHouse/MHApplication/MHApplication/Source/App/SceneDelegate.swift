@@ -14,12 +14,9 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         window = UIWindow(windowScene: windowScene)
         
-        let initialViewController: UIViewController
-        if UserDefaults.standard.object(forKey: Constant.houseName) == nil {
-            initialViewController = RegisterViewController()
-        } else {
-            initialViewController = HomeViewController()
-        }
+        let initialViewController = UserDefaults.standard.object(forKey: Constant.houseName) == nil
+        ? RegisterViewController()
+        : HomeViewController()
         
         let navigationController = UINavigationController(rootViewController: initialViewController)
         window?.rootViewController = navigationController
