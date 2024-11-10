@@ -1,38 +1,46 @@
 import UIKit
 import Photos
 
-final class CustomAlbumViewController: UIViewController {
+public final class CustomAlbumViewController: UIViewController {
     // MARK: - Properties
-    private var imageAsset: PHFetchResult<PHAsset>?
-    private let imageManager = PHCachingImageManager()
     private let imagePicker = UIImagePickerController()
-    
     private lazy var albumCollectionView: UICollectionView = {
         let flowLayout = UICollectionViewFlowLayout()
-        let cellSize = (self.view.bounds.inset(by: self.view.safeAreaInsets).width - 10) / 3
+        let cellSize = (self.view.bounds.inset(by: self.view.safeAreaInsets).width - 6) / 3
         flowLayout.itemSize = CGSize(width: cellSize, height: cellSize)
-        flowLayout.minimumLineSpacing = 10
-        flowLayout.minimumInteritemSpacing = 5
+        flowLayout.minimumLineSpacing = 3
+        flowLayout.minimumInteritemSpacing = 2
         flowLayout.scrollDirection = .vertical
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: flowLayout)
         
         return collectionView
     }()
+    private let viewModel: CustomAlbumViewModel
+    
+    // MARK: - Initializer
+    public init(viewModel: CustomAlbumViewModel) {
+        self.viewModel = viewModel
+        
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        self.viewModel = CustomAlbumViewModel()
+        
+        super.init(nibName: nil, bundle: nil)
+    }
     
     // MARK: - ViewDidLoad
-    override func viewDidLoad() {
+    public override func viewDidLoad() {
         super.viewDidLoad()
         
         setup()
         configureConstraints()
+        viewModel.action(.viewDidLoad)
     }
     
     // MARK: - Setup & Configure
     private func setup() {
-        let fetchOptions = PHFetchOptions()
-        fetchOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
-        
-        imageAsset = PHAsset.fetchAssets(with: fetchOptions)
         imagePicker.delegate = self
         albumCollectionView.delegate = self
         albumCollectionView.dataSource = self
@@ -60,21 +68,16 @@ final class CustomAlbumViewController: UIViewController {
 
 // MARK: - UICollectionViewDelegate
 extension CustomAlbumViewController: UICollectionViewDelegate {
-    func collectionView(
+    public func collectionView(
         _ collectionView: UICollectionView,
         didSelectItemAt indexPath: IndexPath
     ) {
         if indexPath.item == 0 {
             self.openCamera()
         } else {
-            guard let asset = self.imageAsset?[indexPath.item - 1] else { return }
-            imageManager.requestImage(
-                for: asset,
-                targetSize: .zero,
-                contentMode: .default,
-                options: nil
-            ) { image, _ in
-                // TODO: - 이미지 편집 뷰 로 이동
+            guard let asset = viewModel.photoAsset?[indexPath.item - 1] else { return }
+            LocalPhotoManager.shared.requestIamge(with: asset) { image in
+                // TODO: - Edit Photo View로 이동
             }
         }
     }
@@ -82,15 +85,15 @@ extension CustomAlbumViewController: UICollectionViewDelegate {
 
 // MARK: - UICollectionViewDataSource
 extension CustomAlbumViewController: UICollectionViewDataSource {
-    func collectionView(
+    public func collectionView(
         _ collectionView: UICollectionView,
         numberOfItemsInSection section: Int
     ) -> Int {
-        guard let imageAsset else { return 1 }
-        return imageAsset.count + 1
+        guard let assetNum = viewModel.photoAsset?.count else { return 1 }
+        return assetNum + 1
     }
     
-    func collectionView(
+    public func collectionView(
         _ collectionView: UICollectionView,
         cellForItemAt indexPath: IndexPath
     ) -> UICollectionViewCell {
@@ -102,14 +105,9 @@ extension CustomAlbumViewController: UICollectionViewDataSource {
         if indexPath.item == 0 {
             cell.setPhoto(.photo)
         } else {
-            guard let asset = imageAsset?[indexPath.item - 1] else { return cell }
+            guard let asset = viewModel.photoAsset?[indexPath.item - 1] else { return cell }
             let cellSize = cell.bounds.size
-            imageManager.requestImage(
-                for: asset,
-                targetSize: cellSize,
-                contentMode: .aspectFill,
-                options: nil
-            ) { image, _ in
+            LocalPhotoManager.shared.requestIamge(with: asset, cellSize: cellSize) { image in
                 cell.setPhoto(image)
             }
         }
@@ -120,7 +118,7 @@ extension CustomAlbumViewController: UICollectionViewDataSource {
 
 // MARK: - UIImagePickerControllerDelegate, UINavigationControllerDelegate
 extension CustomAlbumViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-    func imagePickerController(
+    public func imagePickerController(
         _ picker: UIImagePickerController,
         didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]
     ) {
