@@ -1,6 +1,9 @@
 import UIKit
+import MHFoundation
 
 public final class RegisterViewController: UIViewController {
+    // MARK: - Properties
+    
     private static let registerButtonFontSize: CGFloat = 12
     private static let registerTextFieldFontSize: CGFloat = 24
     private let registerTextField: UITextField = {
@@ -13,6 +16,8 @@ public final class RegisterViewController: UIViewController {
         var attributedText = AttributedString(stringLiteral: "기록소")
         attributedText.font = registerFont
         textField.attributedPlaceholder = NSAttributedString(attributedText)
+        
+        textField.tag = UITextField.Tag.register
         
         return textField
     }()
@@ -29,9 +34,11 @@ public final class RegisterViewController: UIViewController {
         registerButton.layer.borderColor = #colorLiteral(red: 0.7019607843, green: 0.1490196078, blue: 0.1176470588, alpha: 1)
         registerButton.layer.borderWidth = 1
         registerButton.layer.cornerRadius = registerButtonFontSize
-        
+                
         return registerButton
     }()
+    
+    // MARK: - Lifecycle
     
     public override func viewDidLoad() {
         super.viewDidLoad()
@@ -41,16 +48,20 @@ public final class RegisterViewController: UIViewController {
         configureConstraints()
     }
     
+    // MARK: - Setup
+    
     private func setup() {
         view.backgroundColor = .baseBackground
+        
         addTouchEventToRegisterButton(registerButton)
     }
+    
+    // MARK: - Configure
     
     private func configureAddSubView() {
         view.addSubview(registerTextField)
         view.addSubview(registerButton)
     }
-    
     private func configureConstraints() {
         registerTextField.setHeight(RegisterViewController.registerTextFieldFontSize)
         registerTextField.setWidth(RegisterViewController.registerTextFieldFontSize * 8)
@@ -66,10 +77,7 @@ public final class RegisterViewController: UIViewController {
         let uiAction = UIAction { [weak self] _ in
             // TODO: - 저장소 중복 체크
             
-            guard let houseName = self?.registerTextField.text, !houseName.isEmpty else {
-                self?.showAlert()
-                return
-            }
+            guard let houseName = self?.registerTextField.text, !houseName.isEmpty else { return }
             
             let userDefaults = UserDefaults.standard
             
@@ -81,13 +89,34 @@ public final class RegisterViewController: UIViewController {
         
         button.addAction(uiAction, for: .touchUpInside)
     }
-    
-    private func showAlert() {
-        let alertController = UIAlertController(title: "기록소 이름을 입력해주세요.", message: nil, preferredStyle: .alert)
-        let alertAction = UIAlertAction(title: "확인", style: .default)
+}
+
+// MARK: - UITextFieldDelegate
+
+extension RegisterViewController: UITextFieldDelegate {
+    public func textField(
+        _ textField: UITextField,
+        shouldChangeCharactersIn range: NSRange,
+        replacementString string: String) -> Bool {
+        switch textField.tag {
+        case UITextField.Tag.register:
+            if string.isEmpty {
+                registerButton.isEnabled = false
+            } else {
+                registerButton.isEnabled = true
+            }
+        default:
+            break
+        }
         
-        alertController.addAction(alertAction)
-        
-        present(alertController, animated: true, completion: nil)
+        return true
+    }
+}
+
+// MARK: - Tag for UITextField
+
+extension UITextField {
+    enum Tag {
+        static let register = 0
     }
 }
