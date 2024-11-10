@@ -53,11 +53,11 @@ public final class RegisterViewController: UIViewController {
     
     private func configureConstraints() {
         registerTextField.setHeight(RegisterViewController.registerTextFieldFontSize)
-        registerTextField.setWidth(RegisterViewController.registerTextFieldFontSize * 10)
+        registerTextField.setWidth(RegisterViewController.registerTextFieldFontSize * 8)
         registerTextField.setCenter(view: view)
         
         registerButton.setHeight(RegisterViewController.registerButtonFontSize * 2)
-        registerButton.setWidth(RegisterViewController.registerTextFieldFontSize * 4)
+        registerButton.setWidth(RegisterViewController.registerButtonFontSize * 4)
         registerButton.setTop(anchor: registerTextField.bottomAnchor, constant: 6)
         registerButton.setLeading(anchor: registerTextField.trailingAnchor, constant: -6)
     }
