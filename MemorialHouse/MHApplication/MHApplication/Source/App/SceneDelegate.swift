@@ -12,7 +12,16 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         
         window = UIWindow(windowScene: windowScene)
-        window?.rootViewController = HomeViewController()
+        
+        let initController: UIViewController
+        if UserDefaults.standard.object(forKey: "houseName") == nil {
+            initController = RegisterViewController()
+        } else {
+            initController = HomeViewController()
+        }
+        
+        let navigationController = UINavigationController(rootViewController: initController)
+        window?.rootViewController = navigationController
         window?.makeKeyAndVisible()
     }
 }
