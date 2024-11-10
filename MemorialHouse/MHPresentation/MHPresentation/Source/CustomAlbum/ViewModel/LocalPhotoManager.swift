@@ -3,7 +3,15 @@ import Photos
 
 final class LocalPhotoManager {
     nonisolated(unsafe) static let shared = LocalPhotoManager()
+    
     private let imageManager = PHImageManager()
+    private let imageRequestOptions: PHImageRequestOptions = {
+        let options = PHImageRequestOptions()
+        options.deliveryMode = .highQualityFormat
+        
+        return options
+    }()
+    
     private init() { }
     
     func requestIamge(with asset: PHAsset?, cellSize: CGSize = .zero, completion: @escaping (UIImage?) -> Void) {
@@ -13,7 +21,7 @@ final class LocalPhotoManager {
             for: asset,
             targetSize: cellSize,
             contentMode: .aspectFill,
-            options: nil,
+            options: imageRequestOptions,
             resultHandler: { image, _ in
             completion(image)
         })
