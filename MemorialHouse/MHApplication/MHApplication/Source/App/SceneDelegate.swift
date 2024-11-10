@@ -1,4 +1,5 @@
 import UIKit
+import MHFoundation
 import MHPresentation
 
 final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
@@ -13,14 +14,14 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         window = UIWindow(windowScene: windowScene)
         
-        let initController: UIViewController
-        if UserDefaults.standard.object(forKey: "houseName") == nil {
-            initController = RegisterViewController()
+        let initialViewController: UIViewController
+        if UserDefaults.standard.object(forKey: Constant.houseName) == nil {
+            initialViewController = RegisterViewController()
         } else {
-            initController = HomeViewController()
+            initialViewController = HomeViewController()
         }
         
-        let navigationController = UINavigationController(rootViewController: initController)
+        let navigationController = UINavigationController(rootViewController: initialViewController)
         window?.rootViewController = navigationController
         window?.makeKeyAndVisible()
     }
