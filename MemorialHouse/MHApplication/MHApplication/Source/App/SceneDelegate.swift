@@ -11,10 +11,9 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         options connectionOptions: UIScene.ConnectionOptions
     ) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
-        
         window = UIWindow(windowScene: windowScene)
         
-        let initialViewController = UserDefaults.standard.object(forKey: Constant.houseName) == nil
+        let initialViewController = UserDefaults.standard.object(forKey: Constant.houseNameUserDefaultKey) == nil
         ? RegisterViewController()
         : HomeViewController()
         

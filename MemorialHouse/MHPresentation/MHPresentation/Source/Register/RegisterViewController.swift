@@ -3,7 +3,6 @@ import MHFoundation
 
 public final class RegisterViewController: UIViewController {
     // MARK: - Properties
-    
     private static let registerButtonFontSize: CGFloat = 12
     private static let registerTextFieldFontSize: CGFloat = 24
     private let registerTextField: UITextField = {
@@ -39,7 +38,6 @@ public final class RegisterViewController: UIViewController {
     }()
     
     // MARK: - Lifecycle
-    
     public override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -49,7 +47,6 @@ public final class RegisterViewController: UIViewController {
     }
     
     // MARK: - Setup
-    
     private func setup() {
         view.backgroundColor = .baseBackground
         
@@ -57,7 +54,6 @@ public final class RegisterViewController: UIViewController {
     }
     
     // MARK: - Configure
-    
     private func configureAddSubView() {
         view.addSubview(registerTextField)
         view.addSubview(registerButton)
@@ -81,7 +77,7 @@ public final class RegisterViewController: UIViewController {
             
             let userDefaults = UserDefaults.standard
             
-            userDefaults.set(houseName, forKey: Constant.houseName)
+            userDefaults.set(houseName, forKey: Constant.houseNameUserDefaultKey)
             
             self?.navigationController?.pushViewController(HomeViewController(), animated: false)
             self?.navigationController?.viewControllers.removeFirst()    // inactive back to register view
@@ -92,7 +88,6 @@ public final class RegisterViewController: UIViewController {
 }
 
 // MARK: - UITextFieldDelegate
-
 extension RegisterViewController: UITextFieldDelegate {
     public func textField(
         _ textField: UITextField,
@@ -114,7 +109,6 @@ extension RegisterViewController: UITextFieldDelegate {
 }
 
 // MARK: - Tag for UITextField
-
 extension UITextField {
     enum Tag {
         static let register = 0

@@ -1,3 +1,3 @@
 public enum Constant {
-    public static let houseName = "houseName"
+    public static let houseNameUserDefaultKey = "houseName"
 }
