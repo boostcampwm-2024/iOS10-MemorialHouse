@@ -23,9 +23,8 @@ final class MHBook: UIView {
     private let bookImageView = UIImageView()
     private let titleLabel = UILabel(style: .default)
     private let targetImageView: UIImageView = {
-        let imageView = UIImageView(image: UIImage(systemName: "person"))
+        let imageView = UIImageView()
         imageView.contentMode = .scaleToFill
-        
         imageView.layer.shadowRadius = 4
         imageView.layer.shadowOpacity = 0.4
         imageView.layer.shadowOffset = CGSize(width: 4, height: 4)
@@ -53,7 +52,7 @@ final class MHBook: UIView {
     func configure(with bookCover: BookCover) {
         titleLabel.text = bookCover.title
         bookImageView.image = bookCover.bookType.image
-        targetImageView.image = UIImage(systemName: "person")
+        targetImageView.image = UIImage(systemName: "person") // TODO: Image Loader로 변경
         if let publisher = UserDefaults.standard.object(forKey: Constant.houseNameUserDefaultKey) as? String {
             // TODO: User 모델 만들어지면 파라미터로 출판소 이름 넘겨주기
             publisherLabel.text = publisher
@@ -76,9 +75,7 @@ final class MHBook: UIView {
         targetImageView.setTop(anchor: titleLabel.bottomAnchor, constant: 14)
         targetImageView.setCenterX(view: containerView, constant: 8)
         targetImageView.setWidthAndHeight(width: 100, height: 100)
-        publisherLabel.setAnchor(
-            bottom: containerView.bottomAnchor, constantBottom: 12,
-            trailing: containerView.trailingAnchor, constantTrailing: 12
-        )
+        publisherLabel.setBottom(anchor: containerView.bottomAnchor, constant: 12)
+        publisherLabel.setTrailing(anchor: containerView.trailingAnchor, constant: 12)
     }
 }
