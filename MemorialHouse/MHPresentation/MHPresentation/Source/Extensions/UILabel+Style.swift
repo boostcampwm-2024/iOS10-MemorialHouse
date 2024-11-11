@@ -4,7 +4,8 @@ public extension UILabel {
     enum Style {
         case `default`
         case header
-        case body
+        case body1
+        case body2
     }
     
     convenience init(style: Style) {
@@ -16,8 +17,10 @@ public extension UILabel {
             self.font = UIFont.ownglyphBerry(size: 25)
         case .header:
             self.font = UIFont.ownglyphBerry(size: 30)
-        case .body:
+        case .body1:
             self.font = UIFont.ownglyphBerry(size: 17)
+        case .body2:
+            self.font = UIFont.ownglyphBerry(size: 12)
         }
     }
 }
