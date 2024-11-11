@@ -72,15 +72,19 @@ extension CustomAlbumViewController: UICollectionViewDelegate {
         _ collectionView: UICollectionView,
         didSelectItemAt indexPath: IndexPath
     ) {
-        if indexPath.item == 0 {
-            self.openCamera()
-        } else {
-            guard let asset = viewModel.photoAsset?[indexPath.item - 1] else { return }
-            LocalPhotoManager.shared.requestIamge(with: asset) { [weak self] image in
-                guard let self else { return }
-                let editViewController = EditPhotoViewController()
-                editViewController.setPhoto(image: image)
-                self.navigationController?.pushViewController(editViewController, animated: true)
+        Task {
+            if indexPath.item == 0 {
+                self.openCamera()
+            } else {
+                guard let asset = viewModel.photoAsset?[indexPath.item - 1] else { return }
+                await LocalPhotoManager.shared.requestImage(with: asset) { @Sendable [weak self] image in
+                    guard let self else { return }
+                    Task {
+                        let editViewController = await EditPhotoViewController()
+                        await editViewController.setPhoto(image: image)
+                        await self.navigationController?.pushViewController(editViewController, animated: true)
+                    }
+                }
             }
         }
     }
@@ -105,16 +109,20 @@ extension CustomAlbumViewController: UICollectionViewDataSource {
             for: indexPath
         ) as? CustomAlbumCollectionViewCell else { return UICollectionViewCell() }
         
-        if indexPath.item == 0 {
-            cell.setPhoto(.photo)
-        } else {
-            guard let asset = viewModel.photoAsset?[indexPath.item - 1] else { return cell }
-            let cellSize = cell.bounds.size
-            LocalPhotoManager.shared.requestIamge(with: asset, cellSize: cellSize) { image in
-                cell.setPhoto(image)
+        Task {
+            if indexPath.item == 0 {
+                await cell.setPhoto(.photo)
+            } else {
+                guard let asset = viewModel.photoAsset?[indexPath.item - 1] else { return cell }
+                let cellSize = cell.bounds.size
+                await LocalPhotoManager.shared.requestImage(with: asset, cellSize: cellSize) { @Sendable image in
+                    Task {
+                        await cell.setPhoto(image)
+                    }
+                }
             }
+            return cell
         }
-        
         return cell
     }
 }

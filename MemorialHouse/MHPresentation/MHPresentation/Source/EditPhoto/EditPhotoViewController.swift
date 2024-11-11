@@ -1,5 +1,6 @@
 import UIKit
 
+@MainActor
 public final class EditPhotoViewController: UIViewController {
     // MARK: - Properties
     private let clearView = UIView.dimmedView(opacity: 0)

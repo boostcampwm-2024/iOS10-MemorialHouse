@@ -14,7 +14,7 @@ actor LocalPhotoManager {
     
     private init() { }
     
-    func requestIamge(with asset: PHAsset?, cellSize: CGSize = .zero, completion: @escaping (UIImage?) -> Void) {
+    func requestImage(with asset: PHAsset?, cellSize: CGSize = .zero, completion: @escaping (UIImage?) -> Void) {
         guard let asset else { return }
         
         imageManager.requestImage(
