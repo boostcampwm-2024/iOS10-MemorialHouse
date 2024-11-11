@@ -1,8 +1,8 @@
 import UIKit
 import Photos
 
-final class LocalPhotoManager {
-    nonisolated(unsafe) static let shared = LocalPhotoManager()
+actor LocalPhotoManager {
+    static let shared = LocalPhotoManager()
     
     private let imageManager = PHImageManager()
     private let imageRequestOptions: PHImageRequestOptions = {
