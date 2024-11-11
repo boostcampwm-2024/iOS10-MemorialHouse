@@ -2,17 +2,14 @@ import MHFoundation
 import Photos
 import Combine
 
-enum CustomAlbumViewModelInput {
-    case viewDidLoad
-}
-
 final class CustomAlbumViewModel {
+    enum Input {
+        case viewDidLoad
+    }
     // MARK: - Properties
     @Published private(set) var photoAsset: PHFetchResult<PHAsset>?
     
-    init() { }
-    
-    func action(_ input: CustomAlbumViewModelInput) {
+    func action(_ input: CustomAlbumViewModel.Input) {
         switch input {
         case .viewDidLoad:
             fetchPhotoAssets()
