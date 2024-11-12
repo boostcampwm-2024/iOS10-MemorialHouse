@@ -77,7 +77,7 @@ extension CustomAlbumViewController: UICollectionViewDelegate {
         } else {
             guard let asset = viewModel.photoAsset?[indexPath.item - 1] else { return }
             Task {
-                await LocalPhotoManager.shared.requestImage(with: asset) { @Sendable [weak self] image in
+                await LocalPhotoManager.shared.requestImage(with: asset) { [weak self] image in
                     guard let self else { return }
                     let editViewController = EditPhotoViewController()
                     editViewController.setPhoto(image: image)
@@ -113,7 +113,7 @@ extension CustomAlbumViewController: UICollectionViewDataSource {
             guard let asset = viewModel.photoAsset?[indexPath.item - 1] else { return cell }
             let cellSize = cell.bounds.size
             Task {
-                await LocalPhotoManager.shared.requestImage(with: asset, cellSize: cellSize) { @Sendable image in
+                await LocalPhotoManager.shared.requestImage(with: asset, cellSize: cellSize) { image in
                     cell.setPhoto(image)
                 }
             }
