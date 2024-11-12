@@ -57,7 +57,8 @@ final class MHBook: UIView {
     private func configureConstraints() {
         bookCoverImageView.fillSuperview()
         titleLabel.setTop(anchor: topAnchor, constant: 16)
-        titleLabel.setCenterX(view: self, constant: 8)
+        titleLabel.setLeading(anchor: leadingAnchor, constant: 17)
+        titleLabel.setTrailing(anchor: trailingAnchor, constant: 17)
         targetImageView.setTop(anchor: titleLabel.bottomAnchor, constant: 14)
         targetImageView.setCenterX(view: self, constant: 8)
         targetImageView.setWidthAndHeight(width: 100, height: 100)
