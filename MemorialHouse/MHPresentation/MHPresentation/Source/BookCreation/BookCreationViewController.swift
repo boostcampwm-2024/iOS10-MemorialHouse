@@ -68,6 +68,20 @@ final class BookCreationViewController: UIViewController {
         
         return button
     }()
+    private let colorButtonInnerShadow: CAShapeLayer = {
+        let shadowLayer = CAShapeLayer()
+        shadowLayer.cornerRadius = 15
+        shadowLayer.fillColor = nil
+        shadowLayer.masksToBounds = true
+
+        // 그림자 경로 생성
+        shadowLayer.shadowColor = UIColor.black.cgColor
+        shadowLayer.shadowOpacity = 0.35
+        shadowLayer.shadowOffset = CGSize(width: 0, height: 4)
+        shadowLayer.shadowRadius = 3
+        
+        return shadowLayer
+    }()
     @Published
     private var viewModel: BookCreationViewModel
     private var cancellables: Set<AnyCancellable> = []
@@ -96,6 +110,11 @@ final class BookCreationViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         configureViewModelBinding()
+    }
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        let currentColorButton = bookColorButtons[viewModel.currentColorNumber]
+        self.addInnerShadow(to: currentColorButton)
     }
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
@@ -196,6 +215,7 @@ final class BookCreationViewController: UIViewController {
         
         // 오른쪽 버튼
         let rightBarButtonAction = UIAction { [weak self] _ in
+            // TODO: - 구현 해야 함
             self?.navigationController?.popViewController(animated: true)
         }
         let rightBarButton = UIBarButtonItem(title: "책 속지 만들기", primaryAction: rightBarButtonAction)
@@ -209,7 +229,9 @@ final class BookCreationViewController: UIViewController {
         // 색깔 버튼
         bookColorButtons.enumerated().forEach { idx, button in
             let action = UIAction { [weak self] _ in
-                self?.viewModel.selectedColorNumber = idx
+                guard let self else { return }
+                self.viewModel.previousColorNumber = self.viewModel.currentColorNumber
+                self.viewModel.currentColorNumber = idx
             }
             button.addAction(action, for: .touchUpInside)
         }
@@ -235,15 +257,26 @@ final class BookCreationViewController: UIViewController {
     }
     private func configureViewModelBinding() {
         $viewModel
-            .receive(on: DispatchQueue.main)
+            .debounce(for: .seconds(0.3), scheduler: DispatchQueue.main)
             .sink { [weak self] viewModel in
                 guard let self else { return }
                 self.bookView.configure(
                     title: viewModel.bookTitle,
-                    bookCoverImage: viewModel.selectedColor.image,
+                    bookCoverImage: viewModel.currentColor.image,
                     targetImage: .rotate,
                     publisher: "고양이?"
-                )
+                )   
+            }
+            .store(in: &cancellables)
+        $viewModel
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] viewModel in
+                guard viewModel.previousColorNumber != -1 else { return }
+                guard let self else { return }
+                let previousButton = self.bookColorButtons[viewModel.previousColorNumber]
+                self.removeSubLayersAndaddOuterShadow(to: previousButton)
+                let currentColorButton = self.bookColorButtons[viewModel.currentColorNumber]
+                self.addInnerShadow(to: currentColorButton)
             }
             .store(in: &cancellables)
     }
@@ -274,6 +307,26 @@ final class BookCreationViewController: UIViewController {
             .embededInDefaultBackground()
         
         return bookColorSelectionBackground
+    }
+    private func removeSubLayersAndaddOuterShadow(to view: UIView) {
+        UIView.animate(withDuration: 0.3) { [weak self] in
+            self?.colorButtonInnerShadow.removeFromSuperlayer()
+            view.layer.shadowOpacity = 0.25
+        }
+    }
+    private func addInnerShadow(to view: UIView) {
+        UIView.animate(withDuration: 0.3) { [weak self] in
+            guard let self else { return }
+            let bounds = view.bounds
+            let path = UIBezierPath(rect: bounds)
+            let cutoutPath = UIBezierPath(rect: bounds.insetBy(dx: 0, dy: -4)).reversing()
+            path.append(cutoutPath)
+
+            self.colorButtonInnerShadow.shadowPath = path.cgPath
+            self.colorButtonInnerShadow.frame = bounds
+            view.layer.shadowOpacity = 0
+            view.layer.addSublayer(self.colorButtonInnerShadow)
+        }
     }
 }
 
