@@ -55,6 +55,12 @@ public final class HomeViewController: UIViewController {
         configureConstraints()
     }
     
+    public override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        navigationController?.navigationBar.isHidden = true
+    }
+    
     // MARK: - Setup & Configuration
     private func setup() {
         view.backgroundColor = .baseBackground
