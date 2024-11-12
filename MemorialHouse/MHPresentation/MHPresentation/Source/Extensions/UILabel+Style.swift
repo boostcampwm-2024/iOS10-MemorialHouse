@@ -10,7 +10,7 @@ public extension UILabel {
     
     convenience init(style: Style) {
         self.init(frame: .zero)
-        self.textColor = .title
+        self.textColor = .mhTitle
         self.textAlignment = .center
         switch style {
         case .default:
