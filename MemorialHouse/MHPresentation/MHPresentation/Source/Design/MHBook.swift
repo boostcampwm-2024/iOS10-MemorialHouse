@@ -19,7 +19,6 @@ extension BookType {
 
 final class MHBook: UIView {
     // MARK: - Property
-    private let containerView = UIView()
     private let bookImageView = UIImageView()
     private let titleLabel = UILabel(style: .default)
     private let targetImageView: UIImageView = {
@@ -60,22 +59,20 @@ final class MHBook: UIView {
     }
     
     private func configureAddSubView() {
-        addSubview(containerView)
-        containerView.addSubview(bookImageView)
-        containerView.addSubview(titleLabel)
-        containerView.addSubview(targetImageView)
-        containerView.addSubview(publisherLabel)
+        addSubview(bookImageView)
+        addSubview(titleLabel)
+        addSubview(targetImageView)
+        addSubview(publisherLabel)
     }
     
     private func configureConstraints() {
-        containerView.fillSuperview()
         bookImageView.fillSuperview()
-        titleLabel.setTop(anchor: containerView.topAnchor, constant: 16)
-        titleLabel.setCenterX(view: containerView, constant: 8)
+        titleLabel.setTop(anchor: topAnchor, constant: 16)
+        titleLabel.setCenterX(view: self, constant: 8)
         targetImageView.setTop(anchor: titleLabel.bottomAnchor, constant: 14)
-        targetImageView.setCenterX(view: containerView, constant: 8)
+        targetImageView.setCenterX(view: self, constant: 8)
         targetImageView.setWidthAndHeight(width: 100, height: 100)
-        publisherLabel.setBottom(anchor: containerView.bottomAnchor, constant: 12)
-        publisherLabel.setTrailing(anchor: containerView.trailingAnchor, constant: 12)
+        publisherLabel.setBottom(anchor: bottomAnchor, constant: 12)
+        publisherLabel.setTrailing(anchor: trailingAnchor, constant: 12)
     }
 }
