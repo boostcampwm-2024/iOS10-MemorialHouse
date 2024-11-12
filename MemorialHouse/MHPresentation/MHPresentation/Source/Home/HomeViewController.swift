@@ -81,6 +81,10 @@ public final class HomeViewController: UIViewController {
             // TODO: 카테고리 시트지 띄우기
         }, for: .touchUpInside)
         
+        bookCoverMakeFloatingButton.addAction(UIAction { [weak self] _ in
+            guard let self else { return }
+            self.navigationController?.pushViewController(BookCreationViewController(), animated: true)
+        }, for: .touchUpInside)
     }
     
     private func configureConstraints() {
