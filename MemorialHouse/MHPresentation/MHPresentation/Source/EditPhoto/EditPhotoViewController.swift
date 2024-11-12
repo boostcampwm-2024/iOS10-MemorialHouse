@@ -173,8 +173,9 @@ public final class EditPhotoViewController: UIViewController {
         let cropButtonAction = UIAction { _ in
             // TODO: - Crop Action
         }
-        let rotateButtonAction = UIAction { _ in
-            // TODO: - Rotate Action
+        let rotateButtonAction = UIAction { [weak self] _ in
+            let image = self?.photoView.image
+            self?.photoView.image = image?.rotate(radians: .pi / 2)
         }
         let drawButtonAction = UIAction { _ in
             // TODO: - Draw Action
