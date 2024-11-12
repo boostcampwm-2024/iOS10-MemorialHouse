@@ -18,6 +18,10 @@ final class BookCreationViewController: UIViewController {
         let textField = UITextField()
         textField.font = UIFont.ownglyphBerry(size: 25)
         textField.textColor = .black
+        textField.returnKeyType = .done
+        textField.autocorrectionType = .no
+        textField.autocapitalizationType = .none
+        textField.spellCheckingType = .no
         
         var attributedText = AttributedString(stringLiteral: "책 제목을 입력하세요")
         attributedText.font = UIFont.ownglyphBerry(size: 25)
@@ -109,6 +113,8 @@ final class BookCreationViewController: UIViewController {
     // MARK: - Helper
     private func setup() {
         view.backgroundColor = .baseBackground
+        bookTitleTextField.delegate = self
+        bookColorButtons.last?.isUserInteractionEnabled = false // 마지막 버튼은 크기 조절을 위한 것
     }
     private func configureConstraints() {
         // 책 미리보기
@@ -268,5 +274,12 @@ final class BookCreationViewController: UIViewController {
             .embededInDefaultBackground()
         
         return bookColorSelectionBackground
+    }
+}
+
+extension BookCreationViewController: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
     }
 }
