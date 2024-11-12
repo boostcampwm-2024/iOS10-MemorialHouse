@@ -1,4 +1,5 @@
 import UIKit
+import MHFoundation
 import MHPresentation
 
 final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
@@ -10,9 +11,15 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         options connectionOptions: UIScene.ConnectionOptions
     ) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
-        
         window = UIWindow(windowScene: windowScene)
-        window?.rootViewController = HomeViewController()
+        
+        let initialViewController = UserDefaults.standard.object(forKey: Constant.houseNameUserDefaultKey) == nil
+        ? RegisterViewController()
+        : HomeViewController()
+        
+        let navigationController = UINavigationController(rootViewController: initialViewController)
+        navigationController.navigationBar.isHidden = true
+        window?.rootViewController = navigationController
         window?.makeKeyAndVisible()
     }
 }

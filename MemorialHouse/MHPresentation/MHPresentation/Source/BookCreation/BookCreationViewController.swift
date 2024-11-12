@@ -44,7 +44,7 @@ final class BookCreationViewController: UIViewController {
         attributedTitle.font = UIFont.ownglyphBerry(size: 25)
         
         button.setAttributedTitle(NSAttributedString(attributedTitle), for: .normal)
-        button.setTitleColor(.title, for: .normal)
+        button.setTitleColor(.mhTitle, for: .normal)
         button.contentHorizontalAlignment = .left
         
         return button
@@ -55,7 +55,7 @@ final class BookCreationViewController: UIViewController {
         attributedTitle.font = UIFont.ownglyphBerry(size: 25)
         
         button.setAttributedTitle(NSAttributedString(attributedTitle), for: .normal)
-        button.setTitleColor(.title, for: .normal)
+        button.setTitleColor(.mhTitle, for: .normal)
         
         return button
     }()
