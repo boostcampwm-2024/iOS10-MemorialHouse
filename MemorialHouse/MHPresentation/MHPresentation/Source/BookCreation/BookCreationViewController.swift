@@ -1,13 +1,18 @@
 import UIKit
+import Combine
 
 final class BookCreationViewController: UIViewController {
     // MARK: - Property
-    private let bookImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.image = UIImage(resource: .pinkBook)
-        imageView.contentMode = .scaleAspectFit
+    private let bookView: MHBook = {
+        let mHBook = MHBook()
+        mHBook.configure(
+            title: "",
+            bookCoverImage: .pinkBook,
+            targetImage: .init(),
+            publisher: "고양이"
+        )
         
-        return imageView
+        return mHBook
     }()
     private let bookTitleTextField: UITextField = {
         let textField = UITextField()
@@ -59,7 +64,9 @@ final class BookCreationViewController: UIViewController {
         
         return button
     }()
+    @Published
     private var viewModel: BookCreationViewModel
+    private var cancellables: Set<AnyCancellable> = []
     
     // MARK: - Initializer
     init(viewModel: BookCreationViewModel) {
@@ -80,7 +87,16 @@ final class BookCreationViewController: UIViewController {
         setup()
         configureConstraints()
         configureNavigationBar()
-        configureColorButtonsAction()
+        configureAction()
+    }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        configureViewModelBinding()
+    }
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        cancellables.forEach { $0.cancel() }
+        cancellables.removeAll()
     }
     
     // MARK: - TouchEvent
@@ -96,7 +112,7 @@ final class BookCreationViewController: UIViewController {
     }
     private func configureConstraints() {
         // 책 미리보기
-        let bookPreviewViewBackground = bookImageView.embededInDefaultBackground(
+        let bookPreviewViewBackground = bookView.embededInDefaultBackground(
             with: UIEdgeInsets(top: 70, left: 100, bottom: 70, right: 100)
         )
         view.addSubview(bookPreviewViewBackground)
@@ -183,13 +199,47 @@ final class BookCreationViewController: UIViewController {
         ], for: .normal)
         navigationItem.rightBarButtonItem = rightBarButton
     }
-    private func configureColorButtonsAction() {
+    private func configureAction() {
+        // 색깔 버튼
         bookColorButtons.enumerated().forEach { idx, button in
             let action = UIAction { [weak self] _ in
                 self?.viewModel.selectedColorNumber = idx
             }
             button.addAction(action, for: .touchUpInside)
         }
+        
+        // TitleTextField 변경
+        let titleAction = UIAction { [weak self] _ in
+            self?.viewModel.bookTitle = self?.bookTitleTextField.text ?? ""
+        }
+        bookTitleTextField.addAction(titleAction, for: .editingChanged)
+        
+        // TODO: - 카테고리 선택 뷰모델에 반영
+        
+        // 사진선택 버튼
+        let pictureSelectingAction = UIAction { [weak self] _ in
+            let albumViewModel = CustomAlbumViewModel()
+            let customAlbumViewController = CustomAlbumViewController(viewModel: albumViewModel)
+            self?.navigationController?.pushViewController(customAlbumViewController, animated: true)
+        }
+        imageSelectionButton.addAction(pictureSelectingAction, for: .touchUpInside)
+        
+        // TODO: - 사진 선택 뷰모델?에 반영
+        
+    }
+    private func configureViewModelBinding() {
+        $viewModel
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] viewModel in
+                guard let self else { return }
+                self.bookView.configure(
+                    title: viewModel.bookTitle,
+                    bookCoverImage: viewModel.selectedColor.image,
+                    targetImage: .rotate,
+                    publisher: "고양이?"
+                )
+            }
+            .store(in: &cancellables)
     }
     private func configuredColorButtons() -> UIView { // 린트 경고 때문에 분리
         let firstLineColorButtonStackView  = UIStackView()
