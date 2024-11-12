@@ -13,9 +13,13 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         window = UIWindow(windowScene: windowScene)
         
-        let initialViewController = UserDefaults.standard.object(forKey: Constant.houseNameUserDefaultKey) == nil
-        ? RegisterViewController()
-        : HomeViewController()
+        let initialViewController: UIViewController
+        if let houseName = UserDefaults.standard.object(forKey: Constant.houseNameUserDefaultKey) as? String {
+            let viewModel = HomeViewModel(houseName: houseName)
+            initialViewController = HomeViewController(viewModel: viewModel)
+        } else {
+            initialViewController = RegisterViewController()
+        }
         
         let navigationController = UINavigationController(rootViewController: initialViewController)
         navigationController.navigationBar.isHidden = true
