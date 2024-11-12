@@ -59,6 +59,19 @@ final class BookCreationViewController: UIViewController {
         
         return button
     }()
+    private var viewModel: BookCreationViewModel
+    
+    // MARK: - Initializer
+    init(viewModel: BookCreationViewModel) {
+        self.viewModel = viewModel
+        
+        super.init(nibName: nil, bundle: nil)
+    }
+    required init?(coder: NSCoder) {
+        viewModel = BookCreationViewModel()
+        
+        super.init(coder: coder)
+    }
     
     // MARK: - LifeCycle
     override func viewDidLoad() {
@@ -67,6 +80,7 @@ final class BookCreationViewController: UIViewController {
         setup()
         configureConstraints()
         configureNavigationBar()
+        configureColorButtonsAction()
     }
     
     // MARK: - TouchEvent
@@ -168,6 +182,14 @@ final class BookCreationViewController: UIViewController {
             .foregroundColor: UIColor.mhTitle
         ], for: .normal)
         navigationItem.rightBarButtonItem = rightBarButton
+    }
+    private func configureColorButtonsAction() {
+        bookColorButtons.enumerated().forEach { idx, button in
+            let action = UIAction { [weak self] _ in
+                self?.viewModel.selectedColorNumber = idx
+            }
+            button.addAction(action, for: .touchUpInside)
+        }
     }
     private func configuredColorButtons() -> UIView { // 린트 경고 때문에 분리
         let firstLineColorButtonStackView  = UIStackView()
