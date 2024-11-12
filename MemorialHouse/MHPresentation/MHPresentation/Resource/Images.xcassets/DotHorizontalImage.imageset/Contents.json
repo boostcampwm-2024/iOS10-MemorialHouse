@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "Ic=_Dot-horizontal, Size=Small.png",
+      "filename" : "image 19.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "Ic=_Dot-horizontal, Size=Small@2x.png",
+      "filename" : "image 19@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "Ic=_Dot-horizontal, Size=Small@3x.png",
+      "filename" : "image 19@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
