@@ -28,8 +28,8 @@ public final class EditPhotoViewController: UIViewController {
     private let editButtonStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .horizontal
-        stackView.spacing = 83
         stackView.alignment = .center
+        stackView.distribution = .equalCentering
         
         return stackView
     }()
@@ -124,11 +124,13 @@ public final class EditPhotoViewController: UIViewController {
     }
     
     private func configureConstraints() {
-        editButtonStackView.setCenterX(view: view)
-        editButtonStackView.setBottom(
-            anchor: view.safeAreaLayoutGuide.bottomAnchor,
-            constant: 16
+        editButtonStackView.setAnchor(
+            leading: view.leadingAnchor, constantLeading: 50,
+            bottom: view.safeAreaLayoutGuide.bottomAnchor,
+            trailing: view.trailingAnchor, constantTrailing: 50,
+            height: 80
         )
+        
         dividedLine1.setHorizontal(view: view)
         dividedLine1.setBottom(
             anchor: editButtonStackView.topAnchor,
@@ -137,7 +139,8 @@ public final class EditPhotoViewController: UIViewController {
         captionTextField.setAnchor(
             leading: view.leadingAnchor, constantLeading: 13,
             bottom: dividedLine1.topAnchor, constantBottom: 11,
-            trailing: view.trailingAnchor
+            trailing: view.trailingAnchor,
+            height: 30
         )
         dividedLine2.setHorizontal(view: view)
         dividedLine2.setBottom(
@@ -161,7 +164,7 @@ public final class EditPhotoViewController: UIViewController {
         dimmedView2.setAnchor(
             top: clearView.bottomAnchor,
             leading: view.leadingAnchor,
-            bottom: dividedLine2.topAnchor,
+            bottom: photoView.bottomAnchor,
             trailing: view.trailingAnchor
         )
     }
@@ -170,8 +173,9 @@ public final class EditPhotoViewController: UIViewController {
         let cropButtonAction = UIAction { _ in
             // TODO: - Crop Action
         }
-        let rotateButtonAction = UIAction { _ in
-            // TODO: - Rotate Action
+        let rotateButtonAction = UIAction { [weak self] _ in
+            let image = self?.photoView.image
+            self?.photoView.image = image?.rotate(radians: .pi / 2)
         }
         let drawButtonAction = UIAction { _ in
             // TODO: - Draw Action
