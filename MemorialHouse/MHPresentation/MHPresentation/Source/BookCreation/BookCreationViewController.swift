@@ -64,7 +64,9 @@ final class BookCreationViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        setup()
         configureConstraints()
+        configureNavigationBar()
     }
     
     // MARK: - TouchEvent
@@ -75,6 +77,9 @@ final class BookCreationViewController: UIViewController {
     }
     
     // MARK: - Helper
+    private func setup() {
+        view.backgroundColor = .baseBackground
+    }
     private func configureConstraints() {
         // 책 미리보기
         let bookPreviewViewBackground = bookImageView.embededInDefaultBackground(
@@ -131,6 +136,24 @@ final class BookCreationViewController: UIViewController {
             trailing: categorySelectionButtonBackground.trailingAnchor,
             height: 63
         )
+    }
+    private func configureNavigationBar() {
+        navigationController?.navigationBar.isHidden = false
+        navigationController?.navigationBar.titleTextAttributes = [
+            .font: UIFont.ownglyphBerry(size: 17)
+        ]
+        title = "책 표지 만들기"
+        
+        let leftBarButtonAction = UIAction { [weak self] _ in
+            self?.navigationController?.dismiss(animated: true)
+        }
+        let leftBarButton = UIBarButtonItem(title: "닫기", primaryAction: leftBarButtonAction)
+        leftBarButton.setTitleTextAttributes(
+            [.font: UIFont.ownglyphBerry(size: 17)],
+            for: .normal
+        )
+        navigationController?.navigationItem.leftBarButtonItem = leftBarButton
+        
     }
     private func configuredColorButtons() -> UIView { // 린트 경고 때문에 분리
         let firstLineColorButtonStackView  = UIStackView()
