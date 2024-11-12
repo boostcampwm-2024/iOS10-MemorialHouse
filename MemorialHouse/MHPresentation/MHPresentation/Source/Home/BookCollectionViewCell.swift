@@ -26,7 +26,7 @@ final class BookCollectionViewCell: UICollectionViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         
-        bookCoverView.prepareForReuse()
+        bookCoverView.resetProperties()
         likeButton.imageView?.image = nil
     }
     

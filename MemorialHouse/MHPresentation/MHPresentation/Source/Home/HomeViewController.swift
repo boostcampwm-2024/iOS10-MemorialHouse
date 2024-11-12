@@ -6,7 +6,7 @@ public final class HomeViewController: UIViewController {
     private let navigationBar: MHNavigationBar
     private let currentCategoryLabel = UILabel(style: .default)
     private let categorySelectButton = UIButton(type: .custom)
-    private let bookCoverMakeFloatingButton: UIButton = {
+    private let makingBookFloatingButton: UIButton = {
         let button = UIButton(type: .custom)
         button.setImage(.bookMake, for: .normal)
         button.layer.shadowOpacity = 0.3
@@ -17,8 +17,8 @@ public final class HomeViewController: UIViewController {
     }()
     private lazy var collectionView: UICollectionView = {
         let flowLayout = UICollectionViewFlowLayout()
-        let cellSize = (self.view.bounds.inset(by: self.view.safeAreaInsets).width - 80) / 2
-        flowLayout.itemSize = .init(width: cellSize, height: 210)
+        let cellWidth = (self.view.bounds.inset(by: self.view.safeAreaInsets).width - 80) / 2
+        flowLayout.itemSize = .init(width: cellWidth, height: 210)
         flowLayout.minimumLineSpacing = 40
         flowLayout.minimumInteritemSpacing = 20
         flowLayout.sectionInset = UIEdgeInsets(top: 0, left: 20, bottom: 0, right: 20)
@@ -79,7 +79,7 @@ public final class HomeViewController: UIViewController {
         view.addSubview(currentCategoryLabel)
         view.addSubview(categorySelectButton)
         view.addSubview(collectionView)
-        view.addSubview(bookCoverMakeFloatingButton)
+        view.addSubview(makingBookFloatingButton)
     }
     
     private func configureAction() {
@@ -87,9 +87,10 @@ public final class HomeViewController: UIViewController {
             // TODO: 카테고리 시트지 띄우기
         }, for: .touchUpInside)
         
-        bookCoverMakeFloatingButton.addAction(UIAction { [weak self] _ in
+        makingBookFloatingButton.addAction(UIAction { [weak self] _ in
             guard let self else { return }
-            self.navigationController?.pushViewController(BookCreationViewController(), animated: true)
+            let bookCreationViewController = BookCreationViewController()
+            self.navigationController?.pushViewController(bookCreationViewController, animated: true)
         }, for: .touchUpInside)
     }
     
@@ -109,7 +110,7 @@ public final class HomeViewController: UIViewController {
             bottom: view.bottomAnchor,
             trailing: view.trailingAnchor
         )
-        bookCoverMakeFloatingButton.setAnchor(
+        makingBookFloatingButton.setAnchor(
             bottom: view.bottomAnchor, constantBottom: 24,
             trailing: view.trailingAnchor, constantTrailing: 24,
             width: 80,

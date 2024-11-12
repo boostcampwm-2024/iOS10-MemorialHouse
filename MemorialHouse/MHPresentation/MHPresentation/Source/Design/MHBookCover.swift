@@ -34,7 +34,7 @@ final class MHBookCover: UIView {
         configureConstraints()
     }
     
-    func prepareForReuse() {
+    func resetProperties() {
         bookCoverImageView.image = nil
         titleLabel.text = nil
         targetImageView.image = nil
