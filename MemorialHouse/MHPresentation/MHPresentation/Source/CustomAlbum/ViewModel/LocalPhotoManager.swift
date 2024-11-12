@@ -14,7 +14,11 @@ actor LocalPhotoManager {
     
     private init() { }
     
-    func requestImage(with asset: PHAsset?, cellSize: CGSize = .zero, completion: @escaping (UIImage?) -> Void) {
+    func requestImage(
+        with asset: PHAsset?,
+        cellSize: CGSize = .zero,
+        completion: @escaping @MainActor (UIImage?) -> Void
+    ) {
         guard let asset else { return }
         
         imageManager.requestImage(
@@ -23,7 +27,7 @@ actor LocalPhotoManager {
             contentMode: .aspectFill,
             options: imageRequestOptions,
             resultHandler: { image, _ in
-            completion(image)
-        })
+                Task { await completion(image) }
+            })
     }
 }

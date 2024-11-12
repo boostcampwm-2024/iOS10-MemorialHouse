@@ -57,7 +57,7 @@ final class CustomAlbumViewController: UIViewController {
     
     // MARK: - Open Camera
     private func openCamera() {
-        if (UIImagePickerController.isSourceTypeAvailable(.camera)) {
+        if UIImagePickerController.isSourceTypeAvailable(.camera) {
             imagePicker.sourceType = .camera
             navigationController?.show(imagePicker, sender: nil)
         } else {
@@ -72,18 +72,16 @@ extension CustomAlbumViewController: UICollectionViewDelegate {
         _ collectionView: UICollectionView,
         didSelectItemAt indexPath: IndexPath
     ) {
-        Task {
-            if indexPath.item == 0 {
-                self.openCamera()
-            } else {
-                guard let asset = viewModel.photoAsset?[indexPath.item - 1] else { return }
+        if indexPath.item == 0 {
+            self.openCamera()
+        } else {
+            guard let asset = viewModel.photoAsset?[indexPath.item - 1] else { return }
+            Task {
                 await LocalPhotoManager.shared.requestImage(with: asset) { @Sendable [weak self] image in
                     guard let self else { return }
-                    Task {
-                        let editViewController = await EditPhotoViewController()
-                        await editViewController.setPhoto(image: image)
-                        await self.navigationController?.pushViewController(editViewController, animated: true)
-                    }
+                    let editViewController = EditPhotoViewController()
+                    editViewController.setPhoto(image: image)
+                    self.navigationController?.pushViewController(editViewController, animated: true)
                 }
             }
         }
@@ -109,19 +107,16 @@ extension CustomAlbumViewController: UICollectionViewDataSource {
             for: indexPath
         ) as? CustomAlbumCollectionViewCell else { return UICollectionViewCell() }
         
-        Task {
-            if indexPath.item == 0 {
-                await cell.setPhoto(.photo)
-            } else {
-                guard let asset = viewModel.photoAsset?[indexPath.item - 1] else { return cell }
-                let cellSize = cell.bounds.size
+        if indexPath.item == 0 {
+            cell.setPhoto(.photo)
+        } else {
+            guard let asset = viewModel.photoAsset?[indexPath.item - 1] else { return cell }
+            let cellSize = cell.bounds.size
+            Task {
                 await LocalPhotoManager.shared.requestImage(with: asset, cellSize: cellSize) { @Sendable image in
-                    Task {
-                        await cell.setPhoto(image)
-                    }
+                    cell.setPhoto(image)
                 }
             }
-            return cell
         }
         return cell
     }
@@ -131,7 +126,7 @@ extension CustomAlbumViewController: UICollectionViewDataSource {
 extension CustomAlbumViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     func imagePickerController(
         _ picker: UIImagePickerController,
-        didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]
+        didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]
     ) {
         dismiss(animated: true, completion: nil)
         if let image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {

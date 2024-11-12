@@ -43,7 +43,7 @@ final class CustomAlbumCollectionViewCell: UICollectionViewCell {
     }
     
     // MARK: - Set Cell Image
-    func setPhoto(_ photo: UIImage?) async {
+    func setPhoto(_ photo: UIImage?) {
         photoImageView.image = photo
     }
 }
