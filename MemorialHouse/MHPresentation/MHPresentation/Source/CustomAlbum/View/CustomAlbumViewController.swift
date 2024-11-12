@@ -62,7 +62,7 @@ final class CustomAlbumViewController: UIViewController {
         navigationItem.title = "사진 선택"
         navigationController?.navigationBar.titleTextAttributes = [
             NSAttributedString.Key.font: UIFont.ownglyphBerry(size: 17),
-            NSAttributedString.Key.foregroundColor: UIColor.title]
+            NSAttributedString.Key.foregroundColor: UIColor.mhTitle]
         let closeAction = UIAction { [weak self] _ in
             guard let self else { return }
             self.navigationController?.popViewController(animated: true)
@@ -70,7 +70,7 @@ final class CustomAlbumViewController: UIViewController {
         let leftBarButton = UIBarButtonItem(title: "닫기", primaryAction: closeAction)
         leftBarButton.setTitleTextAttributes(
             [NSAttributedString.Key.font: UIFont.ownglyphBerry(size: 17),
-             NSAttributedString.Key.foregroundColor: UIColor.title],
+             NSAttributedString.Key.foregroundColor: UIColor.mhTitle],
             for: .normal
         )
         navigationItem.leftBarButtonItem = leftBarButton
