@@ -2,7 +2,7 @@ import UIKit
 import MHFoundation
 import MHDomain
 
-final class MHBook: UIView {
+final class MHBookCover: UIView {
     // MARK: - Property
     private let bookCoverImageView = UIImageView()
     private let titleLabel = UILabel(style: .default)
@@ -17,7 +17,7 @@ final class MHBook: UIView {
         
         return imageView
     }()
-    private let publisherLabel = UILabel(style: .body2)
+    private let houseLabel = UILabel(style: .body2)
     
     // MARK: - Initializer
     init() {
@@ -34,24 +34,30 @@ final class MHBook: UIView {
         configureConstraints()
     }
     
+    func prepareForReuse() {
+        bookCoverImageView.image = nil
+        titleLabel.text = nil
+        targetImageView.image = nil
+    }
+    
     // MARK: - Configuration
     func configure(
         title: String,
         bookCoverImage: UIImage,
         targetImage: UIImage,
-        publisher: String
+        houseName: String
     ) {
         titleLabel.text = title
         bookCoverImageView.image = bookCoverImage
         targetImageView.image = targetImage
-        publisherLabel.text = publisher
+        houseLabel.text = houseName
     }
     
     private func configureAddSubView() {
         addSubview(bookCoverImageView)
         addSubview(titleLabel)
         addSubview(targetImageView)
-        addSubview(publisherLabel)
+        addSubview(houseLabel)
     }
     
     private func configureConstraints() {
@@ -60,8 +66,8 @@ final class MHBook: UIView {
         titleLabel.setCenterX(view: self, constant: 8)
         targetImageView.setTop(anchor: titleLabel.bottomAnchor, constant: 14)
         targetImageView.setCenterX(view: self, constant: 8)
-        targetImageView.setWidthAndHeight(width: 100, height: 100)
-        publisherLabel.setBottom(anchor: bottomAnchor, constant: 12)
-        publisherLabel.setTrailing(anchor: trailingAnchor, constant: 12)
+        targetImageView.setWidthAndHeight(width: 100, height: 110)
+        houseLabel.setBottom(anchor: bottomAnchor, constant: 12)
+        houseLabel.setTrailing(anchor: trailingAnchor, constant: 12)
     }
 }
