@@ -4,10 +4,11 @@ import Photos
 struct BookCreationViewModel {
     var bookTitle: String = ""
     var bookCategory: String = ""
-    var selectedColorNumber: Int = 0
+    var previousColorNumber: Int = -1
+    var currentColorNumber: Int = 0
     var coverPicture: PHAsset?
-    var selectedColor: BookColor {
-        switch selectedColorNumber {
+    var currentColor: BookColor {
+        switch currentColorNumber {
         case 0: .pink
         case 1: .green
         case 2: .blue
