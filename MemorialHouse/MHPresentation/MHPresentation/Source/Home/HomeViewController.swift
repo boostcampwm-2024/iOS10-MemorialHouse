@@ -6,6 +6,15 @@ public final class HomeViewController: UIViewController {
     private let navigationBar: MHNavigationBar
     private let currentCategoryLabel = UILabel(style: .default)
     private let categorySelectButton = UIButton(type: .custom)
+    private let bookCoverMakeFloatingButton: UIButton = {
+        let button = UIButton(type: .custom)
+        button.setImage(.bookMake, for: .normal)
+        button.layer.shadowOpacity = 0.3
+        button.layer.shadowOffset = CGSize(width: 2, height: 2)
+        button.layer.shadowRadius = 8
+        
+        return button
+    }()
     private lazy var collectionView: UICollectionView = {
         let flowLayout = UICollectionViewFlowLayout()
         let cellSize = (self.view.bounds.inset(by: self.view.safeAreaInsets).width - 80) / 2
@@ -42,6 +51,7 @@ public final class HomeViewController: UIViewController {
         
         setup()
         configureAddSubView()
+        configureAction()
         configureConstraints()
     }
     
@@ -63,6 +73,14 @@ public final class HomeViewController: UIViewController {
         view.addSubview(currentCategoryLabel)
         view.addSubview(categorySelectButton)
         view.addSubview(collectionView)
+        view.addSubview(bookCoverMakeFloatingButton)
+    }
+    
+    private func configureAction() {
+        categorySelectButton.addAction(UIAction { _ in
+            // TODO: 카테고리 시트지 띄우기
+        }, for: .touchUpInside)
+        
     }
     
     private func configureConstraints() {
@@ -81,12 +99,19 @@ public final class HomeViewController: UIViewController {
             bottom: view.bottomAnchor,
             trailing: view.trailingAnchor
         )
+        bookCoverMakeFloatingButton.setAnchor(
+            bottom: view.bottomAnchor, constantBottom: 24,
+            trailing: view.trailingAnchor, constantTrailing: 24,
+            width: 80,
+            height: 80
+        )
         categorySelectButton.setLeading(anchor: currentCategoryLabel.trailingAnchor, constant: 8)
         categorySelectButton.setCenterY(view: currentCategoryLabel)
         categorySelectButton.setWidth(20)
     }
 }
 
+// MARK: - UICollectionViewDelegate
 extension HomeViewController: UICollectionViewDelegate {
     public func collectionView(
         _ collectionView: UICollectionView,
@@ -96,6 +121,7 @@ extension HomeViewController: UICollectionViewDelegate {
     }
 }
 
+// MARK: - UICollectionViewDataSource
 extension HomeViewController: UICollectionViewDataSource {
     public func collectionView(
         _ collectionView: UICollectionView,
