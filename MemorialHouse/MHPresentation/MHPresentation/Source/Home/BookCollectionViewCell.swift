@@ -45,7 +45,12 @@ final class BookCollectionViewCell: UICollectionViewCell {
             targetImage: targetImage,
             houseName: houseName
         )
-        likeButton.setImage(isLike ? .likeFill : .likeEmpty, for: .normal)
+
+        let likeImage = UIImage.resizedImage(
+            image: isLike ? .likeFill : .likeEmpty,
+            size: CGSize(width: 28, height: 28)
+        )
+        likeButton.setImage(likeImage, for: .normal)
         dropDownButton.setImage(.dotHorizontal, for: .normal)
     }
     
@@ -69,13 +74,12 @@ final class BookCollectionViewCell: UICollectionViewCell {
         bookCoverView.fillSuperview()
         likeButton.setAnchor(
             top: bookCoverView.bottomAnchor,
-            trailing: dropDownButton.leadingAnchor, constantTrailing: 4,
-            width: 20, height: 20
+            trailing: dropDownButton.leadingAnchor, constantTrailing: 10
         )
         dropDownButton.setAnchor(
-            top: bookCoverView.bottomAnchor, constantTop: 2,
             trailing: contentView.trailingAnchor, constantTrailing: 4,
-            width: 20, height: 16
+            width: 24, height: 16
         )
+        dropDownButton.setCenterY(view: likeButton)
     }
 }
