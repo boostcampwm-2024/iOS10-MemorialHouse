@@ -6,15 +6,15 @@ final class BookCreationViewController: UIViewController {
     static let maxTitleLength = 10
     // MARK: - Property
     private let bookView: MHBook = {
-        let mHBook = MHBook()
-        mHBook.configure(
+        let bookView = MHBook()
+        bookView.configure(
             title: "",
             bookCoverImage: .pinkBook,
             targetImage: .init(),
             publisher: "고양이"
         )
         
-        return mHBook
+        return bookView
     }()
     private let bookTitleTextField: UITextField = {
         let textField = UITextField()
