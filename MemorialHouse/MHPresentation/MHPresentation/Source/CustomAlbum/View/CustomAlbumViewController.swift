@@ -1,5 +1,6 @@
 import UIKit
 import Photos
+import Combine
 
 final class CustomAlbumViewController: UIViewController {
     // MARK: - Properties
@@ -16,6 +17,7 @@ final class CustomAlbumViewController: UIViewController {
         return collectionView
     }()
     private let viewModel: CustomAlbumViewModel
+    private var cancellables: Set<AnyCancellable> = []
     
     // MARK: - Initializer
     init(viewModel: CustomAlbumViewModel) {
@@ -30,6 +32,10 @@ final class CustomAlbumViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
     }
     
+    deinit {
+        PHPhotoLibrary.shared().unregisterChangeObserver(self)
+    }
+    
     // MARK: - ViewDidLoad
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -37,12 +43,14 @@ final class CustomAlbumViewController: UIViewController {
         setup()
         configureConstraints()
         configureNavagationBar()
+        bind()
         viewModel.action(.viewDidLoad)
     }
     
     // MARK: - Setup & Configure
     private func setup() {
         view.backgroundColor = .baseBackground
+        PHPhotoLibrary.shared().register(self)
         albumCollectionView.delegate = self
         albumCollectionView.dataSource = self
         albumCollectionView.register(
@@ -77,7 +85,23 @@ final class CustomAlbumViewController: UIViewController {
         navigationItem.leftBarButtonItem = leftBarButton
     }
     
-    // MARK: - Open Camera
+    // MARK: - Binding
+    private func bind() {
+        viewModel.changedAssetsOutput
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] changes in
+                self?.albumCollectionView.performBatchUpdates {
+                    if let inserted = changes.insertedIndexes, !inserted.isEmpty {
+                        self?.albumCollectionView.insertItems(at: inserted.map({ IndexPath(item: $0 + 1, section: 0) }))
+                    }
+                    if let removed = changes.removedIndexes, !removed.isEmpty {
+                        self?.albumCollectionView.deleteItems(at: removed.map({ IndexPath(item: $0 + 1, section: 0) }))
+                    }
+                }
+            }
+            .store(in: &cancellables)
+    }
+    
     // MARK: - Camera
     private func checkCameraAuthorization() {
         let authorization = AVCaptureDevice.authorizationStatus(for: .video)
@@ -181,6 +205,15 @@ extension CustomAlbumViewController: UIImagePickerControllerDelegate, UINavigati
             let editViewController = EditPhotoViewController()
             editViewController.setPhoto(image: image)
             self.navigationController?.pushViewController(editViewController, animated: true)
+        }
+    }
+}
+
+// MARK: - PHPhotoLibraryChangeObserver
+extension CustomAlbumViewController: PHPhotoLibraryChangeObserver {
+    nonisolated func photoLibraryDidChange(_ changeInstance: PHChange) {
+        Task { @MainActor in
+            viewModel.action(.photoDidChanged(changeInstance))
         }
     }
 }
