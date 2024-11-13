@@ -21,7 +21,7 @@ public final class HomeViewController: UIViewController {
         flowLayout.itemSize = .init(width: cellWidth, height: 210)
         flowLayout.minimumLineSpacing = 40
         flowLayout.minimumInteritemSpacing = 20
-        flowLayout.sectionInset = UIEdgeInsets(top: 0, left: 20, bottom: 0, right: 20)
+        flowLayout.sectionInset = UIEdgeInsets(top: 0, left: 20, bottom: 30, right: 20)
         flowLayout.scrollDirection = .vertical
         
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: flowLayout)
