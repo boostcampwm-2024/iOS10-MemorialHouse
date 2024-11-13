@@ -9,10 +9,11 @@ extension UIView {
         return line
     }
     
-    static func dimmedView(opacity: Float) -> UIView {
+    static func dimmedView(opacity: Float, color: UIColor = .white) -> UIView {
         let dim = UIView()
-        dim.backgroundColor = .white
+        dim.backgroundColor = color
         dim.layer.opacity = opacity
+        dim.isUserInteractionEnabled = false
         
         return dim
     }

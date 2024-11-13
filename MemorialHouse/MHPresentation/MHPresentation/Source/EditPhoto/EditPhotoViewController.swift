@@ -5,12 +5,15 @@ public final class EditPhotoViewController: UIViewController {
     private let clearView = UIView.dimmedView(opacity: 0)
     private let dimmedView1 = UIView.dimmedView(opacity: 0.5)
     private let dimmedView2 = UIView.dimmedView(opacity: 0.5)
+    private let topView = UIView.dimmedView(opacity: 1, color: .black)
+    private let bottomView = UIView.dimmedView(opacity: 1, color: .black)
     private let dividedLine1 = UIView.dividedLine()
     private let dividedLine2 = UIView.dividedLine()
     private let photoView: UIImageView = {
        let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
         imageView.backgroundColor = .clear
+        imageView.isUserInteractionEnabled = true
         
         return imageView
     }()
@@ -32,14 +35,6 @@ public final class EditPhotoViewController: UIViewController {
         stackView.distribution = .equalCentering
         
         return stackView
-    }()
-    private let cropButton: UIButton = {
-        var configuration = UIButton.Configuration.plain()
-        configuration.image = .crop
-        let button = UIButton()
-        button.configuration = configuration
-        
-        return button
     }()
     private let rotateButton: UIButton = {
         var configuration = UIButton.Configuration.plain()
@@ -67,6 +62,7 @@ public final class EditPhotoViewController: UIViewController {
         configureAddSubView()
         configureConstraints()
         configureButtonAction()
+        configureGesture()
     }
     
     // MARK: - Setup & Configure
@@ -102,19 +98,17 @@ public final class EditPhotoViewController: UIViewController {
     }
     
     private func configureAddSubView() {
-        [cropButton,
-         rotateButton,
+        [rotateButton,
          drawButton].forEach {
             editButtonStackView.addArrangedSubview($0)
         }
         
-        [dimmedView1,
-         clearView,
-         dimmedView2].forEach {
-            photoView.addSubview($0)
-        }
-        
         [photoView,
+         dimmedView1,
+         clearView,
+         dimmedView2,
+         topView,
+         bottomView,
          dividedLine1,
          captionTextField,
          dividedLine2,
@@ -130,66 +124,93 @@ public final class EditPhotoViewController: UIViewController {
             trailing: view.trailingAnchor, constantTrailing: 50,
             height: 80
         )
-        
-        dividedLine1.setHorizontal(view: view)
-        dividedLine1.setBottom(
-            anchor: editButtonStackView.topAnchor,
-            constant: 11
-        )
+        dividedLine2.setHorizontal(view: view)
+        dividedLine2.setBottom(anchor: editButtonStackView.topAnchor, constant: 11)
         captionTextField.setAnchor(
             leading: view.leadingAnchor, constantLeading: 13,
-            bottom: dividedLine1.topAnchor, constantBottom: 11,
+            bottom: dividedLine2.topAnchor, constantBottom: 11,
             trailing: view.trailingAnchor,
             height: 30
         )
-        dividedLine2.setHorizontal(view: view)
-        dividedLine2.setBottom(
-            anchor: captionTextField.topAnchor,
-            constant: 11
+        dividedLine1.setHorizontal(view: view)
+        dividedLine1.setBottom(anchor: captionTextField.topAnchor, constant: 11)
+        topView.setAnchor(
+            top: view.topAnchor,
+            leading: view.leadingAnchor,
+            bottom: dimmedView1.topAnchor,
+            trailing: view.trailingAnchor
+        )
+        bottomView.setAnchor(
+            top: dividedLine1.topAnchor,
+            leading: view.leadingAnchor,
+            bottom: view.bottomAnchor,
+            trailing: view.trailingAnchor
         )
         photoView.setAnchor(
             top: view.safeAreaLayoutGuide.topAnchor,
             leading: view.leadingAnchor,
-            bottom: dividedLine2.topAnchor,
+            bottom: dividedLine1.topAnchor,
             trailing: view.trailingAnchor
         )
         clearView.setAnchor(width: view.frame.width, height: view.frame.width * 0.75)
         clearView.setCenter(view: photoView)
-        dimmedView1.setAnchor(
-            top: photoView.topAnchor,
-            leading: view.leadingAnchor,
-            bottom: clearView.topAnchor,
-            trailing: view.trailingAnchor
-        )
         dimmedView2.setAnchor(
             top: clearView.bottomAnchor,
             leading: view.leadingAnchor,
-            bottom: photoView.bottomAnchor,
+            bottom: dividedLine1.topAnchor,
+            trailing: view.trailingAnchor
+        )
+        dimmedView1.setAnchor(
+            top: view.safeAreaLayoutGuide.topAnchor,
+            leading: view.leadingAnchor,
+            bottom: clearView.topAnchor,
             trailing: view.trailingAnchor
         )
     }
     
     private func configureButtonAction() {
-        let cropButtonAction = UIAction { _ in
-            // TODO: - Crop Action
-        }
         let rotateButtonAction = UIAction { [weak self] _ in
-            let image = self?.photoView.image
-            self?.photoView.image = image?.rotate(radians: .pi / 2)
+            guard let self else { return }
+            let image = self.photoView.image
+            self.photoView.image = image?.rotate(radians: .pi / 2)
         }
         let drawButtonAction = UIAction { _ in
             // TODO: - Draw Action
         }
-        cropButton.addAction(cropButtonAction, for: .touchUpInside)
         rotateButton.addAction(rotateButtonAction, for: .touchUpInside)
         drawButton.addAction(drawButtonAction, for: .touchUpInside)
     }
     
+    private func configureGesture() {
+        let pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(pinchGestureAction(_:)))
+        let panGesture = UIPanGestureRecognizer(target: self, action: #selector(panGestureAction(_:)))
+        panGesture.maximumNumberOfTouches = 2
+        photoView.addGestureRecognizer(pinchGesture)
+        photoView.addGestureRecognizer(panGesture)
+    }
+    
+    // MARK: - Gesture Action
+    @objc private func pinchGestureAction(_ sender: UIPinchGestureRecognizer) {
+        photoView.transform = photoView.transform.scaledBy(x: sender.scale, y: sender.scale)
+        sender.scale = 1
+    }
+    
+    @objc private func panGestureAction(_ sender: UIPanGestureRecognizer) {
+        let transition = sender.translation(in: photoView)
+        let changedX = photoView.center.x + transition.x
+        let changedY = photoView.center.y + transition.y
+        photoView.center = CGPoint(x: changedX, y: changedY)
+        
+        sender.setTranslation(CGPoint.zero, in: photoView)
+    }
+    
+    // MARK: - Set Photo from Custom Album
     func setPhoto(image: UIImage?) {
         photoView.image = image
     }
 }
 
+// MARK: - UITextFieldDelegate
 extension EditPhotoViewController: UITextFieldDelegate {
     // TODO: - TextField의 텍스트 처리
 }
