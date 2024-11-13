@@ -3,7 +3,6 @@ import Photos
 
 final class CustomAlbumViewController: UIViewController {
     // MARK: - Properties
-    private let imagePicker = UIImagePickerController()
     private lazy var albumCollectionView: UICollectionView = {
         let flowLayout = UICollectionViewFlowLayout()
         let cellSize = (self.view.bounds.inset(by: self.view.safeAreaInsets).width - 6) / 3
@@ -44,7 +43,6 @@ final class CustomAlbumViewController: UIViewController {
     // MARK: - Setup & Configure
     private func setup() {
         view.backgroundColor = .baseBackground
-        imagePicker.delegate = self
         albumCollectionView.delegate = self
         albumCollectionView.dataSource = self
         albumCollectionView.register(
@@ -59,10 +57,13 @@ final class CustomAlbumViewController: UIViewController {
     }
     
     private func configureNavagationBar() {
+        // Title
         navigationItem.title = "사진 선택"
         navigationController?.navigationBar.titleTextAttributes = [
             NSAttributedString.Key.font: UIFont.ownglyphBerry(size: 17),
             NSAttributedString.Key.foregroundColor: UIColor.mhTitle]
+        
+        // LeftBarButton
         let closeAction = UIAction { [weak self] _ in
             guard let self else { return }
             self.navigationController?.popViewController(animated: true)
@@ -77,12 +78,38 @@ final class CustomAlbumViewController: UIViewController {
     }
     
     // MARK: - Open Camera
+    // MARK: - Camera
+    private func checkCameraAuthorization() {
+        let authorization = AVCaptureDevice.authorizationStatus(for: .video)
+        
+        switch authorization {
+        case .notDetermined:
+            AVCaptureDevice.requestAccess(for: .video) { @Sendable granted in
+                if granted {
+                    Task { [weak self] in
+                        await self?.openCamera()
+                    }
+                } else {
+                    // TODO: 카메라 권한 설정 페이지로 이동
+                    print("카메라 권한 거부")
+                }
+            }
+        case .authorized:
+            openCamera()
+        case .restricted, .denied:
+            // TODO: 카메라 권한 설정 페이지로 이동
+            print("카메라 권한 거부")
+        @unknown default:
+            fatalError("Unknown case")
+        }
+    }
+    
     private func openCamera() {
         if UIImagePickerController.isSourceTypeAvailable(.camera) {
+            let imagePicker = UIImagePickerController()
+            imagePicker.delegate = self
             imagePicker.sourceType = .camera
             navigationController?.show(imagePicker, sender: nil)
-        } else {
-            // TODO: - 카메라 접근 권한 Alert
         }
     }
 }
@@ -94,7 +121,7 @@ extension CustomAlbumViewController: UICollectionViewDelegate {
         didSelectItemAt indexPath: IndexPath
     ) {
         if indexPath.item == 0 {
-            self.openCamera()
+            self.checkCameraAuthorization()
         } else {
             guard let asset = viewModel.photoAsset?[indexPath.item - 1] else { return }
             Task {
@@ -149,7 +176,7 @@ extension CustomAlbumViewController: UIImagePickerControllerDelegate, UINavigati
         _ picker: UIImagePickerController,
         didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]
     ) {
-        dismiss(animated: true, completion: nil)
+        dismiss(animated: true)
         if let image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
             let editViewController = EditPhotoViewController()
             editViewController.setPhoto(image: image)
