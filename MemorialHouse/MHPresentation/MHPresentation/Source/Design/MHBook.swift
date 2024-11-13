@@ -5,7 +5,12 @@ import MHDomain
 final class MHBook: UIView {
     // MARK: - Property
     private let bookCoverImageView = UIImageView()
-    private let titleLabel = UILabel(style: .default)
+    private let titleLabel: UILabel = {
+        let label = UILabel(style: .default)
+        label.adjustsFontSizeToFitWidth = true
+        
+        return label
+    }()
     private let targetImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
@@ -57,8 +62,8 @@ final class MHBook: UIView {
     private func configureConstraints() {
         bookCoverImageView.fillSuperview()
         titleLabel.setTop(anchor: topAnchor, constant: 16)
-        titleLabel.setLeading(anchor: leadingAnchor, constant: 17)
-        titleLabel.setTrailing(anchor: trailingAnchor, constant: 17)
+        titleLabel.setLeading(anchor: leadingAnchor, constant: 25)
+        titleLabel.setTrailing(anchor: trailingAnchor, constant: 12)
         targetImageView.setTop(anchor: titleLabel.bottomAnchor, constant: 14)
         targetImageView.setCenterX(view: self, constant: 8)
         targetImageView.setWidthAndHeight(width: 100, height: 100)
