@@ -2,6 +2,8 @@ import UIKit
 import Combine
 
 final class BookCreationViewController: UIViewController {
+    // MARK: - Constant
+    static let maxTitleLength = 10
     // MARK: - Property
     private let bookView: MHBook = {
         let mHBook = MHBook()
@@ -105,21 +107,13 @@ final class BookCreationViewController: UIViewController {
         setup()
         configureConstraints()
         configureNavigationBar()
-        configureAction()
-    }
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
         configureViewModelBinding()
+        configureAction()
     }
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         let currentColorButton = bookColorButtons[viewModel.currentColorNumber]
         self.addInnerShadow(to: currentColorButton)
-    }
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        cancellables.forEach { $0.cancel() }
-        cancellables.removeAll()
     }
     
     // MARK: - TouchEvent
@@ -238,7 +232,12 @@ final class BookCreationViewController: UIViewController {
         
         // TitleTextField 변경
         let titleAction = UIAction { [weak self] _ in
-            self?.viewModel.bookTitle = self?.bookTitleTextField.text ?? ""
+            guard let self else { return }
+            if self.bookTitleTextField.text?.count ?? 0 > Self.maxTitleLength {
+                self.bookTitleTextField.text = String(self.bookTitleTextField.text?.prefix(Self.maxTitleLength) ?? "")
+            }
+            
+            self.viewModel.bookTitle = self.bookTitleTextField.text ?? ""
         }
         bookTitleTextField.addAction(titleAction, for: .editingChanged)
         
@@ -257,7 +256,7 @@ final class BookCreationViewController: UIViewController {
     }
     private func configureViewModelBinding() {
         $viewModel
-            .debounce(for: .seconds(0.3), scheduler: DispatchQueue.main)
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] viewModel in
                 guard let self else { return }
                 self.bookView.configure(
