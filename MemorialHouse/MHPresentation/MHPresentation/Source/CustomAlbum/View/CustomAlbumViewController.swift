@@ -12,6 +12,7 @@ final class CustomAlbumViewController: UIViewController {
         flowLayout.minimumInteritemSpacing = 2
         flowLayout.scrollDirection = .vertical
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: flowLayout)
+        collectionView.backgroundColor = .clear
         
         return collectionView
     }()
@@ -36,11 +37,13 @@ final class CustomAlbumViewController: UIViewController {
         
         setup()
         configureConstraints()
+        configureNavagationBar()
         viewModel.action(.viewDidLoad)
     }
     
     // MARK: - Setup & Configure
     private func setup() {
+        view.backgroundColor = .baseBackground
         imagePicker.delegate = self
         albumCollectionView.delegate = self
         albumCollectionView.dataSource = self
@@ -53,6 +56,24 @@ final class CustomAlbumViewController: UIViewController {
     private func configureConstraints() {
         view.addSubview(albumCollectionView)
         albumCollectionView.fillSuperview()
+    }
+    
+    private func configureNavagationBar() {
+        navigationItem.title = "사진 선택"
+        navigationController?.navigationBar.titleTextAttributes = [
+            NSAttributedString.Key.font: UIFont.ownglyphBerry(size: 17),
+            NSAttributedString.Key.foregroundColor: UIColor.mhTitle]
+        let closeAction = UIAction { [weak self] _ in
+            guard let self else { return }
+            self.navigationController?.popViewController(animated: true)
+        }
+        let leftBarButton = UIBarButtonItem(title: "닫기", primaryAction: closeAction)
+        leftBarButton.setTitleTextAttributes(
+            [NSAttributedString.Key.font: UIFont.ownglyphBerry(size: 17),
+             NSAttributedString.Key.foregroundColor: UIColor.mhTitle],
+            for: .normal
+        )
+        navigationItem.leftBarButtonItem = leftBarButton
     }
     
     // MARK: - Open Camera
