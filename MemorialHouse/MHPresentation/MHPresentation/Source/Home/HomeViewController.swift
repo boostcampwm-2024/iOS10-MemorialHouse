@@ -89,7 +89,7 @@ public final class HomeViewController: UIViewController {
         
         makingBookFloatingButton.addAction(UIAction { [weak self] _ in
             guard let self else { return }
-            let bookCreationViewController = BookCreationViewController()
+            let bookCreationViewController = BookCreationViewController(viewModel: BookCreationViewModel())
             self.navigationController?.pushViewController(bookCreationViewController, animated: true)
         }, for: .touchUpInside)
     }
