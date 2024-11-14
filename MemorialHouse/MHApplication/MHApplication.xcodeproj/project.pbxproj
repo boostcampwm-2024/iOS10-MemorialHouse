@@ -7,11 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0EE4A0A22CD5DD2400F17FA5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EE4A0982CD5DD2400F17FA5 /* AppDelegate.swift */; };
-		0EE4A0A32CD5DD2400F17FA5 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EE4A09F2CD5DD2400F17FA5 /* SceneDelegate.swift */; };
-		0EE4A0A42CD5DD2400F17FA5 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EE4A0A02CD5DD2400F17FA5 /* ViewController.swift */; };
-		0EE4A0A52CD5DD2400F17FA5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0EE4A0992CD5DD2400F17FA5 /* Assets.xcassets */; };
-		0EE4A0A72CD5DD2400F17FA5 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0EE4A09C2CD5DD2400F17FA5 /* LaunchScreen.storyboard */; };
 		CE9AEB6A2CD7B3DA00F8471D /* MHDomain.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9AEB692CD7B3DA00F8471D /* MHDomain.framework */; };
 		CE9AEB6B2CD7B3DA00F8471D /* MHDomain.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = CE9AEB692CD7B3DA00F8471D /* MHDomain.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		CE9AEB8A2CD7B4A800F8471D /* MHData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9AEB892CD7B4A800F8471D /* MHData.framework */; };
@@ -44,18 +39,33 @@
 
 /* Begin PBXFileReference section */
 		0EE4A0802CD5DD1800F17FA5 /* MemorialHouse.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MemorialHouse.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		0EE4A0982CD5DD2400F17FA5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		0EE4A0992CD5DD2400F17FA5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		0EE4A09A2CD5DD2400F17FA5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		0EE4A09B2CD5DD2400F17FA5 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		0EE4A09F2CD5DD2400F17FA5 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		0EE4A0A02CD5DD2400F17FA5 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		CE9AEB692CD7B3DA00F8471D /* MHDomain.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = MHDomain.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE9AEB892CD7B4A800F8471D /* MHData.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = MHData.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE9AEBAE2CD7B52D00F8471D /* MHPresentation.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = MHPresentation.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE9AEBC92CD7B60200F8471D /* MHCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = MHCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DB382CBC2CD9B1C1000D7689 /* MHFoundation.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = MHFoundation.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		A8C933432CDFBCCB007D932A /* Exceptions for "MHApplication" folder in "MemorialHouse" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Resource/Info.plist,
+			);
+			target = 0EE4A07F2CD5DD1800F17FA5 /* MemorialHouse */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		A8C9333B2CDFBCCA007D932A /* MHApplication */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				A8C933432CDFBCCB007D932A /* Exceptions for "MHApplication" folder in "MemorialHouse" target */,
+			);
+			path = MHApplication;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		0EE4A07D2CD5DD1800F17FA5 /* Frameworks */ = {
@@ -76,7 +86,7 @@
 		0EE4A0772CD5DD1800F17FA5 = {
 			isa = PBXGroup;
 			children = (
-				0EE4A0A12CD5DD2400F17FA5 /* MHApplication */,
+				A8C9333B2CDFBCCA007D932A /* MHApplication */,
 				CE9AEB682CD7B3DA00F8471D /* Frameworks */,
 				0EE4A0812CD5DD1800F17FA5 /* Products */,
 			);
@@ -88,43 +98,6 @@
 				0EE4A0802CD5DD1800F17FA5 /* MemorialHouse.app */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		0EE4A0A12CD5DD2400F17FA5 /* MHApplication */ = {
-			isa = PBXGroup;
-			children = (
-				0EE4A0AA2CD5E04B00F17FA5 /* Resource */,
-				0EE4A0AB2CD5E05200F17FA5 /* Source */,
-			);
-			path = MHApplication;
-			sourceTree = "<group>";
-		};
-		0EE4A0AA2CD5E04B00F17FA5 /* Resource */ = {
-			isa = PBXGroup;
-			children = (
-				0EE4A0992CD5DD2400F17FA5 /* Assets.xcassets */,
-				0EE4A09A2CD5DD2400F17FA5 /* Info.plist */,
-				0EE4A09C2CD5DD2400F17FA5 /* LaunchScreen.storyboard */,
-			);
-			path = Resource;
-			sourceTree = "<group>";
-		};
-		0EE4A0AB2CD5E05200F17FA5 /* Source */ = {
-			isa = PBXGroup;
-			children = (
-				0EE4A0AC2CD5E06200F17FA5 /* App */,
-				0EE4A0A02CD5DD2400F17FA5 /* ViewController.swift */,
-			);
-			path = Source;
-			sourceTree = "<group>";
-		};
-		0EE4A0AC2CD5E06200F17FA5 /* App */ = {
-			isa = PBXGroup;
-			children = (
-				0EE4A0982CD5DD2400F17FA5 /* AppDelegate.swift */,
-				0EE4A09F2CD5DD2400F17FA5 /* SceneDelegate.swift */,
-			);
-			path = App;
 			sourceTree = "<group>";
 		};
 		CE9AEB682CD7B3DA00F8471D /* Frameworks */ = {
@@ -155,7 +128,9 @@
 			buildRules = (
 			);
 			dependencies = (
-				CED59DC52CD9E07B005BE50D /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				A8C9333B2CDFBCCA007D932A /* MHApplication */,
 			);
 			name = MemorialHouse;
 			packageProductDependencies = (
@@ -189,7 +164,7 @@
 			mainGroup = 0EE4A0772CD5DD1800F17FA5;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				CED59DC32CD9E053005BE50D /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */,
+				DB4326A12CDD1E78009C03B8 /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 0EE4A0812CD5DD1800F17FA5 /* Products */;
@@ -206,8 +181,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0EE4A0A52CD5DD2400F17FA5 /* Assets.xcassets in Resources */,
-				0EE4A0A72CD5DD2400F17FA5 /* LaunchScreen.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -239,31 +212,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0EE4A0A22CD5DD2400F17FA5 /* AppDelegate.swift in Sources */,
-				0EE4A0A32CD5DD2400F17FA5 /* SceneDelegate.swift in Sources */,
-				0EE4A0A42CD5DD2400F17FA5 /* ViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		CED59DC52CD9E07B005BE50D /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			productRef = CED59DC42CD9E07B005BE50D /* SwiftLintBuildToolPlugin */;
-		};
-/* End PBXTargetDependency section */
-
-/* Begin PBXVariantGroup section */
-		0EE4A09C2CD5DD2400F17FA5 /* LaunchScreen.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				0EE4A09B2CD5DD2400F17FA5 /* Base */,
-			);
-			name = LaunchScreen.storyboard;
-			sourceTree = "<group>";
-		};
-/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		0EE4A0942CD5DD1B00F17FA5 /* Debug */ = {
@@ -278,6 +230,8 @@
 				INFOPLIST_FILE = MHApplication/Resource/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "기록소";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
+				INFOPLIST_KEY_NSCameraUsageDescription = "기록소는 카메라 권한을 필요로 합니다. 허용 안 함 시 일부 기능이 동작하지 않을 수 있습니다.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "기록소는 사진 권한을 필요로 합니다. 허용 안 함 시 일부 기능이 동작하지 않을 수 있습니다.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -312,6 +266,8 @@
 				INFOPLIST_FILE = MHApplication/Resource/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "기록소";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
+				INFOPLIST_KEY_NSCameraUsageDescription = "기록소는 카메라 권한을 필요로 합니다. 허용 안 함 시 일부 기능이 동작하지 않을 수 있습니다.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "기록소는 사진 권한을 필요로 합니다. 허용 안 함 시 일부 기능이 동작하지 않을 수 있습니다.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -477,7 +433,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		CED59DC32CD9E053005BE50D /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */ = {
+		DB4326A12CDD1E78009C03B8 /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/SimplyDanny/SwiftLintPlugins";
 			requirement = {
@@ -486,14 +442,6 @@
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		CED59DC42CD9E07B005BE50D /* SwiftLintBuildToolPlugin */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = CED59DC32CD9E053005BE50D /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */;
-			productName = "plugin:SwiftLintBuildToolPlugin";
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 0EE4A0782CD5DD1800F17FA5 /* Project object */;
 }

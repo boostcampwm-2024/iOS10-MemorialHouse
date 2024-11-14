@@ -7,15 +7,21 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		CE9AEBCD2CD7B60F00F8471D /* Temp.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9AEBCC2CD7B60F00F8471D /* Temp.swift */; };
 		DB382CB92CD9B1A6000D7689 /* MHFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB382CB82CD9B1A6000D7689 /* MHFoundation.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		CE9AEBBB2CD7B5EF00F8471D /* MHCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = MHCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		CE9AEBCC2CD7B60F00F8471D /* Temp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Temp.swift; sourceTree = "<group>"; };
 		DB382CB82CD9B1A6000D7689 /* MHFoundation.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = MHFoundation.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		A8C9332E2CDFBCBA007D932A /* MHCore */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = MHCore;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		CE9AEBB82CD7B5EF00F8471D /* Frameworks */ = {
@@ -32,7 +38,7 @@
 		CE9AEBB12CD7B5EF00F8471D = {
 			isa = PBXGroup;
 			children = (
-				CE9AEBC72CD7B5F700F8471D /* MHCore */,
+				A8C9332E2CDFBCBA007D932A /* MHCore */,
 				CE9AEBFF2CD7BA2B00F8471D /* Frameworks */,
 				CE9AEBBC2CD7B5EF00F8471D /* Products */,
 			);
@@ -44,14 +50,6 @@
 				CE9AEBBB2CD7B5EF00F8471D /* MHCore.framework */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		CE9AEBC72CD7B5F700F8471D /* MHCore */ = {
-			isa = PBXGroup;
-			children = (
-				CE9AEBCC2CD7B60F00F8471D /* Temp.swift */,
-			);
-			path = MHCore;
 			sourceTree = "<group>";
 		};
 		CE9AEBFF2CD7BA2B00F8471D /* Frameworks */ = {
@@ -89,6 +87,9 @@
 			);
 			dependencies = (
 			);
+			fileSystemSynchronizedGroups = (
+				A8C9332E2CDFBCBA007D932A /* MHCore */,
+			);
 			name = MHCore;
 			packageProductDependencies = (
 			);
@@ -121,7 +122,7 @@
 			mainGroup = CE9AEBB12CD7B5EF00F8471D;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				0E7F28842CDA07E7007D4F2B /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */,
+				DB4326A22CDD1E9A009C03B8 /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = CE9AEBBC2CD7B5EF00F8471D /* Products */;
@@ -168,7 +169,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CE9AEBCD2CD7B60F00F8471D /* Temp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -405,7 +405,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		0E7F28842CDA07E7007D4F2B /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */ = {
+		DB4326A22CDD1E9A009C03B8 /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/SimplyDanny/SwiftLintPlugins";
 			requirement = {
