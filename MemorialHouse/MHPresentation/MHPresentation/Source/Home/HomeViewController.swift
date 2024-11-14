@@ -138,7 +138,7 @@ extension HomeViewController: UICollectionViewDataSource {
         _ collectionView: UICollectionView,
         numberOfItemsInSection section: Int
     ) -> Int {
-        viewModel.dummyBook.count
+        0
     }
     
     public func collectionView(
@@ -149,15 +149,7 @@ extension HomeViewController: UICollectionViewDataSource {
             withReuseIdentifier: BookCollectionViewCell.identifier,
             for: indexPath
         ) as? BookCollectionViewCell else { return UICollectionViewCell() }
-        
-        let book = viewModel.dummyBook[indexPath.row]
-        cell.configure(
-            title: book.title,
-            bookCoverImage: book.bookColor.image,
-            targetImage: .pinkBook,
-            isLike: book.isLike,
-            houseName: viewModel.houseName
-        )
+        // TODO: 데이터 넣기
         
         return cell
     }
