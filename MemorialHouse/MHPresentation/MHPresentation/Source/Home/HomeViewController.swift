@@ -1,5 +1,6 @@
 import UIKit
 import MHDomain
+import MHFoundation
 
 public final class HomeViewController: UIViewController {
     // MARK: - Properties
@@ -39,7 +40,7 @@ public final class HomeViewController: UIViewController {
     }
     
     required init?(coder: NSCoder) {
-        guard let houseName = UserDefaults.standard.string(forKey: "houseName") else { return nil }
+        guard let houseName = UserDefaults.standard.string(forKey: Constant.houseNameUserDefaultKey) else { return nil }
         self.viewModel = HomeViewModel(houseName: houseName)
         self.navigationBar = MHNavigationBar(title: viewModel.houseName)
         super.init(coder: coder)
@@ -89,7 +90,7 @@ public final class HomeViewController: UIViewController {
         
         makingBookFloatingButton.addAction(UIAction { [weak self] _ in
             guard let self else { return }
-            let bookCreationViewController = BookCreationViewController()
+            let bookCreationViewController = BookCreationViewController(viewModel: BookCreationViewModel())
             self.navigationController?.pushViewController(bookCreationViewController, animated: true)
         }, for: .touchUpInside)
     }

@@ -1,18 +1,19 @@
 import UIKit
+import Combine
 
 final class BookCreationViewController: UIViewController {
+    // MARK: - Constant
+    static let maxTitleLength = 10
     // MARK: - Property
-    private let bookImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.image = UIImage(resource: .pinkBook)
-        imageView.contentMode = .scaleAspectFit
-        
-        return imageView
-    }()
+    private let bookView: MHBookCover = MHBookCover()
     private let bookTitleTextField: UITextField = {
         let textField = UITextField()
         textField.font = UIFont.ownglyphBerry(size: 25)
         textField.textColor = .black
+        textField.returnKeyType = .done
+        textField.autocorrectionType = .no
+        textField.autocapitalizationType = .none
+        textField.spellCheckingType = .no
         
         var attributedText = AttributedString(stringLiteral: "책 제목을 입력하세요")
         attributedText.font = UIFont.ownglyphBerry(size: 25)
@@ -59,6 +60,35 @@ final class BookCreationViewController: UIViewController {
         
         return button
     }()
+    private let colorButtonInnerShadow: CAShapeLayer = {
+        let shadowLayer = CAShapeLayer()
+        shadowLayer.cornerRadius = 15
+        shadowLayer.fillColor = nil
+        shadowLayer.masksToBounds = true
+
+        // 그림자 경로 생성
+        shadowLayer.shadowColor = UIColor.black.cgColor
+        shadowLayer.shadowOpacity = 0.35
+        shadowLayer.shadowOffset = CGSize(width: 0, height: 4)
+        shadowLayer.shadowRadius = 3
+        
+        return shadowLayer
+    }()
+    @Published
+    private var viewModel: BookCreationViewModel
+    private var cancellables: Set<AnyCancellable> = []
+    
+    // MARK: - Initializer
+    init(viewModel: BookCreationViewModel) {
+        self.viewModel = viewModel
+        
+        super.init(nibName: nil, bundle: nil)
+    }
+    required init?(coder: NSCoder) {
+        viewModel = BookCreationViewModel()
+        
+        super.init(coder: coder)
+    }
     
     // MARK: - LifeCycle
     override func viewDidLoad() {
@@ -66,6 +96,14 @@ final class BookCreationViewController: UIViewController {
         
         setup()
         configureConstraints()
+        configureNavigationBar()
+        configureViewModelBinding()
+        configureAction()
+    }
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        let currentColorButton = bookColorButtons[viewModel.currentColorNumber]
+        self.addInnerShadow(to: currentColorButton)
     }
     
     // MARK: - TouchEvent
@@ -75,15 +113,15 @@ final class BookCreationViewController: UIViewController {
         super.touchesBegan(touches, with: event)
     }
     
-    // MARK: - Setup & Configuration
+    // MARK: - Helper
     private func setup() {
         view.backgroundColor = .baseBackground
-        navigationController?.navigationBar.isHidden = false
+        bookTitleTextField.delegate = self
+        bookColorButtons.last?.isUserInteractionEnabled = false // 마지막 버튼은 크기 조절을 위한 것
     }
-    
     private func configureConstraints() {
         // 책 미리보기
-        let bookPreviewViewBackground = bookImageView.embededInDefaultBackground(
+        let bookPreviewViewBackground = bookView.embededInDefaultBackground(
             with: UIEdgeInsets(top: 70, left: 100, bottom: 70, right: 100)
         )
         view.addSubview(bookPreviewViewBackground)
@@ -138,6 +176,100 @@ final class BookCreationViewController: UIViewController {
             height: 63
         )
     }
+    private func configureNavigationBar() {
+        // 네비바 설정
+        navigationController?.navigationBar.isHidden = false
+        
+        // 타이틀 설정
+        navigationController?.navigationBar.titleTextAttributes = [
+            .font: UIFont.ownglyphBerry(size: 17)
+        ]
+        title = "책 표지 만들기"
+        
+        // 왼쪽 버튼
+        let leftBarButtonAction = UIAction { [weak self] _ in
+            self?.navigationController?.popViewController(animated: true)
+        }
+        let leftBarButton = UIBarButtonItem(title: "닫기", primaryAction: leftBarButtonAction)
+        leftBarButton.setTitleTextAttributes([
+            .font: UIFont.ownglyphBerry(size: 17),
+            .foregroundColor: UIColor.mhTitle
+        ], for: .normal)
+        navigationItem.leftBarButtonItem = leftBarButton
+        
+        // 오른쪽 버튼
+        let rightBarButtonAction = UIAction { [weak self] _ in
+            // TODO: - 구현 해야 함
+            self?.navigationController?.popViewController(animated: true)
+        }
+        let rightBarButton = UIBarButtonItem(title: "책 속지 만들기", primaryAction: rightBarButtonAction)
+        rightBarButton.setTitleTextAttributes([
+            .font: UIFont.ownglyphBerry(size: 17),
+            .foregroundColor: UIColor.mhTitle
+        ], for: .normal)
+        navigationItem.rightBarButtonItem = rightBarButton
+    }
+    private func configureAction() {
+        // 색깔 버튼
+        bookColorButtons.enumerated().forEach { idx, button in
+            let action = UIAction { [weak self] _ in
+                guard let self else { return }
+                self.viewModel.previousColorNumber = self.viewModel.currentColorNumber
+                self.viewModel.currentColorNumber = idx
+            }
+            button.addAction(action, for: .touchUpInside)
+        }
+        
+        // TitleTextField 변경
+        let titleAction = UIAction { [weak self] _ in
+            guard let self else { return }
+            if self.bookTitleTextField.text?.count ?? 0 > Self.maxTitleLength {
+                self.bookTitleTextField.text = String(self.bookTitleTextField.text?.prefix(Self.maxTitleLength) ?? "")
+            }
+            
+            self.viewModel.bookTitle = self.bookTitleTextField.text ?? ""
+        }
+        bookTitleTextField.addAction(titleAction, for: .editingChanged)
+        
+        // TODO: - 카테고리 선택 뷰모델에 반영
+        
+        // 사진선택 버튼
+        let pictureSelectingAction = UIAction { [weak self] _ in
+            let albumViewModel = CustomAlbumViewModel()
+            let customAlbumViewController = CustomAlbumViewController(viewModel: albumViewModel)
+            self?.navigationController?.pushViewController(customAlbumViewController, animated: true)
+        }
+        imageSelectionButton.addAction(pictureSelectingAction, for: .touchUpInside)
+        
+        // TODO: - 사진 선택 뷰모델?에 반영
+        
+    }
+    private func configureViewModelBinding() {
+        $viewModel
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] viewModel in
+                guard let self else { return }
+                self.bookView.configure(
+                    title: viewModel.bookTitle,
+                    bookCoverImage: viewModel.currentColor.image,
+                    // TODO: -  이미지 선택시 변경
+                    targetImage: .rotate,
+                    houseName: viewModel.houseName
+                )
+            }
+            .store(in: &cancellables)
+        $viewModel
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] viewModel in
+                guard viewModel.previousColorNumber != -1 else { return }
+                guard let self else { return }
+                let previousButton = self.bookColorButtons[viewModel.previousColorNumber]
+                self.removeSubLayersAndaddOuterShadow(to: previousButton)
+                let currentColorButton = self.bookColorButtons[viewModel.currentColorNumber]
+                self.addInnerShadow(to: currentColorButton)
+            }
+            .store(in: &cancellables)
+    }
     private func configuredColorButtons() -> UIView { // 린트 경고 때문에 분리
         let firstLineColorButtonStackView  = UIStackView()
         firstLineColorButtonStackView.axis = .horizontal
@@ -165,5 +297,32 @@ final class BookCreationViewController: UIViewController {
             .embededInDefaultBackground()
         
         return bookColorSelectionBackground
+    }
+    private func removeSubLayersAndaddOuterShadow(to view: UIView) {
+        UIView.animate(withDuration: 0.3) { [weak self] in
+            self?.colorButtonInnerShadow.removeFromSuperlayer()
+            view.layer.shadowOpacity = 0.25
+        }
+    }
+    private func addInnerShadow(to view: UIView) {
+        UIView.animate(withDuration: 0.3) { [weak self] in
+            guard let self else { return }
+            let bounds = view.bounds
+            let path = UIBezierPath(rect: bounds)
+            let cutoutPath = UIBezierPath(rect: bounds.insetBy(dx: 0, dy: -4)).reversing()
+            path.append(cutoutPath)
+
+            self.colorButtonInnerShadow.shadowPath = path.cgPath
+            self.colorButtonInnerShadow.frame = bounds
+            view.layer.shadowOpacity = 0
+            view.layer.addSublayer(self.colorButtonInnerShadow)
+        }
+    }
+}
+
+extension BookCreationViewController: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
     }
 }
