@@ -78,8 +78,8 @@ public final class RegisterViewController: UIViewController {
             let userDefaults = UserDefaults.standard
             
             userDefaults.set(houseName, forKey: Constant.houseNameUserDefaultKey)
-            
-            self?.navigationController?.pushViewController(HomeViewController(), animated: false)
+            let homeViewModel = HomeViewModel(houseName: houseName)
+            self?.navigationController?.pushViewController(HomeViewController(viewModel: homeViewModel), animated: false)
             self?.navigationController?.viewControllers.removeFirst()    // inactive back to register view
         }
         
