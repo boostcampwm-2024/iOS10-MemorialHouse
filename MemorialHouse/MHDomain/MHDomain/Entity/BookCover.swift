@@ -4,21 +4,21 @@ public struct BookCover {
     public let bookIdentifer = UUID()
     public let title: String
     public let imageURL: String
-    public let bookType: BookColor
+    public let bookColor: BookColor
     public let category: String
-    public let favorite: Bool
+    public let isLike: Bool
     
     public init(
         title: String,
         imageURL: String,
-        bookType: BookColor,
+        bookColor: BookColor,
         category: String,
-        favorite: Bool = false
+        isLike: Bool = false
     ) {
         self.title = title
         self.imageURL = imageURL
-        self.bookType = bookType
+        self.bookColor = bookColor
         self.category = category
-        self.favorite = favorite
+        self.isLike = isLike
     }
 }
