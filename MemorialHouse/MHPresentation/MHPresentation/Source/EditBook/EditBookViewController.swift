@@ -14,6 +14,42 @@ final class EditBookViewController: UIViewController {
         
         return textView
     }()
+    private let addImageButton: UIButton = {
+        let button = UIButton()
+        button.setImage(.imageButton, for: .normal)
+        button.backgroundColor = .clear
+        
+        return button
+    }()
+    private let addVideoButton: UIButton = {
+        let button = UIButton()
+        button.setImage(.videoButton, for: .normal)
+        button.backgroundColor = .clear
+        
+        return button
+    }()
+    private let addTextButton: UIButton = {
+        let button = UIButton()
+        button.setImage(.textButton, for: .normal)
+        button.backgroundColor = .clear
+        
+        return button
+    }()
+    private let addAudioButton: UIButton = {
+        let button = UIButton()
+        button.setImage(.audioButton, for: .normal)
+        button.backgroundColor = .clear
+        
+        return button
+    }()
+    private let buttonStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .horizontal
+        stackView.spacing = 5
+        stackView.distribution = .fillEqually
+        
+        return stackView
+    }()
     
     // MARK: - LifeCycle
     override func viewDidLoad() {
@@ -29,10 +65,31 @@ final class EditBookViewController: UIViewController {
         hideKeyboardWhenTappedView()
     }
     private func configureAddSubView() {
+        // textView
         view.addSubview(textView)
-        textView.setTop(anchor: view.safeAreaLayoutGuide.topAnchor, constant: 20)
-        textView.setLeading(anchor: view.leadingAnchor, constant: 20)
-        textView.setTrailing(anchor: view.trailingAnchor, constant: 20)
-        textView.setBottom(anchor: view.safeAreaLayoutGuide.bottomAnchor, constant: 20)
+        
+        // buttonStackView
+        buttonStackView.addArrangedSubview(addImageButton)
+        buttonStackView.addArrangedSubview(addVideoButton)
+        buttonStackView.addArrangedSubview(addTextButton)
+        buttonStackView.addArrangedSubview(addAudioButton)
+        view.addSubview(buttonStackView)
+        
+    }
+    private func configureConstraints() {
+        // textView
+        textView.setAnchor(
+            top: view.safeAreaLayoutGuide.topAnchor, constantTop: 20,
+            leading: view.leadingAnchor, constantLeading: 20,
+            bottom: buttonStackView.topAnchor, constantBottom: 20,
+            trailing: view.trailingAnchor, constantTrailing: 20
+        )
+        // buttonStackView
+        buttonStackView.setAnchor(
+            leading: textView.leadingAnchor,
+            bottom: view.safeAreaLayoutGuide.bottomAnchor, constantBottom: 20,
+            trailing: view.trailingAnchor, constantTrailing: 20,
+            height: 50
+        )
     }
 }
