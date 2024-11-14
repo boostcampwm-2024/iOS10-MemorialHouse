@@ -5,17 +5,7 @@ final class BookCreationViewController: UIViewController {
     // MARK: - Constant
     static let maxTitleLength = 10
     // MARK: - Property
-    private let bookView: MHBook = {
-        let bookView = MHBook()
-        bookView.configure(
-            title: "",
-            bookCoverImage: .pinkBook,
-            targetImage: .init(),
-            publisher: "고양이"
-        )
-        
-        return bookView
-    }()
+    private let bookView: MHBookCover = MHBookCover()
     private let bookTitleTextField: UITextField = {
         let textField = UITextField()
         textField.font = UIFont.ownglyphBerry(size: 25)
@@ -262,9 +252,10 @@ final class BookCreationViewController: UIViewController {
                 self.bookView.configure(
                     title: viewModel.bookTitle,
                     bookCoverImage: viewModel.currentColor.image,
+                    // TODO: -  이미지 선택시 변경
                     targetImage: .rotate,
-                    publisher: "고양이?"
-                )   
+                    houseName: viewModel.houseName
+                )
             }
             .store(in: &cancellables)
         $viewModel
