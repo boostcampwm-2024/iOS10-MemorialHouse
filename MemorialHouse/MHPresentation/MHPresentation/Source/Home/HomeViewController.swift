@@ -3,7 +3,7 @@ import MHDomain
 import MHFoundation
 
 public final class HomeViewController: UIViewController {
-    // MARK: - Properties
+    // MARK: - UI Components
     private let navigationBar: MHNavigationBar
     private let currentCategoryLabel = UILabel(style: .default)
     private let categorySelectButton = UIButton(type: .custom)
@@ -30,6 +30,8 @@ public final class HomeViewController: UIViewController {
         
         return collectionView
     }()
+    
+    // MARK: - Properties
     private let viewModel: HomeViewModel
     private var floatingButtonBottomConstraint: NSLayoutConstraint?
     private var isFloatingButtonHidden = false
