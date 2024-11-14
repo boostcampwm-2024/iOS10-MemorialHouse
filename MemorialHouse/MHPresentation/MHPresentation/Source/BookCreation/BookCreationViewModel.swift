@@ -1,4 +1,5 @@
 import MHDomain
+import MHFoundation
 import Photos
 
 struct BookCreationViewModel {
@@ -17,4 +18,5 @@ struct BookCreationViewModel {
         default: .blue
         }
     }
+    let houseName: String = UserDefaults.standard.string(forKey: Constant.houseNameUserDefaultKey) ?? ""
 }
