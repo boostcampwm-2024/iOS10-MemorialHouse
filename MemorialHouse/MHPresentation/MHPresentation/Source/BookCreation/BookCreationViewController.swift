@@ -64,6 +64,7 @@ final class BookCreationViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        setup()
         configureConstraints()
     }
     
@@ -74,7 +75,12 @@ final class BookCreationViewController: UIViewController {
         super.touchesBegan(touches, with: event)
     }
     
-    // MARK: - Helper
+    // MARK: - Setup & Configuration
+    private func setup() {
+        view.backgroundColor = .baseBackground
+        navigationController?.navigationBar.isHidden = false
+    }
+    
     private func configureConstraints() {
         // 책 미리보기
         let bookPreviewViewBackground = bookImageView.embededInDefaultBackground(
