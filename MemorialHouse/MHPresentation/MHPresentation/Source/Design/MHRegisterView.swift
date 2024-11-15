@@ -68,7 +68,7 @@ final class MHRegisterView: UIView {
         super.init(frame: frame)
         
         setup()
-        configureAddSubViewAndConstraints()
+        configureAddSubviewAndConstraints()
     }
     
     required init?(coder: NSCoder) {
@@ -83,7 +83,7 @@ final class MHRegisterView: UIView {
     }
     
     // MARK: - Configure
-    private func configureAddSubViewAndConstraints() {
+    private func configureAddSubviewAndConstraints() {
         coverImageView.setWidthAndHeight(width: self.frame.width, height: self.frame.height)
         self.addSubview(coverImageView)
         
