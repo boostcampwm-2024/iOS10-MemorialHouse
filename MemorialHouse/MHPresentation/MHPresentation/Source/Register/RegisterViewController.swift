@@ -1,116 +1,46 @@
 import UIKit
 import MHFoundation
+import Combine
 
 public final class RegisterViewController: UIViewController {
-    // MARK: - Properties
-    private static let registerButtonFontSize: CGFloat = 12
-    private static let registerTextFieldFontSize: CGFloat = 24
-    private let registerTextField: UITextField = {
-        let registerFont = UIFont.ownglyphBerry(size: registerButtonFontSize)
-        
-        let textField = UITextField()
-        textField.font = registerFont
-        textField.borderStyle = .roundedRect
-        
-        var attributedText = AttributedString(stringLiteral: "기록소")
-        attributedText.font = registerFont
-        textField.attributedPlaceholder = NSAttributedString(attributedText)
-        
-        textField.tag = UITextField.Tag.register
-        
-        return textField
-    }()
-    private let registerButton: UIButton = {
-        let registerButton = UIButton(type: .custom)
-        
-        var attributedString = AttributedString(stringLiteral: "다음")
-        attributedString.font = UIFont.ownglyphBerry(size: registerButtonFontSize)
-        attributedString.strokeColor = UIColor.mhTitle
-        
-        registerButton.setAttributedTitle(NSAttributedString(attributedString), for: .normal)
-        
-        registerButton.backgroundColor = UIColor.mhSection
-        registerButton.layer.borderColor = UIColor.mhBorder.cgColor
-        registerButton.layer.borderWidth = 1
-        registerButton.layer.cornerRadius = registerButtonFontSize
-                
-        return registerButton
-    }()
+    var subscriptions = Set<AnyCancellable>()
+    
+    // MARK: - Property
+    var registerView = MHRegisterView()
     
     // MARK: - Lifecycle
     public override func viewDidLoad() {
         super.viewDidLoad()
         
         setup()
-        configureAddSubView()
+        configureAddSubview()
         configureConstraints()
     }
     
-    // MARK: - Setup
     private func setup() {
         view.backgroundColor = .baseBackground
         
-        addTouchEventToRegisterButton(registerButton)
-    }
-    
-    // MARK: - Configure
-    private func configureAddSubView() {
-        view.addSubview(registerTextField)
-        view.addSubview(registerButton)
-    }
-    private func configureConstraints() {
-        registerTextField.setHeight(RegisterViewController.registerTextFieldFontSize)
-        registerTextField.setWidth(RegisterViewController.registerTextFieldFontSize * 8)
-        registerTextField.setCenter(view: view)
-        
-        registerButton.setHeight(RegisterViewController.registerButtonFontSize * 2)
-        registerButton.setWidth(RegisterViewController.registerButtonFontSize * 4)
-        registerButton.setTop(anchor: registerTextField.bottomAnchor, constant: 6)
-        registerButton.setLeading(anchor: registerTextField.trailingAnchor, constant: -6)
-    }
-    
-    private func addTouchEventToRegisterButton(_ button: UIButton) {
-        let uiAction = UIAction { [weak self] _ in
-            // TODO: - 저장소 중복 체크
-            
-            guard let houseName = self?.registerTextField.text, !houseName.isEmpty else { return }
-            
-            let userDefaults = UserDefaults.standard
-            
-            userDefaults.set(houseName, forKey: Constant.houseNameUserDefaultKey)
-            let homeViewModel = HomeViewModel(houseName: houseName)
-            self?.navigationController?.pushViewController(HomeViewController(viewModel: homeViewModel), animated: false)
-            self?.navigationController?.viewControllers.removeFirst()    // inactive back to register view
-        }
-        
-        button.addAction(uiAction, for: .touchUpInside)
-    }
-}
-
-// MARK: - UITextFieldDelegate
-extension RegisterViewController: UITextFieldDelegate {
-    public func textField(
-        _ textField: UITextField,
-        shouldChangeCharactersIn range: NSRange,
-        replacementString string: String) -> Bool {
-        switch textField.tag {
-        case UITextField.Tag.register:
-            if string.isEmpty {
-                registerButton.isEnabled = false
+        MHRegisterView.buttonSubject.sink { isValid in
+            if isValid {
+                self.navigationController?.pushViewController(HomeViewController(), animated: false)
+                self.navigationController?.viewControllers.removeFirst()    // inactive back to register view
             } else {
-                registerButton.isEnabled = true
+                // TODO: - 기록소 이름 조건이 안맞는 부분 처리
             }
-        default:
-            break
-        }
+        }.store(in: &subscriptions)
         
-        return true
+        registerView = MHRegisterView(
+            frame: CGRect.init(x: 0, y: 0, width: view.bounds.width - 50, height: view.bounds.height - 640))
     }
-}
-
-// MARK: - Tag for UITextField
-extension UITextField {
-    enum Tag {
-        static let register = 0
+    
+    private func configureAddSubview() {
+        self.view.addSubview(registerView)
+    }
+    
+    private func configureConstraints() {
+        registerView.setTop(anchor: self.view.topAnchor, constant: 320)
+        registerView.setBottom(anchor: self.view.bottomAnchor, constant: 320)
+        registerView.setLeading(anchor: self.view.leadingAnchor, constant: 25)
+        registerView.setTrailing(anchor: self.view.trailingAnchor, constant: 25)
     }
 }
