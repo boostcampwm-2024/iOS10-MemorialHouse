@@ -149,16 +149,16 @@ final class MHRegisterView: UIView {
     }
     
     private func addEditingChangedEventToRegisterTextField(_ textfield: UITextField) {
-        let uiAction = UIAction { _ in
+        let uiAction = UIAction { [weak self] _ in
             guard let inputText = textfield.text else { return }
             MHRegisterView.textfieldSubject.send(inputText)
             
             switch textfield.tag {
             case UITextField.Tag.register:
                 if inputText.isEmpty == true {
-                    self.registerButton.isEnabled = false
+                    self?.registerButton.isEnabled = false
                 } else {
-                    self.registerButton.isEnabled = true
+                    self?.registerButton.isEnabled = true
                 }
             default:
                 break
