@@ -64,13 +64,14 @@ final class MHRegisterView: UIView {
     // MARK: - Initializers
     override init(frame: CGRect) {
         super.init(frame: frame)
-        
         setup()
         configureAddSubviewAndConstraints()
     }
     
     required init?(coder: NSCoder) {
-        fatalError("error: mhregisterview requires init(coder:)")
+        super.init(frame: CGRect(x: 0, y: 0, width: 352, height: 234))
+        setup()
+        configureAddSubviewAndConstraints()
     }
     
     // MARK: - Setup
