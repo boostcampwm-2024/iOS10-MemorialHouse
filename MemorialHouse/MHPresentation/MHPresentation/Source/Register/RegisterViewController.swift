@@ -21,9 +21,7 @@ public final class RegisterViewController: UIViewController {
         view.backgroundColor = .baseBackground
         
         MHRegisterView.buttonSubject.sink { [weak self] houseName in
-            
             if houseName.count < 11 {
-            
                 let homeViewController = HomeViewController(viewModel: HomeViewModel(houseName: houseName))
                 self?.navigationController?.pushViewController(homeViewController, animated: false)
                 self?.navigationController?.viewControllers.removeFirst()
