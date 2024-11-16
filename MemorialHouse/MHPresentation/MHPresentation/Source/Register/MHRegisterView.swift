@@ -90,12 +90,12 @@ final class MHRegisterView: UIView {
             trailing: self.trailingAnchor,
             constantTrailing: 40,
             
-            height: MHRegisterView.registerTextFieldFontSize * 4
+            height: 96
         )
         
         let registerTextFieldBackground = registerTextField
                                             .embededInDefaultBackground(with:
-                                            UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5))
+                                            UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 5))
         coverImageView.addSubview(registerTextFieldBackground)
         registerTextFieldBackground.setAnchor(
             top: registerTextLabel.bottomAnchor,
@@ -103,7 +103,7 @@ final class MHRegisterView: UIView {
             constantLeading: 80,
             trailing: self.trailingAnchor,
             constantTrailing: 40,
-            height: MHRegisterView.registerTextFieldFontSize * 2
+            height: 44
         )
         
         let registerButtonBackground = UIView()
@@ -123,10 +123,10 @@ final class MHRegisterView: UIView {
             top: registerTextFieldBackground.bottomAnchor,
             constantTop: 10,
             leading: self.leadingAnchor,
-            constantLeading: MHRegisterView.registerTextFieldFontSize * 11,
+            constantLeading: 260,
             
-            width: MHRegisterView.registerButtonFontSize * 4 + 8,
-            height: MHRegisterView.registerButtonFontSize * 2 + 6
+            width: 60,
+            height: 36
         )
     }
     
