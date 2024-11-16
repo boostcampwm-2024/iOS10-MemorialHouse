@@ -3,8 +3,7 @@ import MHFoundation
 import Combine
 
 final class MHRegisterView: UIView {
-    static let textfieldSubject = PassthroughSubject<String, Never>()
-    static let buttonSubject = PassthroughSubject<Bool, Never>()
+    static let buttonSubject = PassthroughSubject<String, Never>()
     
     // MARK: - Property
     private let coverImageView: UIImageView = {
@@ -39,8 +38,6 @@ final class MHRegisterView: UIView {
         var attributedText = AttributedString(stringLiteral: "기록소")
         attributedText.font = registerFont
         textField.attributedPlaceholder = NSAttributedString(attributedText)
-        
-        textField.tag = UITextField.Tag.register
         
         return textField
     }()
@@ -134,39 +131,16 @@ final class MHRegisterView: UIView {
     }
     
     private func addTouchEventToRegisterButton(_ button: UIButton) {
-        let uiAction = UIAction { _ in
-            MHRegisterView.buttonSubject.send(true)
+        let uiAction = UIAction { [weak self] _ in
+            MHRegisterView.buttonSubject.send(self?.registerTextField.text ?? "")
         }
         registerButton.addAction(uiAction, for: .touchUpInside)
     }
     
     private func addEditingChangedEventToRegisterTextField(_ textfield: UITextField) {
-        let uiAction = UIAction { [weak self] _ in
+        let uiAction = UIAction { _ in
             guard let inputText = textfield.text else { return }
-            MHRegisterView.textfieldSubject.send(inputText)
-            
-            switch textfield.tag {
-            case UITextField.Tag.register:
-                if inputText.isEmpty == true {
-                    self?.registerButton.isEnabled = false
-                } else {
-                    self?.registerButton.isEnabled = true
-                }
-            default:
-                break
-            }
         }
         registerTextField.addAction(uiAction, for: .editingChanged)
-    }
-    
-    private func checkNameValidity(_ name: String) -> Bool {
-        return name.count < 11 ? true : false
-    }
-}
-
-// MARK: - Tag for UITextField
-extension UITextField {
-    enum Tag {
-        static let register = 0
     }
 }

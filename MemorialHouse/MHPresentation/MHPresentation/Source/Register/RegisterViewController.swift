@@ -7,7 +7,6 @@ public final class RegisterViewController: UIViewController {
     
     // MARK: - Property
     var registerView = MHRegisterView()
-    var houseName = ""
     
     // MARK: - Lifecycle
     public override func viewDidLoad() {
@@ -21,13 +20,9 @@ public final class RegisterViewController: UIViewController {
     private func setup() {
         view.backgroundColor = .baseBackground
         
-        MHRegisterView.textfieldSubject.sink { text in
-            self.houseName = text
-        }.store(in: &subscriptions)
-        
-        MHRegisterView.buttonSubject.sink { [weak self] _ in
+        MHRegisterView.buttonSubject.sink { [weak self] houseName in
             
-            if let houseName = self?.houseName, houseName.count < 11 {
+            if houseName.count < 11 {
             
                 let homeViewController = HomeViewController(viewModel: HomeViewModel(houseName: houseName))
                 self?.navigationController?.pushViewController(homeViewController, animated: false)
