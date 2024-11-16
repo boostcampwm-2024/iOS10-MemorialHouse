@@ -7,7 +7,7 @@ public final class RegisterViewController: UIViewController {
     
     // MARK: - Property
     var registerView = MHRegisterView()
-    var username = ""
+    var houseName = ""
     
     // MARK: - Lifecycle
     public override func viewDidLoad() {
@@ -22,14 +22,19 @@ public final class RegisterViewController: UIViewController {
         view.backgroundColor = .baseBackground
         
         MHRegisterView.textfieldSubject.sink { text in
-            self.username = text
+            self.houseName = text
         }.store(in: &subscriptions)
         
-        MHRegisterView.buttonSubject.sink { isValid in
-            if isValid {
-                let homeViewController = HomeViewController(viewModel: HomeViewModel(houseName: self.username))
-                self.navigationController?.pushViewController(homeViewController, animated: false)
-                self.navigationController?.viewControllers.removeFirst()    // inactive back to register view
+        MHRegisterView.buttonSubject.sink { [weak self] _ in
+            
+            if let houseName = self?.houseName, houseName.count < 11 {
+            
+                let homeViewController = HomeViewController(viewModel: HomeViewModel(houseName: houseName))
+                self?.navigationController?.pushViewController(homeViewController, animated: false)
+                self?.navigationController?.viewControllers.removeFirst()
+                
+                let userDefaults = UserDefaults.standard
+                userDefaults.set(houseName, forKey: Constant.houseNameUserDefaultKey)
             } else {
                 // TODO: - 기록소 이름 조건이 안맞는 부분 처리
             }

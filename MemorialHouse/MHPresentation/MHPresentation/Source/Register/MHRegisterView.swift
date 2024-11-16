@@ -134,16 +134,8 @@ final class MHRegisterView: UIView {
     }
     
     private func addTouchEventToRegisterButton(_ button: UIButton) {
-        let uiAction = UIAction { [weak self] _ in
-            guard let houseName = self?.registerTextField.text, !houseName.isEmpty else { return }
-            
-            if self?.checkNameValidity(houseName) ?? false {
-                MHRegisterView.buttonSubject.send(true)
-                let userDefaults = UserDefaults.standard
-                userDefaults.set(houseName, forKey: Constant.houseNameUserDefaultKey)
-            } else {
-                MHRegisterView.buttonSubject.send(false)
-            }
+        let uiAction = UIAction { _ in
+            MHRegisterView.buttonSubject.send(true)
         }
         registerButton.addAction(uiAction, for: .touchUpInside)
     }
