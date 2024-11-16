@@ -6,7 +6,7 @@ public final class RegisterViewController: UIViewController {
     var subscriptions = Set<AnyCancellable>()
     
     // MARK: - Property
-    var registerView = MHRegisterView()
+    private var registerView = MHRegisterView()
     
     // MARK: - Lifecycle
     public override func viewDidLoad() {
