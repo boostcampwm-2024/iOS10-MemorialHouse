@@ -34,7 +34,6 @@ public final class RegisterViewController: UIViewController {
         
         let textField = UITextField()
         textField.font = registerFont
-        textField.borderStyle = .none
         
         var attributedText = AttributedString(stringLiteral: "기록소")
         attributedText.font = registerFont
