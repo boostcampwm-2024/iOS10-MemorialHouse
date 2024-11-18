@@ -88,8 +88,10 @@ public final class HomeViewController: UIViewController {
     }
     
     private func configureAction() {
-        categorySelectButton.addAction(UIAction { _ in
-            // TODO: 카테고리 시트지 띄우기
+        categorySelectButton.addAction(UIAction { [weak self] _ in
+            guard let self else { return }
+            let categoryViewController = CategoryViewController(viewModel: CategoryViewModel())
+            self.navigationController?.pushViewController(categoryViewController, animated: true)
         }, for: .touchUpInside)
         
         makingBookFloatingButton.addAction(UIAction { [weak self] _ in
