@@ -89,9 +89,17 @@ public final class HomeViewController: UIViewController {
     
     private func configureAction() {
         categorySelectButton.addAction(UIAction { [weak self] _ in
-            guard let self else { return }
-            let categoryViewController = CategoryViewController(viewModel: CategoryViewModel())
-            self.navigationController?.pushViewController(categoryViewController, animated: true)
+            let categoryViewModel = CategoryViewModel()
+            let categoryViewController = CategoryViewController(viewModel: categoryViewModel)
+            let navigationController = UINavigationController(rootViewController: categoryViewController)
+            
+            if let sheet = navigationController.sheetPresentationController {
+                sheet.detents = [.custom(identifier: .categorySheet) { _ in
+                    categoryViewModel.calculateSheetHeight()
+                }]
+            }
+            
+            self?.present(navigationController, animated: true)
         }, for: .touchUpInside)
         
         makingBookFloatingButton.addAction(UIAction { [weak self] _ in
