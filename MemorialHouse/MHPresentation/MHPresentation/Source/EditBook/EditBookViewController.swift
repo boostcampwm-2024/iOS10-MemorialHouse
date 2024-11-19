@@ -40,12 +40,20 @@ final class EditBookViewController: UIViewController {
     private let buttonStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .horizontal
-        stackView.spacing = 5
+        stackView.spacing = 10
         stackView.distribution = .fillEqually
         stackView.alignment = .leading
         stackView.backgroundColor = .clear
         
         return stackView
+    }()
+    private let publishButton: UIButton = {
+        let button = UIButton()
+        button.setImage(.publishButton, for: .normal)
+        button.imageView?.contentMode = .scaleAspectFit
+        button.backgroundColor = .clear
+        
+        return button
     }()
     
     // MARK: - LifeCycle
@@ -69,31 +77,47 @@ final class EditBookViewController: UIViewController {
         navigationController?.navigationBar.isHidden = true
     }
     private func configureAddSubView() {
+        // editPageTableView
         view.addSubview(editPageTableView)
         
         // buttonStackView
         buttonStackView.addArrangedSubview(addImageButton)
-        buttonStackView.addArrangedSubview(addVideoButton)
         buttonStackView.addArrangedSubview(addTextButton)
+        buttonStackView.addArrangedSubview(addVideoButton)
         buttonStackView.addArrangedSubview(addAudioButton)
         view.addSubview(buttonStackView)
+        
+        // publishButton
+        view.addSubview(publishButton)
     }
     private func configureConstraints() {
-        // talbeView
+        // tableView
         editPageTableView.setAnchor(
             top: view.safeAreaLayoutGuide.topAnchor,
             leading: view.leadingAnchor,
             bottom: buttonStackView.topAnchor, constantBottom: 10,
             trailing: view.trailingAnchor
         )
+        
+        // buttonStackView
         buttonStackView.setAnchor(
-            leading: editPageTableView.leadingAnchor,
+            leading: editPageTableView.leadingAnchor, constantLeading: 10,
             bottom: view.safeAreaLayoutGuide.bottomAnchor, constantBottom: 20,
-            trailing: editPageTableView.trailingAnchor,
+            height: 40
+        )
+        
+        // publishButton
+        publishButton.setAnchor(
+            bottom: buttonStackView.bottomAnchor,
+            trailing: editPageTableView.trailingAnchor, constantTrailing: 15,
+            width: 55,
             height: 40
         )
     }
-    
+}
+
+// MARK: - UIScrollViewDelegate
+extension EditBookViewController {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         view.endEditing(true)
     }
