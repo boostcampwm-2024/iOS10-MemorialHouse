@@ -40,11 +40,33 @@ final class CustomAlbumViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        bind()
         setup()
         configureConstraints()
-        configureNavagationBar()
-        bind()
         viewModel.action(.viewDidLoad)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        configureNavagationBar()
+    }
+    
+    // MARK: - Binding
+    private func bind() {
+        viewModel.changedAssetsOutput
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] changes in
+                self?.albumCollectionView.performBatchUpdates {
+                    if let inserted = changes.insertedIndexes, !inserted.isEmpty {
+                        self?.albumCollectionView.insertItems(at: inserted.map({ IndexPath(item: $0 + 1, section: 0) }))
+                    }
+                    if let removed = changes.removedIndexes, !removed.isEmpty {
+                        self?.albumCollectionView.deleteItems(at: removed.map({ IndexPath(item: $0 + 1, section: 0) }))
+                    }
+                }
+            }
+            .store(in: &cancellables)
     }
     
     // MARK: - Setup & Configure
@@ -65,13 +87,23 @@ final class CustomAlbumViewController: UIViewController {
     }
     
     private func configureNavagationBar() {
-        // Title
+        // TODO: - 추후 삭제 필요
+        self.navigationController?.navigationBar.isHidden = false
+        
+        let navigationBarAppearance = UINavigationBarAppearance()
+        navigationBarAppearance.configureWithOpaqueBackground()
+        navigationBarAppearance.backgroundColor = .baseBackground
+        navigationBarAppearance.titleTextAttributes = [
+            NSAttributedString.Key.font: UIFont.ownglyphBerry(size: 17),
+            NSAttributedString.Key.foregroundColor: UIColor.black
+        ]
+        navigationController?.navigationBar.standardAppearance = navigationBarAppearance
+        navigationController?.navigationBar.compactAppearance = navigationBarAppearance
+        navigationController?.navigationBar.scrollEdgeAppearance = navigationBarAppearance
         navigationItem.title = "사진 선택"
         navigationController?.navigationBar.titleTextAttributes = [
             NSAttributedString.Key.font: UIFont.ownglyphBerry(size: 17),
             NSAttributedString.Key.foregroundColor: UIColor.mhTitle]
-        
-        // LeftBarButton
         let closeAction = UIAction { [weak self] _ in
             guard let self else { return }
             self.navigationController?.popViewController(animated: true)
@@ -83,23 +115,6 @@ final class CustomAlbumViewController: UIViewController {
             for: .normal
         )
         navigationItem.leftBarButtonItem = leftBarButton
-    }
-    
-    // MARK: - Binding
-    private func bind() {
-        viewModel.changedAssetsOutput
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] changes in
-                self?.albumCollectionView.performBatchUpdates {
-                    if let inserted = changes.insertedIndexes, !inserted.isEmpty {
-                        self?.albumCollectionView.insertItems(at: inserted.map({ IndexPath(item: $0 + 1, section: 0) }))
-                    }
-                    if let removed = changes.removedIndexes, !removed.isEmpty {
-                        self?.albumCollectionView.deleteItems(at: removed.map({ IndexPath(item: $0 + 1, section: 0) }))
-                    }
-                }
-            }
-            .store(in: &cancellables)
     }
     
     // MARK: - Camera
