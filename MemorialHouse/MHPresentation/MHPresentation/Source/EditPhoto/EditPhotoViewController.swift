@@ -81,7 +81,7 @@ final class EditPhotoViewController: UIViewController {
         configureButtonAction()
     }
     
-    // MARK: - Setup & Configure
+    // MARK: - Setup
     private func setup() {
         view.backgroundColor = .black
         photoScrollView.delegate = self
@@ -100,7 +100,9 @@ final class EditPhotoViewController: UIViewController {
         )
     }
     
+    // MARK: - Configure Navigation
     private func configureNavagationBar() {
+        // Navigation Bar
         let navigationBarAppearance = UINavigationBarAppearance()
         navigationBarAppearance.configureWithOpaqueBackground()
         navigationBarAppearance.backgroundColor = .black
@@ -112,16 +114,16 @@ final class EditPhotoViewController: UIViewController {
         navigationController?.navigationBar.compactAppearance = navigationBarAppearance
         navigationController?.navigationBar.scrollEdgeAppearance = navigationBarAppearance
         navigationItem.title = "사진 편집"
-        let closeAction = UIAction { [weak self] _ in
-            guard let self else { return }
-            self.navigationController?.popViewController(animated: true)
-        }
-        let leftBarButton = UIBarButtonItem(title: "닫기", primaryAction: closeAction)
+        
+        // Left Bar BarButton
+        let leftBarButton = UIBarButtonItem(title: "닫기")
         leftBarButton.setTitleTextAttributes([
             NSAttributedString.Key.font: UIFont.ownglyphBerry(size: 17),
             NSAttributedString.Key.foregroundColor: UIColor.white
         ], for: .normal)
         navigationItem.leftBarButtonItem = leftBarButton
+
+        // Right Bar Button
         let rightBarButton = UIBarButtonItem(title: "완료")
         rightBarButton.setTitleTextAttributes([
             NSAttributedString.Key.font: UIFont.ownglyphBerry(size: 17),
@@ -130,6 +132,7 @@ final class EditPhotoViewController: UIViewController {
         navigationItem.rightBarButtonItem = rightBarButton
     }
     
+    // MARK: - Add SubView & Constraints
     private func configureAddSubView() {
         editButtonStackView.addArrangedSubview(rotateButton)
         editButtonStackView.addArrangedSubview(drawButton)
@@ -211,7 +214,15 @@ final class EditPhotoViewController: UIViewController {
         )
     }
     
+    // MARK: - Add Button Action
     private func configureButtonAction() {
+        let closeAction = UIAction { [weak self] _ in
+            guard let self else { return }
+            self.navigationController?.popViewController(animated: true)
+        }
+        let completeAction = UIAction { [weak self] _ in
+            // TODO: 다음 화면으로 전환 및 cropImage 호출
+        }
         let rotateButtonAction = UIAction { [weak self] _ in
             guard let self else { return }
             let image = self.photoImageView.image
@@ -220,6 +231,8 @@ final class EditPhotoViewController: UIViewController {
         let drawButtonAction = UIAction { _ in
             // TODO: - Draw Action
         }
+        navigationItem.leftBarButtonItem?.primaryAction = closeAction
+        navigationItem.rightBarButtonItem?.primaryAction = completeAction
         rotateButton.addAction(rotateButtonAction, for: .touchUpInside)
         drawButton.addAction(drawButtonAction, for: .touchUpInside)
     }
@@ -242,8 +255,16 @@ final class EditPhotoViewController: UIViewController {
         }
     }
     
+    // MARK: - Crop Image
+    private func cropImage() -> UIImage? {
+        let renderer = UIGraphicsImageRenderer(bounds: photoScrollView.bounds)
+        return renderer.image { _ in
+            self.photoScrollView.drawHierarchy(in: self.photoScrollView.bounds, afterScreenUpdates: true)
+        }
+    }
+    
     // MARK: - Set Photo from Custom Album
-    func setPhoto(image: UIImage?) {
+    func setPhoto(image: UIImage?, date: Date?) {
         photoImageView.image = image
     }
 }
@@ -255,34 +276,26 @@ extension EditPhotoViewController: UIScrollViewDelegate {
     }
     
     func scrollViewDidZoom(_ scrollView: UIScrollView) {
-        let photoSize = originalImageSize()
-        let scrollViewSize = scrollView.frame.size
-        var contentOffset = scrollView.contentOffset
-        
-        if photoSize.width < scrollViewSize.width {
-            contentOffset.x = (scrollView.contentSize.width - scrollViewSize.width) / 2
-            scrollView.setContentOffset(contentOffset, animated: true)
-        }
-
-        if photoSize.height < scrollViewSize.height {
-            contentOffset.y = (scrollView.contentSize.height - scrollViewSize.height) / 2
-            scrollView.setContentOffset(contentOffset, animated: true)
-        }
+        reorderImage(scrollView, animated: true)
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        reorderImage(scrollView, animated: false)
+    }
+    
+    private func reorderImage(_ scrollView: UIScrollView, animated: Bool) {
         let photoSize = originalImageSize()
         let scrollViewSize = scrollView.frame.size
         var contentOffset = scrollView.contentOffset
         
         if photoSize.width < scrollViewSize.width {
             contentOffset.x = (scrollView.contentSize.width - scrollViewSize.width) / 2
-            scrollView.setContentOffset(contentOffset, animated: false)
+            scrollView.setContentOffset(contentOffset, animated: animated)
         }
 
         if photoSize.height < scrollViewSize.height {
             contentOffset.y = (scrollView.contentSize.height - scrollViewSize.height) / 2
-            scrollView.setContentOffset(contentOffset, animated: false)
+            scrollView.setContentOffset(contentOffset, animated: animated)
         }
     }
     
