@@ -101,7 +101,7 @@ extension CategoryViewController: UITableViewDelegate {
         _ tableView: UITableView,
         heightForRowAt indexPath: IndexPath
     ) -> CGFloat {
-        46
+        CategoryTableViewCell.height
     }
 }
 

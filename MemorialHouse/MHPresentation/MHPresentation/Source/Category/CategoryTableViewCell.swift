@@ -1,6 +1,8 @@
 import UIKit
 
 final class CategoryTableViewCell: UITableViewCell {
+    nonisolated static let height: CGFloat = 44
+    
     // MARK: - UI Components
     private let categoryLabel = UILabel(style: .body1)
     private let checkImageView = UIImageView()
