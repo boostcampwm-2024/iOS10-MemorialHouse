@@ -3,7 +3,7 @@ import MHDomain
 import MHFoundation
 
 public final class HomeViewController: UIViewController {
-    // MARK: - Properties
+    // MARK: - UI Components
     private let navigationBar: MHNavigationBar
     private let currentCategoryLabel = UILabel(style: .default)
     private let categorySelectButton = UIButton(type: .custom)
@@ -30,7 +30,11 @@ public final class HomeViewController: UIViewController {
         
         return collectionView
     }()
+    
+    // MARK: - Properties
     private let viewModel: HomeViewModel
+    private var floatingButtonBottomConstraint: NSLayoutConstraint?
+    private var isFloatingButtonHidden = false
     
     // MARK: - Initializer
     public init(viewModel: HomeViewModel) {
@@ -112,11 +116,15 @@ public final class HomeViewController: UIViewController {
             trailing: view.trailingAnchor
         )
         makingBookFloatingButton.setAnchor(
-            bottom: view.bottomAnchor, constantBottom: 24,
             trailing: view.trailingAnchor, constantTrailing: 24,
             width: 80,
             height: 80
         )
+        floatingButtonBottomConstraint = makingBookFloatingButton.bottomAnchor.constraint(
+            equalTo: view.safeAreaLayoutGuide.bottomAnchor,
+            constant: -24
+        )
+        floatingButtonBottomConstraint?.isActive = true
         categorySelectButton.setLeading(anchor: currentCategoryLabel.trailingAnchor, constant: 8)
         categorySelectButton.setCenterY(view: currentCategoryLabel)
         categorySelectButton.setWidth(20)
@@ -130,6 +138,42 @@ extension HomeViewController: UICollectionViewDelegate {
         didSelectItemAt indexPath: IndexPath
     ) {
         // TODO: 책 펼치기 로직
+    }
+    
+    public func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let offsetY = scrollView.contentOffset.y
+        let contentHeight = scrollView.contentSize.height
+        let height = scrollView.frame.size.height
+
+        if contentHeight > height {
+            if offsetY > contentHeight - height {
+                hideFloatingButton()
+            } else {
+                showFloatingButton()
+            }
+        } else {
+            showFloatingButton()
+        }
+    }
+    
+    private func hideFloatingButton() {
+        guard let floatingButtonBottomConstraint,
+              !isFloatingButtonHidden else { return }
+        isFloatingButtonHidden = true
+        floatingButtonBottomConstraint.constant = 120
+        UIView.animate(withDuration: 0.3) { [weak self] in
+            self?.view.layoutIfNeeded()
+        }
+    }
+    
+    private func showFloatingButton() {
+        guard let floatingButtonBottomConstraint,
+              isFloatingButtonHidden else { return }
+        isFloatingButtonHidden = false
+        floatingButtonBottomConstraint.constant = -24
+        UIView.animate(withDuration: 0.3) { [weak self] in
+            self?.view.layoutIfNeeded()
+        }
     }
 }
 
