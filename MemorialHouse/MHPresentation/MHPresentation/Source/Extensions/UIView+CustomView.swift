@@ -2,19 +2,19 @@ import UIKit
 
 extension UIView {
     static func dividedLine() -> UIView {
-        let line = UIView()
-        line.backgroundColor = .dividedLine
-        line.setHeight(1)
+        let dividedLineView = UIView()
+        dividedLineView.backgroundColor = .dividedLine
+        dividedLineView.setHeight(1)
         
-        return line
+        return dividedLineView
     }
     
     static func dimmedView(opacity: Float, color: UIColor = .white) -> UIView {
-        let dim = UIView()
-        dim.backgroundColor = color
-        dim.layer.opacity = opacity
-        dim.isUserInteractionEnabled = false
+        let dimmedView = UIView()
+        dimmedView.backgroundColor = color
+        dimmedView.layer.opacity = opacity
+        dimmedView.isUserInteractionEnabled = false
         
-        return dim
+        return dimmedView
     }
 }
