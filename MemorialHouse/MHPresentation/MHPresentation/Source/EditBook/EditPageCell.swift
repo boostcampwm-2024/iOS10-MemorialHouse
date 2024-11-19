@@ -4,7 +4,7 @@ final class EditPageCell: UITableViewCell {
     // MARK: - Property
     private let textView: UITextView = {
         let textView = UITextView()
-        textView.font = .ownglyphBerry(size: 15)
+        textView.font = .ownglyphBerry(size: 20)
         textView.textColor = .mhTitle
         textView.tintColor = .mhTitle
         textView.backgroundColor = .clear
