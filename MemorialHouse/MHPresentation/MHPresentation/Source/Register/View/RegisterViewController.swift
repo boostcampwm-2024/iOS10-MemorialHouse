@@ -4,7 +4,7 @@ import Combine
 
 public final class RegisterViewController: UIViewController {
     // MARK: - Property
-    private let viewModel = RegisterViewModel()
+    private var viewModel = RegisterViewModel()
     private let input = PassthroughSubject<RegisterViewModel.Input, Never>()
     private var cancellables = Set<AnyCancellable>()
     
@@ -29,7 +29,7 @@ public final class RegisterViewController: UIViewController {
         
         return textLabel
     }()
-    let registerTextField: UITextField = {
+    private let registerTextField: UITextField = {
         let registerFont = UIFont.ownglyphBerry(size: 12)
         
         let textField = UITextField()
@@ -41,14 +41,18 @@ public final class RegisterViewController: UIViewController {
         
         return textField
     }()
-    let registerButton: UIButton = {
+    private let registerButton: UIButton = {
         let registerButton = UIButton(type: .custom)
         
         var attributedString = AttributedString(stringLiteral: "다음")
-        attributedString.font = UIFont.ownglyphBerry(size: 12)
-        attributedString.strokeColor = UIColor.mhTitle
-        
+        attributedString.font = UIFont.ownglyphBerry(size: 16)
+        attributedString.foregroundColor = UIColor.black
         registerButton.setAttributedTitle(NSAttributedString(attributedString), for: .normal)
+        
+        var disabledAttributedString = AttributedString(stringLiteral: "다음")
+        disabledAttributedString.font = UIFont.ownglyphBerry(size: 16)
+        disabledAttributedString.foregroundColor = UIColor.gray
+        registerButton.setAttributedTitle(NSAttributedString(disabledAttributedString), for: .disabled)
         
         registerButton.backgroundColor = .mhSection
         registerButton.layer.borderColor = UIColor.mhBorder.cgColor
@@ -57,6 +61,17 @@ public final class RegisterViewController: UIViewController {
         
         return registerButton
     }()
+    
+    // MARK: - Initializer
+    public init(viewModel: RegisterViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        self.viewModel = RegisterViewModel()
+        super.init(coder: coder)
+    }
     
     // MARK: - Lifecycle
     public override func viewDidLoad() {
@@ -68,30 +83,6 @@ public final class RegisterViewController: UIViewController {
         configureConstraints()
     }
     
-    private func bind() {
-        let output = viewModel.transform(input: input.eraseToAnyPublisher())
-        
-        output.sink { [weak self] event in
-            switch event {
-            case .registerButtonEnabled(let isEnabled):
-                self?.registerButton.isEnabled = isEnabled
-                if isEnabled == true {
-                    self?.registerButton.layer.borderWidth = 2
-                    self?.registerButton.layer.shadowOpacity = 0.5
-                    self?.registerButton.layer.shadowOffset = CGSize(width: 2, height: 2)
-                } else {
-                    self?.registerButton.layer.borderWidth = 1
-                    self?.registerButton.layer.shadowOpacity = 0
-                    self?.registerButton.layer.shadowOffset = CGSize(width: 0, height: 0)
-                }
-            case .moveToHome(let houseName):
-                let homeViewController = HomeViewController(viewModel: HomeViewModel(houseName: houseName))
-                self?.navigationController?.pushViewController(homeViewController, animated: false)
-                self?.navigationController?.viewControllers.removeFirst()
-            }
-        }.store(in: &cancellables)
-    }
-    
     private func setup() {
         view.backgroundColor = .baseBackground
 
@@ -99,6 +90,21 @@ public final class RegisterViewController: UIViewController {
         addEditingChangedEventToRegisterTextField(registerTextField)
         coverImageView.isUserInteractionEnabled = true
         registerButton.isEnabled = false
+    }
+    
+    private func bind() {
+        let output = viewModel.transform(input: input.eraseToAnyPublisher())
+        
+        output.sink { [weak self] event in
+            switch event {
+            case .registerButtonEnabled(let isEnabled):
+                self?.registerButton.isEnabled = isEnabled
+            case .moveToHome(let houseName):
+                let homeViewController = HomeViewController(viewModel: HomeViewModel(houseName: houseName))
+                self?.navigationController?.pushViewController(homeViewController, animated: false)
+                self?.navigationController?.viewControllers.removeFirst()
+            }
+        }.store(in: &cancellables)
     }
     
     private func configureAddSubview() {

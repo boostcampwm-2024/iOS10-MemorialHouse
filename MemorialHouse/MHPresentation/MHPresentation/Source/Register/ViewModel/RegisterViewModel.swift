@@ -1,7 +1,7 @@
 import MHFoundation
 import Combine
 
-final class RegisterViewModel: ViewModelType {
+public final class RegisterViewModel: ViewModelType {
     enum Input {
         case registerTextFieldEdited(text: String?)
         case registerButtonTapped(text: String)
@@ -14,6 +14,8 @@ final class RegisterViewModel: ViewModelType {
     
     private let output = PassthroughSubject<Output, Never>()
     private var cancellables = Set<AnyCancellable>()
+    
+    public init() { }
     
     func transform(input: AnyPublisher<Input, Never>) -> AnyPublisher<Output, Never> {
         input.sink { [weak self] event in
