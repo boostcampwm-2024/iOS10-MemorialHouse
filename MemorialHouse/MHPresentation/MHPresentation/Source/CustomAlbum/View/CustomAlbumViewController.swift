@@ -167,7 +167,7 @@ extension CustomAlbumViewController: UICollectionViewDelegate {
                 await LocalPhotoManager.shared.requestImage(with: asset) { [weak self] image in
                     guard let self else { return }
                     let editViewController = EditPhotoViewController()
-                    editViewController.setPhoto(image: image)
+                    editViewController.setPhoto(image: image, date: asset.creationDate)
                     self.navigationController?.pushViewController(editViewController, animated: true)
                 }
             }
@@ -218,7 +218,7 @@ extension CustomAlbumViewController: UIImagePickerControllerDelegate, UINavigati
         dismiss(animated: true)
         if let image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
             let editViewController = EditPhotoViewController()
-            editViewController.setPhoto(image: image)
+            editViewController.setPhoto(image: image, date: .now)
             self.navigationController?.pushViewController(editViewController, animated: true)
         }
     }
