@@ -17,7 +17,8 @@ final class CustomAlbumViewController: UIViewController {
         return collectionView
     }()
     private let viewModel: CustomAlbumViewModel
-    private var cancellables: Set<AnyCancellable> = []
+    private let input = PassthroughSubject<CustomAlbumViewModel.Input, Never>()
+    private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Initializer
     init(viewModel: CustomAlbumViewModel) {
@@ -43,7 +44,7 @@ final class CustomAlbumViewController: UIViewController {
         bind()
         setup()
         configureConstraints()
-        viewModel.action(.viewDidLoad)
+        input.send(.viewDidLoad)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -54,15 +55,25 @@ final class CustomAlbumViewController: UIViewController {
     
     // MARK: - Binding
     private func bind() {
-        viewModel.changedAssetsOutput
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] changes in
-                self?.albumCollectionView.performBatchUpdates {
-                    if let inserted = changes.insertedIndexes, !inserted.isEmpty {
-                        self?.albumCollectionView.insertItems(at: inserted.map({ IndexPath(item: $0 + 1, section: 0) }))
-                    }
-                    if let removed = changes.removedIndexes, !removed.isEmpty {
-                        self?.albumCollectionView.deleteItems(at: removed.map({ IndexPath(item: $0 + 1, section: 0) }))
+        let output = viewModel.transform(input: input.eraseToAnyPublisher())
+        
+        output.receive(on: DispatchQueue.main)
+            .sink { [weak self] event in
+                switch event {
+                case .fetchAssets:
+                    self?.albumCollectionView.reloadData()
+                case .changedAssets(let changes):
+                    self?.albumCollectionView.performBatchUpdates {
+                        if let inserted = changes.insertedIndexes, !inserted.isEmpty {
+                            self?.albumCollectionView.insertItems(
+                                at: inserted.map({ IndexPath(item: $0 + 1, section: 0) })
+                            )
+                        }
+                        if let removed = changes.removedIndexes, !removed.isEmpty {
+                            self?.albumCollectionView.deleteItems(
+                                at: removed.map({ IndexPath(item: $0 + 1, section: 0) })
+                            )
+                        }
                     }
                 }
             }
@@ -231,7 +242,7 @@ extension CustomAlbumViewController: UIImagePickerControllerDelegate, UINavigati
 extension CustomAlbumViewController: PHPhotoLibraryChangeObserver {
     nonisolated func photoLibraryDidChange(_ changeInstance: PHChange) {
         Task { @MainActor in
-            viewModel.action(.photoDidChanged(changeInstance))
+            input.send(.photoDidChanged(changeInstance))
         }
     }
 }

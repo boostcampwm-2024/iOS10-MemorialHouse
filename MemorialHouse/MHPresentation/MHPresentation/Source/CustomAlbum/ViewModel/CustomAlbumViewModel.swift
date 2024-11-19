@@ -2,23 +2,35 @@ import MHFoundation
 import Photos
 import Combine
 
-final class CustomAlbumViewModel {
+final class CustomAlbumViewModel: ViewModelType {
     enum Input {
         case viewDidLoad
         case photoDidChanged(_ changeInstance: PHChange)
     }
-    // MARK: - Properties
-    @Published private(set) var photoAsset: PHFetchResult<PHAsset>?
-    let changedAssetsOutput = PassthroughSubject<PHFetchResultChangeDetails<PHAsset>, Never>()
     
-    func action(_ input: CustomAlbumViewModel.Input) {
-        switch input {
-        case .viewDidLoad:
-            fetchPhotoAssets()
-        case .photoDidChanged(let changeInstance):
-            updatePhotoAssets(changeInstance)
-        }
+    enum Output {
+        case fetchAssets
+        case changedAssets(_ changes: PHFetchResultChangeDetails<PHAsset>)
     }
+    
+    private let output = PassthroughSubject<Output, Never>()
+    private var cancellables = Set<AnyCancellable>()
+    private(set) var photoAsset: PHFetchResult<PHAsset>?
+    
+    func transform(input: AnyPublisher<Input, Never>) -> AnyPublisher<Output, Never> {
+        input.sink { [weak self] events in
+            switch events {
+            case .viewDidLoad:
+                self?.fetchPhotoAssets()
+            case .photoDidChanged(let changeInstance):
+                self?.updatePhotoAssets(changeInstance)
+            }
+        }
+        .store(in: &cancellables)
+        
+        return output.eraseToAnyPublisher()
+    }
+    
     
     private func fetchPhotoAssets() {
         let fetchOptions = PHFetchOptions()
@@ -26,6 +38,7 @@ final class CustomAlbumViewModel {
         fetchOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
         
         photoAsset = PHAsset.fetchAssets(with: fetchOptions)
+        output.send(.fetchAssets)
     }
     
     private func updatePhotoAssets(_ changeInstance: PHChange) {
@@ -35,7 +48,7 @@ final class CustomAlbumViewModel {
         self.photoAsset = changes.fetchResultAfterChanges
         
         if changes.hasIncrementalChanges {
-            changedAssetsOutput.send(changes)
+            output.send(.changedAssets(changes))
         }
     }
 }
