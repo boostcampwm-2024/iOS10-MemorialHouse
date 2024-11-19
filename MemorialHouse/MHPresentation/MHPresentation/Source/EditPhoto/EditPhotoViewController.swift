@@ -62,6 +62,13 @@ final class EditPhotoViewController: UIViewController {
         
         return button
     }()
+    private var captionTextFieldBottomConstraint: NSLayoutConstraint?
+    
+    // MARK: - Deinitialize
+    deinit {
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
     
     // MARK: - ViewDidLoad
     override func viewDidLoad() {
@@ -78,8 +85,19 @@ final class EditPhotoViewController: UIViewController {
     private func setup() {
         view.backgroundColor = .black
         photoScrollView.delegate = self
-        captionTextField.delegate = self
         hideKeyboardWhenTappedView()
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillAppear),
+            name: UIResponder.keyboardWillShowNotification,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillHide),
+            name: UIResponder.keyboardWillHideNotification,
+            object: nil
+        )
     }
     
     private func configureNavagationBar() {
@@ -142,10 +160,14 @@ final class EditPhotoViewController: UIViewController {
         dividedLine2.setBottom(anchor: editButtonStackView.topAnchor, constant: 11)
         captionTextField.setAnchor(
             leading: view.leadingAnchor, constantLeading: 13,
-            bottom: dividedLine2.topAnchor, constantBottom: 11,
             trailing: view.trailingAnchor,
             height: 30
         )
+        captionTextFieldBottomConstraint = captionTextField.bottomAnchor.constraint(
+            equalTo: dividedLine2.topAnchor,
+            constant: -11
+        )
+        captionTextFieldBottomConstraint?.isActive = true
         dividedLine1.setHorizontal(view: view)
         dividedLine1.setBottom(anchor: captionTextField.topAnchor, constant: 11)
         topView.setAnchor(
@@ -202,17 +224,31 @@ final class EditPhotoViewController: UIViewController {
         drawButton.addAction(drawButtonAction, for: .touchUpInside)
     }
     
+    // MARK: - Keyboard Appear & Hide
+    @objc private func keyboardWillAppear(_ notification: Notification) {
+        guard let keyboardInfo = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey],
+              let keyboardSize = keyboardInfo as? CGRect else { return }
+        let bottomConstant = editButtonStackView.frame.height + view.safeAreaInsets.bottom
+        captionTextFieldBottomConstraint?.constant = bottomConstant - keyboardSize.height
+        UIView.animate(withDuration: 0.3) { [weak self] in
+            self?.view.layoutIfNeeded()
+        }
+    }
+    
+    @objc private func keyboardWillHide() {
+        captionTextFieldBottomConstraint?.constant = -11
+        UIView.animate(withDuration: 0.3) { [weak self] in
+            self?.view.layoutIfNeeded()
+        }
+    }
+    
     // MARK: - Set Photo from Custom Album
     func setPhoto(image: UIImage?) {
         photoImageView.image = image
     }
 }
 
-// MARK: - UITextFieldDelegate
-extension EditPhotoViewController: UITextFieldDelegate {
-    // TODO: - TextField의 텍스트 처리
-}
-
+// MARK: - UIScrollViewDelegate
 extension EditPhotoViewController: UIScrollViewDelegate {
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
         return photoImageView
@@ -241,16 +277,12 @@ extension EditPhotoViewController: UIScrollViewDelegate {
         
         if photoSize.width < scrollViewSize.width {
             contentOffset.x = (scrollView.contentSize.width - scrollViewSize.width) / 2
-            UIView.animate(withDuration: 0.3) {
-                scrollView.setContentOffset(contentOffset, animated: false)
-            }
+            scrollView.setContentOffset(contentOffset, animated: false)
         }
 
         if photoSize.height < scrollViewSize.height {
             contentOffset.y = (scrollView.contentSize.height - scrollViewSize.height) / 2
-            UIView.animate(withDuration: 0.3) {
-                scrollView.setContentOffset(contentOffset, animated: false)
-            }
+            scrollView.setContentOffset(contentOffset, animated: false)
         }
     }
     
