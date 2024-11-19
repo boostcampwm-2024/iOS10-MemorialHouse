@@ -1,6 +1,6 @@
 import UIKit
 
-public final class EditPhotoViewController: UIViewController {
+final class EditPhotoViewController: UIViewController {
     // MARK: - Properties
     private let clearView = UIView.dimmedView(opacity: 0)
     private let dimmedView1 = UIView.dimmedView(opacity: 0.5)
@@ -9,7 +9,15 @@ public final class EditPhotoViewController: UIViewController {
     private let bottomView = UIView.dimmedView(opacity: 1, color: .black)
     private let dividedLine1 = UIView.dividedLine()
     private let dividedLine2 = UIView.dividedLine()
-    private let photoView: UIImageView = {
+    private let photoScrollView: UIScrollView = {
+        let scrollView = UIScrollView()
+        scrollView.minimumZoomScale = 1
+        scrollView.maximumZoomScale = 2
+        scrollView.clipsToBounds = false
+        
+        return scrollView
+    }()
+    private let photoImageView: UIImageView = {
        let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
         imageView.backgroundColor = .clear
@@ -53,7 +61,7 @@ public final class EditPhotoViewController: UIViewController {
         return button
     }()
     
-    // MARK: - View Did Load
+    // MARK: - ViewDidLoad
     public override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -62,12 +70,12 @@ public final class EditPhotoViewController: UIViewController {
         configureAddSubView()
         configureConstraints()
         configureButtonAction()
-        configureGesture()
     }
     
     // MARK: - Setup & Configure
     private func setup() {
         view.backgroundColor = .black
+        photoScrollView.delegate = self
         captionTextField.delegate = self
         self.hideKeyboardWhenTappedView()
     }
@@ -98,12 +106,11 @@ public final class EditPhotoViewController: UIViewController {
     }
     
     private func configureAddSubView() {
-        [rotateButton,
-         drawButton].forEach {
-            editButtonStackView.addArrangedSubview($0)
-        }
+        editButtonStackView.addArrangedSubview(rotateButton)
+        editButtonStackView.addArrangedSubview(drawButton)
+        photoScrollView.addSubview(photoImageView)
         
-        [photoView,
+        [photoScrollView,
          dimmedView1,
          clearView,
          dimmedView2,
@@ -146,16 +153,14 @@ public final class EditPhotoViewController: UIViewController {
             bottom: view.bottomAnchor,
             trailing: view.trailingAnchor
         )
-        photoView.setAnchor(
-            top: view.safeAreaLayoutGuide.topAnchor,
+        clearView.setAnchor(
+            top: topView.bottomAnchor,
             leading: view.leadingAnchor,
             bottom: dividedLine1.topAnchor,
             trailing: view.trailingAnchor
         )
-        clearView.setAnchor(width: view.frame.width, height: view.frame.width * 0.75)
-        clearView.setCenter(view: photoView)
         dimmedView2.setAnchor(
-            top: clearView.bottomAnchor,
+            top: photoScrollView.bottomAnchor,
             leading: view.leadingAnchor,
             bottom: dividedLine1.topAnchor,
             trailing: view.trailingAnchor
@@ -163,16 +168,19 @@ public final class EditPhotoViewController: UIViewController {
         dimmedView1.setAnchor(
             top: view.safeAreaLayoutGuide.topAnchor,
             leading: view.leadingAnchor,
-            bottom: clearView.topAnchor,
+            bottom: photoScrollView.topAnchor,
             trailing: view.trailingAnchor
         )
+        photoScrollView.setWidthAndHeight(width: view.frame.width, height: view.frame.width * 0.75)
+        photoScrollView.setCenter(view: clearView)
+        photoImageView.setWidthAndHeight(width: photoScrollView.widthAnchor, height: photoScrollView.heightAnchor)
     }
     
     private func configureButtonAction() {
         let rotateButtonAction = UIAction { [weak self] _ in
             guard let self else { return }
-            let image = self.photoView.image
-            self.photoView.image = image?.rotate(radians: .pi / 2)
+            let image = self.photoImageView.image
+            self.photoImageView.image = image?.rotate(radians: .pi / 2)
         }
         let drawButtonAction = UIAction { _ in
             // TODO: - Draw Action
@@ -181,36 +189,19 @@ public final class EditPhotoViewController: UIViewController {
         drawButton.addAction(drawButtonAction, for: .touchUpInside)
     }
     
-    private func configureGesture() {
-        let pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(pinchGestureAction(_:)))
-        let panGesture = UIPanGestureRecognizer(target: self, action: #selector(panGestureAction(_:)))
-        panGesture.maximumNumberOfTouches = 2
-        photoView.addGestureRecognizer(pinchGesture)
-        photoView.addGestureRecognizer(panGesture)
-    }
-    
-    // MARK: - Gesture Action
-    @objc private func pinchGestureAction(_ sender: UIPinchGestureRecognizer) {
-        photoView.transform = photoView.transform.scaledBy(x: sender.scale, y: sender.scale)
-        sender.scale = 1
-    }
-    
-    @objc private func panGestureAction(_ sender: UIPanGestureRecognizer) {
-        let transition = sender.translation(in: photoView)
-        let changedX = photoView.center.x + transition.x
-        let changedY = photoView.center.y + transition.y
-        photoView.center = CGPoint(x: changedX, y: changedY)
-        
-        sender.setTranslation(CGPoint.zero, in: photoView)
-    }
-    
     // MARK: - Set Photo from Custom Album
     func setPhoto(image: UIImage?) {
-        photoView.image = image
+        photoImageView.image = image
     }
 }
 
 // MARK: - UITextFieldDelegate
 extension EditPhotoViewController: UITextFieldDelegate {
     // TODO: - TextField의 텍스트 처리
+}
+
+extension EditPhotoViewController: UIScrollViewDelegate {
+    func viewForZooming(in scrollView: UIScrollView) -> UIView? {
+        return photoImageView
+    }
 }
