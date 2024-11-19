@@ -12,8 +12,10 @@ final class EditPhotoViewController: UIViewController {
     private let photoScrollView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.minimumZoomScale = 1
-        scrollView.maximumZoomScale = 2
+        scrollView.maximumZoomScale = 3
         scrollView.clipsToBounds = false
+        scrollView.showsHorizontalScrollIndicator = false
+        scrollView.showsVerticalScrollIndicator = false
         
         return scrollView
     }()
@@ -62,7 +64,7 @@ final class EditPhotoViewController: UIViewController {
     }()
     
     // MARK: - ViewDidLoad
-    public override func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
         
         setup()
@@ -77,31 +79,36 @@ final class EditPhotoViewController: UIViewController {
         view.backgroundColor = .black
         photoScrollView.delegate = self
         captionTextField.delegate = self
-        self.hideKeyboardWhenTappedView()
+        hideKeyboardWhenTappedView()
     }
     
     private func configureNavagationBar() {
-        navigationItem.title = "사진 편집"
-        navigationController?.navigationBar.titleTextAttributes = [
+        let navigationBarAppearance = UINavigationBarAppearance()
+        navigationBarAppearance.configureWithOpaqueBackground()
+        navigationBarAppearance.backgroundColor = .black
+        navigationBarAppearance.titleTextAttributes = [
             NSAttributedString.Key.font: UIFont.ownglyphBerry(size: 17),
-            NSAttributedString.Key.foregroundColor: UIColor.white]
+            NSAttributedString.Key.foregroundColor: UIColor.white
+        ]
+        navigationController?.navigationBar.standardAppearance = navigationBarAppearance
+        navigationController?.navigationBar.compactAppearance = navigationBarAppearance
+        navigationController?.navigationBar.scrollEdgeAppearance = navigationBarAppearance
+        navigationItem.title = "사진 편집"
         let closeAction = UIAction { [weak self] _ in
             guard let self else { return }
             self.navigationController?.popViewController(animated: true)
         }
         let leftBarButton = UIBarButtonItem(title: "닫기", primaryAction: closeAction)
-        leftBarButton.setTitleTextAttributes(
-            [NSAttributedString.Key.font: UIFont.ownglyphBerry(size: 17),
-             NSAttributedString.Key.foregroundColor: UIColor.white],
-            for: .normal
-        )
+        leftBarButton.setTitleTextAttributes([
+            NSAttributedString.Key.font: UIFont.ownglyphBerry(size: 17),
+            NSAttributedString.Key.foregroundColor: UIColor.white
+        ], for: .normal)
         navigationItem.leftBarButtonItem = leftBarButton
         let rightBarButton = UIBarButtonItem(title: "완료")
-        rightBarButton.setTitleTextAttributes(
-            [NSAttributedString.Key.font: UIFont.ownglyphBerry(size: 17),
-             NSAttributedString.Key.foregroundColor: UIColor.white],
-            for: .normal
-        )
+        rightBarButton.setTitleTextAttributes([
+            NSAttributedString.Key.font: UIFont.ownglyphBerry(size: 17),
+            NSAttributedString.Key.foregroundColor: UIColor.white
+        ], for: .normal)
         navigationItem.rightBarButtonItem = rightBarButton
     }
     
@@ -174,6 +181,12 @@ final class EditPhotoViewController: UIViewController {
         photoScrollView.setWidthAndHeight(width: view.frame.width, height: view.frame.width * 0.75)
         photoScrollView.setCenter(view: clearView)
         photoImageView.setWidthAndHeight(width: photoScrollView.widthAnchor, height: photoScrollView.heightAnchor)
+        photoImageView.setAnchor(
+            top: photoScrollView.topAnchor,
+            leading: photoScrollView.leadingAnchor,
+            bottom: photoScrollView.bottomAnchor,
+            trailing: photoScrollView.trailingAnchor
+        )
     }
     
     private func configureButtonAction() {
@@ -203,5 +216,51 @@ extension EditPhotoViewController: UITextFieldDelegate {
 extension EditPhotoViewController: UIScrollViewDelegate {
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
         return photoImageView
+    }
+    
+    func scrollViewDidZoom(_ scrollView: UIScrollView) {
+        let photoSize = originalImageSize()
+        let scrollViewSize = scrollView.frame.size
+        var contentOffset = scrollView.contentOffset
+        
+        if photoSize.width < scrollViewSize.width {
+            contentOffset.x = (scrollView.contentSize.width - scrollViewSize.width) / 2
+            scrollView.setContentOffset(contentOffset, animated: true)
+        }
+
+        if photoSize.height < scrollViewSize.height {
+            contentOffset.y = (scrollView.contentSize.height - scrollViewSize.height) / 2
+            scrollView.setContentOffset(contentOffset, animated: true)
+        }
+    }
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let photoSize = originalImageSize()
+        let scrollViewSize = scrollView.frame.size
+        var contentOffset = scrollView.contentOffset
+        
+        if photoSize.width < scrollViewSize.width {
+            contentOffset.x = (scrollView.contentSize.width - scrollViewSize.width) / 2
+            UIView.animate(withDuration: 0.3) {
+                scrollView.setContentOffset(contentOffset, animated: false)
+            }
+        }
+
+        if photoSize.height < scrollViewSize.height {
+            contentOffset.y = (scrollView.contentSize.height - scrollViewSize.height) / 2
+            UIView.animate(withDuration: 0.3) {
+                scrollView.setContentOffset(contentOffset, animated: false)
+            }
+        }
+    }
+    
+    private func originalImageSize() -> CGSize {
+        guard let image = photoImageView.image else { return .zero}
+        let ratio = image.size.height / image.size.width
+        if ratio <= 0.75 {
+            return CGSize(width: photoImageView.frame.width, height: photoImageView.frame.width * ratio)
+        } else {
+            return CGSize(width: photoImageView.frame.height / ratio, height: photoImageView.frame.height)
+        }
     }
 }
