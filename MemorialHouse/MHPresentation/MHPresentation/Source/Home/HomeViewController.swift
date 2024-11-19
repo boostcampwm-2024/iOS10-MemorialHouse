@@ -5,7 +5,7 @@ import MHFoundation
 public final class HomeViewController: UIViewController {
     // MARK: - UI Components
     private let navigationBar: MHNavigationBar
-    private let currentCategoryLabel = UILabel(style: .default)
+    private let currentCategoryLabel = UILabel(style: .header2)
     private let categorySelectButton = UIButton(type: .custom)
     private let makingBookFloatingButton: UIButton = {
         let button = UIButton(type: .custom)
