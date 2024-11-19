@@ -90,6 +90,7 @@ final class CustomAlbumViewController: UIViewController {
         // TODO: - 추후 삭제 필요
         self.navigationController?.navigationBar.isHidden = false
         
+        // Navigation Bar
         let navigationBarAppearance = UINavigationBarAppearance()
         navigationBarAppearance.configureWithOpaqueBackground()
         navigationBarAppearance.backgroundColor = .baseBackground
@@ -104,6 +105,8 @@ final class CustomAlbumViewController: UIViewController {
         navigationController?.navigationBar.titleTextAttributes = [
             NSAttributedString.Key.font: UIFont.ownglyphBerry(size: 17),
             NSAttributedString.Key.foregroundColor: UIColor.mhTitle]
+        
+        // Left Bar BarButton
         let closeAction = UIAction { [weak self] _ in
             guard let self else { return }
             self.navigationController?.popViewController(animated: true)
