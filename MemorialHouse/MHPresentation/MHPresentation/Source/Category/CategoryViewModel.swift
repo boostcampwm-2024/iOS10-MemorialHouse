@@ -27,7 +27,7 @@ final class CategoryViewModel: ViewModelType {
     
     func calculateSheetHeight() -> CGFloat {
         let cellHeight = CategoryTableViewCell.height
-        let itemCount = CGFloat(dummyData.count)
+        let itemCount = CGFloat(dummyData.count) + 2 // 전체 + 즐겨찾기 포함
         return (cellHeight * itemCount) + Constant.navigationBarHeight
     }
     

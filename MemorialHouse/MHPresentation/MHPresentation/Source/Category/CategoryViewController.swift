@@ -69,7 +69,7 @@ final class CategoryViewController: UIViewController {
             fontSize: 22,
             color: .mhTitle
         ) { [weak self] in
-            self?.navigationController?.popViewController(animated: true)
+            // TODO: 편집하기
         }
         
         // 우측 추가 버튼
@@ -79,7 +79,6 @@ final class CategoryViewController: UIViewController {
             color: .mhTitle
         ) { [weak self] in
             // TODO: 로컬에 저장하고 테이블뷰에 추가하는 로직 필요
-            self?.navigationController?.popViewController(animated: true)
         }
     }
     
@@ -110,7 +109,7 @@ extension CategoryViewController: UITableViewDataSource {
         _ tableView: UITableView,
         numberOfRowsInSection section: Int
     ) -> Int {
-        5
+        viewModel.dummyData.count + 2
     }
     
     func tableView(
@@ -122,8 +121,16 @@ extension CategoryViewController: UITableViewDataSource {
             for: indexPath
         ) as? CategoryTableViewCell else { return UITableViewCell() }
         
-        let category = viewModel.dummyData[indexPath.row]
-        cell.configure(category: category, isSelected: true)
+        // TODO: 데이터 넣기
+        switch indexPath.row {
+        case 0:
+            cell.configure(category: "전체", isSelected: true)
+        case 1:
+            cell.configure(category: "즐겨찾기", isSelected: false)
+        default:
+            let category = viewModel.dummyData[indexPath.row - 2]
+            cell.configure(category: category, isSelected: false)
+        }
         
         return cell
     }
