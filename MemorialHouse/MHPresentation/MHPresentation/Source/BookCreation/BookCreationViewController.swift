@@ -182,7 +182,7 @@ final class BookCreationViewController: UIViewController {
         navigationController?.navigationBar.isHidden = false
         navigationController?.navigationBar.titleTextAttributes = [
             .font: UIFont.ownglyphBerry(size: 22),
-            .foregroundColor: UIColor.mhTitle
+            .foregroundColor: UIColor.black
         ]
         title = "책 표지 만들기"
         
