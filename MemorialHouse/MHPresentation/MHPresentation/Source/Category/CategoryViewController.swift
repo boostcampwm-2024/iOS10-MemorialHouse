@@ -65,7 +65,7 @@ final class CategoryViewController: UIViewController {
         
         // 좌측 닫기 버튼
         navigationItem.leftBarButtonItem = UIBarButtonItem(
-            title: "닫기",
+            title: "편집",
             fontSize: 22,
             color: .mhTitle
         ) { [weak self] in
