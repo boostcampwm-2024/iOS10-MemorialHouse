@@ -28,6 +28,7 @@ final class CategoryViewController: UIViewController {
         setup()
         bind()
         input.send(.viewDidLoad)
+        configureNavigationBar()
         configureConstraints()
     }
     
@@ -52,6 +53,34 @@ final class CategoryViewController: UIViewController {
                 self?.categoryTableView.reloadData()
             }
         }.store(in: &cancellables)
+    }
+    
+    private func configureNavigationBar() {
+        navigationController?.navigationBar.isHidden = false
+        navigationController?.navigationBar.titleTextAttributes = [
+            .font: UIFont.ownglyphBerry(size: 22),
+            .foregroundColor: UIColor.black
+        ]
+        navigationItem.title = "카테고리"
+        
+        // 좌측 닫기 버튼
+        navigationItem.leftBarButtonItem = UIBarButtonItem(
+            title: "닫기",
+            fontSize: 22,
+            color: .mhTitle
+        ) { [weak self] in
+            self?.navigationController?.popViewController(animated: true)
+        }
+        
+        // 우측 추가 버튼
+        navigationItem.rightBarButtonItem = UIBarButtonItem(
+            title: "추가",
+            fontSize: 22,
+            color: .mhTitle
+        ) { [weak self] in
+            // TODO: 로컬에 저장하고 테이블뷰에 추가하는 로직 필요
+            self?.navigationController?.popViewController(animated: true)
+        }
     }
     
     private func configureConstraints() {
