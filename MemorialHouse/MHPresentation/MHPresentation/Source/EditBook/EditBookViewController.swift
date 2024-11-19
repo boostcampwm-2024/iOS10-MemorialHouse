@@ -2,17 +2,12 @@ import UIKit
 
 final class EditBookViewController: UIViewController {
     // MARK: - Property
-    private let textView: UITextView = {
-        let textView = UITextView()
-        textView.font = .ownglyphBerry(size: 15)
-        textView.textColor = .mhTitle
-        textView.tintColor = .mhTitle
-        textView.backgroundColor = .clear
-        textView.textContainerInset = UIEdgeInsets(top: 20, left: 32, bottom: 20, right: 32)
-        textView.layer.borderWidth = 3
-        textView.layer.borderColor = UIColor.mhTitle.cgColor
+    private let editPageTableView: UITableView = {
+        let tableView = UITableView()
+        tableView.backgroundColor = .clear
+        tableView.register(EditPageCell.self, forCellReuseIdentifier: EditPageCell.identifier)
         
-        return textView
+        return tableView
     }()
     private let addImageButton: UIButton = {
         let button = UIButton()
@@ -47,6 +42,8 @@ final class EditBookViewController: UIViewController {
         stackView.axis = .horizontal
         stackView.spacing = 5
         stackView.distribution = .fillEqually
+        stackView.alignment = .leading
+        stackView.backgroundColor = .clear
         
         return stackView
     }()
@@ -56,17 +53,23 @@ final class EditBookViewController: UIViewController {
         super.viewDidLoad()
         
         setup()
+        configureNavigationBar()
         configureAddSubView()
+        configureConstraints()
     }
     
     // MARK: - Setup & Configuration
     private func setup() {
         view.backgroundColor = .baseBackground
-        hideKeyboardWhenTappedView()
+        
+        editPageTableView.delegate = self
+        editPageTableView.dataSource = self
+    }
+    private func configureNavigationBar() {
+        navigationController?.navigationBar.isHidden = true
     }
     private func configureAddSubView() {
-        // textView
-        view.addSubview(textView)
+        view.addSubview(editPageTableView)
         
         // buttonStackView
         buttonStackView.addArrangedSubview(addImageButton)
@@ -74,22 +77,47 @@ final class EditBookViewController: UIViewController {
         buttonStackView.addArrangedSubview(addTextButton)
         buttonStackView.addArrangedSubview(addAudioButton)
         view.addSubview(buttonStackView)
-        
     }
     private func configureConstraints() {
-        // textView
-        textView.setAnchor(
-            top: view.safeAreaLayoutGuide.topAnchor, constantTop: 20,
-            leading: view.leadingAnchor, constantLeading: 20,
-            bottom: buttonStackView.topAnchor, constantBottom: 20,
-            trailing: view.trailingAnchor, constantTrailing: 20
+        // talbeView
+        editPageTableView.setAnchor(
+            top: view.safeAreaLayoutGuide.topAnchor,
+            leading: view.leadingAnchor,
+            bottom: buttonStackView.topAnchor, constantBottom: 10,
+            trailing: view.trailingAnchor
         )
-        // buttonStackView
         buttonStackView.setAnchor(
-            leading: textView.leadingAnchor,
+            leading: editPageTableView.leadingAnchor,
             bottom: view.safeAreaLayoutGuide.bottomAnchor, constantBottom: 20,
-            trailing: view.trailingAnchor, constantTrailing: 20,
-            height: 50
+            trailing: editPageTableView.trailingAnchor,
+            height: 40
         )
+    }
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        view.endEditing(true)
+    }
+}
+
+// MARK: - UITableViewDelegate
+extension EditBookViewController: UITableViewDelegate {
+    
+}
+
+// MARK: - UITableViewDataSource
+extension EditBookViewController: UITableViewDataSource {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return 10
+    }
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = tableView.dequeueReusableCell(
+            withIdentifier: EditPageCell.identifier,
+            for: indexPath
+        ) as? EditPageCell else { return UITableViewCell() }
+        
+        return cell
+    }
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return view.frame.height
     }
 }
