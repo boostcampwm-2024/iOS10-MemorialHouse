@@ -176,39 +176,36 @@ final class BookCreationViewController: UIViewController {
             height: 63
         )
     }
+    
     private func configureNavigationBar() {
-        // 네비바 설정
+        // 네비게이션 바 설정
         navigationController?.navigationBar.isHidden = false
-        
-        // 타이틀 설정
         navigationController?.navigationBar.titleTextAttributes = [
-            .font: UIFont.ownglyphBerry(size: 17)
+            .font: UIFont.ownglyphBerry(size: 22),
+            .foregroundColor: UIColor.mhTitle
         ]
         title = "책 표지 만들기"
         
-        // 왼쪽 버튼
-        let leftBarButtonAction = UIAction { [weak self] _ in
+        // 왼쪽 닫기 버튼
+        navigationItem.leftBarButtonItem = UIBarButtonItem(
+            title: "닫기",
+            fontSize: 17,
+            color: .mhTitle
+        ) { [weak self] in
             self?.navigationController?.popViewController(animated: true)
         }
-        let leftBarButton = UIBarButtonItem(title: "닫기", primaryAction: leftBarButtonAction)
-        leftBarButton.setTitleTextAttributes([
-            .font: UIFont.ownglyphBerry(size: 17),
-            .foregroundColor: UIColor.mhTitle
-        ], for: .normal)
-        navigationItem.leftBarButtonItem = leftBarButton
         
-        // 오른쪽 버튼
-        let rightBarButtonAction = UIAction { [weak self] _ in
+        // 오른쪽 책 속지 만들기 버튼
+        navigationItem.rightBarButtonItem = UIBarButtonItem(
+            title: "책 속지 만들기",
+            fontSize: 17,
+            color: .mhTitle
+        ) { [weak self] in
             // TODO: - 구현 해야 함
             self?.navigationController?.popViewController(animated: true)
         }
-        let rightBarButton = UIBarButtonItem(title: "책 속지 만들기", primaryAction: rightBarButtonAction)
-        rightBarButton.setTitleTextAttributes([
-            .font: UIFont.ownglyphBerry(size: 17),
-            .foregroundColor: UIColor.mhTitle
-        ], for: .normal)
-        navigationItem.rightBarButtonItem = rightBarButton
     }
+    
     private func configureAction() {
         // 색깔 버튼
         bookColorButtons.enumerated().forEach { idx, button in
