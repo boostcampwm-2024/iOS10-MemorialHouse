@@ -18,6 +18,9 @@ final class EditPageCell: UITableViewCell {
         
         return textView
     }()
+    private var textLayoutManager: NSTextLayoutManager?
+    private var textStorage: NSTextStorage?
+    private var textContainer: NSTextContainer?
     
     // MARK: - Initializer
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -40,6 +43,10 @@ final class EditPageCell: UITableViewCell {
     private func setup() {
         backgroundColor = .clear
         selectionStyle = .none
+        
+        textLayoutManager = textView.textLayoutManager
+        textStorage = textView.textStorage
+        textContainer = textView.textContainer
     }
     private func configureAddSubView() {
         addSubview(textView)
@@ -52,6 +59,8 @@ final class EditPageCell: UITableViewCell {
             trailing: trailingAnchor, constantTrailing: 10
         )
     }
+    
+    // MARK: - TouchEvent
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         textView.becomeFirstResponder()
         
