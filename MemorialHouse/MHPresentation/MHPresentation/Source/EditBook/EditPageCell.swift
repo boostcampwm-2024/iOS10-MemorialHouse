@@ -46,10 +46,10 @@ final class EditPageCell: UITableViewCell {
     }
     private func configureConstraints() {
         textView.setAnchor(
-            top: topAnchor, constantTop: 20,
-            leading: leadingAnchor, constantLeading: 20,
-            bottom: bottomAnchor, constantBottom: 20,
-            trailing: trailingAnchor, constantTrailing: 20
+            top: topAnchor, constantTop: 10,
+            leading: leadingAnchor, constantLeading: 10,
+            bottom: bottomAnchor, constantBottom: 10,
+            trailing: trailingAnchor, constantTrailing: 10
         )
     }
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
