@@ -37,7 +37,7 @@ final class CustomAlbumViewController: UIViewController {
         PHPhotoLibrary.shared().unregisterChangeObserver(self)
     }
     
-    // MARK: - ViewDidLoad
+    // MARK: - View Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
         

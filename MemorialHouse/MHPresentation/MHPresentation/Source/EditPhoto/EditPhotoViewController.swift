@@ -70,15 +70,20 @@ final class EditPhotoViewController: UIViewController {
         NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
-    // MARK: - ViewDidLoad
+    // MARK: - View Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
         
         setup()
-        configureNavagationBar()
         configureAddSubView()
         configureConstraints()
         configureButtonAction()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        configureNavagationBar()
     }
     
     // MARK: - Setup
@@ -116,19 +121,32 @@ final class EditPhotoViewController: UIViewController {
         navigationItem.title = "사진 편집"
         
         // Left Bar BarButton
-        let leftBarButton = UIBarButtonItem(title: "닫기")
+        let closeAction = UIAction { [weak self] _ in
+            guard let self else { return }
+            self.navigationController?.popViewController(animated: true)
+        }
+        let leftBarButton = UIBarButtonItem(title: "닫기", primaryAction: closeAction)
         leftBarButton.setTitleTextAttributes([
             NSAttributedString.Key.font: UIFont.ownglyphBerry(size: 17),
             NSAttributedString.Key.foregroundColor: UIColor.white
         ], for: .normal)
+        leftBarButton.setTitleTextAttributes([
+            NSAttributedString.Key.font: UIFont.ownglyphBerry(size: 17)
+        ], for: .selected)
         navigationItem.leftBarButtonItem = leftBarButton
 
         // Right Bar Button
-        let rightBarButton = UIBarButtonItem(title: "완료")
+        let completeAction = UIAction { _ in
+            // TODO: 다음 화면으로 전환 및 cropImage 호출
+        }
+        let rightBarButton = UIBarButtonItem(title: "완료", primaryAction: completeAction)
         rightBarButton.setTitleTextAttributes([
             NSAttributedString.Key.font: UIFont.ownglyphBerry(size: 17),
             NSAttributedString.Key.foregroundColor: UIColor.white
         ], for: .normal)
+        rightBarButton.setTitleTextAttributes([
+            NSAttributedString.Key.font: UIFont.ownglyphBerry(size: 17)
+        ], for: .selected)
         navigationItem.rightBarButtonItem = rightBarButton
     }
     
@@ -216,13 +234,6 @@ final class EditPhotoViewController: UIViewController {
     
     // MARK: - Add Button Action
     private func configureButtonAction() {
-        let closeAction = UIAction { [weak self] _ in
-            guard let self else { return }
-            self.navigationController?.popViewController(animated: true)
-        }
-        let completeAction = UIAction { [weak self] _ in
-            // TODO: 다음 화면으로 전환 및 cropImage 호출
-        }
         let rotateButtonAction = UIAction { [weak self] _ in
             guard let self else { return }
             let image = self.photoImageView.image
@@ -231,8 +242,6 @@ final class EditPhotoViewController: UIViewController {
         let drawButtonAction = UIAction { _ in
             // TODO: - Draw Action
         }
-        navigationItem.leftBarButtonItem?.primaryAction = closeAction
-        navigationItem.rightBarButtonItem?.primaryAction = completeAction
         rotateButton.addAction(rotateButtonAction, for: .touchUpInside)
         drawButton.addAction(drawButtonAction, for: .touchUpInside)
     }
