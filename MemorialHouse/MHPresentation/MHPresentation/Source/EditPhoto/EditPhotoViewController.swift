@@ -1,7 +1,7 @@
 import UIKit
 
 final class EditPhotoViewController: UIViewController {
-    // MARK: - Properties
+    // MARK: - UI Components
     private let clearView = UIView.dimmedView(opacity: 0)
     private let dimmedView1 = UIView.dimmedView(opacity: 0.5)
     private let dimmedView2 = UIView.dimmedView(opacity: 0.5)
@@ -75,6 +75,7 @@ final class EditPhotoViewController: UIViewController {
         super.viewDidLoad()
         
         setup()
+        configureNavigationBar()
         configureAddSubView()
         configureConstraints()
         configureButtonAction()
@@ -83,7 +84,7 @@ final class EditPhotoViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        configureNavagationBar()
+        configureNavigationAppearance()
     }
     
     // MARK: - Setup
@@ -106,20 +107,10 @@ final class EditPhotoViewController: UIViewController {
     }
     
     // MARK: - Configure Navigation
-    private func configureNavagationBar() {
-        // Navigation Bar
-        let navigationBarAppearance = UINavigationBarAppearance()
-        navigationBarAppearance.configureWithOpaqueBackground()
-        navigationBarAppearance.backgroundColor = .black
-        navigationBarAppearance.titleTextAttributes = [
-            NSAttributedString.Key.font: UIFont.ownglyphBerry(size: 17),
-            NSAttributedString.Key.foregroundColor: UIColor.white
-        ]
-        navigationController?.navigationBar.standardAppearance = navigationBarAppearance
-        navigationController?.navigationBar.compactAppearance = navigationBarAppearance
-        navigationController?.navigationBar.scrollEdgeAppearance = navigationBarAppearance
+    private func configureNavigationBar() {
         navigationItem.title = "사진 편집"
         
+        // TODO: - 추후 Convenience 생성자로 수정 필요
         // Left Bar BarButton
         let closeAction = UIAction { [weak self] _ in
             guard let self else { return }
@@ -148,6 +139,19 @@ final class EditPhotoViewController: UIViewController {
             NSAttributedString.Key.font: UIFont.ownglyphBerry(size: 17)
         ], for: .selected)
         navigationItem.rightBarButtonItem = rightBarButton
+    }
+    
+    private func configureNavigationAppearance() {
+        let navigationBarAppearance = UINavigationBarAppearance()
+        navigationBarAppearance.configureWithOpaqueBackground()
+        navigationBarAppearance.backgroundColor = .black
+        navigationBarAppearance.titleTextAttributes = [
+            NSAttributedString.Key.font: UIFont.ownglyphBerry(size: 17),
+            NSAttributedString.Key.foregroundColor: UIColor.white
+        ]
+        navigationController?.navigationBar.standardAppearance = navigationBarAppearance
+        navigationController?.navigationBar.compactAppearance = navigationBarAppearance
+        navigationController?.navigationBar.scrollEdgeAppearance = navigationBarAppearance
     }
     
     // MARK: - Add SubView & Constraints

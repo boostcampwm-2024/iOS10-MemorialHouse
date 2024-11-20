@@ -1,9 +1,10 @@
+import MHCore
 import UIKit
 import Photos
 import Combine
 
 final class CustomAlbumViewController: UIViewController {
-    // MARK: - Properties
+    // MARK: - UI Components
     private lazy var albumCollectionView: UICollectionView = {
         let flowLayout = UICollectionViewFlowLayout()
         let cellSize = (self.view.bounds.inset(by: self.view.safeAreaInsets).width - 6) / 3
@@ -16,6 +17,8 @@ final class CustomAlbumViewController: UIViewController {
         
         return collectionView
     }()
+    
+    // MARK: - Properties
     private let viewModel: CustomAlbumViewModel
     private let input = PassthroughSubject<CustomAlbumViewModel.Input, Never>()
     private var cancellables = Set<AnyCancellable>()
@@ -41,16 +44,67 @@ final class CustomAlbumViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        bind()
         setup()
         configureConstraints()
+        configureNavigationBar()
+        bind()
         input.send(.viewDidLoad)
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        configureNavagationBar()
+        configureNavigationAppearance()
+    }
+    
+    // MARK: - Setup & Configure
+    private func setup() {
+        view.backgroundColor = .baseBackground
+        PHPhotoLibrary.shared().register(self)
+        albumCollectionView.delegate = self
+        albumCollectionView.dataSource = self
+        albumCollectionView.register(
+            CustomAlbumCollectionViewCell.self,
+            forCellWithReuseIdentifier: CustomAlbumCollectionViewCell.identifier
+        )
+    }
+    
+    private func configureConstraints() {
+        view.addSubview(albumCollectionView)
+        albumCollectionView.fillSuperview()
+    }
+    
+    private func configureNavigationBar() {
+        // TODO: - 추후 삭제 필요
+        navigationController?.navigationBar.isHidden = false
+        navigationItem.title = "사진 선택"
+        
+        // TODO: - 추후 Convenience 생성자로 수정 필요
+        // Left Bar BarButton
+        let closeAction = UIAction { [weak self] _ in
+            guard let self else { return }
+            self.navigationController?.popViewController(animated: true)
+        }
+        let leftBarButton = UIBarButtonItem(title: "닫기", primaryAction: closeAction)
+        leftBarButton.setTitleTextAttributes(
+            [NSAttributedString.Key.font: UIFont.ownglyphBerry(size: 17),
+             NSAttributedString.Key.foregroundColor: UIColor.mhTitle],
+            for: .normal
+        )
+        navigationItem.leftBarButtonItem = leftBarButton
+    }
+    
+    private func configureNavigationAppearance() {
+        let navigationBarAppearance = UINavigationBarAppearance()
+        navigationBarAppearance.configureWithOpaqueBackground()
+        navigationBarAppearance.backgroundColor = .baseBackground
+        navigationBarAppearance.titleTextAttributes = [
+            NSAttributedString.Key.font: UIFont.ownglyphBerry(size: 17),
+            NSAttributedString.Key.foregroundColor: UIColor.mhTitle
+        ]
+        navigationController?.navigationBar.standardAppearance = navigationBarAppearance
+        navigationController?.navigationBar.compactAppearance = navigationBarAppearance
+        navigationController?.navigationBar.scrollEdgeAppearance = navigationBarAppearance
     }
     
     // MARK: - Binding
@@ -80,57 +134,6 @@ final class CustomAlbumViewController: UIViewController {
             .store(in: &cancellables)
     }
     
-    // MARK: - Setup & Configure
-    private func setup() {
-        view.backgroundColor = .baseBackground
-        PHPhotoLibrary.shared().register(self)
-        albumCollectionView.delegate = self
-        albumCollectionView.dataSource = self
-        albumCollectionView.register(
-            CustomAlbumCollectionViewCell.self,
-            forCellWithReuseIdentifier: CustomAlbumCollectionViewCell.identifier
-        )
-    }
-    
-    private func configureConstraints() {
-        view.addSubview(albumCollectionView)
-        albumCollectionView.fillSuperview()
-    }
-    
-    private func configureNavagationBar() {
-        // TODO: - 추후 삭제 필요
-        self.navigationController?.navigationBar.isHidden = false
-        
-        // Navigation Bar
-        let navigationBarAppearance = UINavigationBarAppearance()
-        navigationBarAppearance.configureWithOpaqueBackground()
-        navigationBarAppearance.backgroundColor = .baseBackground
-        navigationBarAppearance.titleTextAttributes = [
-            NSAttributedString.Key.font: UIFont.ownglyphBerry(size: 17),
-            NSAttributedString.Key.foregroundColor: UIColor.black
-        ]
-        navigationController?.navigationBar.standardAppearance = navigationBarAppearance
-        navigationController?.navigationBar.compactAppearance = navigationBarAppearance
-        navigationController?.navigationBar.scrollEdgeAppearance = navigationBarAppearance
-        navigationItem.title = "사진 선택"
-        navigationController?.navigationBar.titleTextAttributes = [
-            NSAttributedString.Key.font: UIFont.ownglyphBerry(size: 17),
-            NSAttributedString.Key.foregroundColor: UIColor.mhTitle]
-        
-        // Left Bar BarButton
-        let closeAction = UIAction { [weak self] _ in
-            guard let self else { return }
-            self.navigationController?.popViewController(animated: true)
-        }
-        let leftBarButton = UIBarButtonItem(title: "닫기", primaryAction: closeAction)
-        leftBarButton.setTitleTextAttributes(
-            [NSAttributedString.Key.font: UIFont.ownglyphBerry(size: 17),
-             NSAttributedString.Key.foregroundColor: UIColor.mhTitle],
-            for: .normal
-        )
-        navigationItem.leftBarButtonItem = leftBarButton
-    }
-    
     // MARK: - Camera
     private func checkCameraAuthorization() {
         let authorization = AVCaptureDevice.authorizationStatus(for: .video)
@@ -144,16 +147,16 @@ final class CustomAlbumViewController: UIViewController {
                     }
                 } else {
                     // TODO: 카메라 권한 설정 페이지로 이동
-                    print("카메라 권한 거부")
+                    MHLogger.info("카메라 권한 거부")
                 }
             }
         case .authorized:
             openCamera()
         case .restricted, .denied:
             // TODO: 카메라 권한 설정 페이지로 이동
-            print("카메라 권한 거부")
-        @unknown default:
-            fatalError("Unknown case")
+            MHLogger.info("카메라 권한 거부")
+        default:
+            MHLogger.error(authorization)
         }
     }
     
@@ -242,7 +245,7 @@ extension CustomAlbumViewController: UIImagePickerControllerDelegate, UINavigati
 extension CustomAlbumViewController: PHPhotoLibraryChangeObserver {
     nonisolated func photoLibraryDidChange(_ changeInstance: PHChange) {
         Task { @MainActor in
-            input.send(.photoDidChanged(changeInstance))
+            input.send(.photoDidChanged(to: changeInstance))
         }
     }
 }

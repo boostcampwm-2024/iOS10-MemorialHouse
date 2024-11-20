@@ -5,12 +5,12 @@ import Combine
 final class CustomAlbumViewModel: ViewModelType {
     enum Input {
         case viewDidLoad
-        case photoDidChanged(_ changeInstance: PHChange)
+        case photoDidChanged(to: PHChange)
     }
     
     enum Output {
         case fetchAssets
-        case changedAssets(_ changes: PHFetchResultChangeDetails<PHAsset>)
+        case changedAssets(with: PHFetchResultChangeDetails<PHAsset>)
     }
     
     private let output = PassthroughSubject<Output, Never>()
@@ -18,8 +18,8 @@ final class CustomAlbumViewModel: ViewModelType {
     private(set) var photoAsset: PHFetchResult<PHAsset>?
     
     func transform(input: AnyPublisher<Input, Never>) -> AnyPublisher<Output, Never> {
-        input.sink { [weak self] events in
-            switch events {
+        input.sink { [weak self] event in
+            switch event {
             case .viewDidLoad:
                 self?.fetchPhotoAssets()
             case .photoDidChanged(let changeInstance):
@@ -30,7 +30,6 @@ final class CustomAlbumViewModel: ViewModelType {
         
         return output.eraseToAnyPublisher()
     }
-    
     
     private func fetchPhotoAssets() {
         let fetchOptions = PHFetchOptions()
@@ -48,7 +47,7 @@ final class CustomAlbumViewModel: ViewModelType {
         self.photoAsset = changes.fetchResultAfterChanges
         
         if changes.hasIncrementalChanges {
-            output.send(.changedAssets(changes))
+            output.send(.changedAssets(with: changes))
         }
     }
 }
