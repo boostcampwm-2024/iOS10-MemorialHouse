@@ -180,7 +180,7 @@ final class BookCreationViewController: UIViewController {
     private func configureNavigationBar() {
         navigationController?.navigationBar.isHidden = false
         navigationController?.navigationBar.titleTextAttributes = [
-            .font: UIFont.ownglyphBerry(size: 22),
+            .font: UIFont.ownglyphBerry(size: 17),
             .foregroundColor: UIColor.black
         ]
         title = "책 표지 만들기"

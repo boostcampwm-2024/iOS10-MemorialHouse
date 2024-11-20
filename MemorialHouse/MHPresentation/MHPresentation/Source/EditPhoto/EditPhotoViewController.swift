@@ -111,13 +111,12 @@ final class EditPhotoViewController: UIViewController {
         navigationItem.title = "사진 편집"
         
         // 공통 스타일 설정
-        let barButtonFont = UIFont.ownglyphBerry(size: 17)
         let normalAttributes: [NSAttributedString.Key: Any] = [
-            .font: barButtonFont,
+            .font: UIFont.ownglyphBerry(size: 17),
             .foregroundColor: UIColor.white
         ]
         let selectedAttributes: [NSAttributedString.Key: Any] = [
-            .font: barButtonFont
+            .font: UIFont.ownglyphBerry(size: 17)
         ]
         
         // Left Bar Button: 닫기

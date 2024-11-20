@@ -66,18 +66,18 @@ final class CategoryViewController: UIViewController {
     private func configureNavigationBar() {
         navigationController?.navigationBar.isHidden = false
         navigationController?.navigationBar.titleTextAttributes = [
-            .font: UIFont.ownglyphBerry(size: 22),
+            .font: UIFont.ownglyphBerry(size: 17),
             .foregroundColor: UIColor.black
         ]
         navigationItem.title = "카테고리"
         
         // 공통 스타일 정의
         let normalAttributes: [NSAttributedString.Key: Any] = [
-            .font: UIFont.ownglyphBerry(size: 22),
+            .font: UIFont.ownglyphBerry(size: 17),
             .foregroundColor: UIColor.mhTitle
         ]
         let selectedAttributes: [NSAttributedString.Key: Any] = [
-            .font: UIFont.ownglyphBerry(size: 22),
+            .font: UIFont.ownglyphBerry(size: 17),
             .foregroundColor: UIColor.mhTitle
         ]
         
