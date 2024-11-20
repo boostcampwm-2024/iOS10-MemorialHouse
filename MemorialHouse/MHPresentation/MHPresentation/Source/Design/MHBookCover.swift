@@ -6,7 +6,7 @@ final class MHBookCover: UIView {
     // MARK: - Property
     private let bookCoverImageView = UIImageView()
     private let titleLabel: UILabel = {
-        let label = UILabel(style: .default)
+        let label = UILabel(style: .header2)
         label.adjustsFontSizeToFitWidth = true
         
         return label
@@ -22,7 +22,7 @@ final class MHBookCover: UIView {
         
         return imageView
     }()
-    private let houseLabel = UILabel(style: .body2)
+    private let houseLabel = UILabel(style: .body3)
     
     // MARK: - Initializer
     init() {
