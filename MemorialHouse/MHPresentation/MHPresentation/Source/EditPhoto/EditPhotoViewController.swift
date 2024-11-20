@@ -1,16 +1,29 @@
 import UIKit
 
-public final class EditPhotoViewController: UIViewController {
-    // MARK: - Properties
+final class EditPhotoViewController: UIViewController {
+    // MARK: - UI Components
     private let clearView = UIView.dimmedView(opacity: 0)
     private let dimmedView1 = UIView.dimmedView(opacity: 0.5)
     private let dimmedView2 = UIView.dimmedView(opacity: 0.5)
+    private let topView = UIView.dimmedView(opacity: 1, color: .black)
+    private let bottomView = UIView.dimmedView(opacity: 1, color: .black)
     private let dividedLine1 = UIView.dividedLine()
     private let dividedLine2 = UIView.dividedLine()
-    private let photoView: UIImageView = {
+    private let photoScrollView: UIScrollView = {
+        let scrollView = UIScrollView()
+        scrollView.minimumZoomScale = 1
+        scrollView.maximumZoomScale = 3
+        scrollView.clipsToBounds = false
+        scrollView.showsHorizontalScrollIndicator = false
+        scrollView.showsVerticalScrollIndicator = false
+        
+        return scrollView
+    }()
+    private let photoImageView: UIImageView = {
        let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
         imageView.backgroundColor = .clear
+        imageView.isUserInteractionEnabled = true
         
         return imageView
     }()
@@ -33,14 +46,6 @@ public final class EditPhotoViewController: UIViewController {
         
         return stackView
     }()
-    private let cropButton: UIButton = {
-        var configuration = UIButton.Configuration.plain()
-        configuration.image = .crop
-        let button = UIButton()
-        button.configuration = configuration
-        
-        return button
-    }()
     private let rotateButton: UIButton = {
         var configuration = UIButton.Configuration.plain()
         configuration.image = .rotate
@@ -57,64 +62,110 @@ public final class EditPhotoViewController: UIViewController {
         
         return button
     }()
+    private var captionTextFieldBottomConstraint: NSLayoutConstraint?
     
-    // MARK: - View Did Load
-    public override func viewDidLoad() {
+    // MARK: - Deinitialize
+    deinit {
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+    
+    // MARK: - View Life Cycle
+    override func viewDidLoad() {
         super.viewDidLoad()
         
         setup()
-        configureNavagationBar()
+        configureNavigationBar()
         configureAddSubView()
         configureConstraints()
         configureButtonAction()
     }
     
-    // MARK: - Setup & Configure
-    private func setup() {
-        view.backgroundColor = .black
-        captionTextField.delegate = self
-        self.hideKeyboardWhenTappedView()
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        configureNavigationAppearance()
     }
     
-    private func configureNavagationBar() {
+    // MARK: - Setup
+    private func setup() {
+        view.backgroundColor = .black
+        photoScrollView.delegate = self
+        hideKeyboardWhenTappedView()
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillAppear),
+            name: UIResponder.keyboardWillShowNotification,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillHide),
+            name: UIResponder.keyboardWillHideNotification,
+            object: nil
+        )
+    }
+    
+    // MARK: - Configure Navigation
+    private func configureNavigationBar() {
         navigationItem.title = "사진 편집"
-        navigationController?.navigationBar.titleTextAttributes = [
-            NSAttributedString.Key.font: UIFont.ownglyphBerry(size: 17),
-            NSAttributedString.Key.foregroundColor: UIColor.white]
+        
+        // TODO: - 추후 Convenience 생성자로 수정 필요
+        // Left Bar BarButton
         let closeAction = UIAction { [weak self] _ in
             guard let self else { return }
             self.navigationController?.popViewController(animated: true)
         }
         let leftBarButton = UIBarButtonItem(title: "닫기", primaryAction: closeAction)
-        leftBarButton.setTitleTextAttributes(
-            [NSAttributedString.Key.font: UIFont.ownglyphBerry(size: 17),
-             NSAttributedString.Key.foregroundColor: UIColor.white],
-            for: .normal
-        )
+        leftBarButton.setTitleTextAttributes([
+            NSAttributedString.Key.font: UIFont.ownglyphBerry(size: 17),
+            NSAttributedString.Key.foregroundColor: UIColor.white
+        ], for: .normal)
+        leftBarButton.setTitleTextAttributes([
+            NSAttributedString.Key.font: UIFont.ownglyphBerry(size: 17)
+        ], for: .selected)
         navigationItem.leftBarButtonItem = leftBarButton
-        let rightBarButton = UIBarButtonItem(title: "완료")
-        rightBarButton.setTitleTextAttributes(
-            [NSAttributedString.Key.font: UIFont.ownglyphBerry(size: 17),
-             NSAttributedString.Key.foregroundColor: UIColor.white],
-            for: .normal
-        )
+
+        // Right Bar Button
+        let completeAction = UIAction { _ in
+            // TODO: 다음 화면으로 전환 및 cropImage 호출
+        }
+        let rightBarButton = UIBarButtonItem(title: "완료", primaryAction: completeAction)
+        rightBarButton.setTitleTextAttributes([
+            NSAttributedString.Key.font: UIFont.ownglyphBerry(size: 17),
+            NSAttributedString.Key.foregroundColor: UIColor.white
+        ], for: .normal)
+        rightBarButton.setTitleTextAttributes([
+            NSAttributedString.Key.font: UIFont.ownglyphBerry(size: 17)
+        ], for: .selected)
         navigationItem.rightBarButtonItem = rightBarButton
     }
     
+    private func configureNavigationAppearance() {
+        let navigationBarAppearance = UINavigationBarAppearance()
+        navigationBarAppearance.configureWithOpaqueBackground()
+        navigationBarAppearance.backgroundColor = .black
+        navigationBarAppearance.titleTextAttributes = [
+            NSAttributedString.Key.font: UIFont.ownglyphBerry(size: 17),
+            NSAttributedString.Key.foregroundColor: UIColor.white
+        ]
+        navigationController?.navigationBar.standardAppearance = navigationBarAppearance
+        navigationController?.navigationBar.compactAppearance = navigationBarAppearance
+        navigationController?.navigationBar.scrollEdgeAppearance = navigationBarAppearance
+    }
+    
+    // MARK: - Add SubView & Constraints
     private func configureAddSubView() {
-        [cropButton,
-         rotateButton,
-         drawButton].forEach {
-            editButtonStackView.addArrangedSubview($0)
-        }
+        editButtonStackView.addArrangedSubview(rotateButton)
+        editButtonStackView.addArrangedSubview(drawButton)
+        photoScrollView.addSubview(photoImageView)
         
-        [dimmedView1,
+        [photoScrollView,
+         dimmedView1,
          clearView,
-         dimmedView2].forEach {
-            photoView.addSubview($0)
-        }
-        
-        [photoView,
+         dimmedView2,
+         topView,
+         bottomView,
          dividedLine1,
          captionTextField,
          dividedLine2,
@@ -130,66 +181,144 @@ public final class EditPhotoViewController: UIViewController {
             trailing: view.trailingAnchor, constantTrailing: 50,
             height: 80
         )
-        
-        dividedLine1.setHorizontal(view: view)
-        dividedLine1.setBottom(
-            anchor: editButtonStackView.topAnchor,
-            constant: 11
-        )
+        dividedLine2.setHorizontal(view: view)
+        dividedLine2.setBottom(anchor: editButtonStackView.topAnchor, constant: 11)
         captionTextField.setAnchor(
             leading: view.leadingAnchor, constantLeading: 13,
-            bottom: dividedLine1.topAnchor, constantBottom: 11,
             trailing: view.trailingAnchor,
             height: 30
         )
-        dividedLine2.setHorizontal(view: view)
-        dividedLine2.setBottom(
-            anchor: captionTextField.topAnchor,
-            constant: 11
+        captionTextFieldBottomConstraint = captionTextField.bottomAnchor.constraint(
+            equalTo: dividedLine2.topAnchor,
+            constant: -11
         )
-        photoView.setAnchor(
-            top: view.safeAreaLayoutGuide.topAnchor,
+        captionTextFieldBottomConstraint?.isActive = true
+        dividedLine1.setHorizontal(view: view)
+        dividedLine1.setBottom(anchor: captionTextField.topAnchor, constant: 11)
+        topView.setAnchor(
+            top: view.topAnchor,
             leading: view.leadingAnchor,
-            bottom: dividedLine2.topAnchor,
+            bottom: dimmedView1.topAnchor,
             trailing: view.trailingAnchor
         )
-        clearView.setAnchor(width: view.frame.width, height: view.frame.width * 0.75)
-        clearView.setCenter(view: photoView)
-        dimmedView1.setAnchor(
-            top: photoView.topAnchor,
+        bottomView.setAnchor(
+            top: dividedLine1.topAnchor,
             leading: view.leadingAnchor,
-            bottom: clearView.topAnchor,
+            bottom: view.bottomAnchor,
+            trailing: view.trailingAnchor
+        )
+        clearView.setAnchor(
+            top: topView.bottomAnchor,
+            leading: view.leadingAnchor,
+            bottom: dividedLine1.topAnchor,
             trailing: view.trailingAnchor
         )
         dimmedView2.setAnchor(
-            top: clearView.bottomAnchor,
+            top: photoScrollView.bottomAnchor,
             leading: view.leadingAnchor,
-            bottom: photoView.bottomAnchor,
+            bottom: dividedLine1.topAnchor,
             trailing: view.trailingAnchor
+        )
+        dimmedView1.setAnchor(
+            top: view.safeAreaLayoutGuide.topAnchor,
+            leading: view.leadingAnchor,
+            bottom: photoScrollView.topAnchor,
+            trailing: view.trailingAnchor
+        )
+        photoScrollView.setWidthAndHeight(width: view.frame.width, height: view.frame.width * 0.75)
+        photoScrollView.setCenter(view: clearView)
+        photoImageView.setWidthAndHeight(width: photoScrollView.widthAnchor, height: photoScrollView.heightAnchor)
+        photoImageView.setAnchor(
+            top: photoScrollView.topAnchor,
+            leading: photoScrollView.leadingAnchor,
+            bottom: photoScrollView.bottomAnchor,
+            trailing: photoScrollView.trailingAnchor
         )
     }
     
+    // MARK: - Add Button Action
     private func configureButtonAction() {
-        let cropButtonAction = UIAction { _ in
-            // TODO: - Crop Action
-        }
         let rotateButtonAction = UIAction { [weak self] _ in
-            let image = self?.photoView.image
-            self?.photoView.image = image?.rotate(radians: .pi / 2)
+            guard let self else { return }
+            let image = self.photoImageView.image
+            self.photoImageView.image = image?.rotate(radians: .pi / 2)
         }
         let drawButtonAction = UIAction { _ in
             // TODO: - Draw Action
         }
-        cropButton.addAction(cropButtonAction, for: .touchUpInside)
         rotateButton.addAction(rotateButtonAction, for: .touchUpInside)
         drawButton.addAction(drawButtonAction, for: .touchUpInside)
     }
     
-    func setPhoto(image: UIImage?) {
-        photoView.image = image
+    // MARK: - Keyboard Appear & Hide
+    @objc private func keyboardWillAppear(_ notification: Notification) {
+        guard let keyboardInfo = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey],
+              let keyboardSize = keyboardInfo as? CGRect else { return }
+        let bottomConstant = editButtonStackView.frame.height + view.safeAreaInsets.bottom
+        captionTextFieldBottomConstraint?.constant = bottomConstant - keyboardSize.height
+        UIView.animate(withDuration: 0.3) { [weak self] in
+            self?.view.layoutIfNeeded()
+        }
+    }
+    
+    @objc private func keyboardWillHide() {
+        captionTextFieldBottomConstraint?.constant = -11
+        UIView.animate(withDuration: 0.3) { [weak self] in
+            self?.view.layoutIfNeeded()
+        }
+    }
+    
+    // MARK: - Crop Image
+    private func cropImage() -> UIImage? {
+        let renderer = UIGraphicsImageRenderer(bounds: photoScrollView.bounds)
+        return renderer.image { _ in
+            self.photoScrollView.drawHierarchy(in: self.photoScrollView.bounds, afterScreenUpdates: true)
+        }
+    }
+    
+    // MARK: - Set Photo from Custom Album
+    func setPhoto(image: UIImage?, date: Date?) {
+        photoImageView.image = image
     }
 }
 
-extension EditPhotoViewController: UITextFieldDelegate {
-    // TODO: - TextField의 텍스트 처리
+// MARK: - UIScrollViewDelegate
+extension EditPhotoViewController: UIScrollViewDelegate {
+    func viewForZooming(in scrollView: UIScrollView) -> UIView? {
+        return photoImageView
+    }
+    
+    func scrollViewDidZoom(_ scrollView: UIScrollView) {
+        reorderImage(scrollView, animated: true)
+    }
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        reorderImage(scrollView, animated: false)
+    }
+    
+    private func reorderImage(_ scrollView: UIScrollView, animated: Bool) {
+        let photoSize = originalImageSize()
+        let scrollViewSize = scrollView.frame.size
+        var contentOffset = scrollView.contentOffset
+        
+        if photoSize.width < scrollViewSize.width {
+            contentOffset.x = (scrollView.contentSize.width - scrollViewSize.width) / 2
+            scrollView.setContentOffset(contentOffset, animated: animated)
+        }
+
+        if photoSize.height < scrollViewSize.height {
+            contentOffset.y = (scrollView.contentSize.height - scrollViewSize.height) / 2
+            scrollView.setContentOffset(contentOffset, animated: animated)
+        }
+    }
+    
+    private func originalImageSize() -> CGSize {
+        guard let image = photoImageView.image else { return .zero}
+        let ratio = image.size.height / image.size.width
+        if ratio <= 0.75 {
+            return CGSize(width: photoImageView.frame.width, height: photoImageView.frame.width * ratio)
+        } else {
+            return CGSize(width: photoImageView.frame.height / ratio, height: photoImageView.frame.height)
+        }
+    }
 }
