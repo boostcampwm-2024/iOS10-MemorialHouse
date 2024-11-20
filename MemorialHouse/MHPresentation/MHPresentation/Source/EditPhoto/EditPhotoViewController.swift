@@ -110,35 +110,33 @@ final class EditPhotoViewController: UIViewController {
     private func configureNavigationBar() {
         navigationItem.title = "사진 편집"
         
-        // TODO: - 추후 Convenience 생성자로 수정 필요
-        // Left Bar BarButton
-        let closeAction = UIAction { [weak self] _ in
-            guard let self else { return }
-            self.navigationController?.popViewController(animated: true)
+        // 공통 스타일 설정
+        let barButtonFont = UIFont.ownglyphBerry(size: 17)
+        let normalAttributes: [NSAttributedString.Key: Any] = [
+            .font: barButtonFont,
+            .foregroundColor: UIColor.white
+        ]
+        let selectedAttributes: [NSAttributedString.Key: Any] = [
+            .font: barButtonFont
+        ]
+        
+        // Left Bar Button: 닫기
+        navigationItem.leftBarButtonItem = UIBarButtonItem(
+            title: "닫기",
+            normal: normalAttributes,
+            selected: selectedAttributes
+        ) { [weak self] in
+            self?.navigationController?.popViewController(animated: true)
         }
-        let leftBarButton = UIBarButtonItem(title: "닫기", primaryAction: closeAction)
-        leftBarButton.setTitleTextAttributes([
-            NSAttributedString.Key.font: UIFont.ownglyphBerry(size: 17),
-            NSAttributedString.Key.foregroundColor: UIColor.white
-        ], for: .normal)
-        leftBarButton.setTitleTextAttributes([
-            NSAttributedString.Key.font: UIFont.ownglyphBerry(size: 17)
-        ], for: .selected)
-        navigationItem.leftBarButtonItem = leftBarButton
-
-        // Right Bar Button
-        let completeAction = UIAction { _ in
+        
+        // Right Bar Button: 완료
+        navigationItem.rightBarButtonItem = UIBarButtonItem(
+            title: "완료",
+            normal: normalAttributes,
+            selected: selectedAttributes
+        ) {
             // TODO: 다음 화면으로 전환 및 cropImage 호출
         }
-        let rightBarButton = UIBarButtonItem(title: "완료", primaryAction: completeAction)
-        rightBarButton.setTitleTextAttributes([
-            NSAttributedString.Key.font: UIFont.ownglyphBerry(size: 17),
-            NSAttributedString.Key.foregroundColor: UIColor.white
-        ], for: .normal)
-        rightBarButton.setTitleTextAttributes([
-            NSAttributedString.Key.font: UIFont.ownglyphBerry(size: 17)
-        ], for: .selected)
-        navigationItem.rightBarButtonItem = rightBarButton
     }
     
     private func configureNavigationAppearance() {

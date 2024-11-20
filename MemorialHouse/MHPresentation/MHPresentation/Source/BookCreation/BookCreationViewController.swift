@@ -178,7 +178,6 @@ final class BookCreationViewController: UIViewController {
     }
     
     private func configureNavigationBar() {
-        // 네비게이션 바 설정
         navigationController?.navigationBar.isHidden = false
         navigationController?.navigationBar.titleTextAttributes = [
             .font: UIFont.ownglyphBerry(size: 22),
@@ -186,11 +185,21 @@ final class BookCreationViewController: UIViewController {
         ]
         title = "책 표지 만들기"
         
+        // 공통 스타일 정의
+        let normalAttributes: [NSAttributedString.Key: Any] = [
+            .font: UIFont.ownglyphBerry(size: 17),
+            .foregroundColor: UIColor.mhTitle
+        ]
+        let selectedAttributes: [NSAttributedString.Key: Any] = [
+            .font: UIFont.ownglyphBerry(size: 17),
+            .foregroundColor: UIColor.mhTitle
+        ]
+        
         // 왼쪽 닫기 버튼
         navigationItem.leftBarButtonItem = UIBarButtonItem(
             title: "닫기",
-            fontSize: 17,
-            color: .mhTitle
+            normal: normalAttributes,
+            selected: selectedAttributes
         ) { [weak self] in
             self?.navigationController?.popViewController(animated: true)
         }
@@ -198,8 +207,8 @@ final class BookCreationViewController: UIViewController {
         // 오른쪽 책 속지 만들기 버튼
         navigationItem.rightBarButtonItem = UIBarButtonItem(
             title: "책 속지 만들기",
-            fontSize: 17,
-            color: .mhTitle
+            normal: normalAttributes,
+            selected: selectedAttributes
         ) { [weak self] in
             // TODO: - 구현 해야 함
             self?.navigationController?.popViewController(animated: true)

@@ -71,11 +71,21 @@ final class CategoryViewController: UIViewController {
         ]
         navigationItem.title = "카테고리"
         
-        // 좌측 닫기 버튼
+        // 공통 스타일 정의
+        let normalAttributes: [NSAttributedString.Key: Any] = [
+            .font: UIFont.ownglyphBerry(size: 22),
+            .foregroundColor: UIColor.mhTitle
+        ]
+        let selectedAttributes: [NSAttributedString.Key: Any] = [
+            .font: UIFont.ownglyphBerry(size: 22),
+            .foregroundColor: UIColor.mhTitle
+        ]
+        
+        // 좌측 편집 버튼
         navigationItem.leftBarButtonItem = UIBarButtonItem(
             title: "편집",
-            fontSize: 22,
-            color: .mhTitle
+            normal: normalAttributes,
+            selected: selectedAttributes
         ) { [weak self] in
             // TODO: 편집하기
             self?.categoryTableView.setEditing(true, animated: true)
@@ -84,8 +94,8 @@ final class CategoryViewController: UIViewController {
         // 우측 추가 버튼
         navigationItem.rightBarButtonItem = UIBarButtonItem(
             title: "추가",
-            fontSize: 22,
-            color: .mhTitle
+            normal: normalAttributes,
+            selected: selectedAttributes
         ) { [weak self] in
             // TODO: 로컬에 저장하고 테이블뷰에 추가하는 로직 필요
         }
