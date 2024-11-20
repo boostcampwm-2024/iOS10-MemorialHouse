@@ -10,7 +10,6 @@ final class CategoryViewModel: ViewModelType {
         case fetchedCategories
     }
     
-    private(set) var dummyData: [String] = []
     private let output = PassthroughSubject<Output, Never>()
     private var cancellables = Set<AnyCancellable>()
     
@@ -26,7 +25,7 @@ final class CategoryViewModel: ViewModelType {
     }
     
     private func fetchCategories() {
-        dummyData = ["집주인들", "가족", "친구", "동료", "기타"]
+        // TODO: 데이터 받아오기
         output.send(.fetchedCategories)
     }
 }

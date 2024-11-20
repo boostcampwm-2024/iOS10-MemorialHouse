@@ -35,8 +35,8 @@ final class CategoryViewController: UIViewController {
     
     func calculateSheetHeight() -> CGFloat {
         let cellHeight = CategoryTableViewCell.height
-        let dataCount = viewModel.dummyData.count
-        let itemCount = CGFloat(dataCount) + 2 // 전체 + 즐겨찾기 포함
+        // TODO: 데이터 개수 받아와서 계산하기
+        let itemCount = CGFloat(2) // 전체 + 즐겨찾기 포함
         return (cellHeight * itemCount) + Constant.navigationBarHeight
     }
     
@@ -158,7 +158,7 @@ extension CategoryViewController: UITableViewDataSource {
         _ tableView: UITableView,
         numberOfRowsInSection section: Int
     ) -> Int {
-        viewModel.dummyData.count + 2
+        2
     }
     
     func tableView(
@@ -170,17 +170,7 @@ extension CategoryViewController: UITableViewDataSource {
             for: indexPath
         ) as? CategoryTableViewCell else { return UITableViewCell() }
         
-        // TODO: 데이터 넣기
-        switch indexPath.row {
-        case 0:
-            cell.configure(category: "전체", isSelected: true)
-        case 1:
-            cell.configure(category: "즐겨찾기", isSelected: false)
-        default:
-            let category = viewModel.dummyData[indexPath.row - 2]
-            cell.configure(category: category, isSelected: false)
-        }
-        
+        // TODO: 전체, 즐겨찾기, 데이터 받아와서 셀 구성하기
         return cell
     }
 }
