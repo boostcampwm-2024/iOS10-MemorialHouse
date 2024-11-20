@@ -70,6 +70,7 @@ final class CategoryViewController: UIViewController {
             color: .mhTitle
         ) { [weak self] in
             // TODO: 편집하기
+            self?.categoryTableView.setEditing(true, animated: true)
         }
         
         // 우측 추가 버튼
@@ -93,7 +94,7 @@ extension CategoryViewController: UITableViewDelegate {
         _ tableView: UITableView,
         didSelectRowAt indexPath: IndexPath
     ) {
-        
+        // TODO: 카테고리 선택 시 로직 필요
     }
     
     func tableView(
@@ -101,6 +102,36 @@ extension CategoryViewController: UITableViewDelegate {
         heightForRowAt indexPath: IndexPath
     ) -> CGFloat {
         CategoryTableViewCell.height
+    }
+    
+    func tableView(
+        _ tableView: UITableView,
+        canEditRowAt indexPath: IndexPath
+    ) -> Bool {
+        indexPath.row >= 2
+    }
+    
+    func tableView(
+        _ tableView: UITableView,
+        trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath
+    ) -> UISwipeActionsConfiguration? {
+        let editAction = UIContextualAction(
+            style: .normal,
+            title: "수정"
+        ) { [weak self] _, _, completion in
+            // TODO: 수정 로직
+        }
+        
+        let deleteAction = UIContextualAction(
+            style: .destructive,
+            title: "삭제"
+        ) { [weak self] _, _, completion in
+            // TODO: 삭제 로직
+        }
+        
+        return UISwipeActionsConfiguration(
+            actions: [deleteAction, editAction]
+        )
     }
 }
 
