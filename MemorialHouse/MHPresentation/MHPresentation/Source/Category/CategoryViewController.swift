@@ -1,4 +1,5 @@
 import Combine
+import MHFoundation
 import UIKit
 
 final class CategoryViewController: UIViewController {
@@ -30,6 +31,13 @@ final class CategoryViewController: UIViewController {
         input.send(.viewDidLoad)
         configureNavigationBar()
         configureConstraints()
+    }
+    
+    func calculateSheetHeight() -> CGFloat {
+        let cellHeight = CategoryTableViewCell.height
+        let dataCount = viewModel.dummyData.count
+        let itemCount = CGFloat(dataCount) + 2 // 전체 + 즐겨찾기 포함
+        return (cellHeight * itemCount) + Constant.navigationBarHeight
     }
     
     // MARK: - Setup & Configuration

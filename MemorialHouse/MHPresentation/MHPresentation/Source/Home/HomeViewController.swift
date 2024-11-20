@@ -95,7 +95,7 @@ public final class HomeViewController: UIViewController {
             
             if let sheet = navigationController.sheetPresentationController {
                 sheet.detents = [.custom(identifier: .categorySheet) { _ in
-                    categoryViewModel.calculateSheetHeight()
+                    categoryViewController.calculateSheetHeight()
                 }]
             }
             
