@@ -289,7 +289,7 @@ extension EditBookViewController: UITableViewDelegate {
 // MARK: - UITableViewDataSource
 extension EditBookViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 10
+        return 10 // TODO: - 추후 더미데이터 대신 뷰모델 데이터로 변경
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(

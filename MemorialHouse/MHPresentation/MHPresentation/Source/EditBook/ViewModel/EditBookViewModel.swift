@@ -26,6 +26,6 @@ final class EditBookViewModel: ViewModelType {
         return output.eraseToAnyPublisher()
     }
     private func fetchPages() {
-        pages = ["Image", "Video", "Text", "Audio"]
+        // TODO: - Page가져오는 로직 추가
     }
 }
