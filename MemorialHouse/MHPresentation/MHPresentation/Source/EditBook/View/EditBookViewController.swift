@@ -1,6 +1,8 @@
 import UIKit
 
 final class EditBookViewController: UIViewController {
+    // MARK: - Constant
+    static let buttonBottomConstant: CGFloat = -20
     // MARK: - Property
     private let editPageTableView: UITableView = {
         let tableView = UITableView()
@@ -55,6 +57,7 @@ final class EditBookViewController: UIViewController {
         
         return button
     }()
+    private var buttonStackViewBottomConstraint: NSLayoutConstraint?
     
     // MARK: - LifeCycle
     override func viewDidLoad() {
@@ -64,6 +67,7 @@ final class EditBookViewController: UIViewController {
         configureNavigationBar()
         configureAddSubView()
         configureConstraints()
+        configureKeyboard()
     }
     
     // MARK: - Setup & Configuration
@@ -102,9 +106,11 @@ final class EditBookViewController: UIViewController {
         // buttonStackView
         buttonStackView.setAnchor(
             leading: editPageTableView.leadingAnchor, constantLeading: 10,
-            bottom: view.safeAreaLayoutGuide.bottomAnchor, constantBottom: 20,
             height: 40
         )
+        buttonStackViewBottomConstraint
+        = buttonStackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: Self.buttonBottomConstant)
+        buttonStackViewBottomConstraint?.isActive = true
         
         // publishButton
         publishButton.setAnchor(
@@ -113,6 +119,37 @@ final class EditBookViewController: UIViewController {
             width: 55,
             height: 40
         )
+    }
+    private func configureKeyboard() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillAppear),
+            name: UIResponder.keyboardWillShowNotification,
+            object: nil
+            )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillHide),
+            name: UIResponder.keyboardWillHideNotification,
+            object: nil
+            )
+    }
+    
+    // MARK: - Keyboard Appear & Hide
+    @objc private func keyboardWillAppear(_ notification: Notification) {
+        guard let keyboardInfo = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey],
+              let keyboardSize = keyboardInfo as? CGRect else { return }
+        let bottomConstant = -(keyboardSize.height - view.safeAreaInsets.bottom + 10)
+        buttonStackViewBottomConstraint?.constant = bottomConstant
+        UIView.animate(withDuration: 0.3) { [weak self] in
+            self?.view.layoutIfNeeded()
+        }
+    }
+    @objc private func keyboardWillHide() {
+        buttonStackViewBottomConstraint?.constant = Self.buttonBottomConstant
+        UIView.animate(withDuration: 0.3) { [weak self] in
+            self?.view.layoutIfNeeded()
+        }
     }
 }
 
