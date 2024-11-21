@@ -2,7 +2,7 @@ import UIKit
 
 final class MHNavigationBar: UIView {
     // MARK: - Property
-    private let titleLabel = UILabel(style: .header)
+    private let titleLabel = UILabel(style: .header1)
     private let settingButton = UIButton(type: .custom)
     
     // MARK: - Initializer

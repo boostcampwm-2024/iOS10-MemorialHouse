@@ -79,19 +79,23 @@ final class CustomAlbumViewController: UIViewController {
         navigationController?.navigationBar.isHidden = false
         navigationItem.title = "사진 선택"
         
-        // TODO: - 추후 Convenience 생성자로 수정 필요
-        // Left Bar BarButton
-        let closeAction = UIAction { [weak self] _ in
-            guard let self else { return }
-            self.navigationController?.popViewController(animated: true)
+        // 공통 스타일 정의
+        let normalAttributes: [NSAttributedString.Key: Any] = [
+            .font: UIFont.ownglyphBerry(size: 17),
+            .foregroundColor: UIColor.mhTitle
+        ]
+        let selectedAttributes: [NSAttributedString.Key: Any] = [
+            .font: UIFont.ownglyphBerry(size: 17)
+        ]
+        
+        // Left Bar Button
+        navigationItem.leftBarButtonItem = UIBarButtonItem(
+            title: "닫기",
+            normal: normalAttributes,
+            selected: selectedAttributes
+        ) { [weak self] in
+            self?.navigationController?.popViewController(animated: true)
         }
-        let leftBarButton = UIBarButtonItem(title: "닫기", primaryAction: closeAction)
-        leftBarButton.setTitleTextAttributes(
-            [NSAttributedString.Key.font: UIFont.ownglyphBerry(size: 17),
-             NSAttributedString.Key.foregroundColor: UIColor.mhTitle],
-            for: .normal
-        )
-        navigationItem.leftBarButtonItem = leftBarButton
     }
     
     private func configureNavigationAppearance() {

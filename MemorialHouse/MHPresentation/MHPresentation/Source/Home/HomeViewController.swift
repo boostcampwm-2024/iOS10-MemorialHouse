@@ -5,7 +5,7 @@ import MHFoundation
 public final class HomeViewController: UIViewController {
     // MARK: - UI Components
     private let navigationBar: MHNavigationBar
-    private let currentCategoryLabel = UILabel(style: .default)
+    private let currentCategoryLabel = UILabel(style: .header2)
     private let categorySelectButton = UIButton(type: .custom)
     private let makingBookFloatingButton: UIButton = {
         let button = UIButton(type: .custom)
@@ -88,8 +88,18 @@ public final class HomeViewController: UIViewController {
     }
     
     private func configureAction() {
-        categorySelectButton.addAction(UIAction { _ in
-            // TODO: 카테고리 시트지 띄우기
+        categorySelectButton.addAction(UIAction { [weak self] _ in
+            let categoryViewModel = CategoryViewModel()
+            let categoryViewController = CategoryViewController(viewModel: categoryViewModel)
+            let navigationController = UINavigationController(rootViewController: categoryViewController)
+            
+            if let sheet = navigationController.sheetPresentationController {
+                sheet.detents = [.custom(identifier: .categorySheet) { _ in
+                    categoryViewController.calculateSheetHeight()
+                }]
+            }
+            
+            self?.present(navigationController, animated: true)
         }, for: .touchUpInside)
         
         makingBookFloatingButton.addAction(UIAction { [weak self] _ in
