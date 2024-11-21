@@ -84,6 +84,7 @@ final class EditBookViewController: UIViewController {
         
         setup()
         configureNavigationBar()
+        configureSaveButton()
         configureAddSubView()
         configureConstraints()
         configureKeyboard()
@@ -99,7 +100,55 @@ final class EditBookViewController: UIViewController {
         editPageTableView.dataSource = self
     }
     private func configureNavigationBar() {
-        navigationController?.navigationBar.isHidden = true
+        // 공통 스타일 정의
+        let normalAttributes: [NSAttributedString.Key: Any] = [
+            .font: UIFont.ownglyphBerry(size: 17),
+            .foregroundColor: UIColor.mhTitle
+        ]
+        let selectedAttributes: [NSAttributedString.Key: Any] = [
+            .font: UIFont.ownglyphBerry(size: 17),
+            .foregroundColor: UIColor.mhTitle
+        ]
+        
+        // 네비게이션 왼쪽 아이템
+        navigationItem.leftBarButtonItem = UIBarButtonItem(
+            title: "뒤로가기",
+            normal: normalAttributes,
+            selected: selectedAttributes
+        ) { [weak self] in
+            let alert = UIAlertController(
+                title: "작성을 취소하시겠습니까?",
+                message: "작성 중인 내용은 저장되지 않습니다.",
+                preferredStyle: .alert
+            )
+            alert.addAction(UIAlertAction(title: "취소", style: .cancel))
+            alert.addAction(UIAlertAction(title: "확인", style: .default) { _ in
+                self?.navigationController?.popViewController(animated: true)
+            })
+            self?.present(alert, animated: true)
+        }
+        
+        // 네비게이션 오른쪽 아이템
+        navigationItem.rightBarButtonItem = UIBarButtonItem(
+            title: "저장",
+            normal: normalAttributes,
+            selected: selectedAttributes
+        ) { [weak self] in
+            // TODO: - 저장하는 로직
+            self?.navigationController?.popViewController(animated: true)
+        }
+    }
+    private func configureSaveButton() {
+        // BookCreationViewController에서 넘어온 경우에만 저장 버튼 보여주기
+        let isFromCreation = navigationController?.viewControllers
+            .contains { $0 is BookCreationViewController } ?? false
+        
+        if isFromCreation {
+            navigationItem.rightBarButtonItem = nil
+            publishButton.isHidden = false
+        } else {
+            publishButton.isHidden = true
+        }
     }
     private func configureAddSubView() {
         // editPageTableView
@@ -130,7 +179,10 @@ final class EditBookViewController: UIViewController {
             height: 40
         )
         buttonStackViewBottomConstraint
-        = buttonStackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: Self.buttonBottomConstant)
+        = buttonStackView.bottomAnchor.constraint(
+            equalTo: view.safeAreaLayoutGuide.bottomAnchor,
+            constant: Self.buttonBottomConstant
+        )
         buttonStackViewBottomConstraint?.isActive = true
         
         // publishButton
