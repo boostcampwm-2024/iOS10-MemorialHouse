@@ -210,8 +210,12 @@ final class BookCreationViewController: UIViewController {
             normal: normalAttributes,
             selected: selectedAttributes
         ) { [weak self] in
-            // TODO: - 구현 해야 함
-            self?.navigationController?.popViewController(animated: true)
+            // TODO: - 추후 뷰모델 관련 생성 이슈 조정 필요
+            let editBookViewModel = EditBookViewModel()
+            self?.navigationController?.pushViewController(
+                EditBookViewController(viewModel: editBookViewModel),
+                animated: true
+            )
         }
     }
     
