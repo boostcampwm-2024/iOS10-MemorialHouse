@@ -156,6 +156,7 @@ final class EditBookViewController: UIViewController {
             )
     }
     private func configureBinding() {
+        // TODO: - 추후 로직 추가하기
         let output = viewModel.transform(input: input.eraseToAnyPublisher())
         output.receive(on: DispatchQueue.main)
             .sink { [weak self] event in
