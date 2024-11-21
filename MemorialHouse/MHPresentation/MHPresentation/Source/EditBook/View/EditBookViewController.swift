@@ -1,9 +1,11 @@
 import UIKit
+import Combine
 
 final class EditBookViewController: UIViewController {
     // MARK: - Constant
     static let buttonBottomConstant: CGFloat = -20
-    // MARK: - Property
+    
+    // MARK: - ViewComponent
     private let editPageTableView: UITableView = {
         let tableView = UITableView()
         tableView.backgroundColor = .clear
@@ -58,6 +60,23 @@ final class EditBookViewController: UIViewController {
         return button
     }()
     private var buttonStackViewBottomConstraint: NSLayoutConstraint?
+
+    // MARK: - Property
+    private let viewModel: EditBookViewModel
+    private let input = PassthroughSubject<EditBookViewModel.Input, Never>()
+    private var cancellables = Set<AnyCancellable>()
+    
+    // MARK: - Initializer
+    init(viewModel: EditBookViewModel) {
+        self.viewModel = viewModel
+        
+        super.init(nibName: nil, bundle: nil)
+    }
+    required init?(coder: NSCoder) {
+        self.viewModel = EditBookViewModel()
+        
+        super.init(coder: coder)
+    }
     
     // MARK: - LifeCycle
     override func viewDidLoad() {
@@ -68,6 +87,7 @@ final class EditBookViewController: UIViewController {
         configureAddSubView()
         configureConstraints()
         configureKeyboard()
+        configureBinding()
     }
     
     // MARK: - Setup & Configuration
@@ -133,6 +153,17 @@ final class EditBookViewController: UIViewController {
             name: UIResponder.keyboardWillHideNotification,
             object: nil
             )
+    }
+    private func configureBinding() {
+        let output = viewModel.transform(input: input.eraseToAnyPublisher())
+        output.receive(on: DispatchQueue.main)
+            .sink { [weak self] event in
+                switch event {
+                case .setTableView:
+                    self?.editPageTableView.reloadData()
+                }
+            }
+            .store(in: &cancellables)
     }
     
     // MARK: - Keyboard Appear & Hide
