@@ -188,6 +188,12 @@ final class EditBookViewController: UIViewController {
             // TODO: - 오디오 추가 로직
         }
         addAudioButton.addAction(addAudioAction, for: .touchUpInside)
+        
+        let publishAction = UIAction { [weak self] _ in
+            // TODO: - 발행 로직
+            self?.navigationController?.popViewController(animated: true)
+        }
+        publishButton.addAction(publishAction, for: .touchUpInside)
     }
     
     // MARK: - Keyboard Appear & Hide
