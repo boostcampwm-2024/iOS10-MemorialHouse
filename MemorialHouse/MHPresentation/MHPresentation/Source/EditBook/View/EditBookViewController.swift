@@ -88,6 +88,7 @@ final class EditBookViewController: UIViewController {
         configureConstraints()
         configureKeyboard()
         configureBinding()
+        configureButtonAction()
     }
     
     // MARK: - Setup & Configuration
@@ -164,6 +165,28 @@ final class EditBookViewController: UIViewController {
                 }
             }
             .store(in: &cancellables)
+    }
+    private func configureButtonAction() {
+        // TODO: - 로직을 정한다음에 Action 추가
+        let addImageAction = UIAction { [weak self] _ in
+            // TODO: - 이미지 추가 로직
+        }
+        addImageButton.addAction(addImageAction, for: .touchUpInside)
+        
+        let addVideoAction = UIAction { [weak self] _ in
+            // TODO: - 비디오 추가 로직
+        }
+        addVideoButton.addAction(addVideoAction, for: .touchUpInside)
+        
+        let addTextAction = UIAction { [weak self] _ in
+            // TODO: - 텍스트 추가로직???
+        }
+        addTextButton.addAction(addTextAction, for: .touchUpInside)
+        
+        let addAudioAction = UIAction { [weak self] _ in
+            // TODO: - 오디오 추가 로직
+        }
+        addAudioButton.addAction(addAudioAction, for: .touchUpInside)
     }
     
     // MARK: - Keyboard Appear & Hide
