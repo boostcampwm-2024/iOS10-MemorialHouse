@@ -139,6 +139,10 @@ final class EditBookViewController: UIViewController {
             // TODO: - 저장하는 로직
             self?.navigationController?.popViewController(animated: true)
         }
+        
+        // 네비게이션 타이틀
+        // TODO: - ViewModel에서 받아오는 타이틀로 변경
+        navigationItem.title = "책 제목"
     }
     private func configureSaveButton() {
         // BookCreationViewController에서 넘어온 경우에만 저장 버튼 보여주기
