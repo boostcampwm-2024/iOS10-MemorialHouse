@@ -32,6 +32,8 @@ final class EditBookViewController: UIViewController {
         button.setImage(.textButton, for: .normal)
         button.backgroundColor = .clear
         
+        button.isHidden = true // 추후 로직 추가하면 보여주기
+        
         return button
     }()
     private let addAudioButton: UIButton = {
