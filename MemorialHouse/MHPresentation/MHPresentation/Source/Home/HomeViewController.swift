@@ -1,10 +1,10 @@
 import UIKit
-import MHDomain
+import MHCore
 import MHFoundation
 
 public final class HomeViewController: UIViewController {
     // MARK: - UI Components
-    private let navigationBar: MHNavigationBar
+    private let navigationBar = MHNavigationBar(title: "")
     private let currentCategoryLabel = UILabel(style: .header2)
     private let categorySelectButton = UIButton(type: .custom)
     private let makingBookFloatingButton: UIButton = {
@@ -39,14 +39,12 @@ public final class HomeViewController: UIViewController {
     // MARK: - Initializer
     public init(viewModel: HomeViewModel) {
         self.viewModel = viewModel
-        self.navigationBar = MHNavigationBar(title: viewModel.houseName)
         super.init(nibName: nil, bundle: nil)
     }
     
     required init?(coder: NSCoder) {
-        guard let houseName = UserDefaults.standard.string(forKey: Constant.houseNameUserDefaultKey) else { return nil }
-        self.viewModel = HomeViewModel(houseName: houseName)
-        self.navigationBar = MHNavigationBar(title: viewModel.houseName)
+        let viewModelFactory = try! DIContainer.shared.resolve(HomeViewModelFactory.self)
+        self.viewModel = viewModelFactory.make()
         super.init(coder: coder)
     }
     
