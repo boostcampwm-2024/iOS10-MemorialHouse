@@ -1,24 +1,26 @@
 import MHFoundation
 
 public struct BookCover {
-    public let bookIdentifer = UUID()
+    public let identifier: UUID
     public let title: String
-    public let imageURL: String
-    public let bookColor: BookColor
-    public let category: String
-    public let isLike: Bool
+    public let imageURL: String?
+    public let color: BookColor
+    public let category: String?
+    public let favorite: Bool
     
     public init(
+        identifier: UUID = .init(),
         title: String,
-        imageURL: String,
-        bookColor: BookColor,
-        category: String,
-        isLike: Bool = false
+        imageURL: String?,
+        color: BookColor,
+        category: String?,
+        favorite: Bool = false
     ) {
+        self.identifier = identifier
         self.title = title
         self.imageURL = imageURL
-        self.bookColor = bookColor
+        self.color = color
         self.category = category
-        self.isLike = isLike
+        self.favorite = favorite
     }
 }

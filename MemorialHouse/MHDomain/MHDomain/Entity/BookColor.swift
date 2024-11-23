@@ -1,4 +1,4 @@
-public enum BookColor {
+public enum BookColor: String {
     case beige
     case blue
     case green
