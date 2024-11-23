@@ -1,5 +1,5 @@
-public actor DIContainer {
-    public static let shared = DIContainer()
+public final class DIContainer {
+    @MainActor public static let shared = DIContainer()
     private var objects: [String: Any] = [:]
     
     private init() {}
