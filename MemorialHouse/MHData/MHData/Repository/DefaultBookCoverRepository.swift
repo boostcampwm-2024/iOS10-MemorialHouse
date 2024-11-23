@@ -3,10 +3,9 @@ import MHDomain
 import MHCore
 
 public final class DefaultBookCoverRepository: BookCoverRepository {
+    private let dataSource: any CoreDataSource<BookCoverDTO>
     
-    private let dataSource: CoreDataSource
-    
-    public init(dataSource: CoreDataSource) {
+    public init(dataSource: any CoreDataSource<BookCoverDTO>) {
         self.dataSource = dataSource
     }
     
@@ -33,11 +32,12 @@ public final class DefaultBookCoverRepository: BookCoverRepository {
         return []
     }
     
-    public func fetchBookCover(with id: UUID) -> BookCover? {
-        let result = dataSource.fetchBookCover(with: id)
+    public func fetchBookCover(with id: UUID) async -> BookCover? {
+        let result = await dataSource.fetch()
         
         switch result {
-        case .success(let bookCoverDTO):
+        case .success(let bookCoverDTOs):
+            let bookCoverDTO = bookCoverDTOs.filter({ $0.identifier == id }).first
             guard let bookCoverDTO,
                   let color = BookColor(rawValue: bookCoverDTO.color) else { return nil }
             
@@ -56,11 +56,11 @@ public final class DefaultBookCoverRepository: BookCoverRepository {
         return nil
     }
     
-    public func deleteBookCover(_ id: UUID) {
-        let result =  dataSource.deleteBookCover(with: id)
+    public func deleteBookCover(_ id: UUID) async {
+        await dataSource.delete(with: id)
     }
     
-    public func create(bookCover: BookCover) {
+    public func create(bookCover: BookCover) async {
         let bookCoverDTO = BookCoverDTO(
             identifier: bookCover.identifier,
             title: bookCover.title,
@@ -69,10 +69,10 @@ public final class DefaultBookCoverRepository: BookCoverRepository {
             category: bookCover.category,
             favorite: bookCover.favorite
         )
-        let result =  dataSource.create(bookCover: bookCoverDTO)
+        await dataSource.create(data: bookCoverDTO)
     }
     
-    public func update(id: UUID, bookCover: BookCover) {
+    public func update(id: UUID, bookCover: BookCover) async {
         let bookCoverDTO = BookCoverDTO(
             identifier: bookCover.identifier,
             title: bookCover.title,
@@ -81,6 +81,6 @@ public final class DefaultBookCoverRepository: BookCoverRepository {
             category: bookCover.category,
             favorite: bookCover.favorite
         )
-        let result =  dataSource.update(id: id, bookCover: bookCoverDTO)
+        await dataSource.update(with: id, data: bookCoverDTO)
     }
 }
