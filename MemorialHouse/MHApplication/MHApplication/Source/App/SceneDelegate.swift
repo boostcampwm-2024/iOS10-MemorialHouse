@@ -1,4 +1,6 @@
 import UIKit
+import MHCore
+import MHDomain
 import MHFoundation
 import MHPresentation
 
@@ -12,12 +14,15 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     ) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         window = UIWindow(windowScene: windowScene)
-        let initialViewController: UIViewController
+        var initialViewController: UIViewController = RegisterViewController(viewModel: RegisterViewModel())
         if let houseName = UserDefaults.standard.object(forKey: Constant.houseNameUserDefaultKey) as? String {
-            let viewModel = HomeViewModel(houseName: houseName)
-            initialViewController = HomeViewController(viewModel: viewModel)
-        } else {
-            initialViewController = RegisterViewController(viewModel: RegisterViewModel())
+            do {
+                let viewModelFactory = try DIContainer.shared.resolve(HomeViewModelFactory.self)
+                let viewModel = viewModelFactory.make()
+                initialViewController = HomeViewController(viewModel: viewModel)
+            } catch {
+                MHLogger.error(error.localizedDescription)
+            }
         }
         
         let navigationController = UINavigationController(rootViewController: initialViewController)
