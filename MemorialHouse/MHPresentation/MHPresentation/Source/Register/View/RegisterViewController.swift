@@ -1,6 +1,8 @@
-import UIKit
-import MHFoundation
 import Combine
+import UIKit
+import MHCore
+import MHDomain
+import MHFoundation
 
 public final class RegisterViewController: UIViewController {
     // MARK: - Property
@@ -100,9 +102,15 @@ public final class RegisterViewController: UIViewController {
             case .registerButtonEnabled(let isEnabled):
                 self?.registerButton.isEnabled = isEnabled
             case .moveToHome(let houseName):
-                let homeViewController = HomeViewController(viewModel: HomeViewModel(houseName: houseName))
-                self?.navigationController?.pushViewController(homeViewController, animated: false)
-                self?.navigationController?.viewControllers.removeFirst()
+                do {
+                    let homeViewModelFactory = try DIContainer.shared.resolve(HomeViewModelFactory.self)
+                    let homeViewModel = homeViewModelFactory.make()
+                    let homeViewController = HomeViewController(viewModel: homeViewModel)
+                    self?.navigationController?.pushViewController(homeViewController, animated: false)
+                    self?.navigationController?.viewControllers.removeFirst()
+                } catch {
+                    MHLogger.error(error.localizedDescription)
+                }
             }
         }.store(in: &cancellables)
     }
