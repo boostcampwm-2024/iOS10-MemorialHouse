@@ -42,7 +42,7 @@ struct UserHouseUseCaseTest {
     }
     
     @Test mutating func test두글자_이하인_경우_원본_문자열_그대로_반환() async throws {
-        // Arrange
+        // Arrange 준비 단계: 테스트 대상 시스템(SUT)와 의존성을 원하는 상태로 만들기
         let dummyUserHouse = UserHouse(
             name: "Hi",
             categories: [],
@@ -51,10 +51,10 @@ struct UserHouseUseCaseTest {
         let stubUserHouseRepository = StubUserHouseRepository(dummyData: dummyUserHouse)
         self.sut = DefaultFetchUserHouseUseCase(repository: stubUserHouseRepository)
 
-        // Act
+        // Act 실행 단계: SUT 메소드를 호출하면서 의존성을 전달해서 결과를 저장하기
         let result = await sut.execute()
         
-        // Assert
+        // Assert 검증 단계: 결과와 기대치를 비교해서 검증하기
         #expect(result.name == "Hi")
     }
 }
