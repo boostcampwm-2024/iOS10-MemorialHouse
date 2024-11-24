@@ -8,13 +8,15 @@ public final class HomeViewModel: ViewModelType {
     }
     
     enum Output {
-        case fetchedUserHouse(UserHouse)
+        case fetchedUserHouse
     }
     
     private let output = PassthroughSubject<Output, Never>()
     private var fetchUserHouseUseCase: FetchUserHouseUseCase
     private var cancellables = Set<AnyCancellable>()
-    private(set) var userHouse = PassthroughSubject<UserHouse, Never>()
+    private(set) var houseName = ""
+    private(set) var categories = ["전체", "즐겨찾기"]
+    private(set) var bookCovers = [BookCover]()
     
     public init(fetchUserHouseUseCase: FetchUserHouseUseCase) {
         self.fetchUserHouseUseCase = fetchUserHouseUseCase
@@ -32,5 +34,15 @@ public final class HomeViewModel: ViewModelType {
         return output.eraseToAnyPublisher()
     }
     
+    @MainActor
+    private func fetchUserHouse() {
+        Task {
+            let userHouse = await fetchUserHouseUseCase.execute()
+            self.houseName = userHouse.name
+            self.categories.append(contentsOf: userHouse.categories)
+            self.bookCovers = userHouse.bookCovers
+            output.send(.fetchedUserHouse)
+            MHLogger.debug("\(#function): \(userHouse)")
+        }
     }
 }

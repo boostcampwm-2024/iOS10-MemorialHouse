@@ -57,6 +57,7 @@ public final class HomeViewController: UIViewController {
         
         setup()
         bind()
+        input.send(.viewDidLoad)
         configureAddSubView()
         configureAction()
         configureConstraints()
@@ -84,9 +85,24 @@ public final class HomeViewController: UIViewController {
         let output = viewModel.transform(input: input.eraseToAnyPublisher())
         
         output.sink { [weak self] event in
+            guard let self else { return }
             switch event {
+            case .fetchedUserHouse:
+                self.updateUserHouse()
             }
         }.store(in: &cancellables)
+    }
+    
+    private func updateUserHouse() {
+        // 네비게이션 타이틀 설정
+        let houseName = viewModel.houseName
+        navigationBar.configureTitle(with: houseName)
+        
+        // 카테고리 설정
+        currentCategoryLabel.text = viewModel.categories.first
+        
+        // BoockCover 설정
+        collectionView.reloadData()
     }
     
     private func configureAddSubView() {
@@ -203,7 +219,7 @@ extension HomeViewController: UICollectionViewDataSource {
         _ collectionView: UICollectionView,
         numberOfItemsInSection section: Int
     ) -> Int {
-        0
+        viewModel.bookCovers.count
     }
     
     public func collectionView(
@@ -214,7 +230,16 @@ extension HomeViewController: UICollectionViewDataSource {
             withReuseIdentifier: BookCollectionViewCell.identifier,
             for: indexPath
         ) as? BookCollectionViewCell else { return UICollectionViewCell() }
-        // TODO: 데이터 넣기
+        // TODO: Image Loader 필요 & 메모리 캐싱 필요
+        
+        let bookCover = viewModel.bookCovers[indexPath.item]
+        cell.configure(
+            title: bookCover.title,
+            bookCoverImage: bookCover.color.image,
+            targetImage: UIImage(systemName: "person")!,
+            isLike: bookCover.favorite,
+            houseName: viewModel.houseName
+        )
         
         return cell
     }
