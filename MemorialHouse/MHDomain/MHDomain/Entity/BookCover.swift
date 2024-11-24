@@ -1,6 +1,6 @@
 import MHFoundation
 
-public struct BookCover: Sendable {
+public struct BookCover: Equatable, Sendable {
     public let identifier = UUID()
     public let title: String
     public let imageURL: String
@@ -20,5 +20,9 @@ public struct BookCover: Sendable {
         self.color = color
         self.category = category
         self.favorite = favorite
+    }
+    
+    public static func == (lhs: BookCover, rhs: BookCover) -> Bool {
+        lhs.identifier == rhs.identifier
     }
 }

@@ -1,4 +1,4 @@
-public struct UserHouse: Sendable {
+public struct UserHouse: Equatable, Sendable {
     public let name: String
     public let categories: [String]
     public let bookCovers: [BookCover]
@@ -11,5 +11,11 @@ public struct UserHouse: Sendable {
         self.name = name
         self.categories = categories
         self.bookCovers = bookCovers
+    }
+    
+    public static func == (lhs: UserHouse, rhs: UserHouse) -> Bool {
+        lhs.name == rhs.name
+        && lhs.categories == rhs.categories
+        && lhs.bookCovers == rhs.bookCovers
     }
 }
