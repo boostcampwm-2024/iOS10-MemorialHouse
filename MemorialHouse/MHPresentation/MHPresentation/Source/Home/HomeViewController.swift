@@ -38,6 +38,11 @@ public final class HomeViewController: UIViewController {
     private var cancellables = Set<AnyCancellable>()
     private var floatingButtonBottomConstraint: NSLayoutConstraint?
     private var isFloatingButtonHidden = false
+    private var currentCategoryIndex = 0 {
+        didSet {
+            currentCategoryLabel.text = viewModel.categories[currentCategoryIndex]
+        }
+    }
     
     // MARK: - Initializer
     public init(viewModel: HomeViewModel) {
@@ -115,8 +120,10 @@ public final class HomeViewController: UIViewController {
     
     private func configureAction() {
         categorySelectButton.addAction(UIAction { [weak self] _ in
-            let categoryViewModel = CategoryViewModel()
+            guard let self else { return }
+            let categoryViewModel = CategoryViewModel(categories: self.viewModel.categories)
             let categoryViewController = CategoryViewController(viewModel: categoryViewModel)
+            categoryViewController.delegate = self
             let navigationController = UINavigationController(rootViewController: categoryViewController)
             
             if let sheet = navigationController.sheetPresentationController {
@@ -125,7 +132,7 @@ public final class HomeViewController: UIViewController {
                 }]
             }
             
-            self?.present(navigationController, animated: true)
+            self.present(navigationController, animated: true)
         }, for: .touchUpInside)
         
         makingBookFloatingButton.addAction(UIAction { [weak self] _ in
@@ -242,5 +249,11 @@ extension HomeViewController: UICollectionViewDataSource {
         )
         
         return cell
+    }
+}
+
+extension HomeViewController: CategoryViewControllerDelegate {
+    func categoryViewController(_ categoryViewController: CategoryViewController, didSelectCategoryIndex index: Int) {
+        currentCategoryIndex = index
     }
 }

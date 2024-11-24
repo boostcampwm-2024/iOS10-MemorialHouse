@@ -2,11 +2,17 @@ import Combine
 import MHFoundation
 import UIKit
 
+@MainActor
+protocol CategoryViewControllerDelegate: AnyObject {
+    func categoryViewController(_ categoryViewController: CategoryViewController, didSelectCategoryIndex index: Int)
+}
+
 final class CategoryViewController: UIViewController {
     // MARK: - UI Components
     private let categoryTableView = UITableView()
     
     // MARK: - Properties
+    weak var delegate: CategoryViewControllerDelegate?
     private let viewModel: CategoryViewModel
     private let input = PassthroughSubject<CategoryViewModel.Input, Never>()
     private var cancellables = Set<AnyCancellable>()
@@ -18,7 +24,7 @@ final class CategoryViewController: UIViewController {
     }
     
     required init?(coder: NSCoder) {
-        self.viewModel = CategoryViewModel()
+        self.viewModel = CategoryViewModel(categories: ["전체", "즐겨찾기"])
         super.init(coder: coder)
     }
     
@@ -35,8 +41,7 @@ final class CategoryViewController: UIViewController {
     
     func calculateSheetHeight() -> CGFloat {
         let cellHeight = CategoryTableViewCell.height
-        // TODO: 데이터 개수 받아와서 계산하기
-        let itemCount = CGFloat(2) // 전체 + 즐겨찾기 포함
+        let itemCount = CGFloat(viewModel.categories.count)
         return (cellHeight * itemCount) + Constant.navigationBarHeight
     }
     
@@ -112,7 +117,8 @@ extension CategoryViewController: UITableViewDelegate {
         _ tableView: UITableView,
         didSelectRowAt indexPath: IndexPath
     ) {
-        // TODO: 카테고리 선택 시 로직 필요
+        delegate?.categoryViewController(self, didSelectCategoryIndex: indexPath.row)
+        dismiss(animated: true, completion: nil)
     }
     
     func tableView(
@@ -158,7 +164,7 @@ extension CategoryViewController: UITableViewDataSource {
         _ tableView: UITableView,
         numberOfRowsInSection section: Int
     ) -> Int {
-        2
+        viewModel.categories.count
     }
     
     func tableView(
@@ -169,8 +175,8 @@ extension CategoryViewController: UITableViewDataSource {
             withIdentifier: CategoryTableViewCell.identifier,
             for: indexPath
         ) as? CategoryTableViewCell else { return UITableViewCell() }
+        cell.configure(category: viewModel.categories[indexPath.row], isSelected: false)
         
-        // TODO: 전체, 즐겨찾기, 데이터 받아와서 셀 구성하기
         return cell
     }
 }
