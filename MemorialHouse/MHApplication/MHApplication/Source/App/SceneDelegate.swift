@@ -17,7 +17,7 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         registerDependency()
         
         var initialViewController: UIViewController = RegisterViewController(viewModel: RegisterViewModel())
-        if let houseName = UserDefaults.standard.object(forKey: Constant.houseNameUserDefaultKey) as? String {
+        if UserDefaults.standard.object(forKey: Constant.houseNameUserDefaultKey) != nil {
             do {
                 let viewModelFactory = try DIContainer.shared.resolve(HomeViewModelFactory.self)
                 let viewModel = viewModelFactory.make()
