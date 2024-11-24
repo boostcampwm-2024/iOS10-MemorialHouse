@@ -14,7 +14,6 @@ final class CategoryViewController: UIViewController {
     // MARK: - Properties
     weak var delegate: CategoryViewControllerDelegate?
     private let viewModel: CategoryViewModel
-    private let input = PassthroughSubject<CategoryViewModel.Input, Never>()
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Initializer
@@ -33,8 +32,6 @@ final class CategoryViewController: UIViewController {
         super.viewDidLoad()
         
         setup()
-        bind()
-        input.send(.viewDidLoad)
         configureNavigationBar()
         configureConstraints()
     }
@@ -55,17 +52,6 @@ final class CategoryViewController: UIViewController {
             CategoryTableViewCell.self,
             forCellReuseIdentifier: CategoryTableViewCell.identifier
         )
-    }
-    
-    private func bind() {
-        let output = viewModel.transform(input: input.eraseToAnyPublisher())
-        
-        output.sink { [weak self] event in
-            switch event {
-            case .fetchedCategories:
-                self?.categoryTableView.reloadData()
-            }
-        }.store(in: &cancellables)
     }
     
     private func configureNavigationBar() {
