@@ -1,6 +1,6 @@
 import MHFoundation
 
-public struct BookCover {
+public struct BookCover: Sendable {
     public let identifier = UUID()
     public let title: String
     public let imageURL: String

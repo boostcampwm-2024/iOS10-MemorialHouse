@@ -1,4 +1,4 @@
-public struct UserHouse {
+public struct UserHouse: Sendable {
     public let name: String
     public let categories: [String]
     public let bookCovers: [BookCover]
