@@ -1,5 +1,7 @@
+import Combine
 import Testing
-import MHPresentation
+@testable import MHPresentation
+@testable import MHDomain
 
 struct HomeViewModelTest {
     var sut: HomeViewModel!

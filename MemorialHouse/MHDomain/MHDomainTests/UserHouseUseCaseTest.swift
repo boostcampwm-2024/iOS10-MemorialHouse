@@ -1,5 +1,5 @@
 import Testing
-import MHDomain
+@testable import MHDomain
 
 struct UserHouseUseCaseTest {
     var sut: FetchUserHouseUseCase!
