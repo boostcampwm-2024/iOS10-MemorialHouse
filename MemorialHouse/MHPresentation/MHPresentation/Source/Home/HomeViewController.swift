@@ -1,3 +1,4 @@
+import Combine
 import UIKit
 import MHCore
 import MHFoundation
@@ -33,6 +34,8 @@ public final class HomeViewController: UIViewController {
     
     // MARK: - Properties
     private let viewModel: HomeViewModel
+    private let input = PassthroughSubject<HomeViewModel.Input, Never>()
+    private var cancellables = Set<AnyCancellable>()
     private var floatingButtonBottomConstraint: NSLayoutConstraint?
     private var isFloatingButtonHidden = false
     
@@ -53,6 +56,7 @@ public final class HomeViewController: UIViewController {
         super.viewDidLoad()
         
         setup()
+        bind()
         configureAddSubView()
         configureAction()
         configureConstraints()
@@ -73,8 +77,16 @@ public final class HomeViewController: UIViewController {
             BookCollectionViewCell.self,
             forCellWithReuseIdentifier: BookCollectionViewCell.identifier
         )
-        currentCategoryLabel.text = "전체" // TODO: 카테고리 관리 필요
         categorySelectButton.setImage(.dropDown, for: .normal)
+    }
+    
+    private func bind() {
+        let output = viewModel.transform(input: input.eraseToAnyPublisher())
+        
+        output.sink { [weak self] event in
+            switch event {
+            }
+        }.store(in: &cancellables)
     }
     
     private func configureAddSubView() {
