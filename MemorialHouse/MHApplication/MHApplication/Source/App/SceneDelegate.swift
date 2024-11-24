@@ -1,5 +1,6 @@
 import UIKit
 import MHCore
+import MHData
 import MHDomain
 import MHFoundation
 import MHPresentation
@@ -36,7 +37,7 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         do {
             DIContainer.shared.register(
                 UserHouseRepository.self,
-                object: StubUserHouseRepository()
+                object: DefaultUserHouseRepository()
             )
             
             let userHouseRepository = try DIContainer.shared.resolve(UserHouseRepository.self)
