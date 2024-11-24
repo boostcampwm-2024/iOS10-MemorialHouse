@@ -47,20 +47,26 @@ public final class HomeViewModel: ViewModelType {
             self.categories.append(contentsOf: userHouse.categories)
             self.bookCovers = userHouse.bookCovers
             self.currentBookCovers = userHouse.bookCovers
+            
             output.send(.fetchedUserHouse)
-            MHLogger.debug("\(#function): \(userHouse)")
         }
     }
     
     private func filterBooks(with index: Int) {
-        if index == 0 {
+        guard index >= 0 && index < categories.count else {
+            MHLogger.error("유효하지 않은 인덱스: \(index)")
+            return
+        }
+
+        switch categories[index] {
+        case "전체":
             currentBookCovers = bookCovers
-        } else if index == 1 {
+        case "즐겨찾기":
             currentBookCovers = bookCovers.filter { $0.favorite }
-        } else {
+        default:
             currentBookCovers = bookCovers.filter { $0.category == categories[index] }
         }
-        
+
         output.send(.filteredBooks)
     }
 }
