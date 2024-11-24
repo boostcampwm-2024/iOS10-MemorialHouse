@@ -101,7 +101,7 @@ public final class RegisterViewController: UIViewController {
             switch event {
             case .registerButtonEnabled(let isEnabled):
                 self?.registerButton.isEnabled = isEnabled
-            case .moveToHome(let houseName):
+            case .moveToHome:
                 do {
                     let homeViewModelFactory = try DIContainer.shared.resolve(HomeViewModelFactory.self)
                     let homeViewModel = homeViewModelFactory.make()
