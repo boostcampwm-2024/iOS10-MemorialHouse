@@ -43,7 +43,7 @@ public final class HomeViewController: UIViewController {
     }
     
     required init?(coder: NSCoder) {
-        let viewModelFactory = try! DIContainer.shared.resolve(HomeViewModelFactory.self)
+        guard let viewModelFactory = try? DIContainer.shared.resolve(HomeViewModelFactory.self) else { return nil }
         self.viewModel = viewModelFactory.make()
         super.init(coder: coder)
     }
