@@ -24,7 +24,7 @@ final class CategoryViewController: UIViewController {
     }
     
     required init?(coder: NSCoder) {
-        self.viewModel = CategoryViewModel(categories: ["전체", "즐겨찾기"])
+        self.viewModel = CategoryViewModel(categories: ["전체", "즐겨찾기"], currentCategoryIndex: 0)
         super.init(coder: coder)
     }
     
@@ -175,7 +175,8 @@ extension CategoryViewController: UITableViewDataSource {
             withIdentifier: CategoryTableViewCell.identifier,
             for: indexPath
         ) as? CategoryTableViewCell else { return UITableViewCell() }
-        cell.configure(category: viewModel.categories[indexPath.row], isSelected: false)
+        let isSelected = indexPath.row == viewModel.currentCategoryIndex
+        cell.configure(category: viewModel.categories[indexPath.row], isSelected: isSelected)
         
         return cell
     }

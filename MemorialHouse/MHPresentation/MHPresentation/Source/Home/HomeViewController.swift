@@ -123,7 +123,10 @@ public final class HomeViewController: UIViewController {
     private func configureAction() {
         categorySelectButton.addAction(UIAction { [weak self] _ in
             guard let self else { return }
-            let categoryViewModel = CategoryViewModel(categories: self.viewModel.categories)
+            let categoryViewModel = CategoryViewModel(
+                categories: self.viewModel.categories,
+                currentCategoryIndex: self.currentCategoryIndex
+            )
             let categoryViewController = CategoryViewController(viewModel: categoryViewModel)
             categoryViewController.delegate = self
             let navigationController = UINavigationController(rootViewController: categoryViewController)

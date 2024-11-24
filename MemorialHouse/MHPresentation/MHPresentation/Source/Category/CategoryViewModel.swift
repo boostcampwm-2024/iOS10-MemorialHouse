@@ -13,9 +13,11 @@ final class CategoryViewModel: ViewModelType {
     private let output = PassthroughSubject<Output, Never>()
     private var cancellables = Set<AnyCancellable>()
     private(set) var categories: [String]
+    private(set) var currentCategoryIndex: Int
     
-    init(categories: [String]) {
+    init(categories: [String], currentCategoryIndex: Int) {
         self.categories = categories
+        self.currentCategoryIndex = currentCategoryIndex
     }
     
     func transform(input: AnyPublisher<Input, Never>) -> AnyPublisher<Output, Never> {
