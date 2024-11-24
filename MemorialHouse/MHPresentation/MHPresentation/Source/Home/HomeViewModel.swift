@@ -3,12 +3,12 @@ import MHCore
 import MHDomain
 
 public final class HomeViewModel: ViewModelType {
-    enum Input {
+    public enum Input {
         case viewDidLoad
         case selectedCategory(index: Int)
     }
     
-    enum Output {
+    public enum Output {
         case fetchedUserHouse
         case filteredBooks
     }
@@ -41,7 +41,7 @@ public final class HomeViewModel: ViewModelType {
     
     @MainActor
     private func fetchUserHouse() {
-        Task {
+        Task { @MainActor in
             let userHouse = await fetchUserHouseUseCase.execute()
             self.houseName = userHouse.name
             self.categories.append(contentsOf: userHouse.categories)
