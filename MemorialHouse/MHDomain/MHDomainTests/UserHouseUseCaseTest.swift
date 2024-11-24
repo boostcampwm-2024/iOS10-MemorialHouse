@@ -21,7 +21,9 @@ struct MemorialHouseUseCaseTest {
         let result = await sut.execute()
         
         // Assert 검증 단계: 결과와 기대치를 비교해서 검증하기
-        #expect(result == dummyMemorialHouse)
+        #expect(result.name == dummyMemorialHouse.name)
+        #expect(result.categories == dummyMemorialHouse.categories)
+        #expect(result.bookCovers == dummyMemorialHouse.bookCovers)
     }
     
     @Test mutating func test세글자_이상인_경우_글자_사이에_공백추가() async throws {
