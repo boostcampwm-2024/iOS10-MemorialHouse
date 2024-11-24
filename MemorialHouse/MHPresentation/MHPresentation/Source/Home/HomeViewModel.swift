@@ -9,20 +9,20 @@ public final class HomeViewModel: ViewModelType {
     }
     
     public enum Output {
-        case fetchedUserHouse
+        case fetchedMemorialHouse
         case filteredBooks
     }
     
     private let output = PassthroughSubject<Output, Never>()
-    private var fetchUserHouseUseCase: FetchUserHouseUseCase
+    private var fetchMemorialHouseUseCase: FetchMemorialHouseUseCase
     private var cancellables = Set<AnyCancellable>()
     private(set) var houseName = ""
     private(set) var categories = ["전체", "즐겨찾기"]
     private(set) var bookCovers = [BookCover]()
     private(set) var currentBookCovers = [BookCover]()
     
-    public init(fetchUserHouseUseCase: FetchUserHouseUseCase) {
-        self.fetchUserHouseUseCase = fetchUserHouseUseCase
+    public init(fetchMemorialHouseUseCase: FetchMemorialHouseUseCase) {
+        self.fetchMemorialHouseUseCase = fetchMemorialHouseUseCase
     }
     
     @MainActor
@@ -30,7 +30,7 @@ public final class HomeViewModel: ViewModelType {
         input.sink { [weak self] event in
             switch event {
             case .viewDidLoad:
-                self?.fetchUserHouse()
+                self?.fetchMemorialHouse()
             case .selectedCategory(let index):
                 self?.filterBooks(with: index)
             }
@@ -40,15 +40,15 @@ public final class HomeViewModel: ViewModelType {
     }
     
     @MainActor
-    private func fetchUserHouse() {
+    private func fetchMemorialHouse() {
         Task { @MainActor in
-            let userHouse = await fetchUserHouseUseCase.execute()
-            self.houseName = userHouse.name
-            self.categories.append(contentsOf: userHouse.categories)
-            self.bookCovers = userHouse.bookCovers
-            self.currentBookCovers = userHouse.bookCovers
+            let memorialHouse = await fetchMemorialHouseUseCase.execute()
+            self.houseName = memorialHouse.name
+            self.categories.append(contentsOf: memorialHouse.categories)
+            self.bookCovers = memorialHouse.bookCovers
+            self.currentBookCovers = memorialHouse.bookCovers
             
-            output.send(.fetchedUserHouse)
+            output.send(.fetchedMemorialHouse)
         }
     }
     

@@ -8,9 +8,9 @@ struct HomeViewModelTest {
     var cancellables = Set<AnyCancellable>()
     
     @MainActor
-    @Test mutating func test시작할때_UserHouse_모델을_가져온다() async throws {
+    @Test mutating func test시작할때_MemorialHouse_모델을_가져온다() async throws {
         // Arrange 준비 단계: 테스트 대상 시스템(SUT)와 의존성을 원하는 상태로 만들기
-        let dummyUserHouse = UserHouse(
+        let dummyMemorialHouse = MemorialHouse(
             name: "효준",
             categories: ["가족", "친구"],
             bookCovers: [
@@ -18,8 +18,8 @@ struct HomeViewModelTest {
                 BookCover(title: "책2", imageURL: "Temp", color: .beige, category: "친구")
             ]
         )
-        let stubFetchUserHouseUseCase = StubFetchUserHouseUseCase(dummyUserHouse: dummyUserHouse)
-        self.sut = HomeViewModel(fetchUserHouseUseCase: stubFetchUserHouseUseCase)
+        let stubFetchMemorialHouseUseCase = StubFetchMemorialHouseUseCase(dummyMemorialHouse: dummyMemorialHouse)
+        self.sut = HomeViewModel(fetchMemorialHouseUseCase: stubFetchMemorialHouseUseCase)
         
         let input = PassthroughSubject<HomeViewModel.Input, Never>()
         var receivedOutputs: [HomeViewModel.Output] = []
@@ -43,7 +43,7 @@ struct HomeViewModelTest {
     @MainActor
     @Test mutating func test카테고리_선택시_해당_카테고리에_맞는_책들로_필터링한다() async throws {
         // Arrange 준비 단계: 테스트 대상 시스템(SUT)와 의존성을 원하는 상태로 만들기
-        let dummyUserHouse = UserHouse(
+        let dummyMemorialHouse = MemorialHouse(
             name: "효준",
             categories: ["가족", "친구"],
             bookCovers: [
@@ -51,8 +51,8 @@ struct HomeViewModelTest {
                 BookCover(title: "책2", imageURL: "Temp", color: .beige, category: "친구")
             ]
         )
-        let stubFetchUserHouseUseCase = StubFetchUserHouseUseCase(dummyUserHouse: dummyUserHouse)
-        self.sut = HomeViewModel(fetchUserHouseUseCase: stubFetchUserHouseUseCase)
+        let stubFetchMemorialHouseUseCase = StubFetchMemorialHouseUseCase(dummyMemorialHouse: dummyMemorialHouse)
+        self.sut = HomeViewModel(fetchMemorialHouseUseCase: stubFetchMemorialHouseUseCase)
         
         let input = PassthroughSubject<HomeViewModel.Input, Never>()
         var receivedOutputs: [HomeViewModel.Output] = []
@@ -78,7 +78,7 @@ struct HomeViewModelTest {
     @MainActor
     @Test mutating func test유효하지_않은_인덱스를_선택하면_에러를_발생시킨다() async throws {
         // Arrange 준비 단계: 테스트 대상 시스템(SUT)와 의존성을 원하는 상태로 만들기
-        let dummyUserHouse = UserHouse(
+        let dummyMemorialHouse = MemorialHouse(
             name: "효준",
             categories: ["가족", "친구"],
             bookCovers: [
@@ -86,8 +86,8 @@ struct HomeViewModelTest {
                 BookCover(title: "책2", imageURL: "Temp", color: .beige, category: "친구")
             ]
         )
-        let stubFetchUserHouseUseCase = StubFetchUserHouseUseCase(dummyUserHouse: dummyUserHouse)
-        self.sut = HomeViewModel(fetchUserHouseUseCase: stubFetchUserHouseUseCase)
+        let stubFetchMemorialHouseUseCase = StubFetchMemorialHouseUseCase(dummyMemorialHouse: dummyMemorialHouse)
+        self.sut = HomeViewModel(fetchMemorialHouseUseCase: stubFetchMemorialHouseUseCase)
         
         let input = PassthroughSubject<HomeViewModel.Input, Never>()
         var receivedOutputs: [HomeViewModel.Output] = []

@@ -92,15 +92,15 @@ public final class HomeViewController: UIViewController {
         output.sink { [weak self] event in
             guard let self else { return }
             switch event {
-            case .fetchedUserHouse:
-                self.updateUserHouse()
+            case .fetchedMemorialHouse:
+                self.updateMemorialHouse()
             case .filteredBooks:
                 self.collectionView.reloadData()
             }
         }.store(in: &cancellables)
     }
     
-    private func updateUserHouse() {
+    private func updateMemorialHouse() {
         // 네비게이션 타이틀 설정
         let houseName = viewModel.houseName
         navigationBar.configureTitle(with: houseName)

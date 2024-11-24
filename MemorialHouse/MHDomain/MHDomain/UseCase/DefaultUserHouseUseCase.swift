@@ -1,18 +1,18 @@
-public struct DefaultFetchUserHouseUseCase: FetchUserHouseUseCase {    
-    private let repository: UserHouseRepository
+public struct DefaultFetchMemorialHouseUseCase: FetchMemorialHouseUseCase {    
+    private let repository: MemorialHouseRepository
     
-    public init(repository: UserHouseRepository) {
+    public init(repository: MemorialHouseRepository) {
         self.repository = repository
     }
     
-    public func execute() async -> UserHouse {
-        let userHouse = await repository.fetchUserHouse()
-        let transformedName = transformHouseName(with: userHouse.name)
+    public func execute() async -> MemorialHouse {
+        let memorialHouse = await repository.fetchMemorialHouse()
+        let transformedName = transformHouseName(with: memorialHouse.name)
         
-        return UserHouse(
+        return MemorialHouse(
             name: transformedName,
-            categories: userHouse.categories,
-            bookCovers: userHouse.bookCovers
+            categories: memorialHouse.categories,
+            bookCovers: memorialHouse.bookCovers
         )
     }
     

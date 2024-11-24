@@ -1,10 +1,10 @@
 import MHDomain
 
-public struct DefaultUserHouseRepository: UserHouseRepository {
+public struct DefaultMemorialHouseRepository: MemorialHouseRepository {
     public init() { }
     
-    public func fetchUserHouse() async -> UserHouse {
+    public func fetchMemorialHouse() async -> MemorialHouse {
         // TODO: CoreData로부터 꺼내오기
-        return UserHouse(name: "", categories: [], bookCovers: [])
+        return MemorialHouse(name: "", categories: [], bookCovers: [])
     }
 }

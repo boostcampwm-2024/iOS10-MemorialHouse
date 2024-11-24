@@ -36,20 +36,20 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func registerDependency() {
         do {
             DIContainer.shared.register(
-                UserHouseRepository.self,
-                object: DefaultUserHouseRepository()
+                MemorialHouseRepository.self,
+                object: DefaultMemorialHouseRepository()
             )
             
-            let userHouseRepository = try DIContainer.shared.resolve(UserHouseRepository.self)
+            let memorialHouseRepository = try DIContainer.shared.resolve(MemorialHouseRepository.self)
             DIContainer.shared.register(
-                FetchUserHouseUseCase.self,
-                object: DefaultFetchUserHouseUseCase(repository: userHouseRepository)
+                FetchMemorialHouseUseCase.self,
+                object: DefaultFetchMemorialHouseUseCase(repository: memorialHouseRepository)
             )
             
-            let fetchUserHouseUseCase = try DIContainer.shared.resolve(FetchUserHouseUseCase.self)
+            let fetchMemorialHouseUseCase = try DIContainer.shared.resolve(FetchMemorialHouseUseCase.self)
             DIContainer.shared.register(
                 HomeViewModelFactory.self,
-                object: HomeViewModelFactory(fetchUserHouseUseCase: fetchUserHouseUseCase)
+                object: HomeViewModelFactory(fetchMemorialHouseUseCase: fetchMemorialHouseUseCase)
             )
         } catch let error as MHError {
             MHLogger.error("\(error.description)")
