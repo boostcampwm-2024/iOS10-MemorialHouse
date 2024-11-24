@@ -94,6 +94,8 @@ public final class HomeViewController: UIViewController {
             switch event {
             case .fetchedUserHouse:
                 self.updateUserHouse()
+            case .filteredBooks:
+                self.collectionView.reloadData()
             }
         }.store(in: &cancellables)
     }
@@ -226,7 +228,7 @@ extension HomeViewController: UICollectionViewDataSource {
         _ collectionView: UICollectionView,
         numberOfItemsInSection section: Int
     ) -> Int {
-        viewModel.bookCovers.count
+        viewModel.currentBookCovers.count
     }
     
     public func collectionView(
@@ -239,7 +241,7 @@ extension HomeViewController: UICollectionViewDataSource {
         ) as? BookCollectionViewCell else { return UICollectionViewCell() }
         // TODO: Image Loader 필요 & 메모리 캐싱 필요
         
-        let bookCover = viewModel.bookCovers[indexPath.item]
+        let bookCover = viewModel.currentBookCovers[indexPath.item]
         cell.configure(
             title: bookCover.title,
             bookCoverImage: bookCover.color.image,
@@ -255,5 +257,6 @@ extension HomeViewController: UICollectionViewDataSource {
 extension HomeViewController: CategoryViewControllerDelegate {
     func categoryViewController(_ categoryViewController: CategoryViewController, didSelectCategoryIndex index: Int) {
         currentCategoryIndex = index
+        input.send(.selectedCategory(index: index))
     }
 }
