@@ -2,15 +2,15 @@ import MHFoundation
 import MHDomain
 import MHCore
 
-public final class DefaultBookCoverRepository: BookCoverRepository {
-    private let dataSource: any CoreDataSource<BookCoverDTO>
+public struct LocalBookCoverRepository: BookCoverRepository {
+    private let storage: BookCoverStorage
     
-    public init(dataSource: any CoreDataSource<BookCoverDTO>) {
-        self.dataSource = dataSource
+    public init(storage: BookCoverStorage) {
+        self.storage = storage
     }
     
     public func fetchAllBookCovers() async -> [BookCover] {
-        let result = await dataSource.fetch()
+        let result = await storage.fetch()
         
         switch result {
         case .success(let bookCoverDTOs):
@@ -33,7 +33,7 @@ public final class DefaultBookCoverRepository: BookCoverRepository {
     }
     
     public func fetchBookCover(with id: UUID) async -> BookCover? {
-        let result = await dataSource.fetch()
+        let result = await storage.fetch()
         
         switch result {
         case .success(let bookCoverDTOs):
@@ -57,7 +57,7 @@ public final class DefaultBookCoverRepository: BookCoverRepository {
     }
     
     public func deleteBookCover(_ id: UUID) async {
-        await dataSource.delete(with: id)
+        await storage.delete(with: id)
     }
     
     public func create(bookCover: BookCover) async {
@@ -69,7 +69,7 @@ public final class DefaultBookCoverRepository: BookCoverRepository {
             category: bookCover.category,
             favorite: bookCover.favorite
         )
-        await dataSource.create(data: bookCoverDTO)
+        await storage.create(data: bookCoverDTO)
     }
     
     public func update(id: UUID, bookCover: BookCover) async {
@@ -81,6 +81,6 @@ public final class DefaultBookCoverRepository: BookCoverRepository {
             category: bookCover.category,
             favorite: bookCover.favorite
         )
-        await dataSource.update(with: id, data: bookCoverDTO)
+        await storage.update(with: id, data: bookCoverDTO)
     }
 }

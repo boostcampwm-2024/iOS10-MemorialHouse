@@ -2,14 +2,17 @@ import MHFoundation
 import MHCore
 import CoreData
 
-final class BookCoverCoreDataSource: CoreDataSource {
-    typealias DTO = BookCoverDTO
+final class CoreDataBookCoverStorage {
+    private let coreDataStorage: CoreDataStorage
     
-    // MARK: - Properties
-    private let persistentContainer = PersistentContainerManager.shared.persistentContainer
-    
-    func fetch() async -> Result<[DTO], MHError> {
-        let context = persistentContainer.newBackgroundContext()
+    init(coreDataStorage: CoreDataStorage) {
+        self.coreDataStorage = coreDataStorage
+    }
+}
+
+extension CoreDataBookCoverStorage {
+    func fetch() async -> Result<[BookCoverDTO], MHError> {
+        let context = coreDataStorage.persistentContainer.newBackgroundContext()
         let request = BookCoverEntity.fetchRequest()
         
         do {
@@ -36,22 +39,24 @@ final class BookCoverCoreDataSource: CoreDataSource {
         }
     }
     
-    @discardableResult
-    func create(data: DTO) async -> Result<Void, MHError> {
-        let context = persistentContainer.newBackgroundContext()
-        let newEntity = NSEntityDescription.insertNewObject(forEntityName: "BookCoverEntity", into: context)
-        newEntity.setValue(data.identifier, forKey: "identifier")
-        newEntity.setValue(data.title, forKey: "title")
-        newEntity.setValue(data.category, forKey: "category")
-        newEntity.setValue(data.color, forKey: "color")
-        newEntity.setValue(data.imageURL, forKey: "imageURL")
-        newEntity.setValue(data.favorite, forKey: "favorite")
+    func create(data: BookCoverDTO) async -> Result<Void, MHError> {
+        let context = coreDataStorage.persistentContainer.viewContext
+        guard let entity = NSEntityDescription.entity(forEntityName: "BookCoverEntity", in: context) else {
+            return .failure(.DIContainerResolveFailure(key: "BookCoverEntity"))
+        }
+        let bookCover = NSManagedObject(entity: entity, insertInto: context)
+        bookCover.setValue(data.identifier, forKey: "identifier")
+        bookCover.setValue(data.title, forKey: "title")
+        bookCover.setValue(data.category, forKey: "category")
+        bookCover.setValue(data.color, forKey: "color")
+        bookCover.setValue(data.imageURL, forKey: "imageURL")
+        bookCover.setValue(data.favorite, forKey: "favorite")
         
-        return saveContext()
+        await coreDataStorage.saveContext()
+        return .success(())
     }
     
-    @discardableResult
-    func update(with id: UUID, data: DTO) async -> Result<Void, MHError> {
+    func update(with id: UUID, data: BookCoverDTO) async -> Result<Void, MHError> {
         do {
             guard let newEntity = try getEntityByIdentifier(id) else { return .failure(.findEntityFailure) }
             newEntity.setValue(data.identifier, forKey: "identifier")
@@ -61,42 +66,33 @@ final class BookCoverCoreDataSource: CoreDataSource {
             newEntity.setValue(data.imageURL, forKey: "imageURL")
             newEntity.setValue(data.favorite, forKey: "favorite")
             
-            return saveContext()
+            await coreDataStorage.saveContext()
+            return .success(())
         } catch {
             return .failure(.findEntityFailure)
         }
     }
     
-    @discardableResult
     func delete(with id: UUID) async -> Result<Void, MHError> {
         do {
-            let context = persistentContainer.newBackgroundContext()
+            let context = coreDataStorage.persistentContainer.newBackgroundContext()
             guard let entity = try getEntityByIdentifier(id) else { return .failure(.findEntityFailure) }
             
             context.delete(entity)
-            return saveContext()
+            
+            await coreDataStorage.saveContext()
+            return .success(())
         } catch {
             return .failure(.findEntityFailure)
         }
     }
     
     private func getEntityByIdentifier<Entity: NSManagedObject>(_ id: UUID) throws -> Entity? {
-        let context = persistentContainer.newBackgroundContext()
+        let context = coreDataStorage.persistentContainer.newBackgroundContext()
         let request = Entity.fetchRequest()
         request.fetchLimit = 1
         request.predicate = NSPredicate(format: "identifier = %@", id.uuidString)
         
         return try context.fetch(request).first as? Entity
-    }
-    
-    private func saveContext() -> Result<Void, MHError> {
-        let context = persistentContainer.newBackgroundContext()
-        do {
-            try context.save()
-            
-            return .success(())
-        } catch {
-            return .failure(.saveContextFailure)
-        }
     }
 }
