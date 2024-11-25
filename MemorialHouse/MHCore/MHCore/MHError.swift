@@ -1,6 +1,6 @@
 import Foundation
 
-public enum MHError: Error, CustomStringConvertible {
+public enum MHError: Error, CustomStringConvertible, Equatable {
     case DIContainerResolveFailure(key: String)
     case convertDTOFailure
     case findEntityFailure
