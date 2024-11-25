@@ -64,12 +64,6 @@ final class EditPhotoViewController: UIViewController {
     }()
     private var captionTextFieldBottomConstraint: NSLayoutConstraint?
     
-    // MARK: - Deinitialize
-    deinit {
-        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
-    }
-    
     // MARK: - View Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()

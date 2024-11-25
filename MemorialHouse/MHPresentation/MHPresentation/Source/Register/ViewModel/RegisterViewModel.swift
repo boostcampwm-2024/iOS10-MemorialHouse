@@ -9,7 +9,7 @@ public final class RegisterViewModel: ViewModelType {
     
     enum Output {
         case registerButtonEnabled(isEnabled: Bool)
-        case moveToHome(destination: String)
+        case moveToHome
     }
     
     private let output = PassthroughSubject<Output, Never>()
@@ -43,6 +43,6 @@ public final class RegisterViewModel: ViewModelType {
             text,
             forKey: Constant.houseNameUserDefaultKey
         )
-        output.send(.moveToHome(destination: text))
+        output.send(.moveToHome)
     }
 }

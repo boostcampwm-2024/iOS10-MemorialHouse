@@ -2,13 +2,18 @@ import Combine
 import MHFoundation
 import UIKit
 
+@MainActor
+protocol CategoryViewControllerDelegate: AnyObject {
+    func categoryViewController(_ categoryViewController: CategoryViewController, didSelectCategoryIndex index: Int)
+}
+
 final class CategoryViewController: UIViewController {
     // MARK: - UI Components
     private let categoryTableView = UITableView()
     
     // MARK: - Properties
+    weak var delegate: CategoryViewControllerDelegate?
     private let viewModel: CategoryViewModel
-    private let input = PassthroughSubject<CategoryViewModel.Input, Never>()
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Initializer
@@ -18,7 +23,7 @@ final class CategoryViewController: UIViewController {
     }
     
     required init?(coder: NSCoder) {
-        self.viewModel = CategoryViewModel()
+        self.viewModel = CategoryViewModel(categories: ["전체", "즐겨찾기"], currentCategoryIndex: 0)
         super.init(coder: coder)
     }
     
@@ -27,16 +32,13 @@ final class CategoryViewController: UIViewController {
         super.viewDidLoad()
         
         setup()
-        bind()
-        input.send(.viewDidLoad)
         configureNavigationBar()
         configureConstraints()
     }
     
     func calculateSheetHeight() -> CGFloat {
         let cellHeight = CategoryTableViewCell.height
-        // TODO: 데이터 개수 받아와서 계산하기
-        let itemCount = CGFloat(2) // 전체 + 즐겨찾기 포함
+        let itemCount = CGFloat(viewModel.categories.count)
         return (cellHeight * itemCount) + Constant.navigationBarHeight
     }
     
@@ -50,17 +52,6 @@ final class CategoryViewController: UIViewController {
             CategoryTableViewCell.self,
             forCellReuseIdentifier: CategoryTableViewCell.identifier
         )
-    }
-    
-    private func bind() {
-        let output = viewModel.transform(input: input.eraseToAnyPublisher())
-        
-        output.sink { [weak self] event in
-            switch event {
-            case .fetchedCategories:
-                self?.categoryTableView.reloadData()
-            }
-        }.store(in: &cancellables)
     }
     
     private func configureNavigationBar() {
@@ -112,7 +103,8 @@ extension CategoryViewController: UITableViewDelegate {
         _ tableView: UITableView,
         didSelectRowAt indexPath: IndexPath
     ) {
-        // TODO: 카테고리 선택 시 로직 필요
+        delegate?.categoryViewController(self, didSelectCategoryIndex: indexPath.row)
+        dismiss(animated: true, completion: nil)
     }
     
     func tableView(
@@ -158,7 +150,7 @@ extension CategoryViewController: UITableViewDataSource {
         _ tableView: UITableView,
         numberOfRowsInSection section: Int
     ) -> Int {
-        2
+        viewModel.categories.count
     }
     
     func tableView(
@@ -169,8 +161,9 @@ extension CategoryViewController: UITableViewDataSource {
             withIdentifier: CategoryTableViewCell.identifier,
             for: indexPath
         ) as? CategoryTableViewCell else { return UITableViewCell() }
+        let isSelected = indexPath.row == viewModel.currentCategoryIndex
+        cell.configure(category: viewModel.categories[indexPath.row], isSelected: isSelected)
         
-        // TODO: 전체, 즐겨찾기, 데이터 받아와서 셀 구성하기
         return cell
     }
 }
