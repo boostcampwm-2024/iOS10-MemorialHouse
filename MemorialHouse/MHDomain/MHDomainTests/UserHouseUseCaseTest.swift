@@ -4,7 +4,7 @@ import Testing
 struct MemorialHouseUseCaseTest {
     var sut: FetchMemorialHouseUseCase!
     
-    @Test mutating func test유저하우스_엔티티모델_가져오기() async throws {
+    @Test mutating func test유저하우스_엔티티모델_가져오기() async {
         // Arrange 준비 단계: 테스트 대상 시스템(SUT)와 의존성을 원하는 상태로 만들기
         let dummyMemorialHouse = MemorialHouse(
             name: "더미데이터",
@@ -26,7 +26,7 @@ struct MemorialHouseUseCaseTest {
         #expect(result.bookCovers == dummyMemorialHouse.bookCovers)
     }
     
-    @Test mutating func test세글자_이상인_경우_원본_문자열_그대로_반환() async throws {
+    @Test mutating func test세글자_이상인_경우_원본_문자열_그대로_반환() async {
         // Arrange 준비 단계: 테스트 대상 시스템(SUT)와 의존성을 원하는 상태로 만들기
         let dummyMemorialHouse = MemorialHouse(
             name: "Hello",
@@ -43,7 +43,7 @@ struct MemorialHouseUseCaseTest {
         #expect(result.name == "Hello")
     }
     
-    @Test mutating func test두글자_이하인_경우_글자_사이에_공백추가() async throws {
+    @Test mutating func test두글자_이하인_경우_글자_사이에_공백추가() async {
         // Arrange 준비 단계: 테스트 대상 시스템(SUT)와 의존성을 원하는 상태로 만들기
         let dummyMemorialHouse = MemorialHouse(
             name: "Hi",
