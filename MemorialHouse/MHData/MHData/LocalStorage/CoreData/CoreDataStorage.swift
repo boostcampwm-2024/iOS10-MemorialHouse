@@ -1,10 +1,10 @@
 import CoreData
 import MHCore
 
-public class CoreDataStorage {
-    public static let modelName: String = "MemorialHouseModel"
+class CoreDataStorage {
+    static let modelName: String = "MemorialHouseModel"
     
-    nonisolated(unsafe) public static let memorialHouseModel: NSManagedObjectModel = {
+    nonisolated(unsafe) static let memorialHouseModel: NSManagedObjectModel = {
         guard let modelURL = Bundle(for: CoreDataStorage.self).url(
             forResource: CoreDataStorage.modelName,
             withExtension: "momd"
@@ -14,7 +14,7 @@ public class CoreDataStorage {
         return NSManagedObjectModel(contentsOf: modelURL)!
     }()
     
-    public lazy var persistentContainer: NSPersistentContainer = {
+    lazy var persistentContainer: NSPersistentContainer = {
         let container = NSPersistentContainer(name: CoreDataStorage.modelName)
         container.loadPersistentStores { _, error in
             guard let error else { return }
