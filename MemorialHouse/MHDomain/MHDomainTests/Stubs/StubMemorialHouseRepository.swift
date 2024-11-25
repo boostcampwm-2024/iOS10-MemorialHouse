@@ -1,13 +1,13 @@
 @testable import MHDomain
 
-public struct StubMemorialHouseRepository: MemorialHouseRepository {
+struct StubMemorialHouseRepository: MemorialHouseRepository {
     private let dummyData: MemorialHouse
     
-    public init(dummyData: MemorialHouse) {
+    init(dummyData: MemorialHouse) {
         self.dummyData = dummyData
     }
     
-    public func fetchMemorialHouse() async -> MemorialHouse {
+    func fetchMemorialHouse() async -> MemorialHouse {
         return dummyData
     }
 }
