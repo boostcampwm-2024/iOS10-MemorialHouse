@@ -26,17 +26,7 @@ public struct LocalBookCoverRepository: BookCoverRepository {
         
         switch result {
         case .success(let bookCoverDTOs):
-            return bookCoverDTOs.compactMap { (dto: BookCoverDTO) -> BookCover? in
-                guard let color = BookColor(rawValue: dto.color) else { return nil }
-                return BookCover(
-                    identifier: dto.identifier,
-                    title: dto.title,
-                    imageURL: dto.imageURL,
-                    color: color,
-                    category: dto.category,
-                    favorite: dto.favorite
-                )
-            }
+            return bookCoverDTOs.compactMap { $0.toBookCover() }
         case .failure(let failure):
             MHLogger.debug("\(failure.description)")
         }
@@ -50,17 +40,7 @@ public struct LocalBookCoverRepository: BookCoverRepository {
         switch result {
         case .success(let bookCoverDTOs):
             let bookCoverDTO = bookCoverDTOs.filter({ $0.identifier == id }).first
-            guard let bookCoverDTO,
-                  let color = BookColor(rawValue: bookCoverDTO.color) else { return nil }
-            
-            return BookCover(
-                identifier: bookCoverDTO.identifier,
-                title: bookCoverDTO.title,
-                imageURL: bookCoverDTO.imageURL,
-                color: color,
-                category: bookCoverDTO.category,
-                favorite: bookCoverDTO.favorite
-            )
+            return bookCoverDTO?.toBookCover()
         case .failure(let failure):
             MHLogger.debug("\(failure.description)")
         }

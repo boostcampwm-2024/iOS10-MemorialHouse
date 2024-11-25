@@ -34,20 +34,7 @@ extension CoreDataBookCoverStorage: BookCoverStorage {
         
         do {
             let bookCoverEntities = try context.fetch(request)
-            let result = bookCoverEntities.compactMap { entity -> BookCoverDTO? in
-                guard let identifier = entity.identifier,
-                      let title = entity.title,
-                      let color = entity.color else { return nil }
-                
-                return BookCoverDTO(
-                    identifier: identifier,
-                    title: title,
-                    imageURL: entity.imageURL,
-                    color: color,
-                    category: entity.category,
-                    favorite: entity.favorite
-                )
-            }
+            let result = bookCoverEntities.compactMap { $0.toBookCoverDTO() }
             
             return .success(result)
         } catch {
@@ -96,5 +83,23 @@ extension CoreDataBookCoverStorage: BookCoverStorage {
         let request = BookCoverEntity.fetchRequest()
         
         return try context.fetch(request).first(where: { $0.identifier == id })
+    }
+}
+
+// MARK: - BookCoverEntity Extension
+extension BookCoverEntity {
+    func toBookCoverDTO() -> BookCoverDTO? {
+        guard let identifier = self.identifier,
+              let title = self.title,
+              let color = self.color else { return nil }
+        
+        return BookCoverDTO(
+            identifier: identifier,
+            title: title,
+            imageURL: self.imageURL,
+            color: color,
+            category: self.category,
+            favorite: self.favorite
+        )
     }
 }
