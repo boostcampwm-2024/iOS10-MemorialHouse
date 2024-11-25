@@ -12,7 +12,7 @@ final class CoreDataBookCoverStorage {
 
 extension CoreDataBookCoverStorage {
     func fetch() async -> Result<[BookCoverDTO], MHError> {
-        let context = coreDataStorage.persistentContainer.newBackgroundContext()
+        let context = coreDataStorage.persistentContainer.viewContext
         let request = BookCoverEntity.fetchRequest()
         
         do {
@@ -58,7 +58,10 @@ extension CoreDataBookCoverStorage {
     
     func update(with id: UUID, data: BookCoverDTO) async -> Result<Void, MHError> {
         do {
-            guard let newEntity = try getEntityByIdentifier(id) else { return .failure(.findEntityFailure) }
+            let context = coreDataStorage.persistentContainer.viewContext
+            guard let newEntity = try getEntityByIdentifier(in: context, with: id) else {
+                return .failure(.findEntityFailure)
+            }
             newEntity.setValue(data.identifier, forKey: "identifier")
             newEntity.setValue(data.title, forKey: "title")
             newEntity.setValue(data.category, forKey: "category")
@@ -75,8 +78,10 @@ extension CoreDataBookCoverStorage {
     
     func delete(with id: UUID) async -> Result<Void, MHError> {
         do {
-            let context = coreDataStorage.persistentContainer.newBackgroundContext()
-            guard let entity = try getEntityByIdentifier(id) else { return .failure(.findEntityFailure) }
+            let context = coreDataStorage.persistentContainer.viewContext
+            guard let entity = try getEntityByIdentifier(in: context, with: id) else {
+                return .failure(.findEntityFailure)
+            }
             
             context.delete(entity)
             
@@ -87,12 +92,9 @@ extension CoreDataBookCoverStorage {
         }
     }
     
-    private func getEntityByIdentifier<Entity: NSManagedObject>(_ id: UUID) throws -> Entity? {
-        let context = coreDataStorage.persistentContainer.newBackgroundContext()
-        let request = Entity.fetchRequest()
-        request.fetchLimit = 1
-        request.predicate = NSPredicate(format: "identifier = %@", id.uuidString)
+    private func getEntityByIdentifier(in context: NSManagedObjectContext, with id: UUID) throws -> BookCoverEntity? {
+        let request = BookCoverEntity.fetchRequest()
         
-        return try context.fetch(request).first as? Entity
+        return try context.fetch(request).first(where: { $0.identifier == id })
     }
 }

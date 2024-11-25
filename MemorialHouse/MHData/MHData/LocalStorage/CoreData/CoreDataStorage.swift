@@ -5,7 +5,12 @@ public class CoreDataStorage {
     public static let modelName: String = "MemorialHouseModel"
     
     nonisolated(unsafe) public static let memorialHouseModel: NSManagedObjectModel = {
-        let modelURL = Bundle.main.url(forResource: modelName, withExtension: "momd")!
+        guard let modelURL = Bundle(for: CoreDataStorage.self).url(
+            forResource: CoreDataStorage.modelName,
+            withExtension: "momd"
+        ) else {
+            fatalError("Error loading model from bundle")
+        }
         return NSManagedObjectModel(contentsOf: modelURL)!
     }()
     
