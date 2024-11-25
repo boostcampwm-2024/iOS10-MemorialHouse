@@ -1,10 +1,11 @@
+import Combine
 import UIKit
-import MHDomain
+import MHCore
 import MHFoundation
 
 public final class HomeViewController: UIViewController {
     // MARK: - UI Components
-    private let navigationBar: MHNavigationBar
+    private let navigationBar = MHNavigationBar()
     private let currentCategoryLabel = UILabel(style: .header2)
     private let categorySelectButton = UIButton(type: .custom)
     private let makingBookFloatingButton: UIButton = {
@@ -33,20 +34,25 @@ public final class HomeViewController: UIViewController {
     
     // MARK: - Properties
     private let viewModel: HomeViewModel
+    private let input = PassthroughSubject<HomeViewModel.Input, Never>()
+    private var cancellables = Set<AnyCancellable>()
     private var floatingButtonBottomConstraint: NSLayoutConstraint?
     private var isFloatingButtonHidden = false
+    private var currentCategoryIndex = 0 {
+        didSet {
+            currentCategoryLabel.text = viewModel.categories[currentCategoryIndex]
+        }
+    }
     
     // MARK: - Initializer
     public init(viewModel: HomeViewModel) {
         self.viewModel = viewModel
-        self.navigationBar = MHNavigationBar(title: viewModel.houseName)
         super.init(nibName: nil, bundle: nil)
     }
     
     required init?(coder: NSCoder) {
-        guard let houseName = UserDefaults.standard.string(forKey: Constant.houseNameUserDefaultKey) else { return nil }
-        self.viewModel = HomeViewModel(houseName: houseName)
-        self.navigationBar = MHNavigationBar(title: viewModel.houseName)
+        guard let viewModelFactory = try? DIContainer.shared.resolve(HomeViewModelFactory.self) else { return nil }
+        self.viewModel = viewModelFactory.make()
         super.init(coder: coder)
     }
     
@@ -55,6 +61,8 @@ public final class HomeViewController: UIViewController {
         super.viewDidLoad()
         
         setup()
+        bind()
+        input.send(.viewDidLoad)
         configureAddSubView()
         configureAction()
         configureConstraints()
@@ -75,8 +83,33 @@ public final class HomeViewController: UIViewController {
             BookCollectionViewCell.self,
             forCellWithReuseIdentifier: BookCollectionViewCell.identifier
         )
-        currentCategoryLabel.text = "전체" // TODO: 카테고리 관리 필요
         categorySelectButton.setImage(.dropDown, for: .normal)
+    }
+    
+    private func bind() {
+        let output = viewModel.transform(input: input.eraseToAnyPublisher())
+        
+        output.sink { [weak self] event in
+            guard let self else { return }
+            switch event {
+            case .fetchedMemorialHouse:
+                self.updateMemorialHouse()
+            case .filteredBooks:
+                self.collectionView.reloadData()
+            }
+        }.store(in: &cancellables)
+    }
+    
+    private func updateMemorialHouse() {
+        // 네비게이션 타이틀 설정
+        let houseName = viewModel.houseName
+        navigationBar.configureTitle(with: houseName)
+        
+        // 카테고리 설정
+        currentCategoryLabel.text = viewModel.categories.first
+        
+        // BoockCover 설정
+        collectionView.reloadData()
     }
     
     private func configureAddSubView() {
@@ -89,8 +122,13 @@ public final class HomeViewController: UIViewController {
     
     private func configureAction() {
         categorySelectButton.addAction(UIAction { [weak self] _ in
-            let categoryViewModel = CategoryViewModel()
+            guard let self else { return }
+            let categoryViewModel = CategoryViewModel(
+                categories: self.viewModel.categories,
+                currentCategoryIndex: self.currentCategoryIndex
+            )
             let categoryViewController = CategoryViewController(viewModel: categoryViewModel)
+            categoryViewController.delegate = self
             let navigationController = UINavigationController(rootViewController: categoryViewController)
             
             if let sheet = navigationController.sheetPresentationController {
@@ -99,7 +137,7 @@ public final class HomeViewController: UIViewController {
                 }]
             }
             
-            self?.present(navigationController, animated: true)
+            self.present(navigationController, animated: true)
         }, for: .touchUpInside)
         
         makingBookFloatingButton.addAction(UIAction { [weak self] _ in
@@ -193,7 +231,7 @@ extension HomeViewController: UICollectionViewDataSource {
         _ collectionView: UICollectionView,
         numberOfItemsInSection section: Int
     ) -> Int {
-        0
+        viewModel.currentBookCovers.count
     }
     
     public func collectionView(
@@ -204,8 +242,24 @@ extension HomeViewController: UICollectionViewDataSource {
             withReuseIdentifier: BookCollectionViewCell.identifier,
             for: indexPath
         ) as? BookCollectionViewCell else { return UICollectionViewCell() }
-        // TODO: 데이터 넣기
+        // TODO: Image Loader 필요 & 메모리 캐싱 필요
+        
+        let bookCover = viewModel.currentBookCovers[indexPath.item]
+        cell.configure(
+            title: bookCover.title,
+            bookCoverImage: bookCover.color.image,
+            targetImage: UIImage(systemName: "person")!,
+            isLike: bookCover.favorite,
+            houseName: viewModel.houseName
+        )
         
         return cell
+    }
+}
+
+extension HomeViewController: CategoryViewControllerDelegate {
+    func categoryViewController(_ categoryViewController: CategoryViewController, didSelectCategoryIndex index: Int) {
+        currentCategoryIndex = index
+        input.send(.selectedCategory(index: index))
     }
 }
