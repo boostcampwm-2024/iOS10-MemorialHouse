@@ -10,7 +10,7 @@ final class CoreDataBookCoverStorage {
     }
 }
 
-extension CoreDataBookCoverStorage {
+extension CoreDataBookCoverStorage: BookCoverStorage {
     func create(data: BookCoverDTO) async -> Result<Void, MHError> {
         let context = coreDataStorage.persistentContainer.viewContext
         guard let entity = NSEntityDescription.entity(forEntityName: "BookCoverEntity", in: context) else {
