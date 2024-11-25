@@ -11,6 +11,23 @@ final class CoreDataBookCoverStorage {
 }
 
 extension CoreDataBookCoverStorage {
+    func create(data: BookCoverDTO) async -> Result<Void, MHError> {
+        let context = coreDataStorage.persistentContainer.viewContext
+        guard let entity = NSEntityDescription.entity(forEntityName: "BookCoverEntity", in: context) else {
+            return .failure(.DIContainerResolveFailure(key: "BookCoverEntity"))
+        }
+        let bookCover = NSManagedObject(entity: entity, insertInto: context)
+        bookCover.setValue(data.identifier, forKey: "identifier")
+        bookCover.setValue(data.title, forKey: "title")
+        bookCover.setValue(data.category, forKey: "category")
+        bookCover.setValue(data.color, forKey: "color")
+        bookCover.setValue(data.imageURL, forKey: "imageURL")
+        bookCover.setValue(data.favorite, forKey: "favorite")
+        
+        await coreDataStorage.saveContext()
+        return .success(())
+    }
+    
     func fetch() async -> Result<[BookCoverDTO], MHError> {
         let context = coreDataStorage.persistentContainer.viewContext
         let request = BookCoverEntity.fetchRequest()
@@ -37,23 +54,6 @@ extension CoreDataBookCoverStorage {
             MHLogger.debug("Error fetching book covers: \(error.localizedDescription)")
             return .failure(.convertDTOFailure)
         }
-    }
-    
-    func create(data: BookCoverDTO) async -> Result<Void, MHError> {
-        let context = coreDataStorage.persistentContainer.viewContext
-        guard let entity = NSEntityDescription.entity(forEntityName: "BookCoverEntity", in: context) else {
-            return .failure(.DIContainerResolveFailure(key: "BookCoverEntity"))
-        }
-        let bookCover = NSManagedObject(entity: entity, insertInto: context)
-        bookCover.setValue(data.identifier, forKey: "identifier")
-        bookCover.setValue(data.title, forKey: "title")
-        bookCover.setValue(data.category, forKey: "category")
-        bookCover.setValue(data.color, forKey: "color")
-        bookCover.setValue(data.imageURL, forKey: "imageURL")
-        bookCover.setValue(data.favorite, forKey: "favorite")
-        
-        await coreDataStorage.saveContext()
-        return .success(())
     }
     
     func update(with id: UUID, data: BookCoverDTO) async -> Result<Void, MHError> {

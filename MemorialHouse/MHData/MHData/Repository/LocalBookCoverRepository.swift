@@ -9,6 +9,18 @@ public struct LocalBookCoverRepository: BookCoverRepository {
         self.storage = storage
     }
     
+    public func create(bookCover: BookCover) async {
+        let bookCoverDTO = BookCoverDTO(
+            identifier: bookCover.identifier,
+            title: bookCover.title,
+            imageURL: bookCover.imageURL,
+            color: bookCover.color.rawValue,
+            category: bookCover.category,
+            favorite: bookCover.favorite
+        )
+        await storage.create(data: bookCoverDTO)
+    }
+    
     public func fetchAllBookCovers() async -> [BookCover] {
         let result = await storage.fetch()
         
@@ -56,22 +68,6 @@ public struct LocalBookCoverRepository: BookCoverRepository {
         return nil
     }
     
-    public func deleteBookCover(_ id: UUID) async {
-        await storage.delete(with: id)
-    }
-    
-    public func create(bookCover: BookCover) async {
-        let bookCoverDTO = BookCoverDTO(
-            identifier: bookCover.identifier,
-            title: bookCover.title,
-            imageURL: bookCover.imageURL,
-            color: bookCover.color.rawValue,
-            category: bookCover.category,
-            favorite: bookCover.favorite
-        )
-        await storage.create(data: bookCoverDTO)
-    }
-    
     public func update(id: UUID, bookCover: BookCover) async {
         let bookCoverDTO = BookCoverDTO(
             identifier: bookCover.identifier,
@@ -82,5 +78,9 @@ public struct LocalBookCoverRepository: BookCoverRepository {
             favorite: bookCover.favorite
         )
         await storage.update(with: id, data: bookCoverDTO)
+    }
+    
+    public func deleteBookCover(_ id: UUID) async {
+        await storage.delete(with: id)
     }
 }
