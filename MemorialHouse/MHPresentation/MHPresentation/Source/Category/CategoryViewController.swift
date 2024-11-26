@@ -14,6 +14,7 @@ final class CategoryViewController: UIViewController {
     // MARK: - Properties
     weak var delegate: CategoryViewControllerDelegate?
     private let viewModel: CategoryViewModel
+    private let input = PassthroughSubject<CategoryViewModel.Input, Never>()
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Initializer
@@ -32,6 +33,7 @@ final class CategoryViewController: UIViewController {
         super.viewDidLoad()
         
         setup()
+        bind()
         configureNavigationBar()
         configureConstraints()
     }
@@ -52,6 +54,17 @@ final class CategoryViewController: UIViewController {
             CategoryTableViewCell.self,
             forCellReuseIdentifier: CategoryTableViewCell.identifier
         )
+    }
+    
+    private func bind() {
+        let output = viewModel.transform(input: input.eraseToAnyPublisher())
+        
+        output.sink { [weak self] event in
+            switch event {
+            case .addedCategory, .updatedCategory, .deletedCategory:
+                self?.categoryTableView.reloadData()
+            }
+        }.store(in: &cancellables)
     }
     
     private func configureNavigationBar() {
@@ -78,7 +91,6 @@ final class CategoryViewController: UIViewController {
             normal: normalAttributes,
             selected: selectedAttributes
         ) { [weak self] in
-            // TODO: 편집하기
             self?.categoryTableView.setEditing(true, animated: true)
         }
         
@@ -88,7 +100,24 @@ final class CategoryViewController: UIViewController {
             normal: normalAttributes,
             selected: selectedAttributes
         ) { [weak self] in
-            // TODO: 로컬에 저장하고 테이블뷰에 추가하는 로직 필요
+            guard let self else { return }
+            
+            let alert = UIAlertController(
+                title: "카테고리 추가",
+                message: "새로운 카테고리를 입력해주세요.",
+                textFieldConfiguration: { textField in
+                    textField.placeholder = "카테고리 이름"
+                },
+                confirmHandler: { [weak self] newText in
+                    guard let newText = newText, !newText.isEmpty else {
+                        print("새 카테고리 이름이 유효하지 않습니다.")
+                        return
+                    }
+                    self?.input.send(.addCategory(text: newText))
+                }
+            )
+            
+            self.present(alert, animated: true)
         }
     }
     
@@ -129,14 +158,46 @@ extension CategoryViewController: UITableViewDelegate {
             style: .normal,
             title: "수정"
         ) { [weak self] _, _, completion in
-            // TODO: 수정 로직
+            guard let self else { return }
+            let alert = UIAlertController(
+                title: "카테고리 수정",
+                message: "수정할 카테고리 이름을 입력해주세요.",
+                textFieldConfiguration: { textField in
+                    textField.placeholder = "카테고리 이름"
+                    textField.text = self.viewModel.categories[indexPath.row]
+                },
+                confirmHandler: { [weak self] newText in
+                    guard let newText = newText, !newText.isEmpty else {
+                        print("수정할 카테고리 이름이 유효하지 않습니다.")
+                        return
+                    }
+                    self?.input.send(.updateCategory(index: indexPath.row, text: newText))
+                    completion(true)
+                }
+            )
+            
+            self.present(alert, animated: true)
         }
         
         let deleteAction = UIContextualAction(
             style: .destructive,
             title: "삭제"
         ) { [weak self] _, _, completion in
-            // TODO: 삭제 로직
+            guard let self else { return }
+            
+            // 편의 이니셜라이저를 활용한 AlertController 생성
+            let alert = UIAlertController(
+                title: "카테고리 삭제",
+                message: "\"\(self.viewModel.categories[indexPath.row])\"을(를) 삭제하시겠습니까?",
+                confirmTitle: "삭제",
+                cancelTitle: "취소",
+                confirmHandler: { [weak self] _ in
+                    self?.input.send(.deleteCategory(index: indexPath.row))
+                    completion(true)
+                }
+            )
+            
+            self.present(alert, animated: true)
         }
         
         return UISwipeActionsConfiguration(
