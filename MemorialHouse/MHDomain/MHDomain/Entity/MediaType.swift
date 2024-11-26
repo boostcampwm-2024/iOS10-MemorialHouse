@@ -1,4 +1,4 @@
-public enum MediaType: Sendable {
+public enum MediaType: String, Sendable {
     case image
     case video
     case audio
