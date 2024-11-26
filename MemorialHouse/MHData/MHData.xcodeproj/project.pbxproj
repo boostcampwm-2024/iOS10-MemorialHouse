@@ -7,12 +7,24 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A8BCE31D2CF38F6A00A9F32F /* MHData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9AEB772CD7B46700F8471D /* MHData.framework */; platformFilter = ios; };
 		CE9AEB862CD7B49C00F8471D /* MHDomain.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9AEB852CD7B49C00F8471D /* MHDomain.framework */; };
 		CE9AEBF42CD7BA1800F8471D /* MHCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9AEBF32CD7BA1800F8471D /* MHCore.framework */; };
 		DB382CC92CD9B24F000D7689 /* MHFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB382CC82CD9B24F000D7689 /* MHFoundation.framework */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		A8BCE31E2CF38F6A00A9F32F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CE9AEB6E2CD7B46700F8471D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = CE9AEB762CD7B46700F8471D;
+			remoteInfo = MHData;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
+		A8BCE3192CF38F6A00A9F32F /* MHDataTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MHDataTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE9AEB772CD7B46700F8471D /* MHData.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = MHData.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE9AEB852CD7B49C00F8471D /* MHDomain.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = MHDomain.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE9AEBF32CD7BA1800F8471D /* MHCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = MHCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -20,6 +32,11 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		A8BCE31A2CF38F6A00A9F32F /* MHDataTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = MHDataTests;
+			sourceTree = "<group>";
+		};
 		A8C9336C2CDFBCDB007D932A /* MHData */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = MHData;
@@ -28,6 +45,14 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		A8BCE3162CF38F6A00A9F32F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A8BCE31D2CF38F6A00A9F32F /* MHData.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		CE9AEB742CD7B46700F8471D /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -45,6 +70,7 @@
 			isa = PBXGroup;
 			children = (
 				A8C9336C2CDFBCDB007D932A /* MHData */,
+				A8BCE31A2CF38F6A00A9F32F /* MHDataTests */,
 				CE9AEB842CD7B49C00F8471D /* Frameworks */,
 				CE9AEB782CD7B46700F8471D /* Products */,
 			);
@@ -54,6 +80,7 @@
 			isa = PBXGroup;
 			children = (
 				CE9AEB772CD7B46700F8471D /* MHData.framework */,
+				A8BCE3192CF38F6A00A9F32F /* MHDataTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -81,6 +108,29 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		A8BCE3182CF38F6A00A9F32F /* MHDataTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A8BCE3202CF38F6A00A9F32F /* Build configuration list for PBXNativeTarget "MHDataTests" */;
+			buildPhases = (
+				A8BCE3152CF38F6A00A9F32F /* Sources */,
+				A8BCE3162CF38F6A00A9F32F /* Frameworks */,
+				A8BCE3172CF38F6A00A9F32F /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A8BCE31F2CF38F6A00A9F32F /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				A8BCE31A2CF38F6A00A9F32F /* MHDataTests */,
+			);
+			name = MHDataTests;
+			packageProductDependencies = (
+			);
+			productName = MHDataTests;
+			productReference = A8BCE3192CF38F6A00A9F32F /* MHDataTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		CE9AEB762CD7B46700F8471D /* MHData */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = CE9AEB7D2CD7B46700F8471D /* Build configuration list for PBXNativeTarget "MHData" */;
@@ -112,8 +162,12 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1610;
 				LastUpgradeCheck = 1610;
 				TargetAttributes = {
+					A8BCE3182CF38F6A00A9F32F = {
+						CreatedOnToolsVersion = 16.1;
+					};
 					CE9AEB762CD7B46700F8471D = {
 						CreatedOnToolsVersion = 16.1;
 						LastSwiftMigration = 1610;
@@ -138,11 +192,19 @@
 			projectRoot = "";
 			targets = (
 				CE9AEB762CD7B46700F8471D /* MHData */,
+				A8BCE3182CF38F6A00A9F32F /* MHDataTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		A8BCE3172CF38F6A00A9F32F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		CE9AEB752CD7B46700F8471D /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -173,6 +235,13 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		A8BCE3152CF38F6A00A9F32F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		CE9AEB732CD7B46700F8471D /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -182,7 +251,50 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		A8BCE31F2CF38F6A00A9F32F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			platformFilter = ios;
+			target = CE9AEB762CD7B46700F8471D /* MHData */;
+			targetProxy = A8BCE31E2CF38F6A00A9F32F /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		A8BCE3212CF38F6A00A9F32F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = B3PWYBKFUK;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = kr.codesquad.boostcamp9.MHDataTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		A8BCE3222CF38F6A00A9F32F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = B3PWYBKFUK;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = kr.codesquad.boostcamp9.MHDataTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		CE9AEB7E2CD7B46700F8471D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -392,6 +504,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		A8BCE3202CF38F6A00A9F32F /* Build configuration list for PBXNativeTarget "MHDataTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A8BCE3212CF38F6A00A9F32F /* Debug */,
+				A8BCE3222CF38F6A00A9F32F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		CE9AEB712CD7B46700F8471D /* Build configuration list for PBXProject "MHData" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
