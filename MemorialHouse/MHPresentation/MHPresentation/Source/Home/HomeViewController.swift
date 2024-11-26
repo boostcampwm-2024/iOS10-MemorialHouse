@@ -145,6 +145,13 @@ public final class HomeViewController: UIViewController {
             let bookCreationViewController = BookCreationViewController(viewModel: BookCreationViewModel())
             self.navigationController?.pushViewController(bookCreationViewController, animated: true)
         }, for: .touchUpInside)
+        
+        navigationBar.configureSettingAction(action: UIAction { [weak self] _ in
+            guard let self else { return }
+            let settingViewModel = SettingViewModel()
+            let settingViewController = SettingViewController(viewModel: settingViewModel)
+            self.navigationController?.pushViewController(settingViewController, animated: true)
+        })
     }
     
     private func configureConstraints() {
