@@ -1,4 +1,6 @@
+import MHCore
 import UIKit
+import SafariServices
 
 final class SettingViewController: UIViewController {
     // MARK: - UI Component
@@ -78,7 +80,45 @@ final class SettingViewController: UIViewController {
 // MARK: - UITableViewDelegate
 extension SettingViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        // TODO: didSelectRowAt 구현
+        switch indexPath.row {
+        case 0: // 서비스 이용 약관
+            openSafari(urlString: "https://kyxxn.notion.site/3eb0620fd9f242f297fc3f6c8d022978?pvs=4")
+        case 1: // 개인정보 처리 방침
+            openSafari(urlString: "https://kyxxn.notion.site/3a14a15e528f4dc9b1e5b1a9599778af?pvs=4")
+        case 2: // 불편신고 및 개선요청
+            sendMailToReport()
+        case 3: // 자주 묻는 질문
+            openSafari(urlString: "https://kyxxn.notion.site/FAQ-7cae87a10cc04f3b9205c10930998ec1?pvs=4")
+        default:
+            break
+        }
+    }
+    
+    private func openSafari(urlString: String) {
+        guard let url = URL(string: urlString) else { return }
+        let safariVC = SFSafariViewController(url: url)
+        present(safariVC, animated: true)
+    }
+    
+    private func sendMailToReport() {
+        let address = "k264535@gmail.com"
+        let subject = "[기록소] 앱 불편신고 및 개선요청"
+
+        var components = URLComponents()
+        components.scheme = "mailto"
+        components.path = address
+        components.queryItems = [
+              URLQueryItem(name: "subject", value: subject)
+        ]
+
+        guard let url = components.url else {
+            MHLogger.error("mailto URL 만들기 실패")
+            return
+        }
+
+        UIApplication.shared.open(url) { [weak self] _ in
+            self?.dismiss(animated: true)
+        }
     }
 }
 
@@ -91,11 +131,19 @@ extension SettingViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell()
         var content = cell.defaultContentConfiguration()
+        let cellInformation = viewModel.tableViewDataSource[indexPath.row]
         content.attributedText = NSAttributedString(
-            string: viewModel.tableViewDataSource[indexPath.row],
+            string: cellInformation,
             attributes: [.font: UIFont.ownglyphBerry(size: 17),
                          .foregroundColor: UIColor.mhTitle]
         )
+        if cellInformation == viewModel.tableViewDataSource.last {
+            content.secondaryAttributedText = NSAttributedString(
+                string: "v \(viewModel.appVersion ?? "0.0")",
+                attributes: [.font: UIFont.ownglyphBerry(size: 15),
+                             .foregroundColor: UIColor.lightGray]
+            )
+        }
         cell.contentConfiguration = content
         cell.backgroundColor = .clear
         cell.selectionStyle = .none
