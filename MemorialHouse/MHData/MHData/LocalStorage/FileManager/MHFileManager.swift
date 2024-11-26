@@ -13,7 +13,7 @@ extension MHFileManager: FileStorage {
             for: directoryType,
             in: .userDomainMask
         ).first?.appending(path: path)
-        else { return .failure(.directorySettingError) }
+        else { return .failure(.directorySettingFailure) }
         
         let dataPath = directory.appendingPathComponent(name)
         
@@ -22,7 +22,7 @@ extension MHFileManager: FileStorage {
             try data.write(to: dataPath)
             return .success(())
         } catch {
-            return .failure(.fileCreationError)
+            return .failure(.fileCreationFailure)
         }
     }
     func read(at path: String, fileName name: String) async -> Result<Data, MHError> {
@@ -30,14 +30,14 @@ extension MHFileManager: FileStorage {
             for: directoryType,
             in: .userDomainMask
         ).first?.appending(path: path)
-        else { return .failure(.directorySettingError) }
+        else { return .failure(.directorySettingFailure) }
         
         let dataPath = directory.appendingPathComponent(name)
         
         do {
             return .success(try Data(contentsOf: dataPath))
         } catch {
-            return .failure(.fileReadingError)
+            return .failure(.fileReadingFailure)
         }
     }
     func delete(at path: String, fileName name: String) async -> Result<Void, MHError> {
@@ -45,7 +45,7 @@ extension MHFileManager: FileStorage {
             for: directoryType,
             in: .userDomainMask
         ).first?.appending(path: path)
-        else { return .failure(.directorySettingError) }
+        else { return .failure(.directorySettingFailure) }
         
         let dataPath = directory.appendingPathComponent(name)
         
@@ -53,7 +53,7 @@ extension MHFileManager: FileStorage {
             try fileManager.removeItem(at: dataPath)
             return .success(())
         } catch {
-            return .failure(.fileDeletionError)
+            return .failure(.fileDeletionFailure)
         }
     }
     func move(at path: String, fileName name: String, to newPath: String) async -> Result<Void, MHError> {
@@ -61,7 +61,7 @@ extension MHFileManager: FileStorage {
             for: directoryType,
             in: .userDomainMask
         ).first?.appending(path: path)
-        else { return .failure(.directorySettingError) }
+        else { return .failure(.directorySettingFailure) }
         
         let originDataPath = originDirectory.appendingPathComponent(name)
         
@@ -69,7 +69,7 @@ extension MHFileManager: FileStorage {
             for: directoryType,
             in: .userDomainMask
         ).first?.appending(path: newPath)
-        else { return .failure(.directorySettingError) }
+        else { return .failure(.directorySettingFailure) }
         
         let newDataPath = newDirectory.appendingPathComponent(name)
         
@@ -77,7 +77,7 @@ extension MHFileManager: FileStorage {
             try fileManager.moveItem(at: originDataPath, to: newDataPath)
             return .success(())
         } catch {
-            return .failure(.fileMovingError)
+            return .failure(.fileMovingFailure)
         }
     }
 }

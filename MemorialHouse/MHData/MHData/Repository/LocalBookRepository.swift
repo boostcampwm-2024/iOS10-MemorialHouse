@@ -14,7 +14,7 @@ public struct LocalBookRepository: BookRepository {
         
         _ = await storage.create(data: bookDTO)
     }
-    public func fetchBook(with id: UUID) async -> Book? {
+    public func fetch(bookID id: UUID) async -> Book? {
         let result = await storage.fetch(with: id)
         
         switch result {
@@ -26,12 +26,12 @@ public struct LocalBookRepository: BookRepository {
         
         return nil
     }
-    public func update(id: UUID, book: Book) async {
+    public func update(bookID id: UUID, to book: Book) async {
         let bookDTO = mappingBookToDTO(book)
         
         _ = await storage.update(with: id, data: bookDTO)
     }
-    public func deleteBook(_ id: UUID) async {
+    public func delete(bookID id: UUID) async {
         _ = await storage.delete(with: id)
     }
     
@@ -39,7 +39,6 @@ public struct LocalBookRepository: BookRepository {
         let pages = book.pages.map { mappingPageToDTO($0) }
         return BookDTO(
             id: book.id,
-            index: book.index,
             pages: pages
         )
     }

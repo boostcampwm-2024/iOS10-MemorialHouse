@@ -11,7 +11,7 @@ final class CoreDataBookStorage {
 }
 
 extension CoreDataBookStorage: BookStorage {
-    func create(data: BookDTO) async -> Result<Void, MHCore.MHError> {
+    func create(data: BookDTO) async -> Result<Void, MHError> {
         let context = coreDataStorage.persistentContainer.viewContext
         guard let entity = NSEntityDescription.entity(forEntityName: "BookEntity", in: context) else {
             return .failure(.DIContainerResolveFailure(key: "BookEntity"))
@@ -19,40 +19,32 @@ extension CoreDataBookStorage: BookStorage {
         
         let book = NSManagedObject(entity: entity, insertInto: context)
         book.setValue(data.id, forKey: "id")
-        book.setValue(data.index, forKey: "index")
         book.setValue(data.pages, forKey: "pages")
         
         await coreDataStorage.saveContext()
         return .success(())
     }
-    func fetch(with id: UUID) async -> Result<BookDTO, MHCore.MHError> {
+    func fetch(with id: UUID) async -> Result<BookDTO, MHError> {
         let context = coreDataStorage.persistentContainer.viewContext
-        let request = BookEntity.fetchRequest()
 
-        request.predicate = NSPredicate(
-            format: "id LIKE %@", "\(id.uuidString)"
-        )
-
-        
         do {
-            let bookEntity = try context.fetch(request)
-            guard let result = bookEntity.first?.toBookDTO()
+            let bookEntity = try getEntityByIdentifier(in: context, with: id)
+            guard let result = bookEntity?.toBookDTO()
             else { throw MHError.convertDTOFailure }
             
             return .success(result)
         } catch {
-            MHLogger.debug("Error fetching book covers: \(error.localizedDescription)")
-            return .failure(.convertDTOFailure)
+            MHLogger.debug("Error fetching book: \(error.localizedDescription)")
+            return .failure(.fetchFaliure)
         }
     }
-    func update(with id: UUID, data: BookDTO) async -> Result<Void, MHCore.MHError> {
+    func update(with id: UUID, data: BookDTO) async -> Result<Void, MHError> {
         do {
             let context = coreDataStorage.persistentContainer.viewContext
             guard let newEntity = try getEntityByIdentifier(in: context, with: id) else {
                 return .failure(.findEntityFailure)
             }
             newEntity.setValue(data.id, forKey: "id")
-            newEntity.setValue(data.index, forKey: "index")
             newEntity.setValue(data.pages, forKey: "pages")
             
             await coreDataStorage.saveContext()
@@ -61,7 +53,7 @@ extension CoreDataBookStorage: BookStorage {
             return .failure(.findEntityFailure)
         }
     }
-    func delete(with id: UUID) async -> Result<Void, MHCore.MHError> {
+    func delete(with id: UUID) async -> Result<Void, MHError> {
         do {
             let context = coreDataStorage.persistentContainer.viewContext
             guard let entity = try getEntityByIdentifier(in: context, with: id) else {
@@ -80,19 +72,21 @@ extension CoreDataBookStorage: BookStorage {
     private func getEntityByIdentifier(in context: NSManagedObjectContext, with id: UUID) throws -> BookEntity? {
         let request = BookEntity.fetchRequest()
         
-        return try context.fetch(request).first(where: { $0.id == id })
+        request.predicate = NSPredicate(
+            format: "id == %@", id as CVarArg
+        )
+        
+        return try context.fetch(request).first
     }
 }
 
 extension BookEntity {
     func toBookDTO() -> BookDTO? {
         guard let id = self.id,
-              let index = self.index,
               let pages = self.pages else { return nil }
         
         return BookDTO(
             id: id,
-            index: index,
             pages: pages
         )
     }

@@ -2,7 +2,7 @@ import MHFoundation
 
 public protocol BookRepository {
     func create(book: Book) async
-    func fetchBook(with id: UUID) async -> Book?
-    func update(id: UUID, book: Book) async
-    func deleteBook(_ id: UUID) async
+    func fetch(bookID id: UUID) async -> Book?
+    func update(bookID id: UUID, to book: Book) async
+    func delete(bookID id: UUID) async
 }
