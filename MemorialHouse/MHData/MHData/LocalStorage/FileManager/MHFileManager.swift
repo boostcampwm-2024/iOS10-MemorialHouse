@@ -5,6 +5,10 @@ import MHDomain
 public struct MHFileManager {
     private let fileManager = FileManager.default
     private let directoryType: FileManager.SearchPathDirectory
+    
+    public init(directoryType: FileManager.SearchPathDirectory) {
+        self.directoryType = directoryType
+    }
 }
 
 extension MHFileManager: FileStorage {
@@ -18,7 +22,7 @@ extension MHFileManager: FileStorage {
         let dataPath = directory.appendingPathComponent(name)
         
         do {
-            try fileManager.createDirectory(at: directory, withIntermediateDirectories: false)
+            try fileManager.createDirectory(at: directory, withIntermediateDirectories: true)
             try data.write(to: dataPath)
             return .success(())
         } catch {
@@ -74,6 +78,7 @@ extension MHFileManager: FileStorage {
         let newDataPath = newDirectory.appendingPathComponent(name)
         
         do {
+            try fileManager.createDirectory(at: newDirectory, withIntermediateDirectories: true)
             try fileManager.moveItem(at: originDataPath, to: newDataPath)
             return .success(())
         } catch {

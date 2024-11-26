@@ -196,7 +196,7 @@ struct CoreDataBookStorageTests {
         case .success: // 조회가 되면 실패한 거임
             #expect(false, "Delete Book 실패: \(MHError.fetchFaliure.localizedDescription)")
         case .failure(let error): // 조회가 실패하면 성공한 거임
-            #expect(error == MHError.fetchFaliure)
+            #expect(error == MHError.findEntityFailure)
         }
     }
 }
