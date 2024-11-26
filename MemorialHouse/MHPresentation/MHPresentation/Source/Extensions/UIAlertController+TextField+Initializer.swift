@@ -1,15 +1,15 @@
 import UIKit
 
 extension UIAlertController {
-    /// UIAlertController의 편의 생성자
+    /// UIAlertController의 편의 생성자 (텍스트 필드 포함)
     /// - Parameters:
-    ///   - title: Alert의 제목 (기본값 없음)
-    ///   - message: Alert의 메시지 (기본값: nil)
+    ///   - title: Alert의 제목
+    ///   - message: Alert의 메시지
     ///   - preferredStyle: Alert의 스타일 (기본값: .alert)
-    ///   - textFieldConfiguration: 텍스트 필드를 구성하기 위한 클로저 (기본값: nil, 텍스트 필드가 없는 경우 생략 가능)
+    ///   - textFieldConfiguration: 텍스트 필드를 구성하기 위한 클로저
     ///   - confirmTitle: 확인 버튼의 제목 (기본값: "확인")
     ///   - cancelTitle: 취소 버튼의 제목 (기본값: "취소")
-    ///   - confirmHandler: 확인 버튼 클릭 시 실행될 핸들러, 텍스트 필드 입력값(String?)을 매개변수로 전달 (기본값: nil)
+    ///   - confirmHandler: 확인 버튼 클릭 시 실행될 핸들러, 텍스트 필드 입력값(String?)을 매개변수로 전달
     convenience init(
         title: String?,
         message: String? = nil,
@@ -21,15 +21,16 @@ extension UIAlertController {
     ) {
         self.init(title: title, message: message, preferredStyle: preferredStyle)
         
-        // 텍스트 필드 추가 (필요한 경우)
+        // 텍스트 필드 추가
         if let textFieldConfiguration = textFieldConfiguration {
             self.addTextField(configurationHandler: textFieldConfiguration)
         }
         
         // 확인 액션 추가
-        let confirmAction = UIAlertAction(title: confirmTitle, style: .default) { _ in
+        let confirmAction = UIAlertAction(title: confirmTitle, style: .default) { [weak self] _ in
+            guard let self = self else { return }
             let text = self.textFields?.first?.text?.trimmingCharacters(in: .whitespacesAndNewlines)
-            confirmHandler?(textFieldConfiguration != nil ? text : nil)
+            confirmHandler?(text)
         }
         self.addAction(confirmAction)
         
