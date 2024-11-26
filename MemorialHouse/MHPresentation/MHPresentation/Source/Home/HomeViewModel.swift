@@ -14,11 +14,6 @@ public final class HomeViewModel: ViewModelType {
         case fetchedFailure(String)
     }
     
-    public enum FailureReason {
-        case memorialHouseFetchFailure
-        case categoryFetchFailure
-    }
-    
     private let output = PassthroughSubject<Output, Never>()
     private let fetchMemorialHouseUseCase: FetchMemorialHouseUseCase
     private let fetchCategoryUseCase: FetchCategoriesUseCase
@@ -41,13 +36,15 @@ public final class HomeViewModel: ViewModelType {
         input.sink { [weak self] event in
             switch event {
             case .viewDidLoad:
-                do {
-                    self?.fetchMemorialHouse()
-                    try self?.fetchCategory()
-                    self?.output.send(.fetchedMemorialHouseAndCategory)
-                } catch {
-                    self?.output.send(.fetchedFailure("데이터 로드 중 에러가 발생했습니다."))
-                    MHLogger.error("에러 발생: \(error.localizedDescription)")
+                Task {
+                    do {
+                        try await self?.fetchMemorialHouse()
+                        try await self?.fetchCategory()
+                        self?.output.send(.fetchedMemorialHouseAndCategory)
+                    } catch {
+                        self?.output.send(.fetchedFailure("데이터 로드 중 에러가 발생했습니다."))
+                        MHLogger.error("에러 발생: \(error.localizedDescription)")
+                    }
                 }
             case .selectedCategory(let index):
                 self?.filterBooks(with: index)
@@ -57,22 +54,16 @@ public final class HomeViewModel: ViewModelType {
         return output.eraseToAnyPublisher()
     }
     
-    @MainActor
-    private func fetchMemorialHouse() {
-        Task { @MainActor in
-            let memorialHouse = await fetchMemorialHouseUseCase.execute()
-            self.houseName = memorialHouse.name
-            self.bookCovers = memorialHouse.bookCovers
-            self.currentBookCovers = memorialHouse.bookCovers
-        }
+    private func fetchMemorialHouse() async throws {
+        let memorialHouse = try await fetchMemorialHouseUseCase.execute()
+        self.houseName = memorialHouse.name
+        self.bookCovers = memorialHouse.bookCovers
+        self.currentBookCovers = memorialHouse.bookCovers
     }
     
-    @MainActor
-    private func fetchCategory() throws {
-        Task { @MainActor in
-            let categories = try await fetchCategoryUseCase.execute()
-            self.categories += categories
-        }
+    private func fetchCategory() async throws {
+        let categories = try await fetchCategoryUseCase.execute()
+        self.categories += categories
     }
     
     private func filterBooks(with index: Int) {
