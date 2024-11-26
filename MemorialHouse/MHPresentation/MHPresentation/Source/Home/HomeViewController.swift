@@ -136,22 +136,27 @@ public final class HomeViewController: UIViewController {
     
     private func configureAction() {
         categorySelectButton.addAction(UIAction { [weak self] _ in
-            guard let self else { return }
-            let categoryViewModel = CategoryViewModel(
-                categories: self.viewModel.categories,
-                currentCategoryIndex: self.currentCategoryIndex
-            )
-            let categoryViewController = CategoryViewController(viewModel: categoryViewModel)
-            categoryViewController.delegate = self
-            let navigationController = UINavigationController(rootViewController: categoryViewController)
-            
-            if let sheet = navigationController.sheetPresentationController {
-                sheet.detents = [.custom(identifier: .categorySheet) { _ in
-                    categoryViewController.calculateSheetHeight()
-                }]
+            do {
+                guard let self else { return }
+                let categoryViewModelFactory = try DIContainer.shared.resolve(CategoryViewModelFactory.self)
+                let categoryViewModel = categoryViewModelFactory.make()
+                categoryViewModel.setup(categories: self.viewModel.categories, categoryIndex: self.currentCategoryIndex)
+                let categoryViewController = CategoryViewController(viewModel: categoryViewModel)
+                categoryViewController.delegate = self
+                let navigationController = UINavigationController(rootViewController: categoryViewController)
+                
+                if let sheet = navigationController.sheetPresentationController {
+                    sheet.detents = [.custom(identifier: .categorySheet) { _ in
+                        categoryViewController.calculateSheetHeight()
+                    }]
+                }
+                
+                self.present(navigationController, animated: true)
+            } catch let error as MHError {
+                MHLogger.error(error.description)
+            } catch {
+                MHLogger.error(error.localizedDescription)
             }
-            
-            self.present(navigationController, animated: true)
         }, for: .touchUpInside)
         
         makingBookFloatingButton.addAction(UIAction { [weak self] _ in
@@ -206,7 +211,7 @@ extension HomeViewController: UICollectionViewDelegate {
         let offsetY = scrollView.contentOffset.y
         let contentHeight = scrollView.contentSize.height
         let height = scrollView.frame.size.height
-
+        
         if contentHeight > height {
             if offsetY > contentHeight - height {
                 hideFloatingButton()

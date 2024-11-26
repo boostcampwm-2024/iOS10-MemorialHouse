@@ -1,4 +1,5 @@
 import Combine
+import MHDomain
 import MHCore
 
 final class CategoryViewModel: ViewModelType {
@@ -9,20 +10,32 @@ final class CategoryViewModel: ViewModelType {
     }
     
     enum Output {
-        case addedCategory
+        case createdCategory
         case updatedCategory
         case deletedCategory
     }
     
     private let output = PassthroughSubject<Output, Never>()
+    private let createCategoryUseCase: CreateCategoryUseCase
+    private let updateCategoryUseCase: UpdateCategoryUseCase
+    private let deleteCategoryUseCase: DeleteCategoryUseCase
     private var cancellables = Set<AnyCancellable>()
-    private(set) var categories: [String]
-    private(set) var currentCategoryIndex: Int
+    private(set) var categories = [String]()
+    private(set) var currentCategoryIndex: Int = 0
     
-    init(cancellables: Set<AnyCancellable> = Set<AnyCancellable>(), categories: [String], currentCategoryIndex: Int) {
-        self.cancellables = cancellables
+    init(
+        createCategoryUseCase: CreateCategoryUseCase,
+        updateCategoryUseCase: UpdateCategoryUseCase,
+        deleteCategoryUseCase: DeleteCategoryUseCase
+    ) {
+        self.createCategoryUseCase = createCategoryUseCase
+        self.updateCategoryUseCase = updateCategoryUseCase
+        self.deleteCategoryUseCase = deleteCategoryUseCase
+    }
+    
+    func setup(categories: [String], categoryIndex: Int) {
         self.categories = categories
-        self.currentCategoryIndex = currentCategoryIndex
+        self.currentCategoryIndex = categoryIndex
     }
     
     func transform(input: AnyPublisher<Input, Never>) -> AnyPublisher<Output, Never> {
@@ -42,7 +55,7 @@ final class CategoryViewModel: ViewModelType {
     
     private func addCategory(text: String) {
         categories.append(text)
-        output.send(.addedCategory)
+        output.send(.createdCategory)
     }
     
     private func updateCategory(index: Int, text: String) {
