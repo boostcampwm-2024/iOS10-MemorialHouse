@@ -19,7 +19,7 @@ extension CoreDataBookStorage: BookStorage {
         
         let book = NSManagedObject(entity: entity, insertInto: context)
         book.setValue(data.id, forKey: "id")
-        book.setValue(data.pages, forKey: "pages")
+        book.setValue(DTOPagesToCore(data.pages), forKey: "pages")
         
         await coreDataStorage.saveContext()
         return .success(())
@@ -28,14 +28,16 @@ extension CoreDataBookStorage: BookStorage {
         let context = coreDataStorage.persistentContainer.viewContext
 
         do {
-            let bookEntity = try getEntityByIdentifier(in: context, with: id)
-            guard let result = bookEntity?.toBookDTO()
-            else { throw MHError.convertDTOFailure }
+            guard let bookEntity = try getEntityByIdentifier(in: context, with: id)
+            else { return .failure(.findEntityFailure) }
+            
+            guard let result = coreBookToDTO(bookEntity)
+            else { return .failure(.convertDTOFailure) }
             
             return .success(result)
         } catch {
             MHLogger.debug("Error fetching book: \(error.localizedDescription)")
-            return .failure(.fetchFaliure)
+            return .failure(.findEntityFailure)
         }
     }
     func update(with id: UUID, data: BookDTO) async -> Result<Void, MHError> {
@@ -45,7 +47,7 @@ extension CoreDataBookStorage: BookStorage {
                 return .failure(.findEntityFailure)
             }
             newEntity.setValue(data.id, forKey: "id")
-            newEntity.setValue(data.pages, forKey: "pages")
+            newEntity.setValue(DTOPagesToCore(data.pages), forKey: "pages")
             
             await coreDataStorage.saveContext()
             return .success(())
@@ -80,14 +82,23 @@ extension CoreDataBookStorage: BookStorage {
     }
 }
 
-extension BookEntity {
-    func toBookDTO() -> BookDTO? {
-        guard let id = self.id,
-              let pages = self.pages else { return nil }
+// MARK: - Mapper
+extension CoreDataBookStorage {
+    // MARK: - Core to DTO
+    private func coreBookToDTO(_ book: BookEntity) -> BookDTO? {
+        guard let id = book.id,
+              let pages = try? JSONDecoder().decode([PageDTO].self, from: book.pages ?? Data())
+        else { return nil }
         
         return BookDTO(
             id: id,
             pages: pages
         )
+    }
+    
+    // MARK: - DTO to Core
+    private func DTOPagesToCore(_ pages: [PageDTO]) -> Data? {
+        guard let data = try? JSONEncoder().encode(pages) else { return nil }
+        return data
     }
 }

@@ -1,7 +1,7 @@
 import MHFoundation
 import MHDomain
 
-public struct MediaDescriptionDTO {
+public struct MediaDescriptionDTO: Codable {
     let id: UUID
     let type: String
     
