@@ -86,13 +86,20 @@ final class CategoryViewController: UIViewController {
         ]
         
         // 좌측 편집 버튼
-        navigationItem.leftBarButtonItem = UIBarButtonItem(
+        let editButton = UIBarButtonItem(
             title: "편집",
             normal: normalAttributes,
             selected: selectedAttributes
         ) { [weak self] in
-            self?.categoryTableView.setEditing(true, animated: true)
+            guard let self else { return }
+            let isEditing = self.categoryTableView.isEditing
+            self.categoryTableView.setEditing(!isEditing, animated: true)
+            
+            // 버튼 타이틀 업데이트
+            let newTitle = isEditing ? "편집" : "완료"
+            self.navigationItem.leftBarButtonItem?.title = newTitle
         }
+        navigationItem.leftBarButtonItem = editButton
         
         // 우측 추가 버튼
         navigationItem.rightBarButtonItem = UIBarButtonItem(
@@ -110,7 +117,7 @@ final class CategoryViewController: UIViewController {
                 },
                 confirmHandler: { [weak self] newText in
                     guard let newText = newText, !newText.isEmpty else {
-                        print("새 카테고리 이름이 유효하지 않습니다.")
+                        MHLogger.error("입력한 카테고리 이름이 유효하지 않습니다.")
                         return
                     }
                     self?.input.send(.addCategory(text: newText))
@@ -224,6 +231,7 @@ extension CategoryViewController: UITableViewDataSource {
         ) as? CategoryTableViewCell else { return UITableViewCell() }
         let isSelected = indexPath.row == viewModel.currentCategoryIndex
         cell.configure(category: viewModel.categories[indexPath.row], isSelected: isSelected)
+        cell.backgroundColor = .baseBackground
         
         return cell
     }
