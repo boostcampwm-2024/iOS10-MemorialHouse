@@ -15,7 +15,7 @@ public struct LocalBookRepository: BookRepository {
         _ = await storage.create(data: bookDTO)
     }
     public func fetchBook(with id: UUID) async -> Book? {
-        let result = await storage.fetch()
+        let result = await storage.fetch(with: id)
         
         switch result {
         case .success(let bookDTO):

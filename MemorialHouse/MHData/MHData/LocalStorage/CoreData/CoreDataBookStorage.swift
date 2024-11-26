@@ -25,9 +25,14 @@ extension CoreDataBookStorage: BookStorage {
         await coreDataStorage.saveContext()
         return .success(())
     }
-    func fetch() async -> Result<BookDTO, MHCore.MHError> {
+    func fetch(with id: UUID) async -> Result<BookDTO, MHCore.MHError> {
         let context = coreDataStorage.persistentContainer.viewContext
         let request = BookEntity.fetchRequest()
+
+        request.predicate = NSPredicate(
+            format: "id LIKE %@", "\(id.uuidString)"
+        )
+
         
         do {
             let bookEntity = try context.fetch(request)
