@@ -5,6 +5,9 @@ public struct DefaultMemorialHouseRepository: MemorialHouseRepository {
     
     public func fetchMemorialHouse() async -> MemorialHouse {
         // TODO: CoreData로부터 꺼내오기
-        return MemorialHouse(name: "", categories: [], bookCovers: [])
+        return MemorialHouse(
+            name: "",
+            bookCovers: []
+        )
     }
 }

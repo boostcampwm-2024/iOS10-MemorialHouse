@@ -11,7 +11,6 @@ public struct DefaultFetchMemorialHouseUseCase: FetchMemorialHouseUseCase {
         
         return MemorialHouse(
             name: transformedName,
-            categories: memorialHouse.categories,
             bookCovers: memorialHouse.bookCovers
         )
     }
