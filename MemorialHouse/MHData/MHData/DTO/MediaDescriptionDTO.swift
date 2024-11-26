@@ -1,7 +1,6 @@
 import MHFoundation
 import MHDomain
 
-
 public struct MediaDescriptionDTO {
     let id: UUID
     let type: String
