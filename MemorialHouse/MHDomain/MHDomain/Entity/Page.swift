@@ -7,7 +7,7 @@ public struct Page: Identifiable {
     
     public init(
         id: UUID,
-        metadata: [Int : MediaDescription],
+        metadata: [Int: MediaDescription],
         text: String
     ) {
         self.id = id
