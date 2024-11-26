@@ -10,7 +10,6 @@ struct CoreDataBookStorageTests {
     private static let books = [
         BookDTO(
             id: UUID(),
-            index: [],
             pages: [
                 PageDTO(
                     id: UUID(),
@@ -37,7 +36,6 @@ struct CoreDataBookStorageTests {
         ),
         BookDTO(
             id: UUID(),
-            index: [],
             pages: [
                 PageDTO(
                     id: UUID(),
@@ -73,7 +71,6 @@ struct CoreDataBookStorageTests {
         // Arrange
         let newBook = BookDTO(
             id: UUID(),
-            index: [],
             pages: [
                 PageDTO(
                     id: UUID(),
@@ -131,7 +128,6 @@ struct CoreDataBookStorageTests {
         let oldBook = CoreDataBookStorageTests.books[0]
         let newBook = BookDTO(
             id: oldBook.id,
-            index: [],
             pages: [
                 PageDTO(
                     id: oldBook.pages[0].id,
@@ -182,18 +178,25 @@ struct CoreDataBookStorageTests {
     @Test(arguments: [CoreDataBookStorageTests.books[0].id,
                       CoreDataBookStorageTests.books[1].id,
                       UUID()]
-    ) func test코어데이터에서_특정_UUID값을_가진_BookCover_데이터를_삭제한다(_ id: UUID) async throws {
+    ) func test코어데이터에서_특정_UUID값을_가진_BookCover_데이터를_삭제한다(_ id: UUID) async {
         // Arrange
         // Act
         let result = await sut.delete(with: id)
-        let coreDataBook = try await sut.fetch(with: id).get()
+        let coreDataBook = await sut.fetch(with: id)
         
         // Assert
         switch result {
-        case .success:
-            #expect(false, "Delete Book 실패: 삭제된 Book을 찾았습니다.")
-        case .failure(let error):
+        case .success: // 삭제가 되면 성공한 거임
+            #expect(true)
+        case .failure(let error): // 삭제가 실패했을 때 오류를 발생해야 함
             #expect(error == MHError.findEntityFailure)
+        }
+        
+        switch coreDataBook {
+        case .success: // 조회가 되면 실패한 거임
+            #expect(false, "Delete Book 실패: \(MHError.fetchFaliure.localizedDescription)")
+        case .failure(let error): // 조회가 실패하면 성공한 거임
+            #expect(error == MHError.fetchFaliure)
         }
     }
 }
