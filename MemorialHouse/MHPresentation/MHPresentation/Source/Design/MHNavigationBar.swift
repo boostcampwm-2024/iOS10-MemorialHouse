@@ -12,7 +12,6 @@ final class MHNavigationBar: UIView {
         setup()
         configureAddSubView()
         configureConstraints()
-        configureAction()
     }
     
     required init?(coder: NSCoder) {
@@ -21,7 +20,6 @@ final class MHNavigationBar: UIView {
         setup()
         configureAddSubView()
         configureConstraints()
-        configureAction()
     }
     
     // MARK: - Setup & Configuration
@@ -48,10 +46,8 @@ final class MHNavigationBar: UIView {
         settingButton.setHeight(30)
     }
     
-    private func configureAction() {
-        settingButton.addAction(UIAction { _ in
-            // TODO: 설정 버튼 클릭 시 설정화면 라우팅 필요
-        }, for: .touchUpInside)
+    func configureSettingAction(action: UIAction) {
+        settingButton.addAction(action, for: .touchUpInside)
     }
     
     func configureTitle(with title: String) {
