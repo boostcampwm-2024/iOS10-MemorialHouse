@@ -92,10 +92,12 @@ public final class HomeViewController: UIViewController {
         output.sink { [weak self] event in
             guard let self else { return }
             switch event {
-            case .fetchedMemorialHouse:
+            case .fetchedMemorialHouseAndCategory:
                 self.updateMemorialHouse()
             case .filteredBooks:
                 self.collectionView.reloadData()
+            case .fetchedFailure(let errorMessage):
+                self.handleError(with: errorMessage)
             }
         }.store(in: &cancellables)
     }
@@ -110,6 +112,18 @@ public final class HomeViewController: UIViewController {
         
         // BoockCover 설정
         collectionView.reloadData()
+    }
+    
+    private func handleError(with errorMessage: String) {
+        let alertController = UIAlertController(
+            title: "에러",
+            message: errorMessage,
+            preferredStyle: .alert
+        )
+        let okAction = UIAlertAction(title: "확인", style: .default)
+        alertController.addAction(okAction)
+        
+        present(alertController, animated: true)
     }
     
     private func configureAddSubView() {
