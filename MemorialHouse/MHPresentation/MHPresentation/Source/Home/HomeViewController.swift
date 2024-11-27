@@ -38,9 +38,9 @@ public final class HomeViewController: UIViewController {
     private var cancellables = Set<AnyCancellable>()
     private var floatingButtonBottomConstraint: NSLayoutConstraint?
     private var isFloatingButtonHidden = false
-    private var currentCategoryIndex = 0 {
+    private var currentCategory = "전체" {
         didSet {
-            currentCategoryLabel.text = viewModel.categories[currentCategoryIndex]
+            currentCategoryLabel.text = currentCategory
         }
     }
     
@@ -83,6 +83,7 @@ public final class HomeViewController: UIViewController {
             BookCollectionViewCell.self,
             forCellWithReuseIdentifier: BookCollectionViewCell.identifier
         )
+        currentCategoryLabel.text = currentCategory
         categorySelectButton.setImage(.dropDown, for: .normal)
     }
     
@@ -92,10 +93,12 @@ public final class HomeViewController: UIViewController {
         output.sink { [weak self] event in
             guard let self else { return }
             switch event {
-            case .fetchedMemorialHouse:
+            case .fetchedMemorialHouseAndCategory:
                 self.updateMemorialHouse()
             case .filteredBooks:
                 self.collectionView.reloadData()
+            case .fetchedFailure(let errorMessage):
+                self.handleError(with: errorMessage)
             }
         }.store(in: &cancellables)
     }
@@ -105,11 +108,20 @@ public final class HomeViewController: UIViewController {
         let houseName = viewModel.houseName
         navigationBar.configureTitle(with: houseName)
         
-        // 카테고리 설정
-        currentCategoryLabel.text = viewModel.categories.first
-        
         // BoockCover 설정
         collectionView.reloadData()
+    }
+    
+    private func handleError(with errorMessage: String) {
+        let alertController = UIAlertController(
+            title: "에러",
+            message: errorMessage,
+            preferredStyle: .alert
+        )
+        let okAction = UIAlertAction(title: "확인", style: .default)
+        alertController.addAction(okAction)
+        
+        present(alertController, animated: true)
     }
     
     private func configureAddSubView() {
@@ -122,22 +134,27 @@ public final class HomeViewController: UIViewController {
     
     private func configureAction() {
         categorySelectButton.addAction(UIAction { [weak self] _ in
-            guard let self else { return }
-            let categoryViewModel = CategoryViewModel(
-                categories: self.viewModel.categories,
-                currentCategoryIndex: self.currentCategoryIndex
-            )
-            let categoryViewController = CategoryViewController(viewModel: categoryViewModel)
-            categoryViewController.delegate = self
-            let navigationController = UINavigationController(rootViewController: categoryViewController)
-            
-            if let sheet = navigationController.sheetPresentationController {
-                sheet.detents = [.custom(identifier: .categorySheet) { _ in
-                    categoryViewController.calculateSheetHeight()
-                }]
+            do {
+                guard let self else { return }
+                let categoryViewModelFactory = try DIContainer.shared.resolve(CategoryViewModelFactory.self)
+                let categoryViewModel = categoryViewModelFactory.make()
+                categoryViewModel.setup(currentCategory: self.currentCategory)
+                let categoryViewController = CategoryViewController(viewModel: categoryViewModel)
+                categoryViewController.delegate = self
+                let navigationController = UINavigationController(rootViewController: categoryViewController)
+                
+                if let sheet = navigationController.sheetPresentationController {
+                    sheet.detents = [.custom(identifier: .categorySheet) { _ in
+                        categoryViewController.calculateSheetHeight()
+                    }]
+                }
+                
+                self.present(navigationController, animated: true)
+            } catch let error as MHCoreError {
+                MHLogger.error(error.description)
+            } catch {
+                MHLogger.error(error.localizedDescription)
             }
-            
-            self.present(navigationController, animated: true)
         }, for: .touchUpInside)
         
         makingBookFloatingButton.addAction(UIAction { [weak self] _ in
@@ -199,7 +216,7 @@ extension HomeViewController: UICollectionViewDelegate {
         let offsetY = scrollView.contentOffset.y
         let contentHeight = scrollView.contentSize.height
         let height = scrollView.frame.size.height
-
+        
         if contentHeight > height {
             if offsetY > contentHeight - height {
                 hideFloatingButton()
@@ -265,8 +282,8 @@ extension HomeViewController: UICollectionViewDataSource {
 }
 
 extension HomeViewController: CategoryViewControllerDelegate {
-    func categoryViewController(_ categoryViewController: CategoryViewController, didSelectCategoryIndex index: Int) {
-        currentCategoryIndex = index
-        input.send(.selectedCategory(index: index))
+    func categoryViewController(_ categoryViewController: CategoryViewController, didSelectCategory category: String) {
+        currentCategory = category
+        input.send(.selectedCategory(category: category))
     }
 }

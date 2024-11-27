@@ -117,7 +117,7 @@ struct CoreDataBookCoverStorageTests {
         case .success:
             #expect(!coreDataBookCovers.contains(where: { $0.identifier == id }))
         case .failure(let error):
-            #expect(error == MHError.findEntityFailure && !coreDataBookCovers.contains(where: { $0.identifier == id }))
+            #expect(error == MHDataError.findEntityFailure && !coreDataBookCovers.contains(where: { $0.identifier == id }))
         }
     }
 }
