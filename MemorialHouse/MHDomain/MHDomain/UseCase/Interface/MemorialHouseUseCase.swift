@@ -1,3 +1,3 @@
 public protocol FetchMemorialHouseUseCase: Sendable {
-    func execute() async -> MemorialHouse
+    func execute() async throws -> MemorialHouse
 }
