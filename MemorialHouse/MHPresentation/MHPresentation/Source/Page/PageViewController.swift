@@ -19,17 +19,18 @@ final class PageViewController: UIViewController {
     private var textStorage: NSTextStorage?
     private var textContainer: NSTextContainer?
     
-    let index: Int
+    // MARK: - Property
+    private let viewModel: PageViewModel
     
     // MARK: - Initialize
-    init(index: Int) {
-        self.index = index
+    init(viewModel: PageViewModel) {
+        self.viewModel = viewModel
         
         super.init(nibName: nil, bundle: nil)
     }
     
     required init?(coder: NSCoder) {
-        self.index = 0
+        self.viewModel = PageViewModel(index: 0)
         
         super.init(nibName: nil, bundle: nil)
     }
@@ -45,7 +46,7 @@ final class PageViewController: UIViewController {
     // MARK: - Setup & Configure
     private func setup() {
         view.backgroundColor = .baseBackground
-        textView.text = String(index)
+        textView.text = String(viewModel.index)
     }
     
     private func configureConstraints() {
@@ -56,5 +57,9 @@ final class PageViewController: UIViewController {
             bottom: view.bottomAnchor, constantBottom: 10,
             trailing: view.trailingAnchor, constantTrailing: 10
         )
+    }
+    
+    func getPageIndex() -> Int {
+        return viewModel.index
     }
 }

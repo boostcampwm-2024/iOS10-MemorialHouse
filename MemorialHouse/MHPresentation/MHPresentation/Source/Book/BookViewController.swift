@@ -7,17 +7,22 @@ final class BookViewController: UIViewController {
         navigationOrientation: .horizontal
     )
     
-    private let pageList = ["one", "two", "three"]
+    // MARK: - Property
+    private let viewModel: BookViewModel
     
     // MARK: - Initialize
-    init(bookTitle: String) {
+    init(bookTitle: String, viewModel: BookViewModel) {
+        self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
         
         title = bookTitle
     }
     
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        self.viewModel = BookViewModel()
+        super.init(nibName: nil, bundle: nil)
+        
+        title = "책 이름"
     }
     
     // MARK: - View Life Cycle
@@ -87,7 +92,8 @@ final class BookViewController: UIViewController {
     }
     
     private func makeNewPageViewController(index: Int) -> PageViewController? {
-        return PageViewController(index: index)
+        // TODO: - 로직 수정 필요
+        return PageViewController(viewModel: PageViewModel(index: index))
     }
 }
 
@@ -102,19 +108,23 @@ extension BookViewController: UIPageViewControllerDataSource {
         _ pageViewController: UIPageViewController,
         viewControllerBefore viewController: UIViewController
     ) -> UIViewController? {
-        guard let targetViewController = viewController as? PageViewController,
-              targetViewController.index > 0 else { return nil }
+        guard let targetViewController = viewController as? PageViewController else { return nil }
+        let pageIndex = targetViewController.getPageIndex()
         
-        return makeNewPageViewController(index: targetViewController.index - 1)
+        return pageIndex == 0
+        ? nil
+        : makeNewPageViewController(index: pageIndex - 1)
     }
     
     func pageViewController(
         _ pageViewController: UIPageViewController,
         viewControllerAfter viewController: UIViewController
     ) -> UIViewController? {
-        guard let targetViewController = viewController as? PageViewController,
-              targetViewController.index < pageList.count - 1 else { return nil }
+        guard let targetViewController = viewController as? PageViewController else { return nil }
+        let pageIndex = targetViewController.getPageIndex()
         
-        return makeNewPageViewController(index: targetViewController.index + 1)
+        return pageIndex == viewModel.pageList.count - 1
+        ? nil
+        : makeNewPageViewController(index: pageIndex + 1)
     }
 }
