@@ -2,7 +2,7 @@ import Testing
 @testable import MHData
 @testable import MHFoundation
 
-@Suite("Serial model tests", .serialized) final class MHFileManagerTests {
+@Suite("FileManager 순차적으로 테스트", .serialized) final class MHFileManagerTests {
     private var fileManager: MHFileManager!
     private let testDirectory = "TestDirectory"
     private let newTestDirectory = "NewTestDirectory"
@@ -58,7 +58,7 @@ import Testing
         case .success:
             #expect(false, "\(#function) 실패해야하는데 성공함")
         case .failure(let error):
-            #expect(error == .fileReadingFailure)
+            #expect(error == .fileNotExists)
         }
     }
     @Test func test파일삭제_성공() async {
