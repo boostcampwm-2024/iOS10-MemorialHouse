@@ -22,16 +22,19 @@ final class CustomAlbumViewController: UIViewController {
     private let viewModel: CustomAlbumViewModel
     private let input = PassthroughSubject<CustomAlbumViewModel.Input, Never>()
     private var cancellables = Set<AnyCancellable>()
+    private let mediaType: PHAssetMediaType
     
     // MARK: - Initializer
-    init(viewModel: CustomAlbumViewModel) {
+    init(viewModel: CustomAlbumViewModel, mediaType: PHAssetMediaType) {
         self.viewModel = viewModel
+        self.mediaType = mediaType
         
         super.init(nibName: nil, bundle: nil)
     }
     
     required init?(coder: NSCoder) {
         self.viewModel = CustomAlbumViewModel()
+        self.mediaType = .image
         
         super.init(nibName: nil, bundle: nil)
     }
@@ -48,7 +51,7 @@ final class CustomAlbumViewController: UIViewController {
         configureConstraints()
         configureNavigationBar()
         bind()
-        input.send(.viewDidLoad)
+        input.send(.viewDidLoad(mediaType: mediaType))
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -77,7 +80,11 @@ final class CustomAlbumViewController: UIViewController {
     private func configureNavigationBar() {
         // TODO: - 추후 삭제 필요
         navigationController?.navigationBar.isHidden = false
-        navigationItem.title = "사진 선택"
+        if mediaType == .image {
+            navigationItem.title = "사진 선택"
+        } else {
+            navigationItem.title = "동영상 선택"
+        }
         
         // 공통 스타일 정의
         let normalAttributes: [NSAttributedString.Key: Any] = [
@@ -169,6 +176,10 @@ final class CustomAlbumViewController: UIViewController {
             let imagePicker = UIImagePickerController()
             imagePicker.delegate = self
             imagePicker.sourceType = .camera
+            if mediaType == .video {
+                imagePicker.mediaTypes = ["public.movie"]
+                imagePicker.cameraCaptureMode = .video
+            }
             navigationController?.show(imagePicker, sender: nil)
         }
     }
@@ -187,9 +198,13 @@ extension CustomAlbumViewController: UICollectionViewDelegate {
             Task {
                 await LocalPhotoManager.shared.requestImage(with: asset) { [weak self] image in
                     guard let self else { return }
-                    let editViewController = EditPhotoViewController()
-                    editViewController.setPhoto(image: image, date: asset.creationDate)
-                    self.navigationController?.pushViewController(editViewController, animated: true)
+                    if self.mediaType == .image {
+                        let editViewController = EditPhotoViewController()
+                        editViewController.setPhoto(image: image, date: asset.creationDate)
+                        self.navigationController?.pushViewController(editViewController, animated: true)
+                    } else {
+                        // TODO: - 비디오 넘기기
+                    }
                 }
             }
         }

@@ -4,7 +4,7 @@ import Combine
 
 final class CustomAlbumViewModel: ViewModelType {
     enum Input {
-        case viewDidLoad
+        case viewDidLoad(mediaType: PHAssetMediaType)
         case photoDidChanged(to: PHChange)
     }
     
@@ -20,8 +20,8 @@ final class CustomAlbumViewModel: ViewModelType {
     func transform(input: AnyPublisher<Input, Never>) -> AnyPublisher<Output, Never> {
         input.sink { [weak self] event in
             switch event {
-            case .viewDidLoad:
-                self?.fetchPhotoAssets()
+            case .viewDidLoad(let mediaType):
+                self?.fetchPhotoAssets(of: mediaType)
             case .photoDidChanged(let changeInstance):
                 self?.updatePhotoAssets(changeInstance)
             }
@@ -31,9 +31,10 @@ final class CustomAlbumViewModel: ViewModelType {
         return output.eraseToAnyPublisher()
     }
     
-    private func fetchPhotoAssets() {
+    private func fetchPhotoAssets(of mediaType: PHAssetMediaType) {
         let fetchOptions = PHFetchOptions()
-        fetchOptions.predicate = NSPredicate(format: "mediaType = %d", PHAssetMediaType.image.rawValue)
+        
+        fetchOptions.predicate = NSPredicate(format: "mediaType = %d", mediaType.rawValue)
         fetchOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
         
         photoAsset = PHAsset.fetchAssets(with: fetchOptions)
