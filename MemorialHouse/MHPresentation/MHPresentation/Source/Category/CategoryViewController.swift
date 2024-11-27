@@ -42,7 +42,7 @@ final class CategoryViewController: UIViewController {
     
     func calculateSheetHeight() -> CGFloat {
         let cellHeight = CategoryTableViewCell.height
-        let itemCount = CGFloat(viewModel.categories.count)
+        let itemCount = CGFloat(viewModel.categories.count) + 1 // FIXME: detent 임시용
         return (cellHeight * itemCount) + Constant.navigationBarHeight
     }
     
@@ -66,7 +66,6 @@ final class CategoryViewController: UIViewController {
             switch event {
             case .createdCategory, .updatedCategory, .deletedCategory:
                 self?.categoryTableView.reloadData()
-                self?.categoryTableView.layoutIfNeeded()
             }
         }.store(in: &cancellables)
     }

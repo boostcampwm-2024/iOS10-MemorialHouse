@@ -1,4 +1,5 @@
 import MHCore
+
 public struct DefaultFetchMemorialHouseUseCase: FetchMemorialHouseUseCase {
     private let repository: MemorialHouseRepository
     
