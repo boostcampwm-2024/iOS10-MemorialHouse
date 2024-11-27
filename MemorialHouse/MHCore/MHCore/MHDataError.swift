@@ -1,8 +1,12 @@
 import MHFoundation
 
 public enum MHDataError: Error, CustomStringConvertible, Equatable {
+    case noSuchEntity(key: String)
+    case createEntityFailure
     case convertDTOFailure
-    case fetchFaliure
+    case fetchEntityFaliure
+    case updateEntityFailure
+    case deleteEntityFailure
     case findEntityFailure
     case saveContextFailure
     case directorySettingFailure
@@ -14,10 +18,18 @@ public enum MHDataError: Error, CustomStringConvertible, Equatable {
     
     public var description: String {
         switch self {
+        case let .noSuchEntity(key):
+            "\(key)에 대한 Entity가 존재하지 않습니다"
+        case .createEntityFailure:
+            "Entity 생성 실패"
         case .convertDTOFailure:
             "Entity에 대한 DTO 변환 실패"
-        case .fetchFaliure:
-            "Entity Fetch 실패"
+        case .fetchEntityFaliure:
+            "Entity 가져오기 실패"
+        case .updateEntityFailure:
+            "Entity 업데이트 실패"
+        case .deleteEntityFailure:
+            "Entity 삭제 실패"
         case .findEntityFailure:
             "Entity 찾기 실패"
         case .saveContextFailure:

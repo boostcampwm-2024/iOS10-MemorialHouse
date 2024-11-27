@@ -105,7 +105,7 @@ struct CoreDataBookStorageTests {
         case .success:
             #expect(coreDataBook.id == newBook.id)
         case .failure(let error):
-            #expect(false, "Create Book 실패: \(error.localizedDescription)")
+            #expect(false, "Create Book 실패: \(error.description)")
         }
     }
     
@@ -119,7 +119,7 @@ struct CoreDataBookStorageTests {
         case .success(let bookResult):
             #expect(CoreDataBookStorageTests.books.contains(where: { $0.id == bookResult.id }))
         case .failure(let error):
-            #expect(false, "Fetch Book 실패: \(error.localizedDescription)")
+            #expect(false, "Fetch Book 실패: \(error.description)")
         }
     }
     
@@ -171,7 +171,7 @@ struct CoreDataBookStorageTests {
             let newBookResult = coreDataBook
             #expect(newBookResult.pages.count != oldBook.pages.count)
         case .failure(let error):
-            #expect(false, "Update Book 실패: \(error.localizedDescription)")
+            #expect(false, "Update Book 실패: \(error.description)")
         }
     }
     
@@ -189,14 +189,14 @@ struct CoreDataBookStorageTests {
         case .success: // 삭제가 되면 성공한 거임
             #expect(true)
         case .failure(let error): // 삭제가 실패했을 때 오류를 발생해야 함
-            #expect(error == MHError.findEntityFailure)
+            #expect(error == MHDataError.findEntityFailure)
         }
         
         switch coreDataBook {
         case .success: // 조회가 되면 실패한 거임
-            #expect(false, "Delete Book 실패: \(MHError.fetchFaliure.localizedDescription)")
+            #expect(false, "Delete Book 실패: \(MHDataError.fetchEntityFaliure.description)")
         case .failure(let error): // 조회가 실패하면 성공한 거임
-            #expect(error == MHError.findEntityFailure)
+            #expect(error == MHDataError.findEntityFailure)
         }
     }
 }

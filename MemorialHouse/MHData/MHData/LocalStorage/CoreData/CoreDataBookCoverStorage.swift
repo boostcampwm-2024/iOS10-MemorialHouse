@@ -39,7 +39,7 @@ extension CoreDataBookCoverStorage: BookCoverStorage {
             return .success(result)
         } catch {
             MHLogger.debug("Error fetching book covers: \(error.localizedDescription)")
-            return .failure(.fetchFaliure)
+            return .failure(.fetchEntityFaliure)
         }
     }
     

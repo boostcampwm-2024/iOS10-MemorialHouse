@@ -9,7 +9,7 @@ public struct LocalBookRepository: BookRepository {
         self.storage = storage
     }
     
-    public func create(book: Book) async -> Result<Void, MHCoreError> {
+    public func create(book: Book) async -> Result<Void, MHDataError> {
         let bookDTO = mappingBookToDTO(book)
         
         return await storage.create(data: bookDTO)
