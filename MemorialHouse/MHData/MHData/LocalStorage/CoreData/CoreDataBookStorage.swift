@@ -40,8 +40,7 @@ extension CoreDataBookStorage: BookStorage {
         do {
             var bookEntity: BookEntity?
             try await context.perform { [weak self] in
-                guard let self else { return }
-                bookEntity = try getEntityByIdentifier(in: context, with: id)
+                bookEntity = try self?.getEntityByIdentifier(in: context, with: id)
                 guard bookEntity != nil else { throw MHDataError.findEntityFailure }
             }
             
@@ -85,8 +84,7 @@ extension CoreDataBookStorage: BookStorage {
         do {
             let context = coreDataStorage.persistentContainer.viewContext
             try await context.perform { [weak self] in
-                guard let self else { return }
-                guard let entity = try getEntityByIdentifier(in: context, with: id) else {
+                guard let entity = try self?.getEntityByIdentifier(in: context, with: id) else {
                     throw MHDataError.findEntityFailure
                 }
                 
