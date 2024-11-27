@@ -1,10 +1,16 @@
 import MHFoundation
 import MHDomain
 
-public struct PageDTO: Codable {
+public struct PageDTO {
     let id: UUID
     let metadata: [Int: MediaDescriptionDTO]
     let text: String
+    
+    public init(id: UUID, metadata: [Int : MediaDescriptionDTO], text: String) {
+        self.id = id
+        self.metadata = metadata
+        self.text = text
+    }
     
     func toPage() -> Page {
         let metadata = self.metadata
