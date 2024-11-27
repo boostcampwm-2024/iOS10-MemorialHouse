@@ -13,6 +13,7 @@ final class MHPolaroidPhotoView: UIView {
         let label = UILabel()
         label.numberOfLines = 2
         label.font = .ownglyphBerry(size: 12)
+        label.textColor = .mhTitle
         
         return label
     }()
@@ -22,6 +23,7 @@ final class MHPolaroidPhotoView: UIView {
         label.numberOfLines = 1
         label.textAlignment = .right
         label.font = .ownglyphBerry(size: 12)
+        label.textColor = .mhTitle
         
         return label
     }()
@@ -43,8 +45,10 @@ final class MHPolaroidPhotoView: UIView {
     }
     
     private func setup() {
-        frame.size = CGSize(width: 310, height: 310)
+        backgroundColor = .white
         layer.shadowOffset = CGSize(width: 0, height: 4)
+        layer.shadowOpacity = 0.4
+        layer.shadowRadius = 4
         layer.masksToBounds = false
     }
     
@@ -55,17 +59,18 @@ final class MHPolaroidPhotoView: UIView {
     }
     
     private func configureConstraints() {
-        photoImageView.setAnchor(top: topAnchor, constantTop: 25, width: 210, height: 280)
+        photoImageView.setAnchor(top: topAnchor, constantTop: 25,
+                                 width: 280, height: 210)
         photoImageView.setCenterX(view: self)
         
-        captionLabel.setAnchor(top: photoImageView.bottomAnchor, constantTop: 12)
-        captionLabel.setCenterX(view: self)
+        captionLabel.setAnchor(top: photoImageView.bottomAnchor, constantTop: 12,
+                               leading: photoImageView.leadingAnchor)
         
         creationDateLabel.setAnchor(bottom: bottomAnchor, constantBottom: 7,
                                     trailing: trailingAnchor, constantTrailing: 12)
     }
     
-    func configurePhotoImageView(image: UIImage, caption: String, creationDate: String) {
+    func configurePhotoImageView(image: UIImage?, caption: String, creationDate: String) {
         photoImageView.image = image
         captionLabel.text = caption
         creationDateLabel.text = creationDate
