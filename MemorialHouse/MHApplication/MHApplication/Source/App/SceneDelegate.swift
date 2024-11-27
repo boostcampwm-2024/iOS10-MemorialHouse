@@ -51,7 +51,7 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 HomeViewModelFactory.self,
                 object: HomeViewModelFactory(fetchMemorialHouseUseCase: fetchMemorialHouseUseCase)
             )
-        } catch let error as MHError {
+        } catch let error as MHCoreError {
             MHLogger.error("\(error.description)")
         } catch {
             MHLogger.error("\(error.localizedDescription)")

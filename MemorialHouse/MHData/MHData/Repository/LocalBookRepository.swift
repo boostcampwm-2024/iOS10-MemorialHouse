@@ -9,12 +9,12 @@ public struct LocalBookRepository: BookRepository {
         self.storage = storage
     }
     
-    public func create(book: Book) async -> Result<Void, MHError> {
+    public func create(book: Book) async -> Result<Void, MHCoreError> {
         let bookDTO = mappingBookToDTO(book)
         
         return await storage.create(data: bookDTO)
     }
-    public func fetch(bookID id: UUID) async -> Result<Book, MHError> {
+    public func fetch(bookID id: UUID) async -> Result<Book, MHDataError> {
         let result = await storage.fetch(with: id)
         
         switch result {
@@ -25,12 +25,12 @@ public struct LocalBookRepository: BookRepository {
             return .failure(failure)
         }
     }
-    public func update(bookID id: UUID, to book: Book) async -> Result<Void, MHError> {
+    public func update(bookID id: UUID, to book: Book) async -> Result<Void, MHDataError> {
         let bookDTO = mappingBookToDTO(book)
         
         return await storage.update(with: id, data: bookDTO)
     }
-    public func delete(bookID id: UUID) async -> Result<Void, MHError> {
+    public func delete(bookID id: UUID) async -> Result<Void, MHDataError> {
         return await storage.delete(with: id)
     }
     

@@ -11,7 +11,7 @@ final class CoreDataBookStorage {
 }
 
 extension CoreDataBookStorage: BookStorage {
-    func create(data: BookDTO) async -> Result<Void, MHError> {
+    func create(data: BookDTO) async -> Result<Void, MHCoreError> {
         let context = coreDataStorage.persistentContainer.viewContext
         guard let entity = NSEntityDescription.entity(forEntityName: "BookEntity", in: context) else {
             return .failure(.DIContainerResolveFailure(key: "BookEntity"))
@@ -24,7 +24,7 @@ extension CoreDataBookStorage: BookStorage {
         await coreDataStorage.saveContext()
         return .success(())
     }
-    func fetch(with id: UUID) async -> Result<BookDTO, MHError> {
+    func fetch(with id: UUID) async -> Result<BookDTO, MHDataError> {
         let context = coreDataStorage.persistentContainer.viewContext
 
         do {
@@ -40,7 +40,7 @@ extension CoreDataBookStorage: BookStorage {
             return .failure(.findEntityFailure)
         }
     }
-    func update(with id: UUID, data: BookDTO) async -> Result<Void, MHError> {
+    func update(with id: UUID, data: BookDTO) async -> Result<Void, MHDataError> {
         do {
             let context = coreDataStorage.persistentContainer.viewContext
             guard let newEntity = try getEntityByIdentifier(in: context, with: id) else {
@@ -55,7 +55,7 @@ extension CoreDataBookStorage: BookStorage {
             return .failure(.findEntityFailure)
         }
     }
-    func delete(with id: UUID) async -> Result<Void, MHError> {
+    func delete(with id: UUID) async -> Result<Void, MHDataError> {
         do {
             let context = coreDataStorage.persistentContainer.viewContext
             guard let entity = try getEntityByIdentifier(in: context, with: id) else {

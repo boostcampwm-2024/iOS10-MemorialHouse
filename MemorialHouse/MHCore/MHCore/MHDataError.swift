@@ -1,7 +1,6 @@
-import Foundation
+import MHFoundation
 
-public enum MHError: Error, CustomStringConvertible, Equatable {
-    case DIContainerResolveFailure(key: String)
+public enum MHDataError: Error, CustomStringConvertible, Equatable {
     case convertDTOFailure
     case fetchFaliure
     case findEntityFailure
@@ -15,8 +14,6 @@ public enum MHError: Error, CustomStringConvertible, Equatable {
     
     public var description: String {
         switch self {
-        case .DIContainerResolveFailure(let key):
-            "\(key)에 대한 dependency resolve 실패"
         case .convertDTOFailure:
             "Entity에 대한 DTO 변환 실패"
         case .fetchFaliure:

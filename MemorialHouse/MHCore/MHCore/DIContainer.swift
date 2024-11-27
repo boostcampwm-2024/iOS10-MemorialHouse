@@ -13,7 +13,7 @@ public final class DIContainer {
         let key = String(describing: type)
         guard let object = objects[key] as? T else {
             MHLogger.error("\(#function): \(key)에 해당하는 object 없음")
-            throw MHError.DIContainerResolveFailure(key: key)
+            throw MHCoreError.DIContainerResolveFailure(key: key)
         }
         return object
     }
