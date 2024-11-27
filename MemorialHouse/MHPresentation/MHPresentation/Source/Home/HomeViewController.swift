@@ -150,7 +150,7 @@ public final class HomeViewController: UIViewController {
                 }
                 
                 self.present(navigationController, animated: true)
-            } catch let error as MHError {
+            } catch let error as MHCoreError {
                 MHLogger.error(error.description)
             } catch {
                 MHLogger.error(error.localizedDescription)

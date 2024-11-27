@@ -38,7 +38,7 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             registerRepositoryDependency()
             try registerUseCaseDependency()
             try registerViewModelFactoryDependency()
-        } catch let error as MHError {
+        } catch let error as MHCoreError {
             MHLogger.error("\(error.description)")
         } catch {
             MHLogger.error("\(error.localizedDescription)")
