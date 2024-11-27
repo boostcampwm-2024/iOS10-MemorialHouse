@@ -46,21 +46,6 @@ final class CategoryViewController: UIViewController {
         return (cellHeight * itemCount) + Constant.navigationBarHeight
     }
     
-    private func updateTableViewHeight() {
-        let cellHeight = CategoryTableViewCell.height
-        let totalHeight = CGFloat(viewModel.categories.count) * cellHeight
-        
-        categoryTableView.constraints.forEach { constraint in
-            if constraint.firstAttribute == .height {
-                constraint.constant = totalHeight
-            }
-        }
-        
-        UIView.animate(withDuration: 0.3) {
-            self.view.layoutIfNeeded()
-        }
-    }
-    
     // MARK: - Setup & Configuration
     private func setup() {
         view.backgroundColor = .baseBackground
@@ -81,7 +66,7 @@ final class CategoryViewController: UIViewController {
             switch event {
             case .createdCategory, .updatedCategory, .deletedCategory:
                 self?.categoryTableView.reloadData()
-//                self?.updateTableViewHeight()
+                self?.categoryTableView.layoutIfNeeded()
             }
         }.store(in: &cancellables)
     }
