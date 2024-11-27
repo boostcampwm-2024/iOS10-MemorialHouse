@@ -19,7 +19,7 @@ extension CoreDataBookStorage: BookStorage {
         
         let book = NSManagedObject(entity: entity, insertInto: context)
         book.setValue(data.id, forKey: "id")
-        book.setValue(DTOPagesToCore(data.pages), forKey: "pages")
+        book.setValue(dtoPagesToCore(data.pages), forKey: "pages")
         
         await coreDataStorage.saveContext()
         return .success(())
@@ -47,7 +47,7 @@ extension CoreDataBookStorage: BookStorage {
                 return .failure(.findEntityFailure)
             }
             newEntity.setValue(data.id, forKey: "id")
-            newEntity.setValue(DTOPagesToCore(data.pages), forKey: "pages")
+            newEntity.setValue(dtoPagesToCore(data.pages), forKey: "pages")
             
             await coreDataStorage.saveContext()
             return .success(())
@@ -97,7 +97,7 @@ extension CoreDataBookStorage {
     }
     
     // MARK: - DTO to Core
-    private func DTOPagesToCore(_ pages: [PageDTO]) -> Data? {
+    private func dtoPagesToCore(_ pages: [PageDTO]) -> Data? {
         guard let data = try? JSONEncoder().encode(pages) else { return nil }
         return data
     }
