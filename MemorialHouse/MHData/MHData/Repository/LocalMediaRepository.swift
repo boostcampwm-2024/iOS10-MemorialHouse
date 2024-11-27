@@ -5,7 +5,6 @@ import MHCore
 import AVFoundation
 
 public struct LocalMediaRepository: MediaRepository {
-    
     private let storage: FileStorage
     
     public init(storage: FileStorage) {
