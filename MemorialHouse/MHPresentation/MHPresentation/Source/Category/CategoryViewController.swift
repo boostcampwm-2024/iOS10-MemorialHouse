@@ -1,10 +1,11 @@
 import Combine
+import MHCore
 import MHFoundation
 import UIKit
 
 @MainActor
 protocol CategoryViewControllerDelegate: AnyObject {
-    func categoryViewController(_ categoryViewController: CategoryViewController, didSelectCategoryIndex index: Int)
+    func categoryViewController(_ categoryViewController: CategoryViewController, didSelectCategory category: String)
 }
 
 final class CategoryViewController: UIViewController {
@@ -14,6 +15,7 @@ final class CategoryViewController: UIViewController {
     // MARK: - Properties
     weak var delegate: CategoryViewControllerDelegate?
     private let viewModel: CategoryViewModel
+    private let input = PassthroughSubject<CategoryViewModel.Input, Never>()
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Initializer
@@ -23,7 +25,8 @@ final class CategoryViewController: UIViewController {
     }
     
     required init?(coder: NSCoder) {
-        self.viewModel = CategoryViewModel(categories: ["전체", "즐겨찾기"], currentCategoryIndex: 0)
+        guard let viewModelFactory = try? DIContainer.shared.resolve(CategoryViewModelFactory.self) else { return nil }
+        self.viewModel = viewModelFactory.make()
         super.init(coder: coder)
     }
     
@@ -32,13 +35,14 @@ final class CategoryViewController: UIViewController {
         super.viewDidLoad()
         
         setup()
+        bind()
         configureNavigationBar()
         configureConstraints()
     }
     
     func calculateSheetHeight() -> CGFloat {
         let cellHeight = CategoryTableViewCell.height
-        let itemCount = CGFloat(viewModel.categories.count)
+        let itemCount = CGFloat(viewModel.categories.count) + 1 // FIXME: detent 임시용
         return (cellHeight * itemCount) + Constant.navigationBarHeight
     }
     
@@ -46,12 +50,24 @@ final class CategoryViewController: UIViewController {
     private func setup() {
         view.backgroundColor = .baseBackground
         categoryTableView.backgroundColor = .baseBackground
+        
         categoryTableView.delegate = self
         categoryTableView.dataSource = self
         categoryTableView.register(
             CategoryTableViewCell.self,
             forCellReuseIdentifier: CategoryTableViewCell.identifier
         )
+    }
+    
+    private func bind() {
+        let output = viewModel.transform(input: input.eraseToAnyPublisher())
+        
+        output.sink { [weak self] event in
+            switch event {
+            case .createdCategory, .updatedCategory, .deletedCategory:
+                self?.categoryTableView.reloadData()
+            }
+        }.store(in: &cancellables)
     }
     
     private func configureNavigationBar() {
@@ -73,14 +89,20 @@ final class CategoryViewController: UIViewController {
         ]
         
         // 좌측 편집 버튼
-        navigationItem.leftBarButtonItem = UIBarButtonItem(
+        let editButton = UIBarButtonItem(
             title: "편집",
             normal: normalAttributes,
             selected: selectedAttributes
         ) { [weak self] in
-            // TODO: 편집하기
-            self?.categoryTableView.setEditing(true, animated: true)
+            guard let self else { return }
+            let isEditing = self.categoryTableView.isEditing
+            self.categoryTableView.setEditing(!isEditing, animated: true)
+            
+            // 버튼 타이틀 업데이트
+            let newTitle = isEditing ? "편집" : "완료"
+            self.navigationItem.leftBarButtonItem?.title = newTitle
         }
+        navigationItem.leftBarButtonItem = editButton
         
         // 우측 추가 버튼
         navigationItem.rightBarButtonItem = UIBarButtonItem(
@@ -88,7 +110,24 @@ final class CategoryViewController: UIViewController {
             normal: normalAttributes,
             selected: selectedAttributes
         ) { [weak self] in
-            // TODO: 로컬에 저장하고 테이블뷰에 추가하는 로직 필요
+            guard let self else { return }
+            
+            let alert = UIAlertController(
+                title: "카테고리 추가",
+                message: "새로운 카테고리를 입력해주세요.",
+                textFieldConfiguration: { textField in
+                    textField.placeholder = "카테고리 이름"
+                },
+                confirmHandler: { [weak self] newText in
+                    guard let newText, !newText.isEmpty else {
+                        MHLogger.error("입력한 카테고리 이름이 유효하지 않습니다.")
+                        return
+                    }
+                    self?.input.send(.addCategory(text: newText))
+                }
+            )
+            
+            self.present(alert, animated: true)
         }
     }
     
@@ -103,7 +142,8 @@ extension CategoryViewController: UITableViewDelegate {
         _ tableView: UITableView,
         didSelectRowAt indexPath: IndexPath
     ) {
-        delegate?.categoryViewController(self, didSelectCategoryIndex: indexPath.row)
+        let selectedCategory = viewModel.categories[indexPath.row]
+        delegate?.categoryViewController(self, didSelectCategory: selectedCategory)
         dismiss(animated: true, completion: nil)
     }
     
@@ -129,14 +169,46 @@ extension CategoryViewController: UITableViewDelegate {
             style: .normal,
             title: "수정"
         ) { [weak self] _, _, completion in
-            // TODO: 수정 로직
+            guard let self else { return }
+            let alert = UIAlertController(
+                title: "카테고리 수정",
+                message: "수정할 카테고리 이름을 입력해주세요.",
+                textFieldConfiguration: { textField in
+                    textField.placeholder = "카테고리 이름"
+                    textField.text = self.viewModel.categories[indexPath.row]
+                },
+                confirmHandler: { [weak self] newText in
+                    guard let self, let newText = newText, !newText.isEmpty else {
+                        MHLogger.error("수정할 카테고리 이름이 유효하지 않습니다.")
+                        completion(false)
+                        return
+                    }
+                    self.input.send(.updateCategory(index: indexPath.row, text: newText))
+                    completion(true)
+                }
+            )
+            
+            self.present(alert, animated: true)
         }
         
         let deleteAction = UIContextualAction(
             style: .destructive,
             title: "삭제"
         ) { [weak self] _, _, completion in
-            // TODO: 삭제 로직
+            guard let self = self else { return }
+            
+            let alert = UIAlertController(
+                title: "카테고리 삭제",
+                message: "\"\(self.viewModel.categories[indexPath.row])\"을(를) 삭제하시겠습니까?",
+                confirmTitle: "삭제",
+                cancelTitle: "취소"
+            ) { [weak self] _ in
+                guard let self else { return }
+                self.input.send(.deleteCategory(index: indexPath.row))
+                completion(true)
+            }
+            
+            self.present(alert, animated: true)
         }
         
         return UISwipeActionsConfiguration(
@@ -161,8 +233,10 @@ extension CategoryViewController: UITableViewDataSource {
             withIdentifier: CategoryTableViewCell.identifier,
             for: indexPath
         ) as? CategoryTableViewCell else { return UITableViewCell() }
-        let isSelected = indexPath.row == viewModel.currentCategoryIndex
+        
+        let isSelected = viewModel.categories[indexPath.row] == viewModel.currentCategory
         cell.configure(category: viewModel.categories[indexPath.row], isSelected: isSelected)
+        cell.backgroundColor = .baseBackground
         
         return cell
     }

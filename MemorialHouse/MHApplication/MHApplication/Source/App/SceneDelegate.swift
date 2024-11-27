@@ -35,26 +35,78 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     func registerDependency() {
         do {
-            DIContainer.shared.register(
-                MemorialHouseRepository.self,
-                object: DefaultMemorialHouseRepository()
-            )
-            
-            let memorialHouseRepository = try DIContainer.shared.resolve(MemorialHouseRepository.self)
-            DIContainer.shared.register(
-                FetchMemorialHouseUseCase.self,
-                object: DefaultFetchMemorialHouseUseCase(repository: memorialHouseRepository)
-            )
-            
-            let fetchMemorialHouseUseCase = try DIContainer.shared.resolve(FetchMemorialHouseUseCase.self)
-            DIContainer.shared.register(
-                HomeViewModelFactory.self,
-                object: HomeViewModelFactory(fetchMemorialHouseUseCase: fetchMemorialHouseUseCase)
-            )
-        } catch let error as MHCoreError {
+            registerRepositoryDependency()
+            try registerUseCaseDependency()
+            try registerViewModelFactoryDependency()
+        } catch let error as MHError {
             MHLogger.error("\(error.description)")
         } catch {
             MHLogger.error("\(error.localizedDescription)")
         }
+    }
+    
+    private func registerRepositoryDependency() {
+        DIContainer.shared.register(
+            MemorialHouseRepository.self,
+            object: DefaultMemorialHouseRepository()
+        )
+        DIContainer.shared.register(
+            CategoryRepository.self,
+            object: DefaultCategoryRepository()
+        )
+    }
+    
+    private func registerUseCaseDependency() throws {
+        // MARK: MemorialHouse UseCase
+        let memorialHouseRepository = try DIContainer.shared.resolve(MemorialHouseRepository.self)
+        DIContainer.shared.register(
+            FetchMemorialHouseUseCase.self,
+            object: DefaultFetchMemorialHouseUseCase(repository: memorialHouseRepository)
+        )
+        
+        // MARK: Category UseCase
+        let categoryRepository = try DIContainer.shared.resolve(CategoryRepository.self)
+        DIContainer.shared.register(
+            CreateCategoryUseCase.self,
+            object: DefaultCreateCategoryUseCase(repository: categoryRepository)
+        )
+        DIContainer.shared.register(
+            FetchCategoriesUseCase.self,
+            object: DefaultFetchCategoriesUseCase(repository: categoryRepository)
+        )
+        DIContainer.shared.register(
+            UpdateCategoryUseCase.self,
+            object: DefaultUpdateCategoryUseCase(repository: categoryRepository)
+        )
+        DIContainer.shared.register(
+            DeleteCategoryUseCase.self,
+            object: DefaultDeleteCategoryUseCase(repository: categoryRepository)
+        )
+    }
+    
+    private func registerViewModelFactoryDependency() throws {
+        // MARK: MemorialHouse ViewModel
+        let fetchMemorialHouseUseCase = try DIContainer.shared.resolve(FetchMemorialHouseUseCase.self)
+        let fetchCategoryUseCase = try DIContainer.shared.resolve(FetchCategoriesUseCase.self)
+        DIContainer.shared.register(
+            HomeViewModelFactory.self,
+            object: HomeViewModelFactory(
+                fetchMemorialHouseUseCase: fetchMemorialHouseUseCase,
+                fetchCategoryUseCase: fetchCategoryUseCase
+            )
+        )
+        
+        // MARK: Category ViewModel
+        let createCategoryUseCase = try DIContainer.shared.resolve(CreateCategoryUseCase.self)
+        let updateCategoryUseCase = try DIContainer.shared.resolve(UpdateCategoryUseCase.self)
+        let deleteCategoryUseCase = try DIContainer.shared.resolve(DeleteCategoryUseCase.self)
+        DIContainer.shared.register(
+            CategoryViewModelFactory.self,
+            object: CategoryViewModelFactory(
+                createCategoryUseCase: createCategoryUseCase,
+                updateCategoryUseCase: updateCategoryUseCase,
+                deleteCategoryUseCase: deleteCategoryUseCase
+            )
+        )
     }
 }

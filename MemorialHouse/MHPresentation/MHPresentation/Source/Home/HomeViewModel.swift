@@ -5,24 +5,29 @@ import MHDomain
 public final class HomeViewModel: ViewModelType {
     public enum Input {
         case viewDidLoad
-        case selectedCategory(index: Int)
+        case selectedCategory(category: String)
     }
     
     public enum Output {
-        case fetchedMemorialHouse
+        case fetchedMemorialHouseAndCategory
         case filteredBooks
+        case fetchedFailure(String)
     }
     
     private let output = PassthroughSubject<Output, Never>()
-    private var fetchMemorialHouseUseCase: FetchMemorialHouseUseCase
+    private let fetchMemorialHouseUseCase: FetchMemorialHouseUseCase
+    private let fetchCategoryUseCase: FetchCategoriesUseCase
     private var cancellables = Set<AnyCancellable>()
     private(set) var houseName = ""
-    private(set) var categories = ["전체", "즐겨찾기"]
     private(set) var bookCovers = [BookCover]()
     private(set) var currentBookCovers = [BookCover]()
     
-    public init(fetchMemorialHouseUseCase: FetchMemorialHouseUseCase) {
+    public init(
+        fetchMemorialHouseUseCase: FetchMemorialHouseUseCase,
+        fetchCategoryUseCase: FetchCategoriesUseCase
+    ) {
         self.fetchMemorialHouseUseCase = fetchMemorialHouseUseCase
+        self.fetchCategoryUseCase = fetchCategoryUseCase
     }
     
     @MainActor
@@ -30,41 +35,38 @@ public final class HomeViewModel: ViewModelType {
         input.sink { [weak self] event in
             switch event {
             case .viewDidLoad:
-                self?.fetchMemorialHouse()
-            case .selectedCategory(let index):
-                self?.filterBooks(with: index)
+                Task {
+                    do {
+                        try await self?.fetchMemorialHouse()
+                        self?.output.send(.fetchedMemorialHouseAndCategory)
+                    } catch {
+                        self?.output.send(.fetchedFailure("데이터 로드 중 에러가 발생했습니다."))
+                        MHLogger.error("에러 발생: \(error.localizedDescription)")
+                    }
+                }
+            case .selectedCategory(let category):
+                self?.filterBooks(by: category)
             }
         }.store(in: &cancellables)
         
         return output.eraseToAnyPublisher()
     }
     
-    @MainActor
-    private func fetchMemorialHouse() {
-        Task { @MainActor in
-            let memorialHouse = await fetchMemorialHouseUseCase.execute()
-            self.houseName = memorialHouse.name
-            self.categories.append(contentsOf: memorialHouse.categories)
-            self.bookCovers = memorialHouse.bookCovers
-            self.currentBookCovers = memorialHouse.bookCovers
-            
-            output.send(.fetchedMemorialHouse)
-        }
+    private func fetchMemorialHouse() async throws {
+        let memorialHouse = try await fetchMemorialHouseUseCase.execute()
+        self.houseName = memorialHouse.name
+        self.bookCovers = memorialHouse.bookCovers
+        self.currentBookCovers = memorialHouse.bookCovers
     }
     
-    private func filterBooks(with index: Int) {
-        guard index >= 0 && index < categories.count else {
-            MHLogger.error("유효하지 않은 인덱스: \(index)")
-            return
-        }
-
-        switch categories[index] {
+    private func filterBooks(by category: String) {
+        switch category {
         case "전체":
             currentBookCovers = bookCovers
         case "즐겨찾기":
             currentBookCovers = bookCovers.filter { $0.favorite }
         default:
-            currentBookCovers = bookCovers.filter { $0.category == categories[index] }
+            currentBookCovers = bookCovers.filter { $0.category == category }
         }
 
         output.send(.filteredBooks)
