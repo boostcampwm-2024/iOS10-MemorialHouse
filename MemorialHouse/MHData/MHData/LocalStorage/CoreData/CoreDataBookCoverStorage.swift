@@ -46,7 +46,7 @@ extension CoreDataBookCoverStorage: BookCoverStorage {
                 let request = BookCoverEntity.fetchRequest()
                 bookCoverEntities = try context.fetch(request)
             }
-            let result = bookCoverEntities.compactMap { $0.toBookCoverDTO() }
+            let result = bookCoverEntities.compactMap { coreBookCoverToDTO($0) }
             return .success(result)
         } catch let error as MHDataError {
             MHLogger.debug("Error fetching book cover: \(error.description)")
@@ -112,20 +112,21 @@ extension CoreDataBookCoverStorage: BookCoverStorage {
     }
 }
 
-// MARK: - BookCoverEntity Extension
-extension BookCoverEntity {
-    func toBookCoverDTO() -> BookCoverDTO? {
-        guard let identifier = self.identifier,
-              let title = self.title,
-              let color = self.color else { return nil }
+// MARK: - Mapper
+extension CoreDataBookCoverStorage {
+    // MARK: - CoreToDTO
+    func coreBookCoverToDTO(_ bookCover: BookCoverEntity) -> BookCoverDTO? {
+        guard let identifier = bookCover.identifier,
+              let title = bookCover.title,
+              let color = bookCover.color else { return nil }
         
         return BookCoverDTO(
             identifier: identifier,
             title: title,
-            imageURL: self.imageURL,
+            imageURL: bookCover.imageURL,
             color: color,
-            category: self.category,
-            favorite: self.favorite
+            category: bookCover.category,
+            favorite: bookCover.favorite
         )
     }
 }
