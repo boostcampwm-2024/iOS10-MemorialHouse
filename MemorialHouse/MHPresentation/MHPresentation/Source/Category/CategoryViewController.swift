@@ -119,7 +119,7 @@ final class CategoryViewController: UIViewController {
                     textField.placeholder = "카테고리 이름"
                 },
                 confirmHandler: { [weak self] newText in
-                    guard let newText = newText, !newText.isEmpty else {
+                    guard let newText, !newText.isEmpty else {
                         MHLogger.error("입력한 카테고리 이름이 유효하지 않습니다.")
                         return
                     }
