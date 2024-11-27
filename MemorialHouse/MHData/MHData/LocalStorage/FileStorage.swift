@@ -2,7 +2,6 @@ import MHFoundation
 import MHCore
 
 public protocol FileStorage {
-    
     /// 지정된 경로에 파일을 생성합니다.
     /// Documents폴더에 파일을 생성합니다.
     /// 중간 경로 폴더를 자동으로 생성합니다.
