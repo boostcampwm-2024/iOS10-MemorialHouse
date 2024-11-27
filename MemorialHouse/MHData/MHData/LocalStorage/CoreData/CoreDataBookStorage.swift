@@ -11,63 +11,96 @@ final class CoreDataBookStorage {
 }
 
 extension CoreDataBookStorage: BookStorage {
-    func create(data: BookDTO) async -> Result<Void, MHCoreError> {
+    func create(data: BookDTO) async -> Result<Void, MHDataError> {
         let context = coreDataStorage.persistentContainer.viewContext
-        guard let entity = NSEntityDescription.entity(forEntityName: "BookEntity", in: context) else {
-            return .failure(.DIContainerResolveFailure(key: "BookEntity"))
+        do {
+            try await context.perform { [weak self] in
+                guard let self else { return }
+                guard let entity = NSEntityDescription.entity(forEntityName: "BookEntity", in: context) else {
+                    throw MHDataError.noSuchEntity(key: "BookEntity")
+                }
+                let book = NSManagedObject(entity: entity, insertInto: context)
+                book.setValue(data.id, forKey: "id")
+                book.setValue(dtoPagesToCore(data.pages), forKey: "pages")
+                try context.save()
+            }
+            
+            return .success(())
+        } catch let error as MHDataError {
+            MHLogger.debug("Error creating book: \(error.description)")
+            return .failure(error)
+        } catch {
+            MHLogger.debug("Unknown Error creating book: \(error.localizedDescription)")
+            return .failure(.createEntityFailure)
         }
-        
-        let book = NSManagedObject(entity: entity, insertInto: context)
-        book.setValue(data.id, forKey: "id")
-        book.setValue(dtoPagesToCore(data.pages), forKey: "pages")
-        
-        await coreDataStorage.saveContext()
-        return .success(())
     }
     func fetch(with id: UUID) async -> Result<BookDTO, MHDataError> {
         let context = coreDataStorage.persistentContainer.viewContext
 
         do {
-            guard let bookEntity = try getEntityByIdentifier(in: context, with: id)
-            else { return .failure(.findEntityFailure) }
+            var bookEntity: BookEntity?
+            try await context.perform { [weak self] in
+                guard let self else { return }
+                bookEntity = try getEntityByIdentifier(in: context, with: id)
+                guard bookEntity != nil else { throw MHDataError.findEntityFailure }
+            }
             
-            guard let result = coreBookToDTO(bookEntity)
-            else { return .failure(.convertDTOFailure) }
+            guard let bookEntity,
+                  let result = coreBookToDTO(bookEntity)
+            else { throw MHDataError.convertDTOFailure }
             
             return .success(result)
+        } catch let error as MHDataError {
+            MHLogger.debug("Error fetching book: \(error.description)")
+            return .failure(error)
         } catch {
-            MHLogger.debug("Error fetching book: \(error.localizedDescription)")
-            return .failure(.findEntityFailure)
+            MHLogger.debug("Unknown Error fetching book: \(error.localizedDescription)")
+            return .failure(.fetchEntityFaliure)
         }
     }
     func update(with id: UUID, data: BookDTO) async -> Result<Void, MHDataError> {
         do {
             let context = coreDataStorage.persistentContainer.viewContext
-            guard let newEntity = try getEntityByIdentifier(in: context, with: id) else {
-                return .failure(.findEntityFailure)
+            try await context.perform { [weak self] in
+                guard let self else { return }
+                guard let newEntity = try getEntityByIdentifier(in: context, with: id) else {
+                    throw MHDataError.findEntityFailure
+                }
+                
+                newEntity.setValue(data.id, forKey: "id")
+                newEntity.setValue(dtoPagesToCore(data.pages), forKey: "pages")
+                
+                try context.save()
             }
-            newEntity.setValue(data.id, forKey: "id")
-            newEntity.setValue(dtoPagesToCore(data.pages), forKey: "pages")
-            
-            await coreDataStorage.saveContext()
             return .success(())
+        } catch let error as MHDataError {
+            MHLogger.debug("Error update book: \(error.description)")
+            return .failure(error)
         } catch {
-            return .failure(.findEntityFailure)
+            MHLogger.debug("Unknown Error update book: \(error.localizedDescription)")
+            return .failure(.updateEntityFailure)
         }
     }
     func delete(with id: UUID) async -> Result<Void, MHDataError> {
         do {
             let context = coreDataStorage.persistentContainer.viewContext
-            guard let entity = try getEntityByIdentifier(in: context, with: id) else {
-                return .failure(.findEntityFailure)
+            try await context.perform { [weak self] in
+                guard let self else { return }
+                guard let entity = try getEntityByIdentifier(in: context, with: id) else {
+                    throw MHDataError.findEntityFailure
+                }
+                
+                context.delete(entity)
+                
+                try context.save()
             }
-            
-            context.delete(entity)
-            
-            await coreDataStorage.saveContext()
             return .success(())
+        } catch let error as MHDataError {
+            MHLogger.debug("Error delete book: \(error.description)")
+            return .failure(error)
         } catch {
-            return .failure(.findEntityFailure)
+            MHLogger.debug("Unknown Error delete book: \(error.localizedDescription)")
+            return .failure(.deleteEntityFailure)
         }
     }
     
