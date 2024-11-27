@@ -9,30 +9,29 @@ public struct LocalBookRepository: BookRepository {
         self.storage = storage
     }
     
-    public func create(book: Book) async {
+    public func create(book: Book) async -> Result<Void, MHError> {
         let bookDTO = mappingBookToDTO(book)
         
-        _ = await storage.create(data: bookDTO)
+        return await storage.create(data: bookDTO)
     }
-    public func fetch(bookID id: UUID) async -> Book? {
+    public func fetch(bookID id: UUID) async -> Result<Book, MHError> {
         let result = await storage.fetch(with: id)
         
         switch result {
-        case .success(let bookDTO):
-            return bookDTO.toBook()
-        case .failure(let failure):
+        case let .success(bookDTO):
+            return .success(bookDTO.toBook())
+        case let .failure(failure):
             MHLogger.debug("\(failure.description)")
+            return .failure(failure)
         }
-        
-        return nil
     }
-    public func update(bookID id: UUID, to book: Book) async {
+    public func update(bookID id: UUID, to book: Book) async -> Result<Void, MHError> {
         let bookDTO = mappingBookToDTO(book)
         
-        _ = await storage.update(with: id, data: bookDTO)
+        return await storage.update(with: id, data: bookDTO)
     }
-    public func delete(bookID id: UUID) async {
-        _ = await storage.delete(with: id)
+    public func delete(bookID id: UUID) async -> Result<Void, MHError> {
+        return await storage.delete(with: id)
     }
     
     private func mappingBookToDTO(_ book: Book) -> BookDTO {
