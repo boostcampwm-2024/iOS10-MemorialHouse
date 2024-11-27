@@ -137,9 +137,11 @@ extension CoreDataBookStorage {
         let pageEntities = pages.compactMap { dtoPageToCore($0, in: context) }
         return NSOrderedSet(array: pageEntities)
     }
-
     private func dtoPageToCore(_ page: PageDTO, in context: NSManagedObjectContext) -> PageEntity? {
-        guard let entity = NSEntityDescription.insertNewObject(forEntityName: "PageEntity", into: context) as? PageEntity else {
+        guard let entity = NSEntityDescription.insertNewObject(
+            forEntityName: "PageEntity",
+            into: context
+        ) as? PageEntity else {
             return nil
         }
         
@@ -149,7 +151,6 @@ extension CoreDataBookStorage {
         
         return entity
     }
-
     private func dtoMediaDescriptionsToCore(
         _ metadata: [Int: MediaDescriptionDTO],
         in context: NSManagedObjectContext
@@ -164,7 +165,10 @@ extension CoreDataBookStorage {
         _ mediaDescription: MediaDescriptionDTO,
         in context: NSManagedObjectContext
     ) -> MediaDescriptionEntity? {
-        guard let entity = NSEntityDescription.insertNewObject(forEntityName: "MediaDescriptionEntity", into: context) as? MediaDescriptionEntity else {
+        guard let entity = NSEntityDescription.insertNewObject(
+            forEntityName: "MediaDescriptionEntity",
+            into: context
+        ) as? MediaDescriptionEntity else {
             return nil
         }
         
@@ -174,5 +178,4 @@ extension CoreDataBookStorage {
         
         return entity
     }
-
 }
