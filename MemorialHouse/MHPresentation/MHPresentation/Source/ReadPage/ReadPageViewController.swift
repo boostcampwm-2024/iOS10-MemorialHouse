@@ -1,6 +1,6 @@
 import UIKit
 
-final class PageViewController: UIViewController {
+final class ReadPageViewController: UIViewController {
     // MARK: - UI Components
     private let textView: UITextView = {
         let textView = UITextView()
@@ -20,17 +20,17 @@ final class PageViewController: UIViewController {
     private var textContainer: NSTextContainer?
     
     // MARK: - Property
-    private let viewModel: PageViewModel
+    private let viewModel: ReadPageViewModel
     
     // MARK: - Initialize
-    init(viewModel: PageViewModel) {
+    init(viewModel: ReadPageViewModel) {
         self.viewModel = viewModel
         
         super.init(nibName: nil, bundle: nil)
     }
     
     required init?(coder: NSCoder) {
-        self.viewModel = PageViewModel(index: 0)
+        self.viewModel = ReadPageViewModel(index: 0)
         
         super.init(nibName: nil, bundle: nil)
     }

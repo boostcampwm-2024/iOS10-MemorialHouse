@@ -91,9 +91,9 @@ final class BookViewController: UIViewController {
         pageViewController.setViewControllers(viewControllers, direction: .forward, animated: true, completion: nil)
     }
     
-    private func makeNewPageViewController(index: Int) -> PageViewController? {
+    private func makeNewPageViewController(index: Int) -> ReadPageViewController? {
         // TODO: - 로직 수정 필요
-        return PageViewController(viewModel: PageViewModel(index: index))
+        return ReadPageViewController(viewModel: ReadPageViewModel(index: index))
     }
 }
 
@@ -108,7 +108,7 @@ extension BookViewController: UIPageViewControllerDataSource {
         _ pageViewController: UIPageViewController,
         viewControllerBefore viewController: UIViewController
     ) -> UIViewController? {
-        guard let targetViewController = viewController as? PageViewController else { return nil }
+        guard let targetViewController = viewController as? ReadPageViewController else { return nil }
         let pageIndex = targetViewController.getPageIndex()
         
         return pageIndex == 0
@@ -120,7 +120,7 @@ extension BookViewController: UIPageViewControllerDataSource {
         _ pageViewController: UIPageViewController,
         viewControllerAfter viewController: UIViewController
     ) -> UIViewController? {
-        guard let targetViewController = viewController as? PageViewController else { return nil }
+        guard let targetViewController = viewController as? ReadPageViewController else { return nil }
         let pageIndex = targetViewController.getPageIndex()
         
         return pageIndex == viewModel.pageList.count - 1

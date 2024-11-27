@@ -1,7 +1,7 @@
 import Foundation
 import Combine
 
-final class PageViewModel: ViewModelType {
+final class ReadPageViewModel: ViewModelType {
     enum Input {
         
     }
