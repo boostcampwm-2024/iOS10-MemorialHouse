@@ -1,7 +1,7 @@
 import UIKit
 
 final class MHPolaroidPhotoView: UIView {
-    
+    // MARK: - UI Components
     private let photoImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
@@ -28,6 +28,7 @@ final class MHPolaroidPhotoView: UIView {
         return label
     }()
     
+    // MARK: - Initialize
     override init(frame: CGRect) {
         super.init(frame: frame)
         
@@ -44,6 +45,7 @@ final class MHPolaroidPhotoView: UIView {
         configureConstraints()
     }
     
+    // MARK: - Setup & Configure
     private func setup() {
         backgroundColor = .white
         layer.shadowOffset = CGSize(width: 0, height: 4)
@@ -70,7 +72,7 @@ final class MHPolaroidPhotoView: UIView {
                                     trailing: trailingAnchor, constantTrailing: 12)
     }
     
-    func configurePhotoImageView(image: UIImage?, caption: String, creationDate: String) {
+    func configurePhotoImageView(image: UIImage?, caption: String?, creationDate: String) {
         photoImageView.image = image
         captionLabel.text = caption
         creationDateLabel.text = creationDate
