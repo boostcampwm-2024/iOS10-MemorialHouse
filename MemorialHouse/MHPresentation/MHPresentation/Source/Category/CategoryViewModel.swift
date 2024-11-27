@@ -21,7 +21,7 @@ final class CategoryViewModel: ViewModelType {
     private let deleteCategoryUseCase: DeleteCategoryUseCase
     private var cancellables = Set<AnyCancellable>()
     private(set) var categories = [String]()
-    private(set) var currentCategoryIndex: Int = 0
+    private(set) var currentCategory = ""
     
     init(
         createCategoryUseCase: CreateCategoryUseCase,
@@ -33,9 +33,8 @@ final class CategoryViewModel: ViewModelType {
         self.deleteCategoryUseCase = deleteCategoryUseCase
     }
     
-    func setup(categories: [String], categoryIndex: Int) {
-        self.categories = categories
-        self.currentCategoryIndex = categoryIndex
+    func setup(currentCategory: String) {
+        self.currentCategory = currentCategory
     }
     
     func transform(input: AnyPublisher<Input, Never>) -> AnyPublisher<Output, Never> {

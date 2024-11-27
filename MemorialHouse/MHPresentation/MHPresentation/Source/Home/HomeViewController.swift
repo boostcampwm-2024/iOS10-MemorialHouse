@@ -38,9 +38,9 @@ public final class HomeViewController: UIViewController {
     private var cancellables = Set<AnyCancellable>()
     private var floatingButtonBottomConstraint: NSLayoutConstraint?
     private var isFloatingButtonHidden = false
-    private var currentCategoryIndex = 0 {
+    private var currentCategory = "전체" {
         didSet {
-            currentCategoryLabel.text = viewModel.categories[currentCategoryIndex]
+            currentCategoryLabel.text = currentCategory
         }
     }
     
@@ -83,6 +83,7 @@ public final class HomeViewController: UIViewController {
             BookCollectionViewCell.self,
             forCellWithReuseIdentifier: BookCollectionViewCell.identifier
         )
+        currentCategoryLabel.text = currentCategory
         categorySelectButton.setImage(.dropDown, for: .normal)
     }
     
@@ -106,9 +107,6 @@ public final class HomeViewController: UIViewController {
         // 네비게이션 타이틀 설정
         let houseName = viewModel.houseName
         navigationBar.configureTitle(with: houseName)
-        
-        // 카테고리 설정
-        currentCategoryLabel.text = viewModel.categories.first
         
         // BoockCover 설정
         collectionView.reloadData()
@@ -140,7 +138,7 @@ public final class HomeViewController: UIViewController {
                 guard let self else { return }
                 let categoryViewModelFactory = try DIContainer.shared.resolve(CategoryViewModelFactory.self)
                 let categoryViewModel = categoryViewModelFactory.make()
-                categoryViewModel.setup(categories: self.viewModel.categories, categoryIndex: self.currentCategoryIndex)
+                categoryViewModel.setup(currentCategory: self.currentCategory)
                 let categoryViewController = CategoryViewController(viewModel: categoryViewModel)
                 categoryViewController.delegate = self
                 let navigationController = UINavigationController(rootViewController: categoryViewController)
@@ -277,8 +275,8 @@ extension HomeViewController: UICollectionViewDataSource {
 }
 
 extension HomeViewController: CategoryViewControllerDelegate {
-    func categoryViewController(_ categoryViewController: CategoryViewController, didSelectCategoryIndex index: Int) {
-        currentCategoryIndex = index
-        input.send(.selectedCategory(index: index))
+    func categoryViewController(_ categoryViewController: CategoryViewController, didSelectCategory category: String) {
+        currentCategory = category
+        input.send(.selectedCategory(category: category))
     }
 }

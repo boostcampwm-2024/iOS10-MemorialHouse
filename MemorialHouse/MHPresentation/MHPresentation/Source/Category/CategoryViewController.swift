@@ -5,7 +5,7 @@ import UIKit
 
 @MainActor
 protocol CategoryViewControllerDelegate: AnyObject {
-    func categoryViewController(_ categoryViewController: CategoryViewController, didSelectCategoryIndex index: Int)
+    func categoryViewController(_ categoryViewController: CategoryViewController, didSelectCategory category: String)
 }
 
 final class CategoryViewController: UIViewController {
@@ -158,7 +158,8 @@ extension CategoryViewController: UITableViewDelegate {
         _ tableView: UITableView,
         didSelectRowAt indexPath: IndexPath
     ) {
-        delegate?.categoryViewController(self, didSelectCategoryIndex: indexPath.row)
+        let selectedCategory = viewModel.categories[indexPath.row]
+        delegate?.categoryViewController(self, didSelectCategory: selectedCategory)
         dismiss(animated: true, completion: nil)
     }
     
@@ -249,7 +250,7 @@ extension CategoryViewController: UITableViewDataSource {
             for: indexPath
         ) as? CategoryTableViewCell else { return UITableViewCell() }
         
-        let isSelected = indexPath.row == viewModel.currentCategoryIndex
+        let isSelected = viewModel.categories[indexPath.row] == viewModel.currentCategory
         cell.configure(category: viewModel.categories[indexPath.row], isSelected: isSelected)
         cell.backgroundColor = .baseBackground
         
