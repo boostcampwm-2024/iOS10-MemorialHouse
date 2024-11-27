@@ -17,12 +17,14 @@ final public class AudioViewController: UIViewController {
     private var timeTimer: Timer?
     // audio session
     private let audioSession = AVAudioSession.sharedInstance()
-    let audioRecordersettings: [String: Any] = [
+    private let audioRecordersettings: [String: Any] = [
         AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
         AVSampleRateKey: 44100,
         AVNumberOfChannelsKey: 2,
         AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
     ]
+    // UUID
+    private let identifier: UUID = UUID()
     
     // MARK: - UI Components
     // title and buttons
@@ -132,7 +134,7 @@ final public class AudioViewController: UIViewController {
     }
     
     private func configureAudioSession() {
-        let fileName = "recording_\(Date()).m4a"
+        let fileName = "\(identifier).m4a"
         let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
         let audioFileURL = documentDirectory.appendingPathComponent(fileName)
         
@@ -140,7 +142,6 @@ final public class AudioViewController: UIViewController {
         
         audioRecorder = try? AVAudioRecorder(url: audioFileURL, settings: audioRecordersettings)
         audioRecorder?.isMeteringEnabled = true
-        audioRecorder?.delegate = self
     }
     
     private func configureAddSubviews() {
@@ -319,10 +320,15 @@ final public class AudioViewController: UIViewController {
         }, for: .touchUpInside)
     }
     private func addTappedEventToCancelButton() {
-        // TODO: - Delete file
-        cancelButton.addAction( UIAction { _ in
-            self.dismiss(animated: true)
-        }, for: .touchUpInside)
+        cancelButton.addAction(
+            UIAction { [weak self]_ in
+                try? FileManager.default.removeItem(
+                    at: self?.audioRecorder?.url ?? FileManager.default
+                        .urls(for: .documentDirectory, in: .userDomainMask)[0]
+                )
+                self?.dismiss(animated: true)
+            },
+            for: .touchUpInside)
     }
     private func addTappedEventToSaveButton() {
         saveButton.addAction(UIAction { _ in
@@ -345,8 +351,4 @@ final public class AudioViewController: UIViewController {
             }
         }
     }
-}
-
-extension AudioViewController: AVAudioRecorderDelegate, AVAudioPlayerDelegate {
-    
 }
