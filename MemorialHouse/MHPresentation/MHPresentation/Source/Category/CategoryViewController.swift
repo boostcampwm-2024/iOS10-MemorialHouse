@@ -1,4 +1,5 @@
 import Combine
+import MHCore
 import MHFoundation
 import UIKit
 
@@ -24,7 +25,8 @@ final class CategoryViewController: UIViewController {
     }
     
     required init?(coder: NSCoder) {
-        self.viewModel = CategoryViewModel(categories: ["전체", "즐겨찾기"], currentCategoryIndex: 0)
+        guard let viewModelFactory = try? DIContainer.shared.resolve(CategoryViewModelFactory.self) else { return nil }
+        self.viewModel = viewModelFactory.make()
         super.init(coder: coder)
     }
     
@@ -44,10 +46,26 @@ final class CategoryViewController: UIViewController {
         return (cellHeight * itemCount) + Constant.navigationBarHeight
     }
     
+    private func updateTableViewHeight() {
+        let cellHeight = CategoryTableViewCell.height
+        let totalHeight = CGFloat(viewModel.categories.count) * cellHeight
+        
+        categoryTableView.constraints.forEach { constraint in
+            if constraint.firstAttribute == .height {
+                constraint.constant = totalHeight
+            }
+        }
+        
+        UIView.animate(withDuration: 0.3) {
+            self.view.layoutIfNeeded()
+        }
+    }
+    
     // MARK: - Setup & Configuration
     private func setup() {
         view.backgroundColor = .baseBackground
         categoryTableView.backgroundColor = .baseBackground
+        
         categoryTableView.delegate = self
         categoryTableView.dataSource = self
         categoryTableView.register(
@@ -61,8 +79,9 @@ final class CategoryViewController: UIViewController {
         
         output.sink { [weak self] event in
             switch event {
-            case .addedCategory, .updatedCategory, .deletedCategory:
+            case .createdCategory, .updatedCategory, .deletedCategory:
                 self?.categoryTableView.reloadData()
+//                self?.updateTableViewHeight()
             }
         }.store(in: &cancellables)
     }
@@ -174,11 +193,12 @@ extension CategoryViewController: UITableViewDelegate {
                     textField.text = self.viewModel.categories[indexPath.row]
                 },
                 confirmHandler: { [weak self] newText in
-                    guard let newText = newText, !newText.isEmpty else {
-                        print("수정할 카테고리 이름이 유효하지 않습니다.")
+                    guard let self, let newText = newText, !newText.isEmpty else {
+                        MHLogger.error("수정할 카테고리 이름이 유효하지 않습니다.")
+                        completion(false)
                         return
                     }
-                    self?.input.send(.updateCategory(index: indexPath.row, text: newText))
+                    self.input.send(.updateCategory(index: indexPath.row, text: newText))
                     completion(true)
                 }
             )
@@ -190,19 +210,18 @@ extension CategoryViewController: UITableViewDelegate {
             style: .destructive,
             title: "삭제"
         ) { [weak self] _, _, completion in
-            guard let self else { return }
+            guard let self = self else { return }
             
-            // 편의 이니셜라이저를 활용한 AlertController 생성
             let alert = UIAlertController(
                 title: "카테고리 삭제",
                 message: "\"\(self.viewModel.categories[indexPath.row])\"을(를) 삭제하시겠습니까?",
                 confirmTitle: "삭제",
-                cancelTitle: "취소",
-                confirmHandler: { [weak self] _ in
-                    self?.input.send(.deleteCategory(index: indexPath.row))
-                    completion(true)
-                }
-            )
+                cancelTitle: "취소"
+            ) { [weak self] _ in
+                guard let self else { return }
+                self.input.send(.deleteCategory(index: indexPath.row))
+                completion(true)
+            }
             
             self.present(alert, animated: true)
         }
@@ -229,6 +248,7 @@ extension CategoryViewController: UITableViewDataSource {
             withIdentifier: CategoryTableViewCell.identifier,
             for: indexPath
         ) as? CategoryTableViewCell else { return UITableViewCell() }
+        
         let isSelected = indexPath.row == viewModel.currentCategoryIndex
         cell.configure(category: viewModel.categories[indexPath.row], isSelected: isSelected)
         cell.backgroundColor = .baseBackground
