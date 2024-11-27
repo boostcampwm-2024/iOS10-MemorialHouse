@@ -14,21 +14,21 @@ struct CoreDataBookStorageTests {
                 PageDTO(
                     id: UUID(),
                     metadata: [
-                        0: MediaDescriptionDTO(id: UUID(), type: "image")
+                        0: MediaDescriptionDTO(id: UUID(), type: "image", attributes: nil)
                     ],
                     text: "first page"
                 ),
                 PageDTO(
                     id: UUID(),
                     metadata: [
-                        0: MediaDescriptionDTO(id: UUID(), type: "video")
+                        0: MediaDescriptionDTO(id: UUID(), type: "video", attributes: nil)
                     ],
                     text: "second page"
                 ),
                 PageDTO(
                     id: UUID(),
                     metadata: [
-                        0: MediaDescriptionDTO(id: UUID(), type: "audio")
+                        0: MediaDescriptionDTO(id: UUID(), type: "audio", attributes: nil)
                     ],
                     text: "third page"
                 )
@@ -40,21 +40,21 @@ struct CoreDataBookStorageTests {
                 PageDTO(
                     id: UUID(),
                     metadata: [
-                        0: MediaDescriptionDTO(id: UUID(), type: "image")
+                        0: MediaDescriptionDTO(id: UUID(), type: "image", attributes: nil)
                     ],
                     text: "first page"
                 ),
                 PageDTO(
                     id: UUID(),
                     metadata: [
-                        0: MediaDescriptionDTO(id: UUID(), type: "video")
+                        0: MediaDescriptionDTO(id: UUID(), type: "video", attributes: nil)
                     ],
                     text: "second page"
                 ),
                 PageDTO(
                     id: UUID(),
                     metadata: [
-                        0: MediaDescriptionDTO(id: UUID(), type: "audio")
+                        0: MediaDescriptionDTO(id: UUID(), type: "audio", attributes: nil)
                     ],
                     text: "third page"
                 )
@@ -75,21 +75,21 @@ struct CoreDataBookStorageTests {
                 PageDTO(
                     id: UUID(),
                     metadata: [
-                        0: MediaDescriptionDTO(id: UUID(), type: "image")
+                        0: MediaDescriptionDTO(id: UUID(), type: "image", attributes: nil)
                     ],
                     text: "first page"
                 ),
                 PageDTO(
                     id: UUID(),
                     metadata: [
-                        0: MediaDescriptionDTO(id: UUID(), type: "video")
+                        0: MediaDescriptionDTO(id: UUID(), type: "video", attributes: nil)
                     ],
                     text: "second page"
                 ),
                 PageDTO(
                     id: UUID(),
                     metadata: [
-                        0: MediaDescriptionDTO(id: UUID(), type: "audio")
+                        0: MediaDescriptionDTO(id: UUID(), type: "audio", attributes: nil)
                     ],
                     text: "third page"
                 )
@@ -132,29 +132,29 @@ struct CoreDataBookStorageTests {
                 PageDTO(
                     id: oldBook.pages[0].id,
                     metadata: [
-                        0: MediaDescriptionDTO(id: UUID(), type: "image")
+                        0: MediaDescriptionDTO(id: UUID(), type: "image", attributes: nil)
                     ],
                     text: "first page"
                 ),
                 PageDTO(
                     id: UUID(),
                     metadata: [
-                        0: MediaDescriptionDTO(id: UUID(), type: "image"),
-                        2: MediaDescriptionDTO(id: UUID(), type: "image")
+                        0: MediaDescriptionDTO(id: UUID(), type: "image", attributes: nil),
+                        2: MediaDescriptionDTO(id: UUID(), type: "image", attributes: nil)
                     ],
                     text: "second page"
                 ),
                 PageDTO(
                     id: UUID(),
                     metadata: [
-                        0: MediaDescriptionDTO(id: UUID(), type: "audio")
+                        0: MediaDescriptionDTO(id: UUID(), type: "audio", attributes: nil)
                     ],
                     text: "third page"
                 ),
                 PageDTO(
                     id: UUID(),
                     metadata: [
-                        0: MediaDescriptionDTO(id: UUID(), type: "video")
+                        0: MediaDescriptionDTO(id: UUID(), type: "video", attributes: nil)
                     ],
                     text: "fourth page"
                 )

@@ -52,9 +52,12 @@ public struct LocalBookRepository: BookRepository {
         )
     }
     private func mappingMediaDescriptionToDTO(_ description: MediaDescription) -> MediaDescriptionDTO {
+        let attributes = try? JSONSerialization.data(withJSONObject: description.attributes ?? [:], options: [])
+        
         return MediaDescriptionDTO(
             id: description.id,
-            type: description.type.rawValue
+            type: description.type.rawValue,
+            attributes: attributes
         )
     }
 }

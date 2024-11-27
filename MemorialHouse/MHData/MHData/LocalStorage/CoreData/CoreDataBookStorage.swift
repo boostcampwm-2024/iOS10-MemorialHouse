@@ -127,7 +127,8 @@ extension CoreDataBookStorage {
         let location = mediaDescription.location
         return (Int(location), MediaDescriptionDTO(
             id: id,
-            type: type
+            type: type,
+            attributes: mediaDescription.attributes
         ))
     }
     
@@ -174,6 +175,7 @@ extension CoreDataBookStorage {
         
         entity.id = mediaDescription.id
         entity.type = mediaDescription.type
+        entity.attributes = mediaDescription.attributes
         entity.location = Int64(location)
         
         return entity
