@@ -156,9 +156,8 @@ final public class AudioViewController: UIViewController {
     private func configureConstraints() {
         stackView.axis = .horizontal
         stackView.alignment = .center
-        titleLabel.setWidthAndHeight(width: 120, height: 28)
-        cancelButton.setWidthAndHeight(width: 60, height: 21)
-        saveButton.setWidthAndHeight(width: 60, height: 21)
+        cancelButton.setWidth(60)
+        saveButton.setWidth(60)
         
         stackView.setCenterX(view: view)
         stackView.setAnchor(
