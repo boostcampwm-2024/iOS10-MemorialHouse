@@ -11,6 +11,7 @@ public enum MHError: Error, CustomStringConvertible, Equatable {
     case fileReadingFailure
     case fileDeletionFailure
     case fileMovingFailure
+    case fileNotExists
     
     public var description: String {
         switch self {
@@ -34,6 +35,8 @@ public enum MHError: Error, CustomStringConvertible, Equatable {
             "파일 삭제 실패"
         case .fileMovingFailure:
             "파일 이동 실패"
+        case .fileNotExists:
+            "파일이 존재하지 않습니다"
         }
     }
 }
