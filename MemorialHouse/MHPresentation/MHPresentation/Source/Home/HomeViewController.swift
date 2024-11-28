@@ -137,10 +137,10 @@ public final class HomeViewController: UIViewController {
         categorySelectButton.addAction(UIAction { [weak self] _ in
             do {
                 guard let self else { return }
-                let categoryViewModelFactory = try DIContainer.shared.resolve(CategoryViewModelFactory.self)
+                let categoryViewModelFactory = try DIContainer.shared.resolve(BookCategoryViewModelFactory.self)
                 let categoryViewModel = categoryViewModelFactory.make()
                 categoryViewModel.setup(currentCategory: self.currentCategory)
-                let categoryViewController = CategoryViewController(viewModel: categoryViewModel)
+                let categoryViewController = BookCategoryViewController(viewModel: categoryViewModel)
                 categoryViewController.delegate = self
                 let navigationController = UINavigationController(rootViewController: categoryViewController)
                 
@@ -282,8 +282,8 @@ extension HomeViewController: UICollectionViewDataSource {
     }
 }
 
-extension HomeViewController: CategoryViewControllerDelegate {
-    func categoryViewController(_ categoryViewController: CategoryViewController, didSelectCategory category: String) {
+extension HomeViewController: BookCategoryViewControllerDelegate {
+    func categoryViewController(_ categoryViewController: BookCategoryViewController, didSelectCategory category: String) {
         currentCategory = category
         input.send(.selectedCategory(category: category))
     }

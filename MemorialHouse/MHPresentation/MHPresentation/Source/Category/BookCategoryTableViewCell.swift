@@ -1,6 +1,6 @@
 import UIKit
 
-final class CategoryTableViewCell: UITableViewCell {
+final class BookCategoryTableViewCell: UITableViewCell {
     nonisolated static let height: CGFloat = 44
     
     // MARK: - UI Components

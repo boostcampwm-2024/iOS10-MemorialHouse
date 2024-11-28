@@ -1,15 +1,15 @@
-public protocol CreateCategoryUseCase {
+public protocol CreateBookCategoryUseCase {
     func execute(name: String) async throws
 }
 
-public protocol FetchCategoriesUseCase {
+public protocol FetchBookCategoriesUseCase {
     func execute() async throws -> [String]
 }
 
-public protocol UpdateCategoryUseCase {
+public protocol UpdateBookCategoryUseCase {
     func execute(oldName: String, newName: String) async throws
 }
 
-public protocol DeleteCategoryUseCase {
+public protocol DeleteBookCategoryUseCase {
     func execute(name: String) async throws
 }

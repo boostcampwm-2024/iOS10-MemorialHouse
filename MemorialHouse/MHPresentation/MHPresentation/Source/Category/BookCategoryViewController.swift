@@ -4,28 +4,28 @@ import MHFoundation
 import UIKit
 
 @MainActor
-protocol CategoryViewControllerDelegate: AnyObject {
-    func categoryViewController(_ categoryViewController: CategoryViewController, didSelectCategory category: String)
+protocol BookCategoryViewControllerDelegate: AnyObject {
+    func categoryViewController(_ categoryViewController: BookCategoryViewController, didSelectCategory category: String)
 }
 
-final class CategoryViewController: UIViewController {
+final class BookCategoryViewController: UIViewController {
     // MARK: - UI Components
     private let categoryTableView = UITableView()
     
     // MARK: - Properties
-    weak var delegate: CategoryViewControllerDelegate?
-    private let viewModel: CategoryViewModel
-    private let input = PassthroughSubject<CategoryViewModel.Input, Never>()
+    weak var delegate: BookCategoryViewControllerDelegate?
+    private let viewModel: BookCategoryViewModel
+    private let input = PassthroughSubject<BookCategoryViewModel.Input, Never>()
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Initializer
-    init(viewModel: CategoryViewModel) {
+    init(viewModel: BookCategoryViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
     
     required init?(coder: NSCoder) {
-        guard let viewModelFactory = try? DIContainer.shared.resolve(CategoryViewModelFactory.self) else { return nil }
+        guard let viewModelFactory = try? DIContainer.shared.resolve(BookCategoryViewModelFactory.self) else { return nil }
         self.viewModel = viewModelFactory.make()
         super.init(coder: coder)
     }
@@ -41,7 +41,7 @@ final class CategoryViewController: UIViewController {
     }
     
     func calculateSheetHeight() -> CGFloat {
-        let cellHeight = CategoryTableViewCell.height
+        let cellHeight = BookCategoryTableViewCell.height
         let itemCount = CGFloat(viewModel.categories.count) + 1 // FIXME: detent 임시용
         return (cellHeight * itemCount) + Constant.navigationBarHeight
     }
@@ -54,8 +54,8 @@ final class CategoryViewController: UIViewController {
         categoryTableView.delegate = self
         categoryTableView.dataSource = self
         categoryTableView.register(
-            CategoryTableViewCell.self,
-            forCellReuseIdentifier: CategoryTableViewCell.identifier
+            BookCategoryTableViewCell.self,
+            forCellReuseIdentifier: BookCategoryTableViewCell.identifier
         )
     }
     
@@ -137,7 +137,7 @@ final class CategoryViewController: UIViewController {
     }
 }
 
-extension CategoryViewController: UITableViewDelegate {
+extension BookCategoryViewController: UITableViewDelegate {
     func tableView(
         _ tableView: UITableView,
         didSelectRowAt indexPath: IndexPath
@@ -151,7 +151,7 @@ extension CategoryViewController: UITableViewDelegate {
         _ tableView: UITableView,
         heightForRowAt indexPath: IndexPath
     ) -> CGFloat {
-        CategoryTableViewCell.height
+        BookCategoryTableViewCell.height
     }
     
     func tableView(
@@ -217,7 +217,7 @@ extension CategoryViewController: UITableViewDelegate {
     }
 }
 
-extension CategoryViewController: UITableViewDataSource {
+extension BookCategoryViewController: UITableViewDataSource {
     func tableView(
         _ tableView: UITableView,
         numberOfRowsInSection section: Int
@@ -230,9 +230,9 @@ extension CategoryViewController: UITableViewDataSource {
         cellForRowAt indexPath: IndexPath
     ) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(
-            withIdentifier: CategoryTableViewCell.identifier,
+            withIdentifier: BookCategoryTableViewCell.identifier,
             for: indexPath
-        ) as? CategoryTableViewCell else { return UITableViewCell() }
+        ) as? BookCategoryTableViewCell else { return UITableViewCell() }
         
         let isSelected = viewModel.categories[indexPath.row] == viewModel.currentCategory
         cell.configure(category: viewModel.categories[indexPath.row], isSelected: isSelected)
