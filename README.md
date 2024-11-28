@@ -16,6 +16,12 @@
 
 <div align="center">
   
+  <img width="500" src="https://github.com/user-attachments/assets/0858e407-9858-4a39-a761-dfbeddb7dc39">
+  
+  부산 워크샵 단체사진!!
+  
+  <br>
+
 |<img src="https://avatars.githubusercontent.com/u/62226667?v=4" width=150>|<img src="https://avatars.githubusercontent.com/u/129862357?v=4" width=150>|<img src="https://avatars.githubusercontent.com/u/70050038?v=4" width=150>|<img src="https://avatars.githubusercontent.com/u/71179395?v=4" width=150>|
 |:-:|:-:|:-:|:-:|
 |🎨 김영현|🥇 박효준|👓 안윤철|😽 임정현|
@@ -30,7 +36,8 @@
 
 > ### Clean Architecture + MVVM
 
-![image](https://github.com/user-attachments/assets/f976e74e-3433-478e-8ab2-db73f4245baf)
+<img width="742" alt="스크린샷 2024-11-28 오후 11 04 05" src="https://github.com/user-attachments/assets/87b86b8b-2b5f-487e-b648-4eeb80610a36">
+
 
 - View와 비즈니스 로직 분리를 위해 **MVVM 도입**
   
@@ -52,7 +59,9 @@
 
 ##
 
-## 🔗 바로가기
-
-|문서|[Wiki](https://github.com/boostcampwm-2024/iOS10-MemorialHouse/wiki)|[팀 노션](https://kyxxn.notion.site/iOS10-12c9adb32626806c900ad008c85e7dcc?pvs=4)|[그라운드 룰](https://kyxxn.notion.site/12c9adb3262680b28a58dfddd1ed2b59?pvs=4)|[컨벤션](https://kyxxn.notion.site/12c9adb3262680b28a58dfddd1ed2b59?pvs=4)|[회의록](https://kyxxn.notion.site/eb52137ca8374353adbd7fb6926e99e8?pvs=4)|[기획/디자인](https://www.figma.com/design/zgxogGGouOUsshAJkPeT86/MemorialHouse?node-id=0-1&node-type=canvas&t=b4rxjLDdHgzyH6p3-0)|
+<div align="center">
+  
+|📓 문서|[Wiki](https://github.com/boostcampwm-2024/iOS10-MemorialHouse/wiki)|[팀 노션](https://kyxxn.notion.site/iOS10-12c9adb32626806c900ad008c85e7dcc?pvs=4)|[그라운드 룰](https://kyxxn.notion.site/12c9adb3262680b28a58dfddd1ed2b59?pvs=4)|[컨벤션](https://kyxxn.notion.site/12c9adb3262680b28a58dfddd1ed2b59?pvs=4)|[회의록](https://kyxxn.notion.site/eb52137ca8374353adbd7fb6926e99e8?pvs=4)|[기획/디자인](https://www.figma.com/design/zgxogGGouOUsshAJkPeT86/MemorialHouse?node-id=0-1&node-type=canvas&t=b4rxjLDdHgzyH6p3-0)|
 |:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+
+</div>
