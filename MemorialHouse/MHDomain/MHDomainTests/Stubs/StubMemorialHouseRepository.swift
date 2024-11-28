@@ -7,7 +7,7 @@ struct StubMemorialHouseRepository: MemorialHouseRepository {
         self.dummyData = dummyData
     }
     
-    func fetchMemorialHouse() async -> MemorialHouse {
-        return dummyData
+    func fetchMemorialHouse() async -> Result<MemorialHouse, any Error> {
+        return .success(dummyData)
     }
 }
