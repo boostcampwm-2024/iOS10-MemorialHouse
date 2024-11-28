@@ -1,6 +1,6 @@
 public struct BookCategory {
-    let order: Int
-    let name: String
+    public let order: Int
+    public let name: String
     
     public init(
         order: Int,

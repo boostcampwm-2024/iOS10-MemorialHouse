@@ -5,7 +5,10 @@ import UIKit
 
 @MainActor
 protocol BookCategoryViewControllerDelegate: AnyObject {
-    func categoryViewController(_ categoryViewController: BookCategoryViewController, didSelectCategory category: String)
+    func categoryViewController(
+        _ categoryViewController: BookCategoryViewController,
+        didSelectCategory category: String
+    )
 }
 
 final class BookCategoryViewController: UIViewController {
@@ -25,7 +28,9 @@ final class BookCategoryViewController: UIViewController {
     }
     
     required init?(coder: NSCoder) {
-        guard let viewModelFactory = try? DIContainer.shared.resolve(BookCategoryViewModelFactory.self) else { return nil }
+        guard let viewModelFactory = try? DIContainer.shared.resolve(BookCategoryViewModelFactory.self) else {
+            return nil
+        }
         self.viewModel = viewModelFactory.make()
         super.init(coder: coder)
     }
@@ -36,6 +41,7 @@ final class BookCategoryViewController: UIViewController {
         
         setup()
         bind()
+        input.send(.viewDidLoad)
         configureNavigationBar()
         configureConstraints()
     }
@@ -64,10 +70,24 @@ final class BookCategoryViewController: UIViewController {
         
         output.sink { [weak self] event in
             switch event {
-            case .createdCategory, .updatedCategory, .deletedCategory:
+            case .createdCategory, .updatedCategory, .fetchCategories, .deletedCategory:
                 self?.categoryTableView.reloadData()
+            case .failed(let errorMessage):
+                self?.handleError(with: errorMessage)
             }
         }.store(in: &cancellables)
+    }
+    
+    private func handleError(with errorMessage: String) {
+        let alertController = UIAlertController(
+            title: "에러",
+            message: errorMessage,
+            preferredStyle: .alert
+        )
+        let okAction = UIAlertAction(title: "확인", style: .default)
+        alertController.addAction(okAction)
+        
+        present(alertController, animated: true)
     }
     
     private func configureNavigationBar() {
@@ -143,7 +163,7 @@ extension BookCategoryViewController: UITableViewDelegate {
         didSelectRowAt indexPath: IndexPath
     ) {
         let selectedCategory = viewModel.categories[indexPath.row]
-        delegate?.categoryViewController(self, didSelectCategory: selectedCategory)
+        delegate?.categoryViewController(self, didSelectCategory: selectedCategory.name)
         dismiss(animated: true, completion: nil)
     }
     
@@ -175,7 +195,7 @@ extension BookCategoryViewController: UITableViewDelegate {
                 message: "수정할 카테고리 이름을 입력해주세요.",
                 textFieldConfiguration: { textField in
                     textField.placeholder = "카테고리 이름"
-                    textField.text = self.viewModel.categories[indexPath.row]
+                    textField.text = self.viewModel.categories[indexPath.row].name
                 },
                 confirmHandler: { [weak self] newText in
                     guard let self, let newText = newText, !newText.isEmpty else {
@@ -234,8 +254,8 @@ extension BookCategoryViewController: UITableViewDataSource {
             for: indexPath
         ) as? BookCategoryTableViewCell else { return UITableViewCell() }
         
-        let isSelected = viewModel.categories[indexPath.row] == viewModel.currentCategory
-        cell.configure(category: viewModel.categories[indexPath.row], isSelected: isSelected)
+        let isSelected = viewModel.categories[indexPath.row].name == viewModel.currentCategoryName
+        cell.configure(category: viewModel.categories[indexPath.row].name, isSelected: isSelected)
         cell.backgroundColor = .baseBackground
         
         return cell
