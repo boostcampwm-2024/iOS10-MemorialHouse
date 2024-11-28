@@ -112,10 +112,6 @@ struct CoreDataBookCoverStorageTests {
         let result = await sut.delete(with: id)
         let coreDataBookCovers = try await sut.fetch().get()
         
-        print(sut.coreDataStorage)
-        print(sut.coreDataStorage.persistentContainer)
-        print(sut.coreDataStorage.persistentContainer.viewContext)
-        
         // Assert
         switch result {
         case .success:
