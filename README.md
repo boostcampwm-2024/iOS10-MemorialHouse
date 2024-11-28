@@ -16,7 +16,7 @@
 
 <div align="center">
 
-  <img width="750" alt="image" src="https://github.com/user-attachments/assets/3607a9fb-dd84-4877-83ef-ac8e43e1bc27">
+  <img width="500" alt="image" src="https://github.com/user-attachments/assets/3607a9fb-dd84-4877-83ef-ac8e43e1bc27">
 
   부산 워크샵 단체사진!!
   
