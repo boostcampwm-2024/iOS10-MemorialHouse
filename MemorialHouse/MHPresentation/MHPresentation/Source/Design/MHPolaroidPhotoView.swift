@@ -1,4 +1,5 @@
 import UIKit
+import MHDomain
 
 final class MHPolaroidPhotoView: UIView {
     // MARK: - UI Components
@@ -76,5 +77,18 @@ final class MHPolaroidPhotoView: UIView {
         photoImageView.image = image
         captionLabel.text = caption
         creationDateLabel.text = creationDate
+    }
+}
+
+extension MHPolaroidPhotoView: @preconcurrency MediaAttachable {
+    // TODO: - 임시로 넣어 놓음 일단
+    var mediaType: MediaType {
+        get {
+            .image
+        }
+    }
+    func configureSource(with path: URL?) {
+        guard let path else { return }
+        photoImageView.image = UIImage(contentsOfFile: path.absoluteString)
     }
 }

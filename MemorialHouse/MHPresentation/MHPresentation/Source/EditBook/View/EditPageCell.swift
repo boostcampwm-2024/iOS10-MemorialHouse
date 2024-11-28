@@ -1,5 +1,7 @@
 import UIKit
+import MHDomain
 import MHCore
+import MHData
 
 final class EditPageCell: UITableViewCell {
     // MARK: - Property
@@ -66,32 +68,39 @@ final class EditPageCell: UITableViewCell {
     
     // MARK: - Method
     /// Storage에서 Text와 Attachment 정보를 추출해냅니다.
-    private func separateStorageInformation(_ textStorage: NSTextStorage) -> (NSAttributedString, [String: Any]) {
-        var attachmentMetadata: [String: Any] = [:]
+    private func separateStorageInformation(
+        _ textStorage: NSTextStorage
+    ) -> (String, [Int: MediaDescription]) {
+        var metaData = [Int: MediaDescription]()
         let mutableAttributedString = NSMutableAttributedString(attributedString: textStorage)
         
         textStorage.enumerateAttribute(.attachment, in: NSRange(location: 0, length: textStorage.length)) { value, range, _ in
-            if let mediaAttachment = value as? MediaAttachment,
-               let url = mediaAttachment.sourcePath {
+            if let mediaAttachment = value as? MediaAttachment {
                 // 위치와 URL 저장
-                attachmentMetadata[String(range.location)] = url.absoluteString
+                metaData[range.location] = mediaAttachment.mediaDescription
                 // Placeholder로 텍스트 대체
                 mutableAttributedString.replaceCharacters(in: range, with: " ")
             }
         }
-        
-        return (mutableAttributedString, attachmentMetadata)
+        return (mutableAttributedString.string, metaData)
     }
     /// Text와 Attachment 정보를 하나의 문자열로 조합합니다.
-    private func mergeStorageInformation(text savedAttributedString: NSAttributedString, attachmentMetaData: [String: Any]) -> NSAttributedString {
+    private func mergeStorageInformation(
+        text savedAttributedString: NSAttributedString,
+        attachmentMetaData: [Int: MediaDescription]
+    ) -> NSAttributedString {
         let mutableAttributedString = NSMutableAttributedString(attributedString: savedAttributedString)
         
         attachmentMetaData
-            .map { (Int($0.key) ?? 0, $0.value as? String ?? "") }
-            .forEach { location, urlString in
+            .forEach {
+                location,
+                description in
                 let range = NSRange(location: location, length: 1)
-                let mediaAttachment = MediaAttachment()
-                mediaAttachment.sourcePath = URL(string: urlString)
+                let mediaAttachment = MediaAttachment(
+                    view: MHPolaroidPhotoView(), // TODO: - 이거 바꿔줘야함...
+                    description: description
+                )
+                mediaAttachment.mediaDescription = description
                 let attachmentString = NSAttributedString(attachment: mediaAttachment)
                 
                 // Placeholder(공백) 교체
@@ -110,12 +119,7 @@ final class EditPageCell: UITableViewCell {
         let (savedText, metadata) = separateStorageInformation(textStorage)
         
         do {
-            let fileURL = documentDirectory.appendingPathComponent("textWithAttachments.rtf")
-            let rtfData = try savedText.data(
-                from: NSRange(location: 0, length: savedText.length),
-                documentAttributes: [.documentType: NSAttributedString.DocumentType.rtf]
-            )
-            try rtfData.write(to: fileURL)
+            MHFileManager().create(at: <#T##String#>, fileName: <#T##String#>, data: <#T##Data#>)
             MHLogger.debug("Text with attachments saved to \(fileURL)")
         } catch {
             MHLogger.error("Error saving text with attachments: \(error)")
@@ -142,7 +146,7 @@ final class EditPageCell: UITableViewCell {
             )
             let metadataFileURL = documentDirectory.appendingPathComponent("attachmentMetadata.json")
             let metadataData = try Data(contentsOf: metadataFileURL)
-            let metadata = try JSONSerialization.jsonObject(with: metadataData) as! [String: Any]
+            let metadata = try JSONSerialization.jsonObject(with: metadataData) as? [String: Any]
             // 커스텀 NSTextAttachment로 변환
             let restoredText = mergeStorageInformation(text: savedText, attachmentMetaData: metadata)
             textStorage?.setAttributedString(restoredText)
@@ -151,7 +155,6 @@ final class EditPageCell: UITableViewCell {
             MHLogger.error("Error loading text with attachments: \(error)")
         }
     }
-    
     private func isAcceptableHight(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText attributedText: NSAttributedString) -> Bool {
         let updatedText = NSMutableAttributedString(attributedString: textView.attributedText)
         let textViewWidth = textView.bounds.width
