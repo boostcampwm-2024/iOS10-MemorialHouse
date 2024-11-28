@@ -11,7 +11,7 @@ public struct LocalBookCoverRepository: BookCoverRepository {
     
     public func create(bookCover: BookCover) async {
         let bookCoverDTO = BookCoverDTO(
-            identifier: bookCover.identifier,
+            id: bookCover.id,
             title: bookCover.title,
             imageURL: bookCover.imageURL,
             color: bookCover.color.rawValue,
@@ -39,7 +39,7 @@ public struct LocalBookCoverRepository: BookCoverRepository {
         
         switch result {
         case .success(let bookCoverDTOs):
-            let bookCoverDTO = bookCoverDTOs.filter({ $0.identifier == id }).first
+            let bookCoverDTO = bookCoverDTOs.filter({ $0.id == id }).first
             return bookCoverDTO?.toBookCover()
         case .failure(let failure):
             MHLogger.debug("\(failure.description)")
@@ -50,7 +50,7 @@ public struct LocalBookCoverRepository: BookCoverRepository {
     
     public func update(id: UUID, bookCover: BookCover) async {
         let bookCoverDTO = BookCoverDTO(
-            identifier: bookCover.identifier,
+            id: bookCover.id,
             title: bookCover.title,
             imageURL: bookCover.imageURL,
             color: bookCover.color.rawValue,

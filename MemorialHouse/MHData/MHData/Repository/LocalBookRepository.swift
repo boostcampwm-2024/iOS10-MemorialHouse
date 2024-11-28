@@ -38,6 +38,7 @@ public struct LocalBookRepository: BookRepository {
         let pages = book.pages.map { mappingPageToDTO($0) }
         return BookDTO(
             id: book.id,
+            title: book.title,
             pages: pages
         )
     }

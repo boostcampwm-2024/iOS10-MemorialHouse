@@ -21,6 +21,7 @@ extension CoreDataBookStorage: BookStorage {
                 }
                 let book = NSManagedObject(entity: entity, insertInto: context)
                 book.setValue(data.id, forKey: "id")
+                book.setValue(data.title, forKey: "title")
                 book.setValue(dtoPagesToCore(data.pages), forKey: "pages")
                 try context.save()
             }
@@ -70,6 +71,7 @@ extension CoreDataBookStorage: BookStorage {
                 }
                 
                 newEntity.setValue(data.id, forKey: "id")
+                newEntity.setValue(data.title, forKey: "title")
                 newEntity.setValue(dtoPagesToCore(data.pages), forKey: "pages")
                 
                 try context.save()
@@ -122,12 +124,14 @@ extension CoreDataBookStorage {
     // MARK: - Core to DTO
     private func coreBookToDTO(_ book: BookEntity) -> BookDTO? {
         guard let id = book.id,
+              let title = book.title,
               let corePages = book.pages
         else { return nil }
         let pages = corePagesToDTO(corePages)
         
         return BookDTO(
             id: id,
+            title: title,
             pages: pages
         )
     }

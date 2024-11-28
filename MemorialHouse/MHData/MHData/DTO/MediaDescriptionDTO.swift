@@ -6,7 +6,11 @@ public struct MediaDescriptionDTO {
     let type: String
     let attributes: Data?
     
-    public init(id: UUID, type: String, attributes: Data?) {
+    public init(
+        id: UUID,
+        type: String,
+        attributes: Data?
+    ) {
         self.id = id
         self.type = type
         self.attributes = attributes

@@ -10,6 +10,7 @@ struct CoreDataBookStorageTests {
     private static let books = [
         BookDTO(
             id: UUID(),
+            title: "title1",
             pages: [
                 PageDTO(
                     id: UUID(),
@@ -36,6 +37,7 @@ struct CoreDataBookStorageTests {
         ),
         BookDTO(
             id: UUID(),
+            title: "title2",
             pages: [
                 PageDTO(
                     id: UUID(),
@@ -71,6 +73,7 @@ struct CoreDataBookStorageTests {
         // Arrange
         let newBook = BookDTO(
             id: UUID(),
+            title: "title3",
             pages: [
                 PageDTO(
                     id: UUID(),
@@ -128,6 +131,7 @@ struct CoreDataBookStorageTests {
         let oldBook = CoreDataBookStorageTests.books[0]
         let newBook = BookDTO(
             id: oldBook.id,
+            title: "title4",
             pages: [
                 PageDTO(
                     id: oldBook.pages[0].id,

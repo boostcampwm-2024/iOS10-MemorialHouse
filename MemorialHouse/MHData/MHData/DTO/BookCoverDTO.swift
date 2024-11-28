@@ -2,15 +2,22 @@ import MHFoundation
 import MHDomain
 
 public struct BookCoverDTO {
-    let identifier: UUID
+    let id: UUID
     let title: String
     let imageURL: String?
     let color: String
     let category: String?
     let favorite: Bool
     
-    public init(identifier: UUID, title: String, imageURL: String?, color: String, category: String?, favorite: Bool) {
-        self.identifier = identifier
+    public init(
+        id: UUID,
+        title: String,
+        imageURL: String?,
+        color: String,
+        category: String?,
+        favorite: Bool
+    ) {
+        self.id = id
         self.title = title
         self.imageURL = imageURL
         self.color = color
@@ -22,7 +29,7 @@ public struct BookCoverDTO {
         guard let color = BookColor(rawValue: self.color) else { return nil }
         
         return BookCover(
-            identifier: self.identifier,
+            id: self.id,
             title: self.title,
             imageURL: self.imageURL,
             color: color,
