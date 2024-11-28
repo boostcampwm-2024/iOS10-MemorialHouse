@@ -7,12 +7,24 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0E931E5F2CF38390009B8645 /* MHPresentation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9AEB992CD7B4F200F8471D /* MHPresentation.framework */; platformFilter = ios; };
 		CE9AEBAB2CD7B51D00F8471D /* MHDomain.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9AEBAA2CD7B51D00F8471D /* MHDomain.framework */; };
 		CE9AEBFA2CD7BA2000F8471D /* MHCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9AEBF92CD7BA2000F8471D /* MHCore.framework */; };
 		DB382CC52CD9B22E000D7689 /* MHFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB382CC42CD9B22E000D7689 /* MHFoundation.framework */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		0E931E602CF38390009B8645 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CE9AEB902CD7B4F200F8471D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = CE9AEB982CD7B4F200F8471D;
+			remoteInfo = MHPresentation;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
+		0E931E5B2CF38390009B8645 /* MHPresentationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MHPresentationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE9AEB992CD7B4F200F8471D /* MHPresentation.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = MHPresentation.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE9AEBAA2CD7B51D00F8471D /* MHDomain.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = MHDomain.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE9AEBF92CD7BA2000F8471D /* MHCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = MHCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -43,6 +55,11 @@
 /* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		0E931E5C2CF38390009B8645 /* MHPresentationTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = MHPresentationTests;
+			sourceTree = "<group>";
+		};
 		A8C9335B2CDFBCD4007D932A /* MHPresentation */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
@@ -55,6 +72,14 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		0E931E582CF38390009B8645 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0E931E5F2CF38390009B8645 /* MHPresentation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		CE9AEB962CD7B4F200F8471D /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -72,6 +97,7 @@
 			isa = PBXGroup;
 			children = (
 				A8C9335B2CDFBCD4007D932A /* MHPresentation */,
+				0E931E5C2CF38390009B8645 /* MHPresentationTests */,
 				CE9AEBA92CD7B51D00F8471D /* Frameworks */,
 				CE9AEB9A2CD7B4F200F8471D /* Products */,
 			);
@@ -81,6 +107,7 @@
 			isa = PBXGroup;
 			children = (
 				CE9AEB992CD7B4F200F8471D /* MHPresentation.framework */,
+				0E931E5B2CF38390009B8645 /* MHPresentationTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -108,6 +135,29 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		0E931E5A2CF38390009B8645 /* MHPresentationTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0E931E622CF38390009B8645 /* Build configuration list for PBXNativeTarget "MHPresentationTests" */;
+			buildPhases = (
+				0E931E572CF38390009B8645 /* Sources */,
+				0E931E582CF38390009B8645 /* Frameworks */,
+				0E931E592CF38390009B8645 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				0E931E612CF38390009B8645 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				0E931E5C2CF38390009B8645 /* MHPresentationTests */,
+			);
+			name = MHPresentationTests;
+			packageProductDependencies = (
+			);
+			productName = MHPresentationTests;
+			productReference = 0E931E5B2CF38390009B8645 /* MHPresentationTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		CE9AEB982CD7B4F200F8471D /* MHPresentation */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = CE9AEB9F2CD7B4F200F8471D /* Build configuration list for PBXNativeTarget "MHPresentation" */;
@@ -139,8 +189,12 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1610;
 				LastUpgradeCheck = 1610;
 				TargetAttributes = {
+					0E931E5A2CF38390009B8645 = {
+						CreatedOnToolsVersion = 16.1;
+					};
 					CE9AEB982CD7B4F200F8471D = {
 						CreatedOnToolsVersion = 16.1;
 						LastSwiftMigration = 1610;
@@ -165,11 +219,19 @@
 			projectRoot = "";
 			targets = (
 				CE9AEB982CD7B4F200F8471D /* MHPresentation */,
+				0E931E5A2CF38390009B8645 /* MHPresentationTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		0E931E592CF38390009B8645 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		CE9AEB972CD7B4F200F8471D /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -201,6 +263,13 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		0E931E572CF38390009B8645 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		CE9AEB952CD7B4F200F8471D /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -210,7 +279,60 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		0E931E612CF38390009B8645 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			platformFilter = ios;
+			target = CE9AEB982CD7B4F200F8471D /* MHPresentation */;
+			targetProxy = 0E931E602CF38390009B8645 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		0E931E632CF38390009B8645 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = U5N99RCS73;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MACOSX_DEPLOYMENT_TARGET = 15.1;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = kyxxn.MHPresentationTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				XROS_DEPLOYMENT_TARGET = 2.1;
+			};
+			name = Debug;
+		};
+		0E931E642CF38390009B8645 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = U5N99RCS73;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MACOSX_DEPLOYMENT_TARGET = 15.1;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = kyxxn.MHPresentationTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				XROS_DEPLOYMENT_TARGET = 2.1;
+			};
+			name = Release;
+		};
 		CE9AEBA02CD7B4F200F8471D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -422,6 +544,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		0E931E622CF38390009B8645 /* Build configuration list for PBXNativeTarget "MHPresentationTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0E931E632CF38390009B8645 /* Debug */,
+				0E931E642CF38390009B8645 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		CE9AEB932CD7B4F200F8471D /* Build configuration list for PBXProject "MHPresentation" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

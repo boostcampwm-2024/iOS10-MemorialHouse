@@ -176,39 +176,49 @@ final class BookCreationViewController: UIViewController {
             height: 63
         )
     }
+    
     private func configureNavigationBar() {
-        // 네비바 설정
         navigationController?.navigationBar.isHidden = false
-        
-        // 타이틀 설정
         navigationController?.navigationBar.titleTextAttributes = [
-            .font: UIFont.ownglyphBerry(size: 17)
+            .font: UIFont.ownglyphBerry(size: 17),
+            .foregroundColor: UIColor.mhTitle
         ]
         title = "책 표지 만들기"
         
-        // 왼쪽 버튼
-        let leftBarButtonAction = UIAction { [weak self] _ in
-            self?.navigationController?.popViewController(animated: true)
-        }
-        let leftBarButton = UIBarButtonItem(title: "닫기", primaryAction: leftBarButtonAction)
-        leftBarButton.setTitleTextAttributes([
+        // 공통 스타일 정의
+        let normalAttributes: [NSAttributedString.Key: Any] = [
             .font: UIFont.ownglyphBerry(size: 17),
             .foregroundColor: UIColor.mhTitle
-        ], for: .normal)
-        navigationItem.leftBarButtonItem = leftBarButton
+        ]
+        let selectedAttributes: [NSAttributedString.Key: Any] = [
+            .font: UIFont.ownglyphBerry(size: 17),
+            .foregroundColor: UIColor.mhTitle
+        ]
         
-        // 오른쪽 버튼
-        let rightBarButtonAction = UIAction { [weak self] _ in
-            // TODO: - 구현 해야 함
+        // 왼쪽 닫기 버튼
+        navigationItem.leftBarButtonItem = UIBarButtonItem(
+            title: "닫기",
+            normal: normalAttributes,
+            selected: selectedAttributes
+        ) { [weak self] in
             self?.navigationController?.popViewController(animated: true)
         }
-        let rightBarButton = UIBarButtonItem(title: "책 속지 만들기", primaryAction: rightBarButtonAction)
-        rightBarButton.setTitleTextAttributes([
-            .font: UIFont.ownglyphBerry(size: 17),
-            .foregroundColor: UIColor.mhTitle
-        ], for: .normal)
-        navigationItem.rightBarButtonItem = rightBarButton
+        
+        // 오른쪽 책 속지 만들기 버튼
+        navigationItem.rightBarButtonItem = UIBarButtonItem(
+            title: "책 속지 만들기",
+            normal: normalAttributes,
+            selected: selectedAttributes
+        ) { [weak self] in
+            // TODO: - 추후 뷰모델 관련 생성 이슈 조정 필요
+            let editBookViewModel = EditBookViewModel()
+            self?.navigationController?.pushViewController(
+                EditBookViewController(viewModel: editBookViewModel),
+                animated: true
+            )
+        }
     }
+    
     private func configureAction() {
         // 색깔 버튼
         bookColorButtons.enumerated().forEach { idx, button in
@@ -236,7 +246,7 @@ final class BookCreationViewController: UIViewController {
         // 사진선택 버튼
         let pictureSelectingAction = UIAction { [weak self] _ in
             let albumViewModel = CustomAlbumViewModel()
-            let customAlbumViewController = CustomAlbumViewController(viewModel: albumViewModel)
+            let customAlbumViewController = CustomAlbumViewController(viewModel: albumViewModel, mediaType: .image)
             self?.navigationController?.pushViewController(customAlbumViewController, animated: true)
         }
         imageSelectionButton.addAction(pictureSelectingAction, for: .touchUpInside)

@@ -2,31 +2,28 @@ import UIKit
 
 final class MHNavigationBar: UIView {
     // MARK: - Property
-    private let titleLabel = UILabel(style: .header)
+    private let titleLabel = UILabel(style: .header1)
     private let settingButton = UIButton(type: .custom)
     
     // MARK: - Initializer
-    init(title: String) {
+    init() {
         super.init(frame: .zero)
         
-        setup(with: title)
+        setup()
         configureAddSubView()
         configureConstraints()
-        configureAction()
     }
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         
-        setup(with: "")
+        setup()
         configureAddSubView()
         configureConstraints()
-        configureAction()
     }
     
     // MARK: - Setup & Configuration
-    private func setup(with title: String) {
-        titleLabel.text = "\(title) 기록소"
+    private func setup() {
         settingButton.setImage(.settingLight, for: .normal)
         backgroundColor = .baseBackground
     }
@@ -49,9 +46,11 @@ final class MHNavigationBar: UIView {
         settingButton.setHeight(30)
     }
     
-    private func configureAction() {
-        settingButton.addAction(UIAction { _ in
-            // TODO: 설정 버튼 클릭 시 설정화면 라우팅 필요
-        }, for: .touchUpInside)
+    func configureSettingAction(action: UIAction) {
+        settingButton.addAction(action, for: .touchUpInside)
+    }
+    
+    func configureTitle(with title: String) {
+        titleLabel.text = "\(title) 기록소"
     }
 }
