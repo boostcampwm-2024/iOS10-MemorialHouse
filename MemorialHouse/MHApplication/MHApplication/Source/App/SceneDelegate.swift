@@ -35,7 +35,8 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     func registerDependency() {
         do {
-            registerRepositoryDependency()
+            try registerStorageDependency()
+            try registerRepositoryDependency()
             try registerUseCaseDependency()
             try registerViewModelFactoryDependency()
         } catch let error as MHCoreError {
@@ -45,7 +46,21 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
     }
     
-    private func registerRepositoryDependency() {
+    private func registerStorageDependency() throws {
+        DIContainer.shared.register(CoreDataStorage.self, object: CoreDataStorage())
+        
+        let coreDataStorage = try DIContainer.shared.resolve(CoreDataStorage.self)
+        DIContainer.shared.register(
+            BookCoverStorage.self,
+            object: CoreDataBookCoverStorage(coreDataStorage: coreDataStorage)
+        )
+        DIContainer.shared.register(
+            BookStorage.self,
+            object: CoreDataBookStorage(coreDataStorage: coreDataStorage)
+        )
+    }
+    
+    private func registerRepositoryDependency() throws {
         DIContainer.shared.register(
             MemorialHouseRepository.self,
             object: DefaultMemorialHouseRepository()
@@ -53,6 +68,16 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         DIContainer.shared.register(
             CategoryRepository.self,
             object: DefaultCategoryRepository()
+        )
+        let bookCoverStorage = try DIContainer.shared.resolve(BookCoverStorage.self)
+        DIContainer.shared.register(
+            BookCoverRepository.self,
+            object: LocalBookCoverRepository(storage: bookCoverStorage)
+        )
+        let bookStorage = try DIContainer.shared.resolve(BookStorage.self)
+        DIContainer.shared.register(
+            BookRepository.self,
+            object: LocalBookRepository(storage: bookStorage)
         )
     }
     
@@ -81,6 +106,25 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         DIContainer.shared.register(
             DeleteCategoryUseCase.self,
             object: DefaultDeleteCategoryUseCase(repository: categoryRepository)
+        )
+        
+        // MARK: - Book UseCase
+        let bookRepository = try DIContainer.shared.resolve(BookRepository.self)
+        DIContainer.shared.register(
+            CreateBookUseCase.self,
+            object: DefaultCreateBookUseCase(repository: bookRepository)
+        )
+        DIContainer.shared.register(
+            FetchBookUseCase.self,
+            object: DefaultFetchBookUseCase(repository: bookRepository)
+        )
+        DIContainer.shared.register(
+            UpdateBookUseCase.self,
+            object: DefaultUpdateBookUseCase(repository: bookRepository)
+        )
+        DIContainer.shared.register(
+            DeleteBookUseCase.self,
+            object: DefaultDeleteBookUseCase(repository: bookRepository)
         )
     }
     

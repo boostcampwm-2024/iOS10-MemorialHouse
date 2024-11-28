@@ -1,7 +1,7 @@
 import CoreData
 import MHCore
 
-class CoreDataStorage {
+public class CoreDataStorage {
     static let modelName: String = "MemorialHouseModel"
     
     nonisolated(unsafe) static let memorialHouseModel: NSManagedObjectModel = {
@@ -24,7 +24,7 @@ class CoreDataStorage {
         return container
     }()
     
-    init() { }
+    public init() { }
     
     func saveContext() async {
         let context = persistentContainer.viewContext

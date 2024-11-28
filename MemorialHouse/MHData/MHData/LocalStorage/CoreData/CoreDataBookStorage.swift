@@ -2,16 +2,16 @@ import MHFoundation
 import MHCore
 import CoreData
 
-final class CoreDataBookStorage {
+public final class CoreDataBookStorage {
     private let coreDataStorage: CoreDataStorage
     
-    init(coreDataStorage: CoreDataStorage) {
+    public init(coreDataStorage: CoreDataStorage) {
         self.coreDataStorage = coreDataStorage
     }
 }
 
 extension CoreDataBookStorage: BookStorage {
-    func create(data: BookDTO) async -> Result<Void, MHDataError> {
+    public func create(data: BookDTO) async -> Result<Void, MHDataError> {
         let context = coreDataStorage.persistentContainer.viewContext
         do {
             try await context.perform { [weak self] in
@@ -34,7 +34,9 @@ extension CoreDataBookStorage: BookStorage {
             return .failure(.createEntityFailure)
         }
     }
-    func fetch(with id: UUID) async -> Result<BookDTO, MHDataError> {
+    
+    
+    public func fetch(with id: UUID) async -> Result<BookDTO, MHDataError> {
         let context = coreDataStorage.persistentContainer.viewContext
 
         do {
@@ -57,7 +59,8 @@ extension CoreDataBookStorage: BookStorage {
             return .failure(.fetchEntityFaliure)
         }
     }
-    func update(with id: UUID, data: BookDTO) async -> Result<Void, MHDataError> {
+    
+    public func update(with id: UUID, data: BookDTO) async -> Result<Void, MHDataError> {
         do {
             let context = coreDataStorage.persistentContainer.viewContext
             try await context.perform { [weak self] in
@@ -80,7 +83,8 @@ extension CoreDataBookStorage: BookStorage {
             return .failure(.updateEntityFailure)
         }
     }
-    func delete(with id: UUID) async -> Result<Void, MHDataError> {
+    
+    public func delete(with id: UUID) async -> Result<Void, MHDataError> {
         do {
             let context = coreDataStorage.persistentContainer.viewContext
             try await context.perform { [weak self] in
@@ -127,12 +131,14 @@ extension CoreDataBookStorage {
             pages: pages
         )
     }
+    
     private func corePagesToDTO(_ pages: NSOrderedSet) -> [PageDTO] {
         return pages.compactMap {
             guard let page = $0 as? PageEntity else { return nil }
             return corePageToDTO(page)
         }
     }
+    
     private func corePageToDTO(_ page: PageEntity) -> PageDTO? {
         guard let id = page.id,
               let mediaDescriptions = page.mediaDescriptions,
@@ -151,6 +157,7 @@ extension CoreDataBookStorage {
             text: text
         )
     }
+    
     private func coreMediaDescriptionToDTO(_ mediaDescription: MediaDescriptionEntity) -> (Int, MediaDescriptionDTO)? {
         guard let id = mediaDescription.id,
               let type = mediaDescription.type
@@ -169,6 +176,7 @@ extension CoreDataBookStorage {
         let pageEntities = pages.compactMap { dtoPageToCore($0, in: context) }
         return NSOrderedSet(array: pageEntities)
     }
+    
     private func dtoPageToCore(_ page: PageDTO, in context: NSManagedObjectContext) -> PageEntity? {
         guard let entity = NSEntityDescription.insertNewObject(
             forEntityName: "PageEntity",
@@ -183,6 +191,7 @@ extension CoreDataBookStorage {
         
         return entity
     }
+    
     private func dtoMediaDescriptionsToCore(
         _ metadata: [Int: MediaDescriptionDTO],
         in context: NSManagedObjectContext
@@ -192,6 +201,7 @@ extension CoreDataBookStorage {
         }
         return NSSet(array: mediaDescriptionEntities)
     }
+    
     private func dtoMediaDescriptionToCore(
         location: Int,
         _ mediaDescription: MediaDescriptionDTO,

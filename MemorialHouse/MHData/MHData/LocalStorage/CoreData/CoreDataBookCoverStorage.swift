@@ -2,16 +2,16 @@ import MHFoundation
 import MHCore
 import CoreData
 
-final class CoreDataBookCoverStorage {
+public final class CoreDataBookCoverStorage {
     private let coreDataStorage: CoreDataStorage
     
-    init(coreDataStorage: CoreDataStorage) {
+    public init(coreDataStorage: CoreDataStorage) {
         self.coreDataStorage = coreDataStorage
     }
 }
 
 extension CoreDataBookCoverStorage: BookCoverStorage {
-    func create(data: BookCoverDTO) async -> Result<Void, MHDataError> {
+    public func create(data: BookCoverDTO) async -> Result<Void, MHDataError> {
         let context = coreDataStorage.persistentContainer.viewContext
         do {
             try await context.perform {
@@ -38,7 +38,7 @@ extension CoreDataBookCoverStorage: BookCoverStorage {
         }
     }
     
-    func fetch() async -> Result<[BookCoverDTO], MHDataError> {
+    public func fetch() async -> Result<[BookCoverDTO], MHDataError> {
         let context = coreDataStorage.persistentContainer.viewContext
         do {
             var bookCoverEntities: [BookCoverEntity] = []
@@ -57,7 +57,7 @@ extension CoreDataBookCoverStorage: BookCoverStorage {
         }
     }
     
-    func update(with id: UUID, data: BookCoverDTO) async -> Result<Void, MHDataError> {
+    public func update(with id: UUID, data: BookCoverDTO) async -> Result<Void, MHDataError> {
         let context = coreDataStorage.persistentContainer.viewContext
         do {
             try await context.perform { [weak self] in
@@ -83,7 +83,7 @@ extension CoreDataBookCoverStorage: BookCoverStorage {
         }
     }
     
-    func delete(with id: UUID) async -> Result<Void, MHDataError> {
+    public func delete(with id: UUID) async -> Result<Void, MHDataError> {
         let context = coreDataStorage.persistentContainer.viewContext
         do {
             try await context.perform { [weak self] in
