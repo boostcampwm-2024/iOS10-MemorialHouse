@@ -12,7 +12,7 @@
 
 ##
 
-## 🧑‍🧑‍🧒‍🧒 집주인들
+### 🧑‍🧑‍🧒‍🧒 집주인들
 
 <div align="center">
 
@@ -32,7 +32,7 @@
 
 ##
 
-## 🧱 아키텍처
+### 🧱 아키텍처
 
 > ### Clean Architecture + MVVM
 
@@ -49,13 +49,24 @@
 
 ##
 
-## 🛠️ 기술 스택
-
-### UIKit
+### 🛠️ 기술 스택
 
 ### Combine
+- MVVM 패턴에서 View와 ViewModel의 바인딩을 위해 Combine을 활용했습니다.
+- Combine은 First Party 라이브러리라는 점에서 안정성과 지원이 뛰어나며, RxSwift에 비해 성능적인 이점이 있어 RxSwift 대신 Combine을 도입했습니다.
 
-### Swift Testing
+### Swift Concurrency
+
+- 비동기 프로그래밍을 위해 Swift Concurrency(async/await)를 활용하였습니다.
+- 기존의 콜백 기반 비동기 프로그래밍은 코드의 깊이가 증가해 가독성을 해치고, completion 호출을 누락하는 등 휴먼 에러가 발생할 가능성이 있었습니다.
+- Swift Concurrency을 도입하여 위 단점을 보완하여 코드 가독성과 안정성을 높이고자 했습니다.
+
+### CoreData + FileManager
+
+- Local DB로 Core Data와 FileManager를 함께 활용했습니다.
+- Core Data는 책과 페이지 간의 관계를 유지하기 위해 사용하며, 각 페이지는 멀티미디어 데이터를 포함할 수 있습니다.
+- 멀티미디어를 Core Data에 직접 저장하면, 책을 펼칠 때 모든 데이터를 한꺼번에 불러와 성능 저하가 발생할 수 있습니다. 이를 방지하기 위해 멀티미디어는 FileManager를 통해 디바이스에 저장하고, Core Data에는 해당 멀티미디어의 URL만 문자열로 저장했습니다.
+- 이러한 방식으로 페이지 로드 시 URL만 불러와 메모리 사용을 줄이고, 필요한 멀티미디어는 개별적으로 로드하여 효율성을 높였습니다.
 
 ##
 
