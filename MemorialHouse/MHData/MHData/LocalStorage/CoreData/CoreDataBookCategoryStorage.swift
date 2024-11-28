@@ -34,14 +34,14 @@ public final class CoreDataBookCategoryStorage {
 }
 
 extension CoreDataBookCategoryStorage: BookCategoryStorage {
-    public func create(with data: BookCategoryDTO) async -> Result<Void, MHDataError> {
+    public func create(with category: BookCategoryDTO) async -> Result<Void, MHDataError> {
         return await performDatabaseTask { context in
             guard let entity = NSEntityDescription.entity(forEntityName: "BookCategoryEntity", in: context) else {
                 throw MHDataError.noSuchEntity(key: "BookCategoryEntity")
             }
             let bookCategory = NSManagedObject(entity: entity, insertInto: context)
-            bookCategory.setValue(data.order, forKey: "order")
-            bookCategory.setValue(data.name, forKey: "name")
+            bookCategory.setValue(category.order, forKey: "order")
+            bookCategory.setValue(category.name, forKey: "name")
             try context.save()
         }
     }
@@ -54,21 +54,21 @@ extension CoreDataBookCategoryStorage: BookCategoryStorage {
         }
     }
     
-    public func update(with data: BookCategoryDTO) async -> Result<Void, MHDataError> {
+    public func update(with category: BookCategoryDTO) async -> Result<Void, MHDataError> {
         return await performDatabaseTask { context in
             let request = BookCategoryEntity.fetchRequest()
-            if let entity = try context.fetch(request).first(where: { $0.name == data.name }) {
-                entity.setValue(data.name, forKey: "name")
-                entity.setValue(data.order, forKey: "order")
+            if let entity = try context.fetch(request).first(where: { $0.name == category.name }) {
+                entity.setValue(category.name, forKey: "name")
+                entity.setValue(category.order, forKey: "order")
                 try context.save()
             }
         }
     }
     
-    public func delete(with data: BookCategoryDTO) async -> Result<Void, MHDataError> {
+    public func delete(with categoryName: String) async -> Result<Void, MHDataError> {
         return await performDatabaseTask { context in
             let request = BookCategoryEntity.fetchRequest()
-            if let entity = try context.fetch(request).first(where: { $0.name == data.name }) {
+            if let entity = try context.fetch(request).first(where: { $0.name == categoryName }) {
                 context.delete(entity)
                 try context.save()
             }
