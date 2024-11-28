@@ -13,9 +13,6 @@ public struct HomeViewModelFactory {
     }
     
     public func make() -> HomeViewModel {
-        HomeViewModel(
-            fetchMemorialHouseUseCase: fetchMemorialHouseUseCase,
-            fetchCategoryUseCase: fetchCategoryUseCase
-        )
+        HomeViewModel(fetchMemorialHouseUseCase: fetchMemorialHouseUseCase)
     }
 }
