@@ -1,51 +1,51 @@
-public struct DefaultCreateCategoryUseCase: CreateBookCategoryUseCase {
+public struct DefaultCreateBookCategoryUseCase: CreateBookCategoryUseCase {
     let repository: BookCategoryRepository
     
     public init(repository: BookCategoryRepository) {
         self.repository = repository
     }
     
-    public func execute(name: String) async throws {
-        let result = await repository.createBookCategory(name: name)
+    public func execute(with category: BookCategory) async throws {
+        let result = await repository.createBookCategory(with: category)
         try result.get()
     }
 }
 
-public struct DefaultFetchCategoriesUseCase: FetchBookCategoriesUseCase {
+public struct DefaultFetchBookCategoriesUseCase: FetchBookCategoriesUseCase {
     let repository: BookCategoryRepository
     
     public init(repository: BookCategoryRepository) {
         self.repository = repository
     }
     
-    public func execute() async throws -> [String] {
+    public func execute() async throws -> [BookCategory] {
         let result = await repository.fetchBookCategories()
         return try result.get()
     }
 }
 
-public struct DefaultUpdateCategoryUseCase: UpdateBookCategoryUseCase {
+public struct DefaultUpdateBookCategoryUseCase: UpdateBookCategoryUseCase {
     let repository: BookCategoryRepository
     
     public init(repository: BookCategoryRepository) {
         self.repository = repository
     }
     
-    public func execute(oldName: String, newName: String) async throws {
-        let result = await repository.updateBookCategory(oldName: oldName, newName: newName)
+    public func execute(with category: BookCategory) async throws {
+        let result = await repository.updateBookCategory(with: category)
         try result.get()
     }
 }
 
-public struct DefaultDeleteCategoryUseCase: DeleteBookCategoryUseCase {
+public struct DefaultDeleteBookCategoryUseCase: DeleteBookCategoryUseCase {
     let repository: BookCategoryRepository
     
     public init(repository: BookCategoryRepository) {
         self.repository = repository
     }
     
-    public func execute(name: String) async throws {
-        let result = await repository.deleteBookCategory(name: name)
+    public func execute(with categoryName: String) async throws {
+        let result = await repository.deleteBookCategory(with: categoryName)
         try result.get()
     }
 }
