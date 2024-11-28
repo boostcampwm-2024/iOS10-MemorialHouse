@@ -62,6 +62,7 @@ final class BookCategoryViewModel: ViewModelType {
         return output.eraseToAnyPublisher()
     }
     
+    @MainActor
     private func createCategory(text: String) async {
         do {
             let category = BookCategory(order: categories.count, name: text)
@@ -74,6 +75,7 @@ final class BookCategoryViewModel: ViewModelType {
         }
     }
     
+    @MainActor
     private func fetchCategories() async {
         do {
             let fetchedCategories = try await fetchBookCategoriesUseCase.execute()
@@ -85,6 +87,7 @@ final class BookCategoryViewModel: ViewModelType {
         }
     }
     
+    @MainActor
     private func updateCategory(index: Int, text: String) async {
         guard index >= 0 && index < categories.count else {
             MHLogger.error("유효하지 않은 인덱스: \(index)")
@@ -103,6 +106,7 @@ final class BookCategoryViewModel: ViewModelType {
         }
     }
     
+    @MainActor
     private func deleteCategory(index: Int) async {
         guard index >= 0 && index < categories.count else {
             MHLogger.error("유효하지 않은 인덱스: \(index)")

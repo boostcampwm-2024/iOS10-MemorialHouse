@@ -11,7 +11,7 @@ import MHCore
 /// - 주요 특징:
 ///   - `NSPersistentContainer`를 활용해 Core Data 스택을 구성합니다.
 ///   - `saveContext` 메서드를 통해 변경된 컨텍스트를 저장합니다.
-public class CoreDataStorage {
+public class CoreDataStorage: @unchecked Sendable {
     static let modelName: String = "MemorialHouseModel"
     
     nonisolated(unsafe) static let memorialHouseModel: NSManagedObjectModel = {

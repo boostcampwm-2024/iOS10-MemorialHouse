@@ -1,4 +1,4 @@
-public struct BookCategory {
+public struct BookCategory: Sendable {
     public let order: Int
     public let name: String
     
