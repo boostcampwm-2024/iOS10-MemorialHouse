@@ -1,3 +1,4 @@
+import MHCore
 import UIKit
 
 final class BookViewController: UIViewController {
@@ -19,7 +20,8 @@ final class BookViewController: UIViewController {
     }
     
     required init?(coder: NSCoder) {
-        self.viewModel = BookViewModel()
+        guard let viewModel = try? DIContainer.shared.resolve(BookViewModel.self) else { return nil }
+        self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
         
         title = "책 이름"

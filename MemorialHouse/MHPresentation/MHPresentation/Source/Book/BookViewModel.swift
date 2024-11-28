@@ -1,7 +1,8 @@
-import Foundation
+import MHFoundation
+import MHDomain
 import Combine
 
-final class BookViewModel: ViewModelType {
+public final class BookViewModel: ViewModelType {
     enum Input {
         
     }
@@ -10,9 +11,14 @@ final class BookViewModel: ViewModelType {
         
     }
     
+    private let fetchBookUseCase: FetchBookUseCase
     private let output = PassthroughSubject<Output, Never>()
     private var cancellables = Set<AnyCancellable>()
     private(set) var pageList = ["one", "two", "three"]
+    
+    init(fetchBookUseCase: FetchBookUseCase) {
+        self.fetchBookUseCase = fetchBookUseCase
+    }
     
     func transform(input: AnyPublisher<Input, Never>) -> AnyPublisher<Output, Never> {
         input.sink { event in

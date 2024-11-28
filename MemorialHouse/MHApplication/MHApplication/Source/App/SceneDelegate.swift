@@ -152,5 +152,12 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 deleteCategoryUseCase: deleteCategoryUseCase
             )
         )
+        
+        // MARK: - Book ViewModel
+        let fetchBookUseCase = try DIContainer.shared.resolve(FetchBookUseCase.self)
+        DIContainer.shared.register(
+            BookViewModelFactory.self,
+            object: BookViewModelFactory(fetchBookUseCase: fetchBookUseCase)
+        )
     }
 }
