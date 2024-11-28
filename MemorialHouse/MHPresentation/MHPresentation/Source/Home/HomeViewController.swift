@@ -133,6 +133,7 @@ public final class HomeViewController: UIViewController {
     }
     
     private func configureAction() {
+        // MARK: 카테고리 화면으로 전환 버튼
         categorySelectButton.addAction(UIAction { [weak self] _ in
             do {
                 guard let self else { return }
