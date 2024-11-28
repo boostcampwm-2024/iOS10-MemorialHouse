@@ -15,9 +15,9 @@
 ## 🧑‍🧑‍🧒‍🧒 집주인들
 
 <div align="center">
-  
-  <img width="500" src="https://github.com/user-attachments/assets/0858e407-9858-4a39-a761-dfbeddb7dc39">
-  
+
+  <img width="750" alt="image" src="https://github.com/user-attachments/assets/3607a9fb-dd84-4877-83ef-ac8e43e1bc27">
+
   부산 워크샵 단체사진!!
   
   <br>
@@ -25,7 +25,7 @@
 |<img src="https://avatars.githubusercontent.com/u/62226667?v=4" width=150>|<img src="https://avatars.githubusercontent.com/u/129862357?v=4" width=150>|<img src="https://avatars.githubusercontent.com/u/70050038?v=4" width=150>|<img src="https://avatars.githubusercontent.com/u/71179395?v=4" width=150>|
 |:-:|:-:|:-:|:-:|
 |🎨 김영현|🥇 박효준|👓 안윤철|😽 임정현|
-|집주인 내 골드핸즈(= 금손) <br> 초고수 디자이너|우리팀 리-더 <br> 발표 초-고수<br> 황금막내 <br> 분위기 메이커|아이디어 뱅크 <br> 동의, 인정, 공감 장인 <br> MZ|살아있는 네이버 클로바 <br> 루루 집사 <br> 스티브잡스, 워즈니악, 그리고<br>더킹갓제네럴엠페럴초사이언 임정현 let's go|
+|집주인 내 골드핸즈(= 금손) <br> 초고수 디자이너 <br> 영리아나 그란데 <br> 영카소, 영켈란젤로, 영흐|우리팀 리-더 <br> 발표 초-고수<br> 황금막내 <br> 열정보이🔥 <br> 문서화 장인|데(DevOps) 윤철<br>분위기 메이커<br>아이디어 뱅크 <br> 동의, 인정, 공감 장인 <br> 돌리기 장인 (조리돌림)<br>우리팀 MZ|살아있는 네이버 클로바 <br> 루루 집사 <br> 스티브잡스, 스티브워즈니악,<br>스티브 임정현 Let's Go|
 |[@k2645](https://github.com/k2645)|[@kyxxn](https://github.com/kyxxn)|[@yuncheol-AHN](https://github.com/yuncheol-ahn)|[@iceHood](https://github.com/icehood)|
 
 </div>
