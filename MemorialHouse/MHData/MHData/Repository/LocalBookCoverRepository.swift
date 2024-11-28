@@ -26,7 +26,7 @@ public struct LocalBookCoverRepository: BookCoverRepository {
         
         switch result {
         case .success(let bookCoverDTOs):
-            return bookCoverDTOs.compactMap { $0.toBookCover() }
+            return bookCoverDTOs.compactMap { $0.convertToBookCover() }
         case .failure(let failure):
             MHLogger.debug("\(failure.description)")
         }
@@ -40,7 +40,7 @@ public struct LocalBookCoverRepository: BookCoverRepository {
         switch result {
         case .success(let bookCoverDTOs):
             let bookCoverDTO = bookCoverDTOs.filter({ $0.identifier == id }).first
-            return bookCoverDTO?.toBookCover()
+            return bookCoverDTO?.convertToBookCover()
         case .failure(let failure):
             MHLogger.debug("\(failure.description)")
         }
