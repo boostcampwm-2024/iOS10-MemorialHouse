@@ -25,7 +25,7 @@ public class CoreDataStorage {
     }()
     
     lazy var persistentContainer: NSPersistentContainer = {
-        let container = NSPersistentContainer(name: CoreDataStorage.modelName)
+        let container = NSPersistentContainer(name: CoreDataStorage.modelName, managedObjectModel: Self.memorialHouseModel)
         container.loadPersistentStores { _, error in
             guard let error else { return }
             MHLogger.error("\(#function): PersistentContainer 호출에 실패; \(error.localizedDescription)")
