@@ -15,7 +15,7 @@ public enum MHDataError: Error, CustomStringConvertible, Equatable {
     case fileDeletionFailure
     case fileMovingFailure
     case fileNotExists
-    case generalFailure(Error)
+    case generalFailure
     
     public var description: String {
         switch self {
@@ -47,8 +47,8 @@ public enum MHDataError: Error, CustomStringConvertible, Equatable {
             "파일 이동 실패"
         case .fileNotExists:
             "파일이 존재하지 않습니다"
-        case .generalFailure(let error):
-            error.localizedDescription
+        case .generalFailure:
+            "알 수 없는 에러입니다."
         }
     }
 }
