@@ -2,10 +2,10 @@ import MHFoundation
 import MHCore
 import CoreData
 
-final class CoreDataBookCategoryStorage {
+public final class CoreDataBookCategoryStorage {
     private let coreDataStorage: CoreDataStorage
     
-    init(coreDataStorage: CoreDataStorage) {
+    public init(coreDataStorage: CoreDataStorage) {
         self.coreDataStorage = coreDataStorage
     }
     
@@ -28,13 +28,13 @@ final class CoreDataBookCategoryStorage {
         } catch let error as MHDataError {
             return .failure(error)
         } catch {
-            return .failure(MHDataError.generalFailure(error))
+            return .failure(MHDataError.generalFailure)
         }
     }
 }
 
 extension CoreDataBookCategoryStorage: BookCategoryStorage {
-    func create(with data: BookCategoryDTO) async -> Result<Void, MHDataError> {
+    public func create(with data: BookCategoryDTO) async -> Result<Void, MHDataError> {
         return await performDatabaseTask { context in
             guard let entity = NSEntityDescription.entity(forEntityName: "BookCategoryEntity", in: context) else {
                 throw MHDataError.noSuchEntity(key: "BookCategoryEntity")
@@ -46,7 +46,7 @@ extension CoreDataBookCategoryStorage: BookCategoryStorage {
         }
     }
     
-    func fetch() async -> Result<[BookCategoryDTO], MHDataError> {
+    public func fetch() async -> Result<[BookCategoryDTO], MHDataError> {
         return await performDatabaseTask { [weak self] context in
             let request = BookCategoryEntity.fetchRequest()
             let bookCategoryEntities = try context.fetch(request)
@@ -54,7 +54,7 @@ extension CoreDataBookCategoryStorage: BookCategoryStorage {
         }
     }
     
-    func update(with data: BookCategoryDTO) async -> Result<Void, MHDataError> {
+    public func update(with data: BookCategoryDTO) async -> Result<Void, MHDataError> {
         return await performDatabaseTask { context in
             let request = BookCategoryEntity.fetchRequest()
             if let entity = try context.fetch(request).first(where: { $0.name == data.name }) {
@@ -65,7 +65,7 @@ extension CoreDataBookCategoryStorage: BookCategoryStorage {
         }
     }
     
-    func delete(with data: BookCategoryDTO) async -> Result<Void, MHDataError> {
+    public func delete(with data: BookCategoryDTO) async -> Result<Void, MHDataError> {
         return await performDatabaseTask { context in
             let request = BookCategoryEntity.fetchRequest()
             if let entity = try context.fetch(request).first(where: { $0.name == data.name }) {
