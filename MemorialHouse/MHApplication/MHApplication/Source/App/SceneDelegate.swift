@@ -65,7 +65,7 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let bookCategoryStorage = try DIContainer.shared.resolve(BookCategoryStorage.self)
         DIContainer.shared.register(
             BookCategoryRepository.self,
-            object: DefaultBookCategoryRepository(storage: bookCategoryStorage)
+            object: LocalBookCategoryRepository(storage: bookCategoryStorage)
         )
     }
     
@@ -81,19 +81,19 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let bookCategoryRepository = try DIContainer.shared.resolve(BookCategoryRepository.self)
         DIContainer.shared.register(
             CreateBookCategoryUseCase.self,
-            object: DefaultCreateCategoryUseCase(repository: bookCategoryRepository)
+            object: DefaultCreateBookCategoryUseCase(repository: bookCategoryRepository)
         )
         DIContainer.shared.register(
             FetchBookCategoriesUseCase.self,
-            object: DefaultFetchCategoriesUseCase(repository: bookCategoryRepository)
+            object: DefaultFetchBookCategoriesUseCase(repository: bookCategoryRepository)
         )
         DIContainer.shared.register(
             UpdateBookCategoryUseCase.self,
-            object: DefaultUpdateCategoryUseCase(repository: bookCategoryRepository)
+            object: DefaultUpdateBookCategoryUseCase(repository: bookCategoryRepository)
         )
         DIContainer.shared.register(
             DeleteBookCategoryUseCase.self,
-            object: DefaultDeleteCategoryUseCase(repository: bookCategoryRepository)
+            object: DefaultDeleteBookCategoryUseCase(repository: bookCategoryRepository)
         )
     }
     
@@ -111,12 +111,14 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         // MARK: Category ViewModel
         let createBookCategoryUseCase = try DIContainer.shared.resolve(CreateBookCategoryUseCase.self)
+        let fetchBookCategoriesUseCase = try DIContainer.shared.resolve(FetchBookCategoriesUseCase.self)
         let updateBookCategoryUseCase = try DIContainer.shared.resolve(UpdateBookCategoryUseCase.self)
         let deleteBookCategoryUseCase = try DIContainer.shared.resolve(DeleteBookCategoryUseCase.self)
         DIContainer.shared.register(
             BookCategoryViewModelFactory.self,
             object: BookCategoryViewModelFactory(
                 createBookCategoryUseCase: createBookCategoryUseCase,
+                fetchBookCategoriesUseCase: fetchBookCategoriesUseCase,
                 updateBookCategoryUseCase: updateBookCategoryUseCase,
                 deleteBookCategoryUseCase: deleteBookCategoryUseCase
             )
