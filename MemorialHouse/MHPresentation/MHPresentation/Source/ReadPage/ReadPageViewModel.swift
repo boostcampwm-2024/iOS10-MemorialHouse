@@ -1,7 +1,8 @@
-import Foundation
+import MHFoundation
+import MHDomain
 import Combine
 
-final class ReadPageViewModel: ViewModelType {
+public final class ReadPageViewModel: ViewModelType {
     enum Input {
         
     }
@@ -12,10 +13,10 @@ final class ReadPageViewModel: ViewModelType {
     
     private let output = PassthroughSubject<Output, Never>()
     private var cancellables = Set<AnyCancellable>()
-    let index: Int
+    private let page: Page
     
-    init(index: Int) {
-        self.index = index
+    init(page: Page) {
+        self.page = page
     }
     
     func transform(input: AnyPublisher<Input, Never>) -> AnyPublisher<Output, Never> {

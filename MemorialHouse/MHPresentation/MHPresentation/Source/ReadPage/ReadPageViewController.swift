@@ -1,3 +1,4 @@
+import MHDomain
 import UIKit
 
 final class ReadPageViewController: UIViewController {
@@ -30,7 +31,7 @@ final class ReadPageViewController: UIViewController {
     }
     
     required init?(coder: NSCoder) {
-        self.viewModel = ReadPageViewModel(index: 0)
+        self.viewModel = ReadPageViewModel(page: Page(metadata: [:], text: ""))
         
         super.init(nibName: nil, bundle: nil)
     }
@@ -46,7 +47,6 @@ final class ReadPageViewController: UIViewController {
     // MARK: - Setup & Configure
     private func setup() {
         view.backgroundColor = .baseBackground
-        textView.text = String(viewModel.index)
     }
     
     private func configureConstraints() {
@@ -57,9 +57,5 @@ final class ReadPageViewController: UIViewController {
             bottom: view.bottomAnchor, constantBottom: 10,
             trailing: view.trailingAnchor, constantTrailing: 10
         )
-    }
-    
-    func getPageIndex() -> Int {
-        return viewModel.index
     }
 }

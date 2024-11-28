@@ -159,5 +159,11 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             BookViewModelFactory.self,
             object: BookViewModelFactory(fetchBookUseCase: fetchBookUseCase)
         )
+        
+        // MARK: - Page ViewModel
+        DIContainer.shared.register(
+            ReadPageViewModelFactory.self,
+            object: ReadPageViewModelFactory()
+        )
     }
 }
