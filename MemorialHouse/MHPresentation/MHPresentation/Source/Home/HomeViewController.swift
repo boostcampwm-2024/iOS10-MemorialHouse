@@ -282,7 +282,10 @@ extension HomeViewController: UICollectionViewDataSource {
 }
 
 extension HomeViewController: BookCategoryViewControllerDelegate {
-    func categoryViewController(_ categoryViewController: BookCategoryViewController, didSelectCategory category: String) {
+    func categoryViewController(
+        _ categoryViewController: BookCategoryViewController,
+        didSelectCategory category: String
+    ) {
         currentCategory = category
         input.send(.selectedCategory(category: category))
     }
