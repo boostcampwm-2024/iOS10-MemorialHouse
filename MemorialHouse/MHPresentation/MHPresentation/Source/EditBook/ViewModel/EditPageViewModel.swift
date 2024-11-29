@@ -103,7 +103,6 @@ final class EditPageViewModel: ViewModelType {
         
         text.enumerateAttribute(.attachment, in: NSRange(location: 0, length: text.length)) { value, range, _ in
             if let mediaAttachment = value as? MediaAttachment {
-                // 위치와 URL 저장
                 metaData[range.location] = mediaAttachment.mediaDescription
                 // Placeholder로 텍스트 대체
                 mutableAttributedString.replaceCharacters(in: range, with: " ")
