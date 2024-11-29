@@ -213,14 +213,18 @@ extension BookCategoryViewController: UITableViewDelegate {
             
             let alert = UIAlertController(
                 title: "카테고리 삭제",
-                message: "\"\(self.viewModel.categories[indexPath.row])\"을(를) 삭제하시겠습니까?",
+                message: "\"\(self.viewModel.categories[indexPath.row].name)\"을(를) 삭제하시겠습니까?",
                 confirmTitle: "삭제",
-                cancelTitle: "취소"
-            ) { [weak self] _ in
-                guard let self else { return }
-                self.input.send(.deleteCategory(index: indexPath.row))
-                completion(true)
-            }
+                cancelTitle: "취소",
+                confirmHandler: { [weak self] _ in
+                    guard let self else { return }
+                    self.input.send(.deleteCategory(index: indexPath.row))
+                    completion(true)
+                },
+                cancelHandler: {
+                    completion(false)
+                }
+            )
             
             self.present(alert, animated: true)
         }
