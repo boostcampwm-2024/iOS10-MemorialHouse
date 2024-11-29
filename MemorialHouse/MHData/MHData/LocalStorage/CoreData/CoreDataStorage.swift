@@ -24,17 +24,19 @@ public class CoreDataStorage: @unchecked Sendable {
         return NSManagedObjectModel(contentsOf: modelURL)!
     }()
     
-    lazy var persistentContainer: NSPersistentContainer = {
-        let container = NSPersistentContainer(name: CoreDataStorage.modelName, managedObjectModel: Self.memorialHouseModel)
+    var persistentContainer: NSPersistentContainer
+    
+    public init() {
+        let container = NSPersistentContainer(
+            name: CoreDataStorage.modelName,
+            managedObjectModel: Self.memorialHouseModel
+        )
         container.loadPersistentStores { _, error in
             guard let error else { return }
-            MHLogger.error("\(#function): PersistentContainer 호출에 실패; \(error.localizedDescription)")
+            MHLogger.error("\(#function): PersistentContainer 호출에 실패: \(error.localizedDescription)")
         }
-        
-        return container
-    }()
-    
-    public init() { }
+        self.persistentContainer = container
+    }
     
     func saveContext() async {
         let context = persistentContainer.viewContext
