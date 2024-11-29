@@ -19,7 +19,7 @@ public struct LocalBookRepository: BookRepository {
         
         switch result {
         case let .success(bookDTO):
-            return .success(bookDTO.toBook())
+            return .success(bookDTO.convertToBook())
         case let .failure(failure):
             MHLogger.debug("\(failure.description)")
             return .failure(failure)

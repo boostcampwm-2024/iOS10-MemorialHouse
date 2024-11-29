@@ -35,7 +35,7 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     func registerDependency() {
         do {
-            try registerStorageDependency()
+            try registerStorageDepedency()
             try registerRepositoryDependency()
             try registerUseCaseDependency()
             try registerViewModelFactoryDependency()
@@ -46,10 +46,14 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
     }
     
-    private func registerStorageDependency() throws {
+    private func registerStorageDepedency() throws {
         DIContainer.shared.register(CoreDataStorage.self, object: CoreDataStorage())
-        
+                
         let coreDataStorage = try DIContainer.shared.resolve(CoreDataStorage.self)
+        DIContainer.shared.register(
+            BookCategoryStorage.self,
+            object: CoreDataBookCategoryStorage(coreDataStorage: coreDataStorage)
+        )
         DIContainer.shared.register(
             BookCoverStorage.self,
             object: CoreDataBookCoverStorage(coreDataStorage: coreDataStorage)
@@ -65,9 +69,11 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             MemorialHouseRepository.self,
             object: DefaultMemorialHouseRepository()
         )
+        
+        let bookCategoryStorage = try DIContainer.shared.resolve(BookCategoryStorage.self)
         DIContainer.shared.register(
-            CategoryRepository.self,
-            object: DefaultCategoryRepository()
+            BookCategoryRepository.self,
+            object: LocalBookCategoryRepository(storage: bookCategoryStorage)
         )
         let bookCoverStorage = try DIContainer.shared.resolve(BookCoverStorage.self)
         DIContainer.shared.register(
@@ -90,22 +96,22 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         )
         
         // MARK: Category UseCase
-        let categoryRepository = try DIContainer.shared.resolve(CategoryRepository.self)
+        let bookCategoryRepository = try DIContainer.shared.resolve(BookCategoryRepository.self)
         DIContainer.shared.register(
-            CreateCategoryUseCase.self,
-            object: DefaultCreateCategoryUseCase(repository: categoryRepository)
+            CreateBookCategoryUseCase.self,
+            object: DefaultCreateBookCategoryUseCase(repository: bookCategoryRepository)
         )
         DIContainer.shared.register(
-            FetchCategoriesUseCase.self,
-            object: DefaultFetchCategoriesUseCase(repository: categoryRepository)
+            FetchBookCategoriesUseCase.self,
+            object: DefaultFetchBookCategoriesUseCase(repository: bookCategoryRepository)
         )
         DIContainer.shared.register(
-            UpdateCategoryUseCase.self,
-            object: DefaultUpdateCategoryUseCase(repository: categoryRepository)
+            UpdateBookCategoryUseCase.self,
+            object: DefaultUpdateBookCategoryUseCase(repository: bookCategoryRepository)
         )
         DIContainer.shared.register(
-            DeleteCategoryUseCase.self,
-            object: DefaultDeleteCategoryUseCase(repository: categoryRepository)
+            DeleteBookCategoryUseCase.self,
+            object: DefaultDeleteBookCategoryUseCase(repository: bookCategoryRepository)
         )
         
         // MARK: - Book UseCase
@@ -131,25 +137,27 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     private func registerViewModelFactoryDependency() throws {
         // MARK: MemorialHouse ViewModel
         let fetchMemorialHouseUseCase = try DIContainer.shared.resolve(FetchMemorialHouseUseCase.self)
-        let fetchCategoryUseCase = try DIContainer.shared.resolve(FetchCategoriesUseCase.self)
+        let fetchBookCategoryUseCase = try DIContainer.shared.resolve(FetchBookCategoriesUseCase.self)
         DIContainer.shared.register(
             HomeViewModelFactory.self,
             object: HomeViewModelFactory(
                 fetchMemorialHouseUseCase: fetchMemorialHouseUseCase,
-                fetchCategoryUseCase: fetchCategoryUseCase
+                fetchCategoryUseCase: fetchBookCategoryUseCase
             )
         )
         
         // MARK: Category ViewModel
-        let createCategoryUseCase = try DIContainer.shared.resolve(CreateCategoryUseCase.self)
-        let updateCategoryUseCase = try DIContainer.shared.resolve(UpdateCategoryUseCase.self)
-        let deleteCategoryUseCase = try DIContainer.shared.resolve(DeleteCategoryUseCase.self)
+        let createBookCategoryUseCase = try DIContainer.shared.resolve(CreateBookCategoryUseCase.self)
+        let fetchBookCategoriesUseCase = try DIContainer.shared.resolve(FetchBookCategoriesUseCase.self)
+        let updateBookCategoryUseCase = try DIContainer.shared.resolve(UpdateBookCategoryUseCase.self)
+        let deleteBookCategoryUseCase = try DIContainer.shared.resolve(DeleteBookCategoryUseCase.self)
         DIContainer.shared.register(
-            CategoryViewModelFactory.self,
-            object: CategoryViewModelFactory(
-                createCategoryUseCase: createCategoryUseCase,
-                updateCategoryUseCase: updateCategoryUseCase,
-                deleteCategoryUseCase: deleteCategoryUseCase
+            BookCategoryViewModelFactory.self,
+            object: BookCategoryViewModelFactory(
+                createBookCategoryUseCase: createBookCategoryUseCase,
+                fetchBookCategoriesUseCase: fetchBookCategoriesUseCase,
+                updateBookCategoryUseCase: updateBookCategoryUseCase,
+                deleteBookCategoryUseCase: deleteBookCategoryUseCase
             )
         )
         

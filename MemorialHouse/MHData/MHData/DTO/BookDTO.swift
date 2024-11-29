@@ -16,11 +16,11 @@ public struct BookDTO {
         self.pages = pages
     }
     
-    func toBook() -> Book {
+    func convertToBook() -> Book {
         return Book(
             id: self.id,
             title: self.title,
-            pages: self.pages.map { $0.toPage() }
+            pages: self.pages.map { $0.convertToPage() }
         )
     }
 }

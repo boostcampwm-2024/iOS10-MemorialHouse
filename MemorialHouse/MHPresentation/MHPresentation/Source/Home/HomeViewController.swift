@@ -133,20 +133,20 @@ public final class HomeViewController: UIViewController {
     }
     
     private func configureAction() {
+        // MARK: 카테고리 화면으로 전환 버튼
+        // FIXME: Custom Sheet로 변경 필요
         categorySelectButton.addAction(UIAction { [weak self] _ in
             do {
                 guard let self else { return }
-                let categoryViewModelFactory = try DIContainer.shared.resolve(CategoryViewModelFactory.self)
+                let categoryViewModelFactory = try DIContainer.shared.resolve(BookCategoryViewModelFactory.self)
                 let categoryViewModel = categoryViewModelFactory.make()
                 categoryViewModel.setup(currentCategory: self.currentCategory)
-                let categoryViewController = CategoryViewController(viewModel: categoryViewModel)
+                let categoryViewController = BookCategoryViewController(viewModel: categoryViewModel)
                 categoryViewController.delegate = self
                 let navigationController = UINavigationController(rootViewController: categoryViewController)
                 
                 if let sheet = navigationController.sheetPresentationController {
-                    sheet.detents = [.custom(identifier: .categorySheet) { _ in
-                        categoryViewController.calculateSheetHeight()
-                    }]
+                    sheet.detents = [.medium(), .large()]
                 }
                 
                 self.present(navigationController, animated: true)
@@ -281,8 +281,8 @@ extension HomeViewController: UICollectionViewDataSource {
     }
 }
 
-extension HomeViewController: CategoryViewControllerDelegate {
-    func categoryViewController(_ categoryViewController: CategoryViewController, didSelectCategory category: String) {
+extension HomeViewController: BookCategoryViewControllerDelegate {
+    func categoryViewController(_ categoryViewController: BookCategoryViewController, didSelectCategory category: String) {
         currentCategory = category
         input.send(.selectedCategory(category: category))
     }

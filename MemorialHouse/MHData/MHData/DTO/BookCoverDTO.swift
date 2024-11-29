@@ -25,7 +25,7 @@ public struct BookCoverDTO {
         self.favorite = favorite
     }
     
-    func toBookCover() -> BookCover? {
+    func convertToBookCover() -> BookCover? {
         guard let color = BookColor(rawValue: self.color) else { return nil }
         
         return BookCover(
