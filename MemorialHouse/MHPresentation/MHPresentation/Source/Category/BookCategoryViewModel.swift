@@ -24,7 +24,10 @@ final class BookCategoryViewModel: ViewModelType {
     private let deleteBookCategoryUseCase: DeleteBookCategoryUseCase
     private let output = PassthroughSubject<Output, Never>()
     private var cancellables = Set<AnyCancellable>()
-    private(set) var categories = [BookCategory]()
+    private(set) var categories = [
+        BookCategory(order: 0, name: "전체"),
+        BookCategory(order: 1, name: "즐겨찾기")
+    ]
     private(set) var currentCategoryName = ""
     
     init(
@@ -62,6 +65,7 @@ final class BookCategoryViewModel: ViewModelType {
         return output.eraseToAnyPublisher()
     }
     
+    // FIXME: MainActor 제거
     @MainActor
     private func createCategory(text: String) async {
         do {
@@ -79,7 +83,7 @@ final class BookCategoryViewModel: ViewModelType {
     private func fetchCategories() async {
         do {
             let fetchedCategories = try await fetchBookCategoriesUseCase.execute()
-            categories = fetchedCategories
+            categories.append(contentsOf: fetchedCategories)
             output.send(.fetchCategories)
         } catch {
             MHLogger.error("카테고리를 불러오는데 실패했습니다: \(error)")
