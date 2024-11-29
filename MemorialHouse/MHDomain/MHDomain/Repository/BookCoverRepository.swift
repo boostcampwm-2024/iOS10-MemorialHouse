@@ -1,5 +1,6 @@
 import MHFoundation
 
+// TODO: Result로 변경
 public protocol BookCoverRepository {
     func fetchAllBookCovers() async -> [BookCover]
     func fetchBookCover(with id: UUID) async -> BookCover?
