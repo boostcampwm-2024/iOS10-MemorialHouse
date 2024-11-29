@@ -1,5 +1,6 @@
 import UIKit
-import Combine
+import MHCore
+@preconcurrency import Combine
 
 final class EditBookViewController: UIViewController {
     // MARK: - Constant
@@ -67,6 +68,7 @@ final class EditBookViewController: UIViewController {
     private let viewModel: EditBookViewModel
     private let input = PassthroughSubject<EditBookViewModel.Input, Never>()
     private var cancellables = Set<AnyCancellable>()
+    var id: UUID? // TODO: - 지워야함
     
     // MARK: - Initializer
     init(viewModel: EditBookViewModel) {
@@ -75,8 +77,8 @@ final class EditBookViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
     }
     required init?(coder: NSCoder) {
-        self.viewModel = EditBookViewModel()
-        
+        guard let viewModel = try? DIContainer.shared.resolve(EditBookViewModelFactory.self) else { return nil }
+        self.viewModel = viewModel.make()
         super.init(coder: coder)
     }
     
@@ -92,6 +94,8 @@ final class EditBookViewController: UIViewController {
         configureKeyboard()
         configureBinding()
         configureButtonAction()
+        guard let bookID = id else { return }
+        input.send(.viewDidLoad(bookID: bookID))
     }
     
     // MARK: - Setup & Configuration
@@ -229,6 +233,7 @@ final class EditBookViewController: UIViewController {
         // TODO: - 로직을 정한다음에 Action 추가
         let addImageAction = UIAction { [weak self] _ in
             // TODO: - 이미지 추가 로직
+            self?.input.send(.didAddMediaWithData(type: .image, atPage: 0, data: UIImage(resource: .bookMake).pngData()!))
         }
         addImageButton.addAction(addImageAction, for: .touchUpInside)
         
@@ -287,13 +292,15 @@ extension EditBookViewController: UITableViewDelegate {
 // MARK: - UITableViewDataSource
 extension EditBookViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 10 // TODO: - 추후 더미데이터 대신 뷰모델 데이터로 변경
+        return viewModel.numberOfPages()
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(
             withIdentifier: EditPageCell.identifier,
             for: indexPath
         ) as? EditPageCell else { return UITableViewCell() }
+        
+        cell.configure(viewModel: viewModel.page(at: indexPath.row))
         
         return cell
     }
