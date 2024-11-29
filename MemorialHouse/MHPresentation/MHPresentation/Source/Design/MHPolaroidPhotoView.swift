@@ -81,14 +81,10 @@ final class MHPolaroidPhotoView: UIView {
 }
 
 extension MHPolaroidPhotoView: @preconcurrency MediaAttachable {
-    // TODO: - 임시로 넣어 놓음 일단
-    var mediaType: MediaType {
-        get {
-            .image
-        }
+    func configureSource(with mediaDescription: MediaDescription, data: Data) {
+        photoImageView.image = UIImage(data: data)
     }
-    func configureSource(with path: URL?) {
-        guard let path else { return }
-        photoImageView.image = UIImage(contentsOfFile: path.absoluteString)
+    func configureSource(with mediaDescription: MediaDescription, url: URL) {
+        photoImageView.image = UIImage(contentsOfFile: url.path)
     }
 }
