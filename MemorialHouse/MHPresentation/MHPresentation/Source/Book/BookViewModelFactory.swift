@@ -1,3 +1,4 @@
+import MHFoundation
 import MHDomain
 
 public struct BookViewModelFactory {
@@ -7,7 +8,10 @@ public struct BookViewModelFactory {
         self.fetchBookUseCase = fetchBookUseCase
     }
     
-    public func make() -> BookViewModel {
-        BookViewModel(fetchBookUseCase: fetchBookUseCase)
+    public func make(bookID: UUID) -> BookViewModel {
+        BookViewModel(
+            identifier: bookID,
+            fetchBookUseCase: fetchBookUseCase
+        )
     }
 }
