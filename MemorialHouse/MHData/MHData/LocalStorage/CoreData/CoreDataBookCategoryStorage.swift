@@ -54,10 +54,10 @@ extension CoreDataBookCategoryStorage: BookCategoryStorage {
         }
     }
     
-    public func update(with category: BookCategoryDTO) async -> Result<Void, MHDataError> {
+    public func update(oldName: String, with category: BookCategoryDTO) async -> Result<Void, MHDataError> {
         return await performDatabaseTask { context in
             let request = BookCategoryEntity.fetchRequest()
-            if let entity = try context.fetch(request).first(where: { $0.name == category.name }) {
+            if let entity = try context.fetch(request).first(where: { $0.name == oldName }) {
                 entity.setValue(category.name, forKey: "name")
                 entity.setValue(category.order, forKey: "order")
                 try context.save()

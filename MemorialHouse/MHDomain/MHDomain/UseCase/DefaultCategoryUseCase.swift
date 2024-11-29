@@ -31,8 +31,8 @@ public struct DefaultUpdateBookCategoryUseCase: UpdateBookCategoryUseCase {
         self.repository = repository
     }
     
-    public func execute(with category: BookCategory) async throws {
-        let result = await repository.updateBookCategory(with: category)
+    public func execute(oldName: String, with category: BookCategory) async throws {
+        let result = await repository.updateBookCategory(oldName: oldName, with: category)
         try result.get()
     }
 }

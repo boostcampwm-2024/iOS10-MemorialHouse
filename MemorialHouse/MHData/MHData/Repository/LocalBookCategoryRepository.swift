@@ -24,8 +24,11 @@ public struct LocalBookCategoryRepository: BookCategoryRepository {
         }
     }
     
-    public func updateBookCategory(with category: BookCategory) async -> Result<Void, MHDataError> {
-        return await storage.update(with: BookCategoryDTO(order: category.order, name: category.name))
+    public func updateBookCategory(oldName: String, with category: BookCategory) async -> Result<Void, MHDataError> {
+        return await storage.update(
+            oldName: oldName,
+            with: BookCategoryDTO(order: category.order, name: category.name)
+        )
     }
     
     public func deleteBookCategory(with categoryName: String) async -> Result<Void, MHDataError> {

@@ -100,8 +100,9 @@ final class BookCategoryViewModel: ViewModelType {
         }
         
         do {
+            let oldName = categories[index].name
             let category = BookCategory(order: index, name: text)
-            try await updateBookCategoryUseCase.execute(with: category)
+            try await updateBookCategoryUseCase.execute(oldName: oldName, with: category)
             categories[index] = category
             output.send(.updatedCategory)
         } catch {

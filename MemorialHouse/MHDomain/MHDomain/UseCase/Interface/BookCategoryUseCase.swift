@@ -7,7 +7,7 @@ public protocol FetchBookCategoriesUseCase: Sendable {
 }
 
 public protocol UpdateBookCategoryUseCase: Sendable {
-    func execute(with category: BookCategory) async throws
+    func execute(oldName: String, with category: BookCategory) async throws
 }
 
 public protocol DeleteBookCategoryUseCase: Sendable {
