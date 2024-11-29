@@ -18,7 +18,7 @@ public final class HomeViewModel: ViewModelType {
     private let fetchMemorialHouseUseCase: FetchMemorialHouseUseCase
     private var cancellables = Set<AnyCancellable>()
     private(set) var houseName = ""
-    private(set) var bookCovers = [BookCover]()
+    var bookCovers = [BookCover]()
     private(set) var currentBookCovers = [BookCover]()
     
     public init(fetchMemorialHouseUseCase: FetchMemorialHouseUseCase) {
