@@ -134,6 +134,7 @@ public final class HomeViewController: UIViewController {
     
     private func configureAction() {
         // MARK: 카테고리 화면으로 전환 버튼
+        // FIXME: Custom Sheet로 변경 필요
         categorySelectButton.addAction(UIAction { [weak self] _ in
             do {
                 guard let self else { return }
@@ -145,9 +146,7 @@ public final class HomeViewController: UIViewController {
                 let navigationController = UINavigationController(rootViewController: categoryViewController)
                 
                 if let sheet = navigationController.sheetPresentationController {
-                    sheet.detents = [.custom(identifier: .categorySheet) { _ in
-                        categoryViewController.calculateSheetHeight()
-                    }]
+                    sheet.detents = [.medium(), .large()]
                 }
                 
                 self.present(navigationController, animated: true)
