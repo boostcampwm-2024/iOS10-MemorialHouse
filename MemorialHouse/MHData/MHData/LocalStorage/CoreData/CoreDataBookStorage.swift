@@ -22,7 +22,7 @@ extension CoreDataBookStorage: BookStorage {
                 let book = NSManagedObject(entity: entity, insertInto: context)
                 book.setValue(data.id, forKey: "id")
                 book.setValue(data.title, forKey: "title")
-                book.setValue(dtoPagesToCore(data.pages), forKey: "pages")
+                book.setValue(dtoPagesToCore(data.pages, in: context), forKey: "pages")
                 try context.save()
             }
             
@@ -35,7 +35,6 @@ extension CoreDataBookStorage: BookStorage {
             return .failure(.createEntityFailure)
         }
     }
-    
     
     public func fetch(with id: UUID) async -> Result<BookDTO, MHDataError> {
         let context = coreDataStorage.persistentContainer.viewContext
@@ -72,7 +71,7 @@ extension CoreDataBookStorage: BookStorage {
                 
                 newEntity.setValue(data.id, forKey: "id")
                 newEntity.setValue(data.title, forKey: "title")
-                newEntity.setValue(dtoPagesToCore(data.pages), forKey: "pages")
+                newEntity.setValue(dtoPagesToCore(data.pages, in: context), forKey: "pages")
                 
                 try context.save()
             }
@@ -175,8 +174,7 @@ extension CoreDataBookStorage {
     }
     
     // MARK: - DTO to Core
-    private func dtoPagesToCore(_ pages: [PageDTO]) -> NSOrderedSet? {
-        let context = coreDataStorage.persistentContainer.viewContext
+    private func dtoPagesToCore(_ pages: [PageDTO], in context: NSManagedObjectContext) -> NSOrderedSet? {
         let pageEntities = pages.compactMap { dtoPageToCore($0, in: context) }
         return NSOrderedSet(array: pageEntities)
     }
