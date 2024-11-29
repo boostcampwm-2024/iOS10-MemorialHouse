@@ -4,7 +4,7 @@ import MHDomain
 import MHCore
 import AVFoundation
 
-public struct LocalMediaRepository: MediaRepository {
+public struct LocalMediaRepository: MediaRepository, Sendable {
     private let storage: FileStorage
     
     public init(storage: FileStorage) {

@@ -1,7 +1,7 @@
 import MHFoundation
 import MHCore
 
-public struct DefaultCreateMediaUseCase: CreateMediaUseCase {
+public struct DefaultCreateMediaUseCase: CreateMediaUseCase, Sendable {
     // MARK: - Property
     let repository: MediaRepository
     

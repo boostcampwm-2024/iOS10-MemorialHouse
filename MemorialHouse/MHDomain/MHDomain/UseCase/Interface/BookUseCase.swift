@@ -1,14 +1,14 @@
 import MHFoundation
 
-public protocol CreateBookUseCase {
+public protocol CreateBookUseCase: Sendable {
     func execute(book: Book) async throws
 }
-public protocol FetchBookUseCase {
+public protocol FetchBookUseCase: Sendable {
     func execute(bookID: UUID) async throws -> Book
 }
-public protocol UpdateBookUseCase {
+public protocol UpdateBookUseCase: Sendable {
     func execute(book: Book) async throws
 }
-public protocol DeleteBookUseCase {
+public protocol DeleteBookUseCase: Sendable {
     func execute(bookID: UUID) async throws
 }

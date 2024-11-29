@@ -1,17 +1,17 @@
 import MHFoundation
 import MHCore
 
-struct MHFileManager {
-    private let fileManager = FileManager.default
+public struct MHFileManager: Sendable {
+    private var fileManager: FileManager { FileManager.default }
     private let directoryType: FileManager.SearchPathDirectory
     
-    init(directoryType: FileManager.SearchPathDirectory) {
+    public init(directoryType: FileManager.SearchPathDirectory) {
         self.directoryType = directoryType
     }
 }
 
 extension MHFileManager: FileStorage {
-    func create(at path: String, fileName name: String, data: Data) async -> Result<Void, MHDataError> {
+    public func create(at path: String, fileName name: String, data: Data) async -> Result<Void, MHDataError> {
         guard let directory = fileManager.urls(
             for: directoryType,
             in: .userDomainMask
@@ -28,7 +28,7 @@ extension MHFileManager: FileStorage {
             return .failure(.fileCreationFailure)
         }
     }
-    func read(at path: String, fileName name: String) async -> Result<Data, MHDataError> {
+    public func read(at path: String, fileName name: String) async -> Result<Data, MHDataError> {
         guard let directory = fileManager.urls(
             for: directoryType,
             in: .userDomainMask
@@ -47,7 +47,7 @@ extension MHFileManager: FileStorage {
             return .failure(.fileReadingFailure)
         }
     }
-    func delete(at path: String, fileName name: String) async -> Result<Void, MHDataError> {
+    public func delete(at path: String, fileName name: String) async -> Result<Void, MHDataError> {
         guard let directory = fileManager.urls(
             for: directoryType,
             in: .userDomainMask
@@ -63,7 +63,7 @@ extension MHFileManager: FileStorage {
             return .failure(.fileDeletionFailure)
         }
     }
-    func copy(at url: URL, to newPath: String, newFileName name: String) async -> Result<Void, MHDataError> {
+    public func copy(at url: URL, to newPath: String, newFileName name: String) async -> Result<Void, MHDataError> {
         let originDataPath = url
         
         guard fileManager.fileExists(atPath: originDataPath.path) else {
@@ -86,7 +86,7 @@ extension MHFileManager: FileStorage {
             return .failure(.fileMovingFailure)
         }
     }
-    func copy(at path: String, fileName name: String, to newPath: String) async -> Result<Void, MHDataError> {
+    public func copy(at path: String, fileName name: String, to newPath: String) async -> Result<Void, MHDataError> {
         guard let originDirectory = fileManager.urls(
             for: directoryType,
             in: .userDomainMask
@@ -115,7 +115,7 @@ extension MHFileManager: FileStorage {
             return .failure(.fileMovingFailure)
         }
     }
-    func move(at path: String, fileName name: String, to newPath: String) async -> Result<Void, MHDataError> {
+    public func move(at path: String, fileName name: String, to newPath: String) async -> Result<Void, MHDataError> {
         guard let originDirectory = fileManager.urls(
             for: directoryType,
             in: .userDomainMask
@@ -144,7 +144,7 @@ extension MHFileManager: FileStorage {
             return .failure(.fileMovingFailure)
         }
     }
-    func moveAll(in path: String, to newPath: String) async -> Result<Void, MHDataError> {
+    public func moveAll(in path: String, to newPath: String) async -> Result<Void, MHDataError> {
         guard let originDirectory = fileManager.urls(
             for: directoryType,
             in: .userDomainMask
@@ -174,7 +174,7 @@ extension MHFileManager: FileStorage {
             return .failure(.fileMovingFailure)
         }
     }
-    func getURL(at path: String, fileName name: String) async -> Result<URL, MHDataError> {
+    public func getURL(at path: String, fileName name: String) async -> Result<URL, MHDataError> {
         guard let originDirectory = fileManager.urls(
             for: directoryType,
             in: .userDomainMask

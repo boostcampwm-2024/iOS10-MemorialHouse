@@ -1,7 +1,7 @@
 import CoreData
 import MHCore
 
-class CoreDataStorage {
+public final class CoreDataStorage: Sendable {
     static let modelName: String = "MemorialHouseModel"
     
     nonisolated(unsafe) static let memorialHouseModel: NSManagedObjectModel = {
@@ -14,17 +14,16 @@ class CoreDataStorage {
         return NSManagedObjectModel(contentsOf: modelURL)!
     }()
     
-    lazy var persistentContainer: NSPersistentContainer = {
-        let container = NSPersistentContainer(name: CoreDataStorage.modelName)
+    let persistentContainer: NSPersistentContainer
+    
+    public init() {
+        let container = NSPersistentContainer(name: CoreDataStorage.modelName, managedObjectModel: Self.memorialHouseModel)
         container.loadPersistentStores { _, error in
             guard let error else { return }
             MHLogger.error("\(#function): PersistentContainer 호출에 실패; \(error.localizedDescription)")
         }
-        
-        return container
-    }()
-    
-    init() { }
+        self.persistentContainer = container
+    }
     
     func saveContext() async {
         let context = persistentContainer.viewContext
