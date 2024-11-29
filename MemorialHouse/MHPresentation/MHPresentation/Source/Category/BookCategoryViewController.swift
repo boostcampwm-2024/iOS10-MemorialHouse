@@ -46,12 +46,6 @@ final class BookCategoryViewController: UIViewController {
         configureConstraints()
     }
     
-    func calculateSheetHeight() -> CGFloat {
-        let cellHeight = BookCategoryTableViewCell.height
-        let itemCount = CGFloat(viewModel.categories.count) + 1 // FIXME: detent 임시용
-        return (cellHeight * itemCount) + Constant.navigationBarHeight
-    }
-    
     // MARK: - Setup & Configuration
     private func setup() {
         view.backgroundColor = .baseBackground
