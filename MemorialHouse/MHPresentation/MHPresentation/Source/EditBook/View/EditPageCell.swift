@@ -4,6 +4,11 @@ import MHDomain
 import MHCore
 
 final class EditPageCell: UITableViewCell {
+    // MARK: - Constant
+    private let defaultAttributes: [NSAttributedString.Key: Any] = [
+        .font: UIFont.ownglyphBerry(size: 20),
+        .foregroundColor: UIColor.mhTitle
+    ]
     // MARK: - Property
     private let textView: UITextView = {
         let textView = UITextView()
@@ -110,8 +115,7 @@ final class EditPageCell: UITableViewCell {
         )
         attachment.configure(with: data)
         let text = NSMutableAttributedString(attachment: attachment)
-        text.addAttributes([.font: UIFont.ownglyphBerry(size: 20),
-                            .foregroundColor: UIColor.mhTitle],
+        text.addAttributes(defaultAttributes,
                            range: NSRange(location: 0, length: 1))
         textStorage?.append(text)
     }
@@ -121,8 +125,10 @@ final class EditPageCell: UITableViewCell {
             description: media
         )
         attachment.configure(with: url)
-        textStorage?.append(NSAttributedString(attachment: attachment))
-        textView.font = .ownglyphBerry(size: 20)
+        let text = NSMutableAttributedString(attachment: attachment)
+        text.addAttributes(defaultAttributes,
+                           range: NSRange(location: 0, length: 1))
+        textStorage?.append(text)
     }
     private func mediaLoadedWithData(media: MediaDescription, data: Data) {
         let attachment = findAttachment(by: media)
@@ -175,6 +181,9 @@ final class EditPageCell: UITableViewCell {
             mutableAttributedString.replaceCharacters(in: range, with: attachmentString)
         }
         
+        mutableAttributedString.addAttributes(defaultAttributes,
+                                              range: NSRange(location: 0, length: mutableAttributedString.length))
+        
         return mutableAttributedString
     }
     private func isAcceptableHight(
@@ -187,7 +196,6 @@ final class EditPageCell: UITableViewCell {
         let temporaryTextView = UITextView(
             frame: CGRect(x: 0, y: 0, width: textViewWidth, height: .greatestFiniteMagnitude)
         )
-        updatedText.append(attributedText)
         updatedText.replaceCharacters(in: range, with: attributedText)
         temporaryTextView.attributedText = updatedText
         temporaryTextView.sizeToFit()
@@ -207,6 +215,10 @@ extension EditPageCell: @preconcurrency MediaAttachmentDataSource {
 // MARK: - UITextViewDelegate
 extension EditPageCell: UITextViewDelegate {
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-        return isAcceptableHight(textView, shouldChangeTextIn: range, replacementText: .init(string: text))
+        let attributedText = NSAttributedString(
+            string: text,
+            attributes: defaultAttributes
+        )
+        return isAcceptableHight(textView, shouldChangeTextIn: range, replacementText: attributedText)
     }
 }
