@@ -33,7 +33,7 @@ struct CoreDataBookCategoryStorageTests {
         case .success:
             #expect(coreDataBookCategories.contains(where: { $0.name == newBookCategory.name }))
         case .failure(let error):
-            #expect(false, "Create BookCover 실패: \(error.localizedDescription)")
+            #expect(false, "Create BookCategory 실패: \(error.localizedDescription)")
         }
     }
     
@@ -51,7 +51,7 @@ struct CoreDataBookCategoryStorageTests {
                 }))
             }
         case .failure(let error):
-            #expect(false, "Fetch BookCover 실패: \(error.localizedDescription)")
+            #expect(false, "Fetch BookCategory 실패: \(error.localizedDescription)")
         }
     }
     
@@ -70,7 +70,7 @@ struct CoreDataBookCategoryStorageTests {
             let newBookCategories = coreDataBookCategories.first(where: { $0.name == oldBookCategory.name })
             #expect(newBookCategories?.name != oldBookCategory.name)
         case .failure(let error):
-            #expect(false, "Update BookCover 실패: \(error.localizedDescription)")
+            #expect(false, "Update BookCategory 실패: \(error.localizedDescription)")
         }
     }
     
