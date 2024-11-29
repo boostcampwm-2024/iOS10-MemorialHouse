@@ -9,11 +9,7 @@ protocol MediaAttachmentDataSource: AnyObject {
 final class MediaAttachment: NSTextAttachment {
     // MARK: - Property
     private let view: (UIView & MediaAttachable)
-    var mediaDescription: MediaDescription {
-        didSet {
-            view.configureSource(with: mediaDescription)
-        }
-    }
+    let mediaDescription: MediaDescription
     weak var dataSource: MediaAttachmentDataSource?
     
     // MARK: - Initializer
@@ -28,7 +24,11 @@ final class MediaAttachment: NSTextAttachment {
     }
     
     // MARK: - ViewConfigures
-    override func viewProvider(for parentView: UIView?, location: any NSTextLocation, textContainer: NSTextContainer?) -> NSTextAttachmentViewProvider? {
+    override func viewProvider(
+        for parentView: UIView?,
+        location: any NSTextLocation,
+        textContainer: NSTextContainer?
+    ) -> NSTextAttachmentViewProvider? {
         let provider = MediaAttachmentViewProvider(
             textAttachment: self,
             parentView: parentView,
@@ -40,13 +40,20 @@ final class MediaAttachment: NSTextAttachment {
         provider.type = mediaDescription.type
         return provider
     }
-    override func image(forBounds imageBounds: CGRect, textContainer: NSTextContainer?, characterIndex charIndex: Int) -> UIImage? {
+    override func image(
+        forBounds imageBounds: CGRect,
+        textContainer: NSTextContainer?,
+        characterIndex charIndex: Int
+    ) -> UIImage? {
         return dataSource?.mediaAttachmentDragingImage(self, about: view)
     }
     
     // MARK: - Method
-    func setup() {
-        view.configureSource(with: mediaDescription)
+    func configure(with data: Data) {
+        view.configureSource(with: mediaDescription, data: data)
+    }
+    func configure(with url: URL) {
+        view.configureSource(with: mediaDescription, url: url)
     }
 }
 
@@ -81,5 +88,6 @@ class MediaAttachmentViewProvider: NSTextAttachmentViewProvider {
 
 // MARK: - MediaAttachable
 protocol MediaAttachable {
-    func configureSource(with description: MediaDescription)
+    func configureSource(with mediaDescription: MediaDescription, data: Data)
+    func configureSource(with mediaDescription: MediaDescription, url: URL)
 }
