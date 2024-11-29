@@ -1,5 +1,6 @@
 import MHDomain
 import UIKit
+import Combine
 
 final class ReadPageViewController: UIViewController {
     // MARK: - UI Components
@@ -22,6 +23,8 @@ final class ReadPageViewController: UIViewController {
     
     // MARK: - Property
     private let viewModel: ReadPageViewModel
+    private let input = PassthroughSubject<ReadPageViewModel.Input, Never>()
+    private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Initialize
     init(viewModel: ReadPageViewModel) {
@@ -40,8 +43,22 @@ final class ReadPageViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        bind()
         setup()
         configureConstraints()
+        input.send(.viewDidLoad)
+    }
+    
+    private func bind() {
+        let output = viewModel.transform(input: input.eraseToAnyPublisher())
+        
+        output.sink { [weak self] event in
+            switch event {
+            case .loadPage(let text):
+                self?.textView.text = text
+            }
+        }
+        .store(in: &cancellables)
     }
     
     // MARK: - Setup & Configure

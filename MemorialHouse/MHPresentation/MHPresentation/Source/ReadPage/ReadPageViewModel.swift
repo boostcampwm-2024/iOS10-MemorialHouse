@@ -4,11 +4,11 @@ import Combine
 
 public final class ReadPageViewModel: ViewModelType {
     enum Input {
-        
+        case viewDidLoad
     }
     
     enum Output {
-        
+        case loadPage(text: String)
     }
     
     private let output = PassthroughSubject<Output, Never>()
@@ -20,13 +20,18 @@ public final class ReadPageViewModel: ViewModelType {
     }
     
     func transform(input: AnyPublisher<Input, Never>) -> AnyPublisher<Output, Never> {
-        input.sink { event in
+        input.sink { [weak self] event in
             switch event {
-                
+            case .viewDidLoad:
+                self?.loadPage()
             }
         }
         .store(in: &cancellables)
 
         return output.eraseToAnyPublisher()
+    }
+    
+    private func loadPage() {
+        output.send(.loadPage(text: page.text))
     }
 }
