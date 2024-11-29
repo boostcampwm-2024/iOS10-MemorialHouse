@@ -1,7 +1,7 @@
 import UIKit
+import Combine
 import MHDomain
 import MHCore
-import MHData
 
 final class EditPageCell: UITableViewCell {
     // MARK: - Property
@@ -22,6 +22,9 @@ final class EditPageCell: UITableViewCell {
         return textView
     }()
     private var textStorage: NSTextStorage?
+    private var viewModel: EditPageViewModel?
+    private let input = PassthroughSubject<EditPageViewModel.Input, Never>()
+    private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Initializer
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -31,13 +34,20 @@ final class EditPageCell: UITableViewCell {
         configureAddSubView()
         configureConstraints()
     }
-    
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         
         setup()
         configureAddSubView()
         configureConstraints()
+    }
+    
+    // MARK: - LifeCycle
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        saveContents()
+        cancellables.removeAll()
     }
     
     // MARK: - Setup & Configuration
@@ -48,114 +58,130 @@ final class EditPageCell: UITableViewCell {
         textStorage = textView.textStorage
     }
     private func configureAddSubView() {
-        addSubview(textView)
+        contentView.addSubview(textView)
     }
     private func configureConstraints() {
         textView.setAnchor(
-            top: topAnchor, constantTop: 10,
-            leading: leadingAnchor, constantLeading: 10,
-            bottom: bottomAnchor, constantBottom: 10,
-            trailing: trailingAnchor, constantTrailing: 10
+            top: contentView.topAnchor, constantTop: 10,
+            leading: contentView.leadingAnchor, constantLeading: 10,
+            bottom: contentView.bottomAnchor, constantBottom: 10,
+            trailing: contentView.trailingAnchor, constantTrailing: 10
         )
     }
-    
-    // MARK: - TouchEvent
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        textView.becomeFirstResponder()
-        
-        super.touchesBegan(touches, with: event)
+    private func configureBinding() {
+        let output = viewModel?.transform(input: input.eraseToAnyPublisher())
+        output?
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] event in
+            switch event {
+            case .page(let page):
+                self?.configurePage(page: page)
+            case let .mediaAddedWithData(media, data):
+                self?.mediaAddedWithData(media: media, data: data)
+            case let .mediaAddedWithURL(media, url):
+                self?.mediaAddedWithURL(media: media, url: url)
+            case let .mediaLoadedWithData(media, data):
+                self?.mediaLoadedWithData(media: media, data: data)
+            case let .mediaLoadedWithURL(media, url):
+                self?.mediaLoadedWithURL(media: media, url: url)
+            }
+        }.store(in: &cancellables)
     }
     
     // MARK: - Method
-    /// Storage에서 Text와 Attachment 정보를 추출해냅니다.
-    private func separateStorageInformation(
-        _ textStorage: NSTextStorage
-    ) -> (String, [Int: MediaDescription]) {
-        var metaData = [Int: MediaDescription]()
-        let mutableAttributedString = NSMutableAttributedString(attributedString: textStorage)
-        
-        textStorage.enumerateAttribute(.attachment, in: NSRange(location: 0, length: textStorage.length)) { value, range, _ in
-            if let mediaAttachment = value as? MediaAttachment {
-                // 위치와 URL 저장
-                metaData[range.location] = mediaAttachment.mediaDescription
-                // Placeholder로 텍스트 대체
-                mutableAttributedString.replaceCharacters(in: range, with: " ")
+    func configure(viewModel: EditPageViewModel) {
+        self.viewModel = viewModel
+        configureBinding()
+        input.send(.pageWillAppear)
+    }
+    
+    // MARK: - Helper
+    private func configurePage(page: Page) {
+        let mergedText = mergeStorageInformation(
+            text: page.text,
+            attachmentMetaData: page.metadata
+        )
+        textStorage?.setAttributedString(mergedText)
+    }
+    private func mediaAddedWithData(media: MediaDescription, data: Data) {
+        let attachment = MediaAttachment(
+            view: MHPolaroidPhotoView(),
+            description: media
+        )
+        attachment.configure(with: data)
+        let text = NSMutableAttributedString(attachment: attachment)
+        text.addAttributes([.font: UIFont.ownglyphBerry(size: 20),
+                            .foregroundColor: UIColor.mhTitle],
+                           range: NSRange(location: 0, length: 1))
+        textStorage?.append(text)
+    }
+    private func mediaAddedWithURL(media: MediaDescription, url: URL) {
+        let attachment = MediaAttachment(
+            view: MHPolaroidPhotoView(),
+            description: media
+        )
+        attachment.configure(with: url)
+        textStorage?.append(NSAttributedString(attachment: attachment))
+        textView.font = .ownglyphBerry(size: 20)
+    }
+    private func mediaLoadedWithData(media: MediaDescription, data: Data) {
+        let attachment = findAttachment(by: media)
+        attachment?.configure(with: data)
+    }
+    private func mediaLoadedWithURL(media: MediaDescription, url: URL) {
+        let attachment = findAttachment(by: media)
+        attachment?.configure(with: url)
+    }
+    private func saveContents() {
+        guard let textStorage else { return }
+        let range = NSRange(location: 0, length: textStorage.length)
+        let text = textStorage.attributedSubstring(from: range)
+        input.send(.pageWillDisappear(attributedText: text))
+    }
+    /// Text에서 특정 Attachment를 찾아서 적용합니다.
+    private func findAttachment(
+        by media: MediaDescription
+    ) -> MediaAttachment? {
+        var attachment: MediaAttachment?
+        guard let textStorage else { return attachment }
+        textStorage
+            .enumerateAttribute(
+                .attachment,
+                in: NSRange(location: 0, length: textStorage.length)
+            ) { value, _, _ in
+            if let mediaAttachment = value as? MediaAttachment,
+               mediaAttachment.mediaDescription.id == media.id {
+                attachment = mediaAttachment
+                return
             }
         }
-        return (mutableAttributedString.string, metaData)
+        return attachment
     }
     /// Text와 Attachment 정보를 하나의 문자열로 조합합니다.
     private func mergeStorageInformation(
-        text savedAttributedString: NSAttributedString,
+        text: String,
         attachmentMetaData: [Int: MediaDescription]
     ) -> NSAttributedString {
-        let mutableAttributedString = NSMutableAttributedString(attributedString: savedAttributedString)
-        
-        attachmentMetaData
-            .forEach {
-                location,
-                description in
-                let range = NSRange(location: location, length: 1)
-                let mediaAttachment = MediaAttachment(
-                    view: MHPolaroidPhotoView(), // TODO: - 이거 바꿔줘야함...
-                    description: description
-                )
-                mediaAttachment.mediaDescription = description
-                let attachmentString = NSAttributedString(attachment: mediaAttachment)
-                
-                // Placeholder(공백) 교체
-                mutableAttributedString.replaceCharacters(in: range, with: attachmentString)
-            }
+        let mutableAttributedString = NSMutableAttributedString(string: text)
+        attachmentMetaData.forEach { location, description in
+            let range = NSRange(location: location, length: 1)
+            let mediaAttachment = MediaAttachment(
+                view: MHPolaroidPhotoView(), // TODO: - 이거 바꿔줘야함...
+                description: description
+            )
+            input.send(.didRequestMediaDataForData(media: description))
+            let attachmentString = NSAttributedString(attachment: mediaAttachment)
+            // Placeholder(공백) 교체
+            mutableAttributedString.replaceCharacters(in: range, with: attachmentString)
+        }
         
         return mutableAttributedString
     }
-    private func saveTextWithAttachments() {
-        guard let textStorage = textStorage else { return }
-        
-        let documentDirectory = FileManager.default.urls(
-            for: .documentDirectory,
-            in: .userDomainMask
-        ).first!
-        let (savedText, metadata) = separateStorageInformation(textStorage)
-        
-        do {
-            MHFileManager().create(at: <#T##String#>, fileName: <#T##String#>, data: <#T##Data#>)
-            MHLogger.debug("Text with attachments saved to \(fileURL)")
-        } catch {
-            MHLogger.error("Error saving text with attachments: \(error)")
-        }
-        
-        do {
-            let metadataFileURL = documentDirectory.appendingPathComponent("attachmentMetadata.json")
-            let metadataData = try JSONSerialization.data(withJSONObject: metadata, options: [])
-            try metadataData.write(to: metadataFileURL)
-            MHLogger.debug("Attachment metadata saved to \(metadataFileURL)")
-        } catch {
-            MHLogger.error("Error saving attachment metadata: \(error)")
-        }
-    }
-    private func loadTextWithAttachments() {
-        let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-        let fileURL = documentDirectory.appendingPathComponent("textWithAttachments.rtf")
-        do {
-            let rtfData = try Data(contentsOf: fileURL)
-            let savedText = try NSAttributedString(
-                data: rtfData,
-                options: [.documentType: NSAttributedString.DocumentType.rtf],
-                documentAttributes: nil
-            )
-            let metadataFileURL = documentDirectory.appendingPathComponent("attachmentMetadata.json")
-            let metadataData = try Data(contentsOf: metadataFileURL)
-            let metadata = try JSONSerialization.jsonObject(with: metadataData) as? [String: Any]
-            // 커스텀 NSTextAttachment로 변환
-            let restoredText = mergeStorageInformation(text: savedText, attachmentMetaData: metadata)
-            textStorage?.setAttributedString(restoredText)
-            MHLogger.debug("Text with attachments loaded from \(fileURL)")
-        } catch {
-            MHLogger.error("Error loading text with attachments: \(error)")
-        }
-    }
-    private func isAcceptableHight(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText attributedText: NSAttributedString) -> Bool {
+    private func isAcceptableHight(
+        _ textView: UITextView,
+        shouldChangeTextIn range: NSRange,
+        replacementText attributedText: NSAttributedString
+    ) -> Bool {
         let updatedText = NSMutableAttributedString(attributedString: textView.attributedText)
         let textViewWidth = textView.bounds.width
         let temporaryTextView = UITextView(
