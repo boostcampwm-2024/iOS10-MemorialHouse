@@ -104,6 +104,7 @@ final public class AudioViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
     }
     
+    // MARK: - Life Cycle
     public override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -119,28 +120,11 @@ final public class AudioViewController: UIViewController {
         self.input.send(.viewDidDisappear)
     }
     
+    // MARK: - setup
     private func setup() {
         view.backgroundColor = .white
         setupBars()
         requestMicrophonePermission()
-    }
-    
-    private func bind() {
-        let output = viewModel?.transform(input: input.eraseToAnyPublisher())
-        output?.sink(receiveValue: { [weak self] event in
-            switch event {
-            case .updatedAudioFileURL:
-                debugPrint("updated audio file URL")
-            case .savedAudioFile:
-                debugPrint("saved audio file")
-            case .deleteTemporaryAudioFile:
-                debugPrint("delete temporary audio file")
-            case .audioStart:
-                self?.startRecording()
-            case .audioStop:
-                self?.stopRecording()
-            }
-        }).store(in: &cancellables)
     }
     
     private func setupBars() {
@@ -171,6 +155,43 @@ final public class AudioViewController: UIViewController {
             downBarLayers.append(downMeteringLayer)
         }
     }
+    
+    private func requestMicrophonePermission() {
+        AVAudioSession.sharedInstance().requestRecordPermission { @Sendable granted in
+            if !granted {
+                Task { @MainActor in
+                    let alert = UIAlertController(
+                        title: "마이크 권한 필요",
+                        message: "설정에서 마이크 권한을 허용해주세요.",
+                        preferredStyle: .alert
+                    )
+                    alert.addAction(UIAlertAction(title: "OK", style: .default))
+                    self.present(alert, animated: true, completion: nil)
+                }
+            }
+        }
+    }
+    
+    // MARK: - bind
+    private func bind() {
+        let output = viewModel?.transform(input: input.eraseToAnyPublisher())
+        output?.sink(receiveValue: { [weak self] event in
+            switch event {
+            case .updatedAudioFileURL:
+                debugPrint("updated audio file URL")
+            case .savedAudioFile:
+                debugPrint("saved audio file")
+            case .deleteTemporaryAudioFile:
+                debugPrint("delete temporary audio file")
+            case .audioStart:
+                self?.startRecording()
+            case .audioStop:
+                self?.stopRecording()
+            }
+        }).store(in: &cancellables)
+    }
+    
+    // MARK: - configure
     
     private func configureAudioSession() {
         let fileName = "\(identifier).m4a"
@@ -205,30 +226,28 @@ final public class AudioViewController: UIViewController {
             trailing: view.trailingAnchor, constantTrailing: 25,
             height: 120
         )
-        
+        // meteringBackgroundView
+        meteringBackgroundView.layer.cornerRadius = 25
         meteringBackgroundView.backgroundColor = UIColor.mhPink
-        meteringBackgroundView.translatesAutoresizingMaskIntoConstraints = false
         meteringBackgroundView.setCenterX(view: view)
         meteringBackgroundView.setAnchor(top: titleLabel.bottomAnchor, constantTop: 24)
         meteringBackgroundView.setWidthAndHeight(width: 320, height: volumeHalfHeight * 2)
-        meteringBackgroundView.layer.cornerRadius = 25
         
-        upMeteringView.translatesAutoresizingMaskIntoConstraints = false
+        // metering level view
         meteringBackgroundView.addSubview(upMeteringView)
         upMeteringView.setCenter(view: meteringBackgroundView, offset: CGPoint(x: 0, y: -volumeHalfHeight/2))
         upMeteringView.setWidthAndHeight(width: 300, height: volumeHalfHeight)
         
-        downMeteringView.translatesAutoresizingMaskIntoConstraints = false
         meteringBackgroundView.addSubview(downMeteringView)
         downMeteringView.setCenter(view: meteringBackgroundView, offset: CGPoint(x: 0, y: volumeHalfHeight/2))
         downMeteringView.setWidthAndHeight(width: 300, height: volumeHalfHeight)
         
+        // audio button
         audioButtonBackground.setAnchor(top: meteringBackgroundView.bottomAnchor, constantTop: 20)
         audioButtonBackground.setCenterX(view: view)
         audioButtonBackground.setWidthAndHeight(width: 60, height: 60)
         
         audioButton.layer.cornerRadius = 24
-        audioButton.translatesAutoresizingMaskIntoConstraints = false
         audioButtonConstraints = [
             audioButton.widthAnchor.constraint(equalToConstant: 48),
             audioButton.heightAnchor.constraint(equalToConstant: 48),
@@ -361,21 +380,5 @@ final public class AudioViewController: UIViewController {
             self.input.send(.saveButtonTapped)
             self.dismiss(animated: true)
         }, for: .touchUpInside)
-    }
-    
-    private func requestMicrophonePermission() {
-        AVAudioSession.sharedInstance().requestRecordPermission { @Sendable granted in
-            if !granted {
-                Task { @MainActor in
-                    let alert = UIAlertController(
-                        title: "마이크 권한 필요",
-                        message: "설정에서 마이크 권한을 허용해주세요.",
-                        preferredStyle: .alert
-                    )
-                    alert.addAction(UIAlertAction(title: "OK", style: .default))
-                    self.present(alert, animated: true, completion: nil)
-                }
-            }
-        }
     }
 }
