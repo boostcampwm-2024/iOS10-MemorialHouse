@@ -68,8 +68,14 @@ final class EditPageViewModel: ViewModelType {
         self.page = page
     }
     private func loadMediaForData(media: MediaDescription) async {
+        // TODO: - Loading실패시 로딩실패 처리
         guard let mediaData: Data = try? await fetchMediaUseCase.execute(media: media, in: bookID) else { return }
         output.send(.mediaLoadedWithData(media: media, data: mediaData))
+    }
+    private func loadMediaForURL(media: MediaDescription) async {
+        // TODO: - Loading실패시 로딩실패 처리
+        guard let mediaURL: URL = try? await fetchMediaUseCase.execute(media: media, in: bookID) else { return }
+        output.send(.mediaLoadedWithURL(media: media, url: mediaURL))
     }
     
     // MARK: - Method
@@ -81,10 +87,6 @@ final class EditPageViewModel: ViewModelType {
     }
     
     // MARK: - Helper
-    private func loadMediaForURL(media: MediaDescription) async {
-        guard let mediaURL: URL = try? await fetchMediaUseCase.execute(media: media, in: bookID) else { return }
-        output.send(.mediaLoadedWithURL(media: media, url: mediaURL))
-    }
     private func converTextToPage(text: NSAttributedString) -> Page {
         let (savedText, metadata) = separateStorageInformation(text)
         let newPage = Page(
