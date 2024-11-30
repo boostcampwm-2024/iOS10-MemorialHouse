@@ -97,12 +97,10 @@ public final class HomeViewController: UIViewController {
             switch event {
             case .fetchedMemorialHouseAndCategory:
                 self.updateMemorialHouse()
-            case .filteredBooks:
+            case .filteredBooks, .dragAndDropFinished:
                 self.collectionView.reloadData()
             case .fetchedFailure(let errorMessage):
                 self.handleError(with: errorMessage)
-            case .dragAndDropFinished:
-                self.collectionView.reloadData()
             }
         }.store(in: &cancellables)
     }
