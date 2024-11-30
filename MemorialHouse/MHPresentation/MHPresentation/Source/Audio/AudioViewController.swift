@@ -1,8 +1,13 @@
 import UIKit
 import AVFoundation
+import Combine
 
 final public class AudioViewController: UIViewController {
-    // MARK: - Properties
+    // MARK: - Property
+    // data bind
+    private var viewModel: AudioViewModel?
+    private let input = PassthroughSubject<AudioViewModel.Input, Never>()
+    private var cancellables = Set<AnyCancellable>()
     // auido
     private var audioRecorder: AVAudioRecorder?
     private var isRecording = false
@@ -26,7 +31,7 @@ final public class AudioViewController: UIViewController {
     // UUID
     private let identifier: UUID = UUID()
     
-    // MARK: - UI Components
+    // MARK: - UI Component
     // title and buttons
     private var stackView = UIStackView()
     private let titleLabel: UITextField = {
@@ -88,20 +93,54 @@ final public class AudioViewController: UIViewController {
         return textField
     }()
     
+    // MARK: - Initializer
+    public init(viewModel: AudioViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    public required init?(coder: NSCoder) {
+        self.viewModel = AudioViewModel()
+        super.init(nibName: nil, bundle: nil)
+    }
+    
     public override func viewDidLoad() {
         super.viewDidLoad()
         
-        requestMicrophonePermission()
         setup()
+        bind()
         configureAudioSession()
         configureAddSubviews()
         configureConstraints()
         configureAddActions()
     }
     
+    public override func viewDidDisappear(_ animated: Bool) {
+        self.input.send(.viewDidDisappear)
+    }
+    
     private func setup() {
         view.backgroundColor = .white
         setupBars()
+        requestMicrophonePermission()
+    }
+    
+    private func bind() {
+        let output = viewModel?.transform(input: input.eraseToAnyPublisher())
+        output?.sink(receiveValue: { [weak self] event in
+            switch event {
+            case .updatedAudioFileURL:
+                debugPrint("updated audio file URL")
+            case .savedAudioFile:
+                debugPrint("saved audio file")
+            case .deleteTemporaryAudioFile:
+                debugPrint("delete temporary audio file")
+            case .audioStart:
+                self?.startRecording()
+            case .audioStop:
+                self?.stopRecording()
+            }
+        }).store(in: &cancellables)
     }
     
     private func setupBars() {
@@ -210,14 +249,14 @@ final public class AudioViewController: UIViewController {
         
         audioRecorder?.prepareToRecord()
         audioRecorder?.record()
-        
+        // timer about audio metering level
         recordingTimer?.invalidate()
         recordingTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
             Task {
                 await self?.updateAudioMetering()
             }
         }
-        
+        // timer about audio record time
         timeTimer?.invalidate()
         timeTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
             Task { @MainActor in
@@ -307,30 +346,35 @@ final public class AudioViewController: UIViewController {
     
     private func addTappedEventToAudioButton() {
         audioButton.addAction(UIAction { [weak self] _ in
-            switch self?.isRecording {
-                case true:
-                    self?.stopRecording()
-                case false:
-                    self?.startRecording()
-                default: break
-            }
-            self?.audioButtonBackground.layoutIfNeeded()
-            self?.isRecording.toggle()
+            self?.input.send(.audioButtonTapped)
+//            switch self?.isRecording {
+//                case true:
+//                    self?.stopRecording()
+//                case false:
+//                    self?.startRecording()
+//                default: break
+//            }
+//            self?.audioButtonBackground.layoutIfNeeded()
+//            self?.isRecording.toggle()
         }, for: .touchUpInside)
+        
+//        input.send(.audioButtonTapped)
     }
     private func addTappedEventToCancelButton() {
         cancelButton.addAction(
             UIAction { [weak self]_ in
-                try? FileManager.default.removeItem(
-                    at: self?.audioRecorder?.url ?? FileManager.default
-                        .urls(for: .documentDirectory, in: .userDomainMask)[0]
-                )
+//                try? FileManager.default.removeItem(
+//                    at: self?.audioRecorder?.url ?? FileManager.default
+//                        .urls(for: .documentDirectory, in: .userDomainMask)[0]
+//                )
+//                self?.input.send(.)
                 self?.dismiss(animated: true)
             },
             for: .touchUpInside)
     }
     private func addTappedEventToSaveButton() {
         saveButton.addAction(UIAction { _ in
+            self.input.send(.saveButtonTapped)
             self.dismiss(animated: true)
         }, for: .touchUpInside)
     }
@@ -340,8 +384,8 @@ final public class AudioViewController: UIViewController {
             if !granted {
                 Task { @MainActor in
                     let alert = UIAlertController(
-                        title: "Microphone Permission Denied",
-                        message: "Please enable microphone access in Settings to use this feature.",
+                        title: "마이크 권한 필요",
+                        message: "설정에서 마이크 권한을 허용해주세요.",
                         preferredStyle: .alert
                     )
                     alert.addAction(UIAlertAction(title: "OK", style: .default))
