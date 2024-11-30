@@ -2,6 +2,7 @@ import MHFoundation
 import MHDomain
 import MHCore
 
+// TODO: Result 처리
 public struct LocalBookCoverRepository: BookCoverRepository {
     private let storage: BookCoverStorage
     
