@@ -101,6 +101,8 @@ public final class HomeViewController: UIViewController {
                 self.collectionView.reloadData()
             case .fetchedFailure(let errorMessage):
                 self.handleError(with: errorMessage)
+            case .dragAndDropFinished:
+                self.collectionView.reloadData()
             }
         }.store(in: &cancellables)
     }
@@ -333,9 +335,12 @@ extension HomeViewController: UICollectionViewDropDelegate {
         
         collectionView.performBatchUpdates { [weak self] in
             guard let self else { return }
-            let sourceItem = self.viewModel.bookCovers[sourceIndexPath.item]
-            self.viewModel.bookCovers.remove(at: sourceIndexPath.item)
-            self.viewModel.bookCovers.insert(sourceItem, at: destinationIndexPath.item)
+            input.send(
+                .dragAndDropBookCover(
+                    currentIndex: sourceIndexPath.item,
+                    destinationIndex: destinationIndexPath.item
+                )
+            )
             
             collectionView.deleteItems(at: [sourceIndexPath])
             collectionView.insertItems(at: [destinationIndexPath])
