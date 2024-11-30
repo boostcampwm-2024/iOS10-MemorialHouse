@@ -97,7 +97,7 @@ public final class HomeViewController: UIViewController {
             switch event {
             case .fetchedMemorialHouseAndCategory:
                 self.updateMemorialHouse()
-            case .filteredBooks, .dragAndDropFinished:
+            case .filteredBooks, .dragAndDropFinished, .likeButtonTapped:
                 self.collectionView.reloadData()
             case .fetchedFailure(let errorMessage):
                 self.handleError(with: errorMessage)
@@ -274,11 +274,15 @@ extension HomeViewController: UICollectionViewDataSource {
         
         let bookCover = viewModel.currentBookCovers[indexPath.item]
         cell.configure(
+            id: bookCover.id,
             title: bookCover.title,
             bookCoverImage: bookCover.color.image,
             targetImage: UIImage(systemName: "person")!,
             isLike: bookCover.favorite,
-            houseName: viewModel.houseName
+            houseName: viewModel.houseName,
+            likeButtonAction: { [weak self] in
+                self?.input.send(.likeButtonTapped(bookId: bookCover.id))
+            }
         )
         
         return cell
