@@ -6,7 +6,11 @@ public struct PageDTO {
     let metadata: [Int: MediaDescriptionDTO]
     let text: String
     
-    public init(id: UUID, metadata: [Int: MediaDescriptionDTO], text: String) {
+    public init(
+        id: UUID,
+        metadata: [Int: MediaDescriptionDTO],
+        text: String
+    ) {
         self.id = id
         self.metadata = metadata
         self.text = text

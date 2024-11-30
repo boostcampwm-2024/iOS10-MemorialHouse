@@ -2,7 +2,7 @@ import MHFoundation
 import MHDomain
 
 public struct BookCoverDTO {
-    let identifier: UUID
+    let id: UUID
     let order: Int
     let title: String
     let imageURL: String?
@@ -11,7 +11,7 @@ public struct BookCoverDTO {
     let favorite: Bool
     
     public init(
-        identifier: UUID,
+        id: UUID,
         order: Int,
         title: String,
         imageURL: String?,
@@ -19,7 +19,7 @@ public struct BookCoverDTO {
         category: String?,
         favorite: Bool
     ) {
-        self.identifier = identifier
+        self.id = id
         self.order = order
         self.title = title
         self.imageURL = imageURL
@@ -32,7 +32,7 @@ public struct BookCoverDTO {
         guard let color = BookColor(rawValue: self.color) else { return nil }
         
         return BookCover(
-            identifier: self.identifier,
+            id: self.id,
             order: self.order,
             title: self.title,
             imageURL: self.imageURL,

@@ -1,7 +1,7 @@
 import MHFoundation
 
-public struct BookCover: Equatable, Sendable {
-    public let identifier: UUID
+public struct BookCover: Identifiable, Equatable, Sendable {
+    public let id: UUID
     public let order: Int
     public let title: String
     public let imageURL: String?
@@ -10,7 +10,7 @@ public struct BookCover: Equatable, Sendable {
     public let favorite: Bool
     
     public init(
-        identifier: UUID = .init(),
+        id: UUID = .init(),
         order: Int,
         title: String,
         imageURL: String?,
@@ -18,7 +18,7 @@ public struct BookCover: Equatable, Sendable {
         category: String?,
         favorite: Bool = false
     ) {
-        self.identifier = identifier
+        self.id = id
         self.order = order
         self.title = title
         self.imageURL = imageURL
@@ -28,6 +28,6 @@ public struct BookCover: Equatable, Sendable {
     }
     
     public static func == (lhs: BookCover, rhs: BookCover) -> Bool {
-        lhs.identifier == rhs.identifier
+        lhs.id == rhs.id
     }
 }

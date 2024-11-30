@@ -9,7 +9,7 @@ struct CoreDataBookCoverStorageTests {
     private let sut = CoreDataBookCoverStorage(coreDataStorage: MockCoreDataStorage())
     private static let bookCovers = [
         BookCoverDTO(
-            identifier: UUID(),
+            id: UUID(),
             order: 1,
             title: "test1",
             imageURL: nil,
@@ -17,7 +17,7 @@ struct CoreDataBookCoverStorageTests {
             category: nil,
             favorite: true),
         BookCoverDTO(
-            identifier: UUID(),
+            id: UUID(),
             order: 2,
             title: "test2",
             imageURL: nil,
@@ -25,7 +25,7 @@ struct CoreDataBookCoverStorageTests {
             category: nil,
             favorite: false),
         BookCoverDTO(
-            identifier: UUID(),
+            id: UUID(),
             order: 3,
             title: "test3",
             imageURL: nil,
@@ -43,7 +43,7 @@ struct CoreDataBookCoverStorageTests {
     @Test func test코어데이터에_새로운_BookCover_객체를_생성한다() async throws {
         // Arrange
         let newBookCover = BookCoverDTO(
-            identifier: UUID(),
+            id: UUID(),
             order: 4,
             title: "test4",
             imageURL: nil,
@@ -58,7 +58,7 @@ struct CoreDataBookCoverStorageTests {
         // Assert
         switch result {
         case .success:
-            #expect(coreDataBookCovers.contains(where: { $0.identifier == newBookCover.identifier }))
+            #expect(coreDataBookCovers.contains(where: { $0.id == newBookCover.id }))
         case .failure(let error):
             #expect(false, "Create BookCover 실패: \(error.localizedDescription)")
         }
@@ -74,7 +74,7 @@ struct CoreDataBookCoverStorageTests {
         case .success(let bookCoversResult):
             bookCoversResult.forEach { bookCoverResult in
                 #expect(CoreDataBookCoverStorageTests.bookCovers.contains(where: {
-                    bookCoverResult.identifier == $0.identifier
+                    bookCoverResult.id == $0.id
                 }))
             }
         case .failure(let error):
@@ -86,7 +86,7 @@ struct CoreDataBookCoverStorageTests {
         // Arrange
         let oldBookCover = CoreDataBookCoverStorageTests.bookCovers[0]
         let newBookCover = BookCoverDTO(
-            identifier: oldBookCover.identifier,
+            id: oldBookCover.id,
             order: 4,
             title: "test4",
             imageURL: nil,
@@ -95,21 +95,21 @@ struct CoreDataBookCoverStorageTests {
             favorite: true)
         
         // Act
-        let result = await sut.update(with: oldBookCover.identifier, data: newBookCover)
+        let result = await sut.update(with: oldBookCover.id, data: newBookCover)
         let coreDataBookCovers = try await sut.fetch().get()
         
         // Assert
         switch result {
         case .success:
-            let newBookCoverResult = coreDataBookCovers.first(where: { $0.identifier == oldBookCover.identifier })
+            let newBookCoverResult = coreDataBookCovers.first(where: { $0.id == oldBookCover.id })
             #expect(newBookCoverResult?.title != oldBookCover.title)
         case .failure(let error):
             #expect(false, "Update BookCover 실패: \(error.localizedDescription)")
         }
     }
     
-    @Test(arguments: [CoreDataBookCoverStorageTests.bookCovers[0].identifier,
-                      CoreDataBookCoverStorageTests.bookCovers[1].identifier,
+    @Test(arguments: [CoreDataBookCoverStorageTests.bookCovers[0].id,
+                      CoreDataBookCoverStorageTests.bookCovers[1].id,
                       UUID()]
     ) func test코어데이터에서_특정_UUID값을_가진_BookCover_데이터를_삭제한다(_ id: UUID) async throws {
         // Arrange
@@ -120,9 +120,9 @@ struct CoreDataBookCoverStorageTests {
         // Assert
         switch result {
         case .success:
-            #expect(!coreDataBookCovers.contains(where: { $0.identifier == id }))
+            #expect(!coreDataBookCovers.contains(where: { $0.id == id }))
         case .failure(let error):
-            #expect(error == MHDataError.findEntityFailure && !coreDataBookCovers.contains(where: { $0.identifier == id }))
+            #expect(error == MHDataError.findEntityFailure && !coreDataBookCovers.contains(where: { $0.id == id }))
         }
     }
 }

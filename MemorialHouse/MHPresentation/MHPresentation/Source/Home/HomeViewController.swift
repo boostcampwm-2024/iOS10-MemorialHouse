@@ -213,7 +213,11 @@ extension HomeViewController: UICollectionViewDelegate {
         _ collectionView: UICollectionView,
         didSelectItemAt indexPath: IndexPath
     ) {
-        // TODO: 책 펼치기 로직
+        let bookID = viewModel.currentBookCovers[indexPath.row].id
+        guard let bookViewModelFactory = try? DIContainer.shared.resolve(BookViewModelFactory.self) else { return }
+        let bookViewModel = bookViewModelFactory.make(bookID: bookID)
+        let bookViewController = BookViewController(viewModel: bookViewModel)
+        navigationController?.pushViewController(bookViewController, animated: true)
     }
     
     public func scrollViewDidScroll(_ scrollView: UIScrollView) {
