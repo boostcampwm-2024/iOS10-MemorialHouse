@@ -11,7 +11,6 @@ final class BookCollectionViewCell: UICollectionViewCell {
         super.init(frame: frame)
         
         configureAddSubView()
-        configureAction()
         configureConstraints()
     }
     
@@ -19,7 +18,6 @@ final class BookCollectionViewCell: UICollectionViewCell {
         super.init(coder: coder)
         
         configureAddSubView()
-        configureAction()
         configureConstraints()
     }
     
@@ -32,12 +30,14 @@ final class BookCollectionViewCell: UICollectionViewCell {
     
     // MARK: - Configuration
     func configure(
+        id: UUID,
         title: String,
         bookCoverImage: UIImage,
         targetImage: UIImage,
         isLike: Bool,
-        // category: String, // TODO: 카테고리 처리 생각해보기
-        houseName: String
+        houseName: String,
+        likeButtonAction: @escaping () -> Void
+        // TODO: DropDownButtonAction
     ) {
         bookCoverView.configure(
             title: title,
@@ -52,6 +52,8 @@ final class BookCollectionViewCell: UICollectionViewCell {
         )
         likeButton.setImage(likeImage, for: .normal)
         dropDownButton.setImage(.dotHorizontal, for: .normal)
+        
+        configureAction(likeButtonAction: likeButtonAction)
     }
     
     private func configureAddSubView() {
@@ -60,13 +62,13 @@ final class BookCollectionViewCell: UICollectionViewCell {
         contentView.addSubview(dropDownButton)
     }
     
-    private func configureAction() {
+    private func configureAction(likeButtonAction: @escaping () -> Void) {
         likeButton.addAction(UIAction { _ in
-            // TODO: 좋아요 버튼 로직
+            likeButtonAction()
         }, for: .touchUpInside)
         
         dropDownButton.addAction(UIAction { _ in
-            // TODO: UI Menu 띄우기
+            // TODO: DropDownButtonAction
         }, for: .touchUpInside)
     }
     
