@@ -2,7 +2,7 @@ import UIKit
 import MHFoundation
 import MHDomain
 
-final class MHBookCover: UIView {
+final class MHBookCover: UIButton {
     // MARK: - Property
     private let bookCoverImageView = UIImageView()
     private let titleLabel: UILabel = {
