@@ -10,6 +10,7 @@ struct CoreDataBookCoverStorageTests {
     private static let bookCovers = [
         BookCoverDTO(
             identifier: UUID(),
+            order: 1,
             title: "test1",
             imageURL: nil,
             color: "pink",
@@ -17,6 +18,7 @@ struct CoreDataBookCoverStorageTests {
             favorite: true),
         BookCoverDTO(
             identifier: UUID(),
+            order: 2,
             title: "test2",
             imageURL: nil,
             color: "blue",
@@ -24,6 +26,7 @@ struct CoreDataBookCoverStorageTests {
             favorite: false),
         BookCoverDTO(
             identifier: UUID(),
+            order: 3,
             title: "test3",
             imageURL: nil,
             color: "beige",
@@ -41,6 +44,7 @@ struct CoreDataBookCoverStorageTests {
         // Arrange
         let newBookCover = BookCoverDTO(
             identifier: UUID(),
+            order: 4,
             title: "test4",
             imageURL: nil,
             color: "green",
@@ -83,6 +87,7 @@ struct CoreDataBookCoverStorageTests {
         let oldBookCover = CoreDataBookCoverStorageTests.bookCovers[0]
         let newBookCover = BookCoverDTO(
             identifier: oldBookCover.identifier,
+            order: 4,
             title: "test4",
             imageURL: nil,
             color: "green",
