@@ -385,8 +385,6 @@ final public class AudioViewController: UIViewController {
         audioButton.addAction(UIAction { [weak self] _ in
             self?.input.send(.audioButtonTapped)
         }, for: .touchUpInside)
-        
-//        input.send(.audioButtonTapped)
     }
     private func addTappedEventToCancelButton() {
         cancelButton.addAction(
