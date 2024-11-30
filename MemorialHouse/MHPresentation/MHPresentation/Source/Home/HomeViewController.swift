@@ -20,7 +20,7 @@ public final class HomeViewController: UIViewController {
     private lazy var collectionView: UICollectionView = {
         let flowLayout = UICollectionViewFlowLayout()
         let cellWidth = (self.view.bounds.inset(by: self.view.safeAreaInsets).width - 80) / 2
-        flowLayout.itemSize = .init(width: cellWidth, height: 210)
+        flowLayout.itemSize = .init(width: cellWidth, height: cellWidth * 1.5)
         flowLayout.minimumLineSpacing = 40
         flowLayout.minimumInteritemSpacing = 20
         flowLayout.sectionInset = UIEdgeInsets(top: 0, left: 20, bottom: 30, right: 20)
