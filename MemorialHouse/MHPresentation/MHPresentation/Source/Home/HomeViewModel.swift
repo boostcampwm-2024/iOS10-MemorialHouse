@@ -6,19 +6,21 @@ public final class HomeViewModel: ViewModelType {
     public enum Input {
         case viewDidLoad
         case selectedCategory(category: String)
+        case dragAndDropBookCover(currentIndex: Int, destinationIndex: Int)
     }
     
     public enum Output {
         case fetchedMemorialHouseAndCategory
         case filteredBooks
         case fetchedFailure(String)
+        case dragAndDropFinished
     }
     
     private let output = PassthroughSubject<Output, Never>()
     private let fetchMemorialHouseUseCase: FetchMemorialHouseUseCase
     private var cancellables = Set<AnyCancellable>()
     private(set) var houseName = ""
-    var bookCovers = [BookCover]()
+    private(set) var bookCovers = [BookCover]()
     private(set) var currentBookCovers = [BookCover]()
     
     public init(fetchMemorialHouseUseCase: FetchMemorialHouseUseCase) {
@@ -41,6 +43,8 @@ public final class HomeViewModel: ViewModelType {
                 }
             case .selectedCategory(let category):
                 self?.filterBooks(by: category)
+            case .dragAndDropBookCover(let currentIndex, let destinationIndex):
+                self?.dragAndDropBookCover(from: currentIndex, to: destinationIndex)
             }
         }.store(in: &cancellables)
         
@@ -65,5 +69,15 @@ public final class HomeViewModel: ViewModelType {
         }
 
         output.send(.filteredBooks)
+    }
+    
+    private func dragAndDropBookCover(from currentIndex: Int, to destinationIndex: Int) {
+        let currentBookCover = currentBookCovers[currentIndex]
+        let targetBookCover = currentBookCovers[destinationIndex]
+        bookCovers.remove(at: currentBookCover.order)
+        bookCovers.insert(currentBookCover, at: targetBookCover.order)
+        currentBookCovers.remove(at: currentIndex)
+        currentBookCovers.insert(currentBookCover, at: destinationIndex)
+        output.send(.dragAndDropFinished)
     }
 }
