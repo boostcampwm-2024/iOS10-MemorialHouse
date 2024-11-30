@@ -248,12 +248,8 @@ final public class AudioViewController: UIViewController {
         audioButtonBackground.setWidthAndHeight(width: 60, height: 60)
         
         audioButton.layer.cornerRadius = 24
-        audioButtonConstraints = [
-            audioButton.widthAnchor.constraint(equalToConstant: 48),
-            audioButton.heightAnchor.constraint(equalToConstant: 48),
-            audioButton.centerXAnchor.constraint(equalTo: audioButtonBackground.centerXAnchor),
-            audioButton.centerYAnchor.constraint(equalTo: audioButtonBackground.centerYAnchor)
-        ]
+        audioButton.setWidthAndHeight(width: 48, height: 48)
+        audioButton.setCenter(view: audioButtonBackground)
         NSLayoutConstraint.activate(audioButtonConstraints)
         
         timeTextLabel.setAnchor(
