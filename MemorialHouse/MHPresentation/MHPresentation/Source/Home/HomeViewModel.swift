@@ -16,7 +16,6 @@ public final class HomeViewModel: ViewModelType {
         case filteredBooks
         case fetchedFailure(String)
         case dragAndDropFinished
-        case likeButtonTapped
     }
     
     private let output = PassthroughSubject<Output, Never>()
@@ -109,7 +108,5 @@ public final class HomeViewModel: ViewModelType {
             favorite: !currentBookCover.favorite
         )
         try await updateBookCoverUseCase.execute(id: bookId, with: bookCover)
-        currentBookCovers[index] = bookCover
-        output.send(.likeButtonTapped)
     }
 }

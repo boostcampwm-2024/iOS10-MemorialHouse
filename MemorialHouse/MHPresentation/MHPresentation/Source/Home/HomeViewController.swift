@@ -97,7 +97,7 @@ public final class HomeViewController: UIViewController {
             switch event {
             case .fetchedMemorialHouseAndCategory:
                 self.updateMemorialHouse()
-            case .filteredBooks, .dragAndDropFinished, .likeButtonTapped:
+            case .filteredBooks, .dragAndDropFinished:
                 self.collectionView.reloadData()
             case .fetchedFailure(let errorMessage):
                 self.handleError(with: errorMessage)
