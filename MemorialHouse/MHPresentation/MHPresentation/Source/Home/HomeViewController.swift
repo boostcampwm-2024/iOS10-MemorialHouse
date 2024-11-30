@@ -320,17 +320,22 @@ extension HomeViewController: UICollectionViewDropDelegate {
             destinationIndexPath = IndexPath(item: row - 1, section: 0)
         }
         
-        guard coordinator.proposal.operation == .move else { return }
-        move(coordinator: coordinator, destinationIndexPath: destinationIndexPath, collectionView: collectionView)
+        moveItems(
+            coordinator: coordinator,
+            destinationIndexPath: destinationIndexPath,
+            collectionView: collectionView
+        )
     }
     
-    private func move(
+    private func moveItems(
         coordinator: UICollectionViewDropCoordinator,
         destinationIndexPath: IndexPath,
         collectionView: UICollectionView
     ) {
-        guard let item = coordinator.items.first,
-              let sourceIndexPath = item.sourceIndexPath
+        guard
+            coordinator.proposal.operation == .move,
+            let item = coordinator.items.first,
+            let sourceIndexPath = item.sourceIndexPath
         else { return }
         
         collectionView.performBatchUpdates { [weak self] in
@@ -344,8 +349,6 @@ extension HomeViewController: UICollectionViewDropDelegate {
             
             collectionView.deleteItems(at: [sourceIndexPath])
             collectionView.insertItems(at: [destinationIndexPath])
-        } completion: { _ in
-            coordinator.drop(item.dragItem, toItemAt: destinationIndexPath)
         }
     }
 }
