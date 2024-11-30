@@ -12,7 +12,7 @@ final class EditBookViewModel: ViewModelType {
         case didSaveButtonTapped
     }
     enum Output {
-        case setTableView
+        case updateTableView
     }
     
     // MARK: - Property
@@ -74,7 +74,7 @@ final class EditBookViewModel: ViewModelType {
             )
             pageViewModels.append(pageViewModel)
         }
-        output.send(.setTableView)
+        output.send(.updateTableView)
     }
     private func addMedia(type: MediaType, at index: Int, with data: Data) {
         let description = MediaDescription(
@@ -92,6 +92,10 @@ final class EditBookViewModel: ViewModelType {
     }
     private func saveMediaAll() async {
         guard let bookID else { return }
+        pageViewModels.map { viewModel in
+            
+        }
+        try? await updateBookUseCase.execute(book: <#T##Book#>)
         try? await storeBookUseCase.execute(to: bookID)
     }
     
