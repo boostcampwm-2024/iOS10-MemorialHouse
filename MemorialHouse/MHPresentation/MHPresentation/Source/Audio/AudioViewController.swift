@@ -3,11 +3,11 @@ import AVFoundation
 import Combine
 import MHCore
 
-final public class AudioViewController: UIViewController {
+final public class CreateAudioViewController: UIViewController {
     // MARK: - Property
     // data bind
-    private var viewModel: AudioViewModel?
-    private let input = PassthroughSubject<AudioViewModel.Input, Never>()
+    private var viewModel: CreateAudioViewModel?
+    private let input = PassthroughSubject<CreateAudioViewModel.Input, Never>()
     private var cancellables = Set<AnyCancellable>()
     // auido
     private var audioRecorder: AVAudioRecorder?
@@ -19,8 +19,8 @@ final public class AudioViewController: UIViewController {
     private let volumeHalfHeight: CGFloat = 40
     // timer
     private var recordingSeconds: Int = 0
-    private var recordingTimer: Timer?
-    private var timeTimer: Timer?
+    private var meteringLevelTimer: Timer?
+    private var recordTimer: Timer?
     // audio session
     private let audioSession = AVAudioSession.sharedInstance()
     private let audioRecordersettings: [String: Any] = [
@@ -95,13 +95,13 @@ final public class AudioViewController: UIViewController {
     }()
     
     // MARK: - Initializer
-    public init(viewModel: AudioViewModel) {
+    public init(viewModel: CreateAudioViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
     
     public required init?(coder: NSCoder) {
-        self.viewModel = AudioViewModel()
+        self.viewModel = CreateAudioViewModel()
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -269,15 +269,15 @@ final public class AudioViewController: UIViewController {
         audioRecorder?.prepareToRecord()
         audioRecorder?.record()
         // timer about audio metering level
-        recordingTimer?.invalidate()
-        recordingTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
+        meteringLevelTimer?.invalidate()
+        meteringLevelTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
             Task {
                 await self?.updateAudioMetering()
             }
         }
         // timer about audio record time
-        timeTimer?.invalidate()
-        timeTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
+        recordTimer?.invalidate()
+        recordTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
             Task { @MainActor in
                 self?.recordingSeconds += 1
                 self?.setTimeLabel(seconds: self?.recordingSeconds)
@@ -296,7 +296,7 @@ final public class AudioViewController: UIViewController {
         try? audioSession.setActive(false)
         
         audioRecorder?.stop()
-        timeTimer?.invalidate()
+        recordTimer?.invalidate()
         
         recordingSeconds = 0
         timeTextLabel.text = "00:00"

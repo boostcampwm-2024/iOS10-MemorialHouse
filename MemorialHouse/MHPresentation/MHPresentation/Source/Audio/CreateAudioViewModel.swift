@@ -2,7 +2,7 @@ import Foundation
 import Combine
 import MHCore
 
-public final class AudioViewModel: ViewModelType {
+public final class CreateAudioViewModel: ViewModelType {
     enum Input {
         case audioSessionOpened(url: URL?)
         case audioButtonTapped
