@@ -5,6 +5,7 @@ final class BookCollectionViewCell: UICollectionViewCell {
     private let bookCoverView = MHBookCover()
     private let likeButton = UIButton(type: .custom)
     private let dropDownButton = UIButton(type: .custom)
+    private var isLike: Bool = false
     
     // MARK: - Initializer
     override init(frame: CGRect) {
@@ -66,6 +67,7 @@ final class BookCollectionViewCell: UICollectionViewCell {
         likeButton.addAction(UIAction { [weak self] _ in
             guard let self else { return }
             likeButtonAction()
+            self.isLike.toggle()
             self.changeLikeButtonImage(isLike: self.isLike)
         }, for: .touchUpInside)
         
