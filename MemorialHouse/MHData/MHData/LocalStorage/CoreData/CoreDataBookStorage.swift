@@ -12,99 +12,54 @@ public final class CoreDataBookStorage {
 
 extension CoreDataBookStorage: BookStorage {
     public func create(data: BookDTO) async -> Result<Void, MHDataError> {
-        let context = coreDataStorage.persistentContainer.viewContext
-        do {
-            try await context.perform { [weak self] in
-                guard let self else { return }
-                guard let entity = NSEntityDescription.entity(forEntityName: "BookEntity", in: context) else {
-                    throw MHDataError.noSuchEntity(key: "BookEntity")
-                }
-                let book = NSManagedObject(entity: entity, insertInto: context)
-                book.setValue(data.id, forKey: "id")
-                book.setValue(dtoPagesToCore(data.pages), forKey: "pages")
-                try context.save()
+        return await coreDataStorage.performDatabaseTask { [weak self] context in
+            guard let entity = NSEntityDescription.entity(forEntityName: "BookEntity", in: context) else {
+                throw MHDataError.noSuchEntity(key: "BookEntity")
             }
+            let book = NSManagedObject(entity: entity, insertInto: context)
+            book.setValue(data.id, forKey: "id")
+            book.setValue(data.title, forKey: "title")
+            book.setValue(self?.dtoPagesToCore(data.pages, in: context), forKey: "pages")
             
-            return .success(())
-        } catch let error as MHDataError {
-            MHLogger.debug("Error creating book: \(error.description)")
-            return .failure(error)
-        } catch {
-            MHLogger.debug("Unknown Error creating book: \(error.localizedDescription)")
-            return .failure(.createEntityFailure)
+            try context.save()
         }
     }
+    
     public func fetch(with id: UUID) async -> Result<BookDTO, MHDataError> {
-        let context = coreDataStorage.persistentContainer.viewContext
-
-        do {
-            var bookEntity: BookEntity?
-            try await context.perform { [weak self] in
-                bookEntity = try self?.getEntityByIdentifier(in: context, with: id)
-                guard bookEntity != nil else { throw MHDataError.findEntityFailure }
-            }
+        return await coreDataStorage.performDatabaseTask { [weak self] context in
+            guard let bookEntity = try self?.getEntityByIdentifier(in: context, with: id) else { throw MHDataError.findEntityFailure }
+            guard let bookDTO = self?.coreBookToDTO(bookEntity) else { throw MHDataError.convertDTOFailure }
             
-            guard let bookEntity,
-                  let result = coreBookToDTO(bookEntity)
-            else { throw MHDataError.convertDTOFailure }
-            
-            return .success(result)
-        } catch let error as MHDataError {
-            MHLogger.debug("Error fetching book: \(error.description)")
-            return .failure(error)
-        } catch {
-            MHLogger.debug("Unknown Error fetching book: \(error.localizedDescription)")
-            return .failure(.fetchEntityFaliure)
+            return bookDTO
         }
     }
+    
     public func update(with id: UUID, data: BookDTO) async -> Result<Void, MHDataError> {
-        do {
-            let context = coreDataStorage.persistentContainer.viewContext
-            try await context.perform { [weak self] in
-                guard let self else { return }
-                guard let newEntity = try getEntityByIdentifier(in: context, with: id) else {
-                    throw MHDataError.findEntityFailure
-                }
-                
-                newEntity.setValue(data.id, forKey: "id")
-                newEntity.setValue(dtoPagesToCore(data.pages), forKey: "pages")
-                
-                try context.save()
+        return await coreDataStorage.performDatabaseTask { [weak self] context in
+            guard let newEntity = try self?.getEntityByIdentifier(in: context, with: id) else {
+                throw MHDataError.findEntityFailure
             }
-            return .success(())
-        } catch let error as MHDataError {
-            MHLogger.debug("Error update book: \(error.description)")
-            return .failure(error)
-        } catch {
-            MHLogger.debug("Unknown Error update book: \(error.localizedDescription)")
-            return .failure(.updateEntityFailure)
+            newEntity.setValue(data.id, forKey: "id")
+            newEntity.setValue(data.title, forKey: "title")
+            newEntity.setValue(self?.dtoPagesToCore(data.pages, in: context), forKey: "pages")
+            
+            try context.save()
         }
     }
+    
     public func delete(with id: UUID) async -> Result<Void, MHDataError> {
-        do {
-            let context = coreDataStorage.persistentContainer.viewContext
-            try await context.perform { [weak self] in
-                guard let entity = try self?.getEntityByIdentifier(in: context, with: id) else {
-                    throw MHDataError.findEntityFailure
-                }
-                
-                context.delete(entity)
-                
-                try context.save()
+        return await coreDataStorage.performDatabaseTask { [weak self] context in
+            guard let entity = try self?.getEntityByIdentifier(in: context, with: id) else {
+                throw MHDataError.findEntityFailure
             }
-            return .success(())
-        } catch let error as MHDataError {
-            MHLogger.debug("Error delete book: \(error.description)")
-            return .failure(error)
-        } catch {
-            MHLogger.debug("Unknown Error delete book: \(error.localizedDescription)")
-            return .failure(.deleteEntityFailure)
+            context.delete(entity)
+            
+            try context.save()
         }
     }
     
     private func getEntityByIdentifier(in context: NSManagedObjectContext, with id: UUID) throws -> BookEntity? {
         let request = BookEntity.fetchRequest()
-        
         request.predicate = NSPredicate(
             format: "id == %@", id as CVarArg
         )
@@ -118,21 +73,25 @@ extension CoreDataBookStorage {
     // MARK: - Core to DTO
     private func coreBookToDTO(_ book: BookEntity) -> BookDTO? {
         guard let id = book.id,
+              let title = book.title,
               let corePages = book.pages
         else { return nil }
         let pages = corePagesToDTO(corePages)
         
         return BookDTO(
             id: id,
+            title: title,
             pages: pages
         )
     }
+    
     private func corePagesToDTO(_ pages: NSOrderedSet) -> [PageDTO] {
         return pages.compactMap {
             guard let page = $0 as? PageEntity else { return nil }
             return corePageToDTO(page)
         }
     }
+    
     private func corePageToDTO(_ page: PageEntity) -> PageDTO? {
         guard let id = page.id,
               let mediaDescriptions = page.mediaDescriptions,
@@ -151,6 +110,7 @@ extension CoreDataBookStorage {
             text: text
         )
     }
+    
     private func coreMediaDescriptionToDTO(_ mediaDescription: MediaDescriptionEntity) -> (Int, MediaDescriptionDTO)? {
         guard let id = mediaDescription.id,
               let type = mediaDescription.type
@@ -164,11 +124,11 @@ extension CoreDataBookStorage {
     }
     
     // MARK: - DTO to Core
-    private func dtoPagesToCore(_ pages: [PageDTO]) -> NSOrderedSet? {
-        let context = coreDataStorage.persistentContainer.viewContext
+    private func dtoPagesToCore(_ pages: [PageDTO], in context: NSManagedObjectContext) -> NSOrderedSet? {
         let pageEntities = pages.compactMap { dtoPageToCore($0, in: context) }
         return NSOrderedSet(array: pageEntities)
     }
+    
     private func dtoPageToCore(_ page: PageDTO, in context: NSManagedObjectContext) -> PageEntity? {
         guard let entity = NSEntityDescription.insertNewObject(
             forEntityName: "PageEntity",
@@ -183,6 +143,7 @@ extension CoreDataBookStorage {
         
         return entity
     }
+    
     private func dtoMediaDescriptionsToCore(
         _ metadata: [Int: MediaDescriptionDTO],
         in context: NSManagedObjectContext
@@ -192,6 +153,7 @@ extension CoreDataBookStorage {
         }
         return NSSet(array: mediaDescriptionEntities)
     }
+    
     private func dtoMediaDescriptionToCore(
         location: Int,
         _ mediaDescription: MediaDescriptionDTO,

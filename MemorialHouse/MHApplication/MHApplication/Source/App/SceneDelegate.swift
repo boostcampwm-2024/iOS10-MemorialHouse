@@ -65,6 +65,14 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             BookCategoryStorage.self,
             object: CoreDataBookCategoryStorage(coreDataStorage: coreDataStorage)
         )
+        DIContainer.shared.register(
+            BookCoverStorage.self,
+            object: CoreDataBookCoverStorage(coreDataStorage: coreDataStorage)
+        )
+        DIContainer.shared.register(
+            BookStorage.self,
+            object: CoreDataBookStorage(coreDataStorage: coreDataStorage)
+        )
     }
     
     private func registerRepositoryDependency() throws {
@@ -78,12 +86,12 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             BookCategoryRepository.self,
             object: LocalBookCategoryRepository(storage: bookCategoryStorage)
         )
-        guard let bookCoverStorage = try? DIContainer.shared.resolve(CoreDataBookCoverStorage.self) else { return }
+        let bookCoverStorage = try DIContainer.shared.resolve(BookCoverStorage.self)
         DIContainer.shared.register(
-            LocalBookCoverRepository.self,
+            BookCoverRepository.self,
             object: LocalBookCoverRepository(storage: bookCoverStorage)
         )
-        guard let bookStorage = try? DIContainer.shared.resolve(CoreDataBookStorage.self) else { return }
+        let bookStorage = try DIContainer.shared.resolve(BookStorage.self)
         DIContainer.shared.register(
             BookRepository.self,
             object: LocalBookRepository(storage: bookStorage)
@@ -122,8 +130,12 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             object: DefaultDeleteBookCategoryUseCase(repository: bookCategoryRepository)
         )
         
-        // MARK: - EditBook UseCase
+        // MARK: - Book UseCase
         let bookRepository = try DIContainer.shared.resolve(BookRepository.self)
+        DIContainer.shared.register(
+            CreateBookUseCase.self,
+            object: DefaultCreateBookUseCase(repository: bookRepository)
+        )
         DIContainer.shared.register(
             FetchBookUseCase.self,
             object: DefaultFetchBookUseCase(repository: bookRepository)
@@ -132,6 +144,11 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             UpdateBookUseCase.self,
             object: DefaultUpdateBookUseCase(repository: bookRepository)
         )
+        DIContainer.shared.register(
+            DeleteBookUseCase.self,
+            object: DefaultDeleteBookUseCase(repository: bookRepository)
+        )
+        // MARK: - EditBook UseCase
         let mediaRepository = try DIContainer.shared.resolve(MediaRepository.self)
         DIContainer.shared.register(
             PersistentlyStoreMediaUseCase.self,
@@ -176,6 +193,19 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 updateBookCategoryUseCase: updateBookCategoryUseCase,
                 deleteBookCategoryUseCase: deleteBookCategoryUseCase
             )
+        )
+        
+        // MARK: - Book ViewModel
+        let fetchBookUseCase = try DIContainer.shared.resolve(FetchBookUseCase.self)
+        DIContainer.shared.register(
+            BookViewModelFactory.self,
+            object: BookViewModelFactory(fetchBookUseCase: fetchBookUseCase)
+        )
+        
+        // MARK: - Page ViewModel
+        DIContainer.shared.register(
+            ReadPageViewModelFactory.self,
+            object: ReadPageViewModelFactory()
         )
         
         // MARK: - EditBook ViewModel
