@@ -3,6 +3,7 @@ import MHDomain
 
 public struct BookCoverDTO {
     let id: UUID
+    let order: Int
     let title: String
     let imageURL: String?
     let color: String
@@ -11,6 +12,7 @@ public struct BookCoverDTO {
     
     public init(
         id: UUID,
+        order: Int,
         title: String,
         imageURL: String?,
         color: String,
@@ -18,6 +20,7 @@ public struct BookCoverDTO {
         favorite: Bool
     ) {
         self.id = id
+        self.order = order
         self.title = title
         self.imageURL = imageURL
         self.color = color
@@ -30,6 +33,7 @@ public struct BookCoverDTO {
         
         return BookCover(
             id: self.id,
+            order: self.order,
             title: self.title,
             imageURL: self.imageURL,
             color: color,

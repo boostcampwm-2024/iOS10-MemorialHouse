@@ -12,6 +12,7 @@ public struct LocalBookCoverRepository: BookCoverRepository {
     public func create(bookCover: BookCover) async {
         let bookCoverDTO = BookCoverDTO(
             id: bookCover.id,
+            order: bookCover.order,
             title: bookCover.title,
             imageURL: bookCover.imageURL,
             color: bookCover.color.rawValue,
@@ -51,6 +52,7 @@ public struct LocalBookCoverRepository: BookCoverRepository {
     public func update(id: UUID, bookCover: BookCover) async {
         let bookCoverDTO = BookCoverDTO(
             id: bookCover.id,
+            order: bookCover.order,
             title: bookCover.title,
             imageURL: bookCover.imageURL,
             color: bookCover.color.rawValue,

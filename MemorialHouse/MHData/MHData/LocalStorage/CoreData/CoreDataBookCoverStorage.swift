@@ -80,6 +80,7 @@ extension CoreDataBookCoverStorage {
         
         return BookCoverDTO(
             id: id,
+            order: Int(bookCover.order),
             title: title,
             imageURL: bookCover.imageURL,
             color: color,
