@@ -128,6 +128,24 @@ final public class AudioViewController: UIViewController {
         requestMicrophonePermission()
     }
     
+    private func bind() {
+        let output = viewModel?.transform(input: input.eraseToAnyPublisher())
+        output?.sink(receiveValue: { [weak self] event in
+            switch event {
+            case .updatedAudioFileURL:
+                debugPrint("updated audio file URL")
+            case .savedAudioFile:
+                debugPrint("saved audio file")
+            case .deleteTemporaryAudioFile:
+                debugPrint("delete temporary audio file")
+            case .audioStart:
+                self?.startRecording()
+            case .audioStop:
+                self?.stopRecording()
+            }
+        }).store(in: &cancellables)
+    }
+    
     private func setupBars() {
         let width = 300 / numberOfBars - 5
         let barSpacing = 5
@@ -367,6 +385,8 @@ final public class AudioViewController: UIViewController {
         audioButton.addAction(UIAction { [weak self] _ in
             self?.input.send(.audioButtonTapped)
         }, for: .touchUpInside)
+        
+//        input.send(.audioButtonTapped)
     }
     private func addTappedEventToCancelButton() {
         cancelButton.addAction(
