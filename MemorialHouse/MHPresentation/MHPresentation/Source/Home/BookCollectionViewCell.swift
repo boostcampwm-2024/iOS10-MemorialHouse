@@ -73,10 +73,16 @@ final class BookCollectionViewCell: UICollectionViewCell {
     }
     
     private func configureConstraints() {
-        bookCoverView.fillSuperview()
+        bookCoverView.setAnchor(
+            top: contentView.topAnchor,
+            leading: contentView.leadingAnchor,
+            bottom: likeButton.topAnchor,
+            trailing: contentView.trailingAnchor
+        )
         likeButton.setAnchor(
-            top: bookCoverView.bottomAnchor,
-            trailing: dropDownButton.leadingAnchor, constantTrailing: 10
+            bottom: contentView.bottomAnchor,
+            trailing: dropDownButton.leadingAnchor, constantTrailing: 10,
+            width: 28, height: 28
         )
         dropDownButton.setAnchor(
             trailing: contentView.trailingAnchor, constantTrailing: 4,
