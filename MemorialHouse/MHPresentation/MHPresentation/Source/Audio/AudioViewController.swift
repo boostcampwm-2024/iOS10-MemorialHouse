@@ -347,27 +347,11 @@ final public class AudioViewController: UIViewController {
     private func addTappedEventToAudioButton() {
         audioButton.addAction(UIAction { [weak self] _ in
             self?.input.send(.audioButtonTapped)
-//            switch self?.isRecording {
-//                case true:
-//                    self?.stopRecording()
-//                case false:
-//                    self?.startRecording()
-//                default: break
-//            }
-//            self?.audioButtonBackground.layoutIfNeeded()
-//            self?.isRecording.toggle()
         }, for: .touchUpInside)
-        
-//        input.send(.audioButtonTapped)
     }
     private func addTappedEventToCancelButton() {
         cancelButton.addAction(
             UIAction { [weak self]_ in
-//                try? FileManager.default.removeItem(
-//                    at: self?.audioRecorder?.url ?? FileManager.default
-//                        .urls(for: .documentDirectory, in: .userDomainMask)[0]
-//                )
-//                self?.input.send(.)
                 self?.dismiss(animated: true)
             },
             for: .touchUpInside)
