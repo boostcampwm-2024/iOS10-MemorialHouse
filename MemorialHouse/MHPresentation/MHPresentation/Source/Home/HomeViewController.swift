@@ -106,11 +106,9 @@ public final class HomeViewController: UIViewController {
     }
     
     private func updateMemorialHouse() {
-        // 네비게이션 타이틀 설정
         let houseName = viewModel.houseName
         navigationBar.configureTitle(with: houseName)
         
-        // BoockCover 설정
         collectionView.reloadData()
     }
     
