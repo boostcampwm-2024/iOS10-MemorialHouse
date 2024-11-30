@@ -96,8 +96,12 @@ public final class HomeViewModel: ViewModelType {
     }
     
     private func likeButtonTapped(bookId: UUID) async throws {
-        guard let index = currentBookCovers.firstIndex(where: { $0.id == bookId }) else { return }
-        let currentBookCover = currentBookCovers[index]
+        guard
+            let bookCoverIndex = bookCovers.firstIndex(where: { $0.id == bookId }),
+            let currentBookCoverindex = currentBookCovers.firstIndex(where: { $0.id == bookId })
+        else { return }
+        
+        let currentBookCover = currentBookCovers[currentBookCoverindex]
         let bookCover = BookCover(
             id: currentBookCover.id,
             order: currentBookCover.order,
@@ -108,5 +112,7 @@ public final class HomeViewModel: ViewModelType {
             favorite: !currentBookCover.favorite
         )
         try await updateBookCoverUseCase.execute(id: bookId, with: bookCover)
+        bookCovers[bookCoverIndex] = bookCover
+        currentBookCovers[currentBookCoverindex] = bookCover
     }
 }
