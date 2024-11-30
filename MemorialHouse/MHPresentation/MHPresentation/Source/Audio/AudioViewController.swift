@@ -1,6 +1,7 @@
 import UIKit
 import AVFoundation
 import Combine
+import MHCore
 
 final public class AudioViewController: UIViewController {
     // MARK: - Property
@@ -178,11 +179,14 @@ final public class AudioViewController: UIViewController {
         output?.sink(receiveValue: { [weak self] event in
             switch event {
             case .updatedAudioFileURL:
-                debugPrint("updated audio file URL")
+                // TODO: - update audio file url
+                MHLogger.debug("updated audio file URL")
             case .savedAudioFile:
-                debugPrint("saved audio file")
+                // TODO: - show audio player
+                MHLogger.debug("saved audio file")
             case .deleteTemporaryAudioFile:
-                debugPrint("delete temporary audio file")
+                // TODO: - delete temporary audio file
+                MHLogger.debug("delete temporary audio file")
             case .audioStart:
                 self?.startRecording()
             case .audioStop:

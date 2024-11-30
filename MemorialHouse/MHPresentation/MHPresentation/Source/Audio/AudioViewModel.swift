@@ -1,5 +1,6 @@
 import Foundation
 import Combine
+import MHCore
 
 public final class AudioViewModel: ViewModelType {
     enum Input {
@@ -22,7 +23,6 @@ public final class AudioViewModel: ViewModelType {
     private var audioTemporaryFileURL: URL?
     private var audioIsRecoding: Bool = false
     
-    // called in controller
     func transform(input: AnyPublisher<Input, Never>) -> AnyPublisher<Output, Never> {
         input.sink { [weak self] event in
             switch event {
@@ -46,7 +46,7 @@ public final class AudioViewModel: ViewModelType {
     }
     
     private func audioButtonTapped() {
-        debugPrint("audio button tapped in view model")
+        MHLogger.debug("audio button tapped in view model")
         switch audioIsRecoding {
         case false:
             output.send(.audioStart)
