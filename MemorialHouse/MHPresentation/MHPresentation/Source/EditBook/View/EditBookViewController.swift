@@ -136,11 +136,11 @@ final class EditBookViewController: UIViewController {
         
         // 네비게이션 오른쪽 아이템
         navigationItem.rightBarButtonItem = UIBarButtonItem(
-            title: "저장",
+            title: "기록",
             normal: normalAttributes,
             selected: selectedAttributes
         ) { [weak self] in
-            // TODO: - 저장하는 로직
+            self?.input.send(.didSaveButtonTapped)
             self?.navigationController?.popViewController(animated: true)
         }
         
@@ -223,7 +223,7 @@ final class EditBookViewController: UIViewController {
         output.receive(on: DispatchQueue.main)
             .sink { [weak self] event in
                 switch event {
-                case .setTableView:
+                case .updateTableView:
                     self?.editPageTableView.reloadData()
                 }
             }
@@ -232,8 +232,11 @@ final class EditBookViewController: UIViewController {
     private func configureButtonAction() {
         // TODO: - 로직을 정한다음에 Action 추가
         let addImageAction = UIAction { [weak self] _ in
-            // TODO: - 이미지 추가 로직
-            self?.input.send(.didAddMediaWithData(type: .image, atPage: 0, data: UIImage(resource: .bookMake).pngData()!))
+            // TODO: - 이미지 받는 임시 로직
+            guard let data = UIImage(resource: .bookMake).pngData(),
+                  let currentPage = self?.editPageTableView.indexPathForSelectedRow?.row
+            else { return }
+            self?.input.send(.didAddMediaWithData(type: .image, atPage: currentPage, data: data))
         }
         addImageButton.addAction(addImageAction, for: .touchUpInside)
         
@@ -242,18 +245,13 @@ final class EditBookViewController: UIViewController {
         }
         addVideoButton.addAction(addVideoAction, for: .touchUpInside)
         
-        let addTextAction = UIAction { [weak self] _ in
-            // TODO: - 텍스트 추가로직???
-        }
-        addTextButton.addAction(addTextAction, for: .touchUpInside)
-        
         let addAudioAction = UIAction { [weak self] _ in
             // TODO: - 오디오 추가 로직
         }
         addAudioButton.addAction(addAudioAction, for: .touchUpInside)
         
         let publishAction = UIAction { [weak self] _ in
-            // TODO: - 발행 로직
+            self?.input.send(.didSaveButtonTapped)
             self?.navigationController?.popViewController(animated: true)
         }
         publishButton.addAction(publishAction, for: .touchUpInside)
