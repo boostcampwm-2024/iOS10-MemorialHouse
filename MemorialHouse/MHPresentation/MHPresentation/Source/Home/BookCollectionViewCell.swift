@@ -26,6 +26,7 @@ final class BookCollectionViewCell: UICollectionViewCell {
         
         bookCoverView.resetProperties()
         likeButton.imageView?.image = nil
+        likeButton.removeTarget(nil, action: nil, for: .allEvents)
     }
     
     // MARK: - Configuration
@@ -36,40 +37,54 @@ final class BookCollectionViewCell: UICollectionViewCell {
         targetImage: UIImage,
         isLike: Bool,
         houseName: String,
+        bookCoverAction: @escaping () -> Void,
         likeButtonAction: @escaping () -> Void
-        // TODO: DropDownButtonAction
     ) {
+        self.isLike = isLike
         bookCoverView.configure(
             title: title,
             bookCoverImage: bookCoverImage,
             targetImage: targetImage,
             houseName: houseName
         )
-
+        changeLikeButtonImage(isLike: isLike)
+        dropDownButton.setImage(.dotHorizontal, for: .normal)
+        configureAction(
+            bookCoverAction: bookCoverAction,
+            likeButtonAction: likeButtonAction
+        )
+    }
+    
+    private func configureAction(
+        bookCoverAction: @escaping () -> Void,
+        likeButtonAction: @escaping () -> Void
+    ) {
+        bookCoverView.addAction(UIAction { _ in
+            bookCoverAction()
+        }, for: .touchUpInside)
+        
+        likeButton.addAction(UIAction { [weak self] _ in
+            guard let self else { return }
+            likeButtonAction()
+            self.changeLikeButtonImage(isLike: self.isLike)
+        }, for: .touchUpInside)
+        
+        dropDownButton.addAction(UIAction { _ in
+        }, for: .touchUpInside)
+    }
+    
+    private func changeLikeButtonImage(isLike: Bool) {
         let likeImage = UIImage.resizedImage(
             image: isLike ? .likeFill : .likeEmpty,
             size: CGSize(width: 28, height: 28)
         )
         likeButton.setImage(likeImage, for: .normal)
-        dropDownButton.setImage(.dotHorizontal, for: .normal)
-        
-        configureAction(likeButtonAction: likeButtonAction)
     }
     
     private func configureAddSubView() {
         contentView.addSubview(bookCoverView)
         contentView.addSubview(likeButton)
         contentView.addSubview(dropDownButton)
-    }
-    
-    private func configureAction(likeButtonAction: @escaping () -> Void) {
-        likeButton.addAction(UIAction { _ in
-            likeButtonAction()
-        }, for: .touchUpInside)
-        
-        dropDownButton.addAction(UIAction { _ in
-            // TODO: DropDownButtonAction
-        }, for: .touchUpInside)
     }
     
     private func configureConstraints() {

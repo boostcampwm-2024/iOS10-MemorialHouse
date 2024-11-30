@@ -205,17 +205,6 @@ public final class HomeViewController: UIViewController {
 
 // MARK: - UICollectionViewDelegate
 extension HomeViewController: UICollectionViewDelegate {
-    public func collectionView(
-        _ collectionView: UICollectionView,
-        didSelectItemAt indexPath: IndexPath
-    ) {
-        let bookID = viewModel.currentBookCovers[indexPath.row].id
-        guard let bookViewModelFactory = try? DIContainer.shared.resolve(BookViewModelFactory.self) else { return }
-        let bookViewModel = bookViewModelFactory.make(bookID: bookID)
-        let bookViewController = BookViewController(viewModel: bookViewModel)
-        navigationController?.pushViewController(bookViewController, animated: true)
-    }
-    
     public func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let offsetY = scrollView.contentOffset.y
         let contentHeight = scrollView.contentSize.height
@@ -280,12 +269,25 @@ extension HomeViewController: UICollectionViewDataSource {
             targetImage: UIImage(systemName: "person")!,
             isLike: bookCover.favorite,
             houseName: viewModel.houseName,
+            bookCoverAction: { [weak self] in
+                self?.bookCoverTapped(indexPath: indexPath)
+            },
             likeButtonAction: { [weak self] in
                 self?.input.send(.likeButtonTapped(bookId: bookCover.id))
             }
         )
         
         return cell
+    }
+    
+    private func bookCoverTapped(indexPath: IndexPath) {
+        let bookID = viewModel.currentBookCovers[indexPath.row].id
+        guard let bookViewModelFactory = try? DIContainer.shared.resolve(BookViewModelFactory.self) else {
+            return
+        }
+        let bookViewModel = bookViewModelFactory.make(bookID: bookID)
+        let bookViewController = BookViewController(viewModel: bookViewModel)
+        navigationController?.pushViewController(bookViewController, animated: true)
     }
 }
 
