@@ -122,6 +122,7 @@ extension CoreDataBookCoverStorage {
         
         return BookCoverDTO(
             identifier: identifier,
+            order: Int(bookCover.order),
             title: title,
             imageURL: bookCover.imageURL,
             color: color,
