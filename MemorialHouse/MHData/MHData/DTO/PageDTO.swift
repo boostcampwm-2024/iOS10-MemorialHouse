@@ -12,9 +12,9 @@ public struct PageDTO {
         self.text = text
     }
     
-    func toPage() -> Page {
+    func convertToPage() -> Page {
         let metadata = self.metadata
-            .compactMapValues { $0.toMediaDescription() }
+            .compactMapValues { $0.convertToMediaDescription() }
         
         return Page(
             id: self.id,

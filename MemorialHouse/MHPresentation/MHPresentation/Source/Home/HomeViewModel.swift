@@ -16,18 +16,13 @@ public final class HomeViewModel: ViewModelType {
     
     private let output = PassthroughSubject<Output, Never>()
     private let fetchMemorialHouseUseCase: FetchMemorialHouseUseCase
-    private let fetchCategoryUseCase: FetchCategoriesUseCase
     private var cancellables = Set<AnyCancellable>()
     private(set) var houseName = ""
     private(set) var bookCovers = [BookCover]()
     private(set) var currentBookCovers = [BookCover]()
     
-    public init(
-        fetchMemorialHouseUseCase: FetchMemorialHouseUseCase,
-        fetchCategoryUseCase: FetchCategoriesUseCase
-    ) {
+    public init(fetchMemorialHouseUseCase: FetchMemorialHouseUseCase) {
         self.fetchMemorialHouseUseCase = fetchMemorialHouseUseCase
-        self.fetchCategoryUseCase = fetchCategoryUseCase
     }
     
     @MainActor

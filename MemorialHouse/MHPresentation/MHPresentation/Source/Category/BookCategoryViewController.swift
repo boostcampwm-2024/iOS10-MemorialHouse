@@ -4,28 +4,33 @@ import MHFoundation
 import UIKit
 
 @MainActor
-protocol CategoryViewControllerDelegate: AnyObject {
-    func categoryViewController(_ categoryViewController: CategoryViewController, didSelectCategory category: String)
+protocol BookCategoryViewControllerDelegate: AnyObject {
+    func categoryViewController(
+        _ categoryViewController: BookCategoryViewController,
+        didSelectCategory category: String
+    )
 }
 
-final class CategoryViewController: UIViewController {
+final class BookCategoryViewController: UIViewController {
     // MARK: - UI Components
     private let categoryTableView = UITableView()
     
     // MARK: - Properties
-    weak var delegate: CategoryViewControllerDelegate?
-    private let viewModel: CategoryViewModel
-    private let input = PassthroughSubject<CategoryViewModel.Input, Never>()
+    weak var delegate: BookCategoryViewControllerDelegate?
+    private let viewModel: BookCategoryViewModel
+    private let input = PassthroughSubject<BookCategoryViewModel.Input, Never>()
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Initializer
-    init(viewModel: CategoryViewModel) {
+    init(viewModel: BookCategoryViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
     
     required init?(coder: NSCoder) {
-        guard let viewModelFactory = try? DIContainer.shared.resolve(CategoryViewModelFactory.self) else { return nil }
+        guard let viewModelFactory = try? DIContainer.shared.resolve(BookCategoryViewModelFactory.self) else {
+            return nil
+        }
         self.viewModel = viewModelFactory.make()
         super.init(coder: coder)
     }
@@ -36,14 +41,9 @@ final class CategoryViewController: UIViewController {
         
         setup()
         bind()
+        input.send(.viewDidLoad)
         configureNavigationBar()
         configureConstraints()
-    }
-    
-    func calculateSheetHeight() -> CGFloat {
-        let cellHeight = CategoryTableViewCell.height
-        let itemCount = CGFloat(viewModel.categories.count) + 1 // FIXME: detent 임시용
-        return (cellHeight * itemCount) + Constant.navigationBarHeight
     }
     
     // MARK: - Setup & Configuration
@@ -54,8 +54,8 @@ final class CategoryViewController: UIViewController {
         categoryTableView.delegate = self
         categoryTableView.dataSource = self
         categoryTableView.register(
-            CategoryTableViewCell.self,
-            forCellReuseIdentifier: CategoryTableViewCell.identifier
+            BookCategoryTableViewCell.self,
+            forCellReuseIdentifier: BookCategoryTableViewCell.identifier
         )
     }
     
@@ -64,10 +64,24 @@ final class CategoryViewController: UIViewController {
         
         output.sink { [weak self] event in
             switch event {
-            case .createdCategory, .updatedCategory, .deletedCategory:
+            case .createdCategory, .updatedCategory, .fetchCategories, .deletedCategory:
                 self?.categoryTableView.reloadData()
+            case .failed(let errorMessage):
+                self?.handleError(with: errorMessage)
             }
         }.store(in: &cancellables)
+    }
+    
+    private func handleError(with errorMessage: String) {
+        let alertController = UIAlertController(
+            title: "에러",
+            message: errorMessage,
+            preferredStyle: .alert
+        )
+        let okAction = UIAlertAction(title: "확인", style: .default)
+        alertController.addAction(okAction)
+        
+        present(alertController, animated: true)
     }
     
     private func configureNavigationBar() {
@@ -137,13 +151,13 @@ final class CategoryViewController: UIViewController {
     }
 }
 
-extension CategoryViewController: UITableViewDelegate {
+extension BookCategoryViewController: UITableViewDelegate {
     func tableView(
         _ tableView: UITableView,
         didSelectRowAt indexPath: IndexPath
     ) {
         let selectedCategory = viewModel.categories[indexPath.row]
-        delegate?.categoryViewController(self, didSelectCategory: selectedCategory)
+        delegate?.categoryViewController(self, didSelectCategory: selectedCategory.name)
         dismiss(animated: true, completion: nil)
     }
     
@@ -151,7 +165,7 @@ extension CategoryViewController: UITableViewDelegate {
         _ tableView: UITableView,
         heightForRowAt indexPath: IndexPath
     ) -> CGFloat {
-        CategoryTableViewCell.height
+        BookCategoryTableViewCell.height
     }
     
     func tableView(
@@ -175,7 +189,7 @@ extension CategoryViewController: UITableViewDelegate {
                 message: "수정할 카테고리 이름을 입력해주세요.",
                 textFieldConfiguration: { textField in
                     textField.placeholder = "카테고리 이름"
-                    textField.text = self.viewModel.categories[indexPath.row]
+                    textField.text = self.viewModel.categories[indexPath.row].name
                 },
                 confirmHandler: { [weak self] newText in
                     guard let self, let newText = newText, !newText.isEmpty else {
@@ -199,14 +213,18 @@ extension CategoryViewController: UITableViewDelegate {
             
             let alert = UIAlertController(
                 title: "카테고리 삭제",
-                message: "\"\(self.viewModel.categories[indexPath.row])\"을(를) 삭제하시겠습니까?",
+                message: "\"\(self.viewModel.categories[indexPath.row].name)\"을(를) 삭제하시겠습니까?",
                 confirmTitle: "삭제",
-                cancelTitle: "취소"
-            ) { [weak self] _ in
-                guard let self else { return }
-                self.input.send(.deleteCategory(index: indexPath.row))
-                completion(true)
-            }
+                cancelTitle: "취소",
+                confirmHandler: { [weak self] _ in
+                    guard let self else { return }
+                    self.input.send(.deleteCategory(index: indexPath.row))
+                    completion(true)
+                },
+                cancelHandler: {
+                    completion(false)
+                }
+            )
             
             self.present(alert, animated: true)
         }
@@ -217,7 +235,7 @@ extension CategoryViewController: UITableViewDelegate {
     }
 }
 
-extension CategoryViewController: UITableViewDataSource {
+extension BookCategoryViewController: UITableViewDataSource {
     func tableView(
         _ tableView: UITableView,
         numberOfRowsInSection section: Int
@@ -230,12 +248,12 @@ extension CategoryViewController: UITableViewDataSource {
         cellForRowAt indexPath: IndexPath
     ) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(
-            withIdentifier: CategoryTableViewCell.identifier,
+            withIdentifier: BookCategoryTableViewCell.identifier,
             for: indexPath
-        ) as? CategoryTableViewCell else { return UITableViewCell() }
+        ) as? BookCategoryTableViewCell else { return UITableViewCell() }
         
-        let isSelected = viewModel.categories[indexPath.row] == viewModel.currentCategory
-        cell.configure(category: viewModel.categories[indexPath.row], isSelected: isSelected)
+        let isSelected = viewModel.categories[indexPath.row].name == viewModel.currentCategoryName
+        cell.configure(category: viewModel.categories[indexPath.row].name, isSelected: isSelected)
         cell.backgroundColor = .baseBackground
         
         return cell

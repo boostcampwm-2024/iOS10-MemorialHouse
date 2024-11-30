@@ -17,7 +17,8 @@ extension UIAlertController {
         textFieldConfiguration: ((UITextField) -> Void)? = nil,
         confirmTitle: String = "확인",
         cancelTitle: String = "취소",
-        confirmHandler: ((String?) -> Void)? = nil
+        confirmHandler: ((String?) -> Void)? = nil,
+        cancelHandler: (() -> Void)? = nil
     ) {
         self.init(title: title, message: message, preferredStyle: preferredStyle)
         
@@ -34,7 +35,9 @@ extension UIAlertController {
         self.addAction(confirmAction)
         
         // 취소 액션 추가
-        let cancelAction = UIAlertAction(title: cancelTitle, style: .cancel, handler: nil)
+        let cancelAction = UIAlertAction(title: cancelTitle, style: .cancel) { _ in
+            cancelHandler?()
+        }
         self.addAction(cancelAction)
     }
 }
