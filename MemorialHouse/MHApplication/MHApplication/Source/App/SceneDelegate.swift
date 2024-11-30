@@ -132,17 +132,24 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             DeleteBookUseCase.self,
             object: DefaultDeleteBookUseCase(repository: bookRepository)
         )
+        
+        // MARK: - BookCover UseCase
+        let bookCoverRepository = try DIContainer.shared.resolve(BookCoverRepository.self)
+        DIContainer.shared.register(
+            UpdateBookCoverUseCase.self,
+            object: DefaultUpdateBookCoverUseCase(repository: bookCoverRepository)
+        )
     }
     
     private func registerViewModelFactoryDependency() throws {
         // MARK: MemorialHouse ViewModel
         let fetchMemorialHouseUseCase = try DIContainer.shared.resolve(FetchMemorialHouseUseCase.self)
-        let fetchBookCategoryUseCase = try DIContainer.shared.resolve(FetchBookCategoriesUseCase.self)
+        let updateBookCoverUseCase = try DIContainer.shared.resolve(UpdateBookCoverUseCase.self)
         DIContainer.shared.register(
             HomeViewModelFactory.self,
             object: HomeViewModelFactory(
                 fetchMemorialHouseUseCase: fetchMemorialHouseUseCase,
-                fetchCategoryUseCase: fetchBookCategoryUseCase
+                updateBookCoverUseCase: updateBookCoverUseCase
             )
         )
         
