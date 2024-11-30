@@ -1,4 +1,6 @@
+import MHDomain
 import UIKit
+import Combine
 
 final class ReadPageViewController: UIViewController {
     // MARK: - UI Components
@@ -21,6 +23,8 @@ final class ReadPageViewController: UIViewController {
     
     // MARK: - Property
     private let viewModel: ReadPageViewModel
+    private let input = PassthroughSubject<ReadPageViewModel.Input, Never>()
+    private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Initialize
     init(viewModel: ReadPageViewModel) {
@@ -30,7 +34,7 @@ final class ReadPageViewController: UIViewController {
     }
     
     required init?(coder: NSCoder) {
-        self.viewModel = ReadPageViewModel(index: 0)
+        self.viewModel = ReadPageViewModel(page: Page(metadata: [:], text: ""))
         
         super.init(nibName: nil, bundle: nil)
     }
@@ -39,14 +43,27 @@ final class ReadPageViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        bind()
         setup()
         configureConstraints()
+        input.send(.viewDidLoad)
+    }
+    
+    private func bind() {
+        let output = viewModel.transform(input: input.eraseToAnyPublisher())
+        
+        output.sink { [weak self] event in
+            switch event {
+            case .loadPage(let text):
+                self?.textView.text = text
+            }
+        }
+        .store(in: &cancellables)
     }
     
     // MARK: - Setup & Configure
     private func setup() {
         view.backgroundColor = .baseBackground
-        textView.text = String(viewModel.index)
     }
     
     private func configureConstraints() {
@@ -57,9 +74,5 @@ final class ReadPageViewController: UIViewController {
             bottom: view.bottomAnchor, constantBottom: 10,
             trailing: view.trailingAnchor, constantTrailing: 10
         )
-    }
-    
-    func getPageIndex() -> Int {
-        return viewModel.index
     }
 }

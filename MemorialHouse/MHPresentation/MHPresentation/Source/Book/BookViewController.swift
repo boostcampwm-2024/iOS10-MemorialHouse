@@ -1,38 +1,58 @@
+import MHCore
+import MHDomain
 import UIKit
+import Combine
 
 final class BookViewController: UIViewController {
-    // MARK: - UI Components
+    // MARK: - UI Component
     private let pageViewController = UIPageViewController(
         transitionStyle: .pageCurl,
         navigationOrientation: .horizontal
     )
     
-    // MARK: - Property
+    // MARK: - Properties
     private let viewModel: BookViewModel
+    private let input = PassthroughSubject<BookViewModel.Input, Never>()
+    private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Initialize
-    init(bookTitle: String, viewModel: BookViewModel) {
+    init(viewModel: BookViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
-        
-        title = bookTitle
     }
     
     required init?(coder: NSCoder) {
-        self.viewModel = BookViewModel()
+        guard let viewModel = try? DIContainer.shared.resolve(BookViewModel.self) else { return nil }
+        self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
-        
-        title = "책 이름"
     }
     
     // MARK: - View Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        bind()
         setup()
         configureNavigationBar()
         configureConstraints()
-        configurePageViewController()
+        input.send(.viewDidLoad)
+    }
+    
+    // MARK: - Binding
+    private func bind() {
+        let output = viewModel.transform(input: input.eraseToAnyPublisher())
+        
+        output.receive(on: DispatchQueue.main)
+            .sink { [weak self] event in
+            switch event {
+            case .fetchBook(let bookTitle):
+                self?.title = bookTitle
+            case .loadFirstPage(let page):
+                guard let page else { return }
+                self?.configureFirstPageViewController(firstPage: page)
+            }
+        }
+        .store(in: &cancellables)
     }
     
     // MARK: - Setup & Configure
@@ -74,7 +94,7 @@ final class BookViewController: UIViewController {
             title: "수정",
             normal: normalAttributes,
             selected: selectedAttributes
-        ) { [weak self] in
+        ) {
             // TODO: - 추후 책 속지 수정 페이지로 넘어가는 로직 필요
         }
     }
@@ -85,15 +105,17 @@ final class BookViewController: UIViewController {
     }
     
     // MARK: - Set PageviewController
-    private func configurePageViewController() {
-        guard let startViewController = makeNewPageViewController(index: 0) else { return }
+    private func configureFirstPageViewController(firstPage: Page) {
+        guard let startViewController = makeNewPageViewController(page: firstPage) else { return }
         let viewControllers = [startViewController]
         pageViewController.setViewControllers(viewControllers, direction: .forward, animated: true, completion: nil)
     }
     
-    private func makeNewPageViewController(index: Int) -> ReadPageViewController? {
-        // TODO: - 로직 수정 필요
-        return ReadPageViewController(viewModel: ReadPageViewModel(index: index))
+    private func makeNewPageViewController(page: Page) -> ReadPageViewController? {
+        guard let readPageViewModelFactory = try? DIContainer.shared.resolve(ReadPageViewModelFactory.self) else { return nil }
+        let readPageViewModel = readPageViewModelFactory.make(page: page)
+        
+        return ReadPageViewController(viewModel: readPageViewModel)
     }
 }
 
@@ -108,23 +130,19 @@ extension BookViewController: UIPageViewControllerDataSource {
         _ pageViewController: UIPageViewController,
         viewControllerBefore viewController: UIViewController
     ) -> UIViewController? {
-        guard let targetViewController = viewController as? ReadPageViewController else { return nil }
-        let pageIndex = targetViewController.getPageIndex()
+        guard let previousPage = viewModel.previousPage else { return nil }
+        input.send(.loadPreviousPage)
         
-        return pageIndex == 0
-        ? nil
-        : makeNewPageViewController(index: pageIndex - 1)
+        return makeNewPageViewController(page: previousPage)
     }
     
     func pageViewController(
         _ pageViewController: UIPageViewController,
         viewControllerAfter viewController: UIViewController
     ) -> UIViewController? {
-        guard let targetViewController = viewController as? ReadPageViewController else { return nil }
-        let pageIndex = targetViewController.getPageIndex()
+        guard let nextPage = viewModel.nextPage else { return nil }
+        input.send(.loadNextPage)
         
-        return pageIndex == viewModel.pageList.count - 1
-        ? nil
-        : makeNewPageViewController(index: pageIndex + 1)
+        return makeNewPageViewController(page: nextPage)
     }
 }

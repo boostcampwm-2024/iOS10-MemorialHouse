@@ -2,113 +2,71 @@ import MHFoundation
 import MHCore
 import CoreData
 
-final class CoreDataBookCoverStorage {
+public final class CoreDataBookCoverStorage {
     private let coreDataStorage: CoreDataStorage
     
-    init(coreDataStorage: CoreDataStorage) {
+    public init(coreDataStorage: CoreDataStorage) {
         self.coreDataStorage = coreDataStorage
     }
 }
 
 extension CoreDataBookCoverStorage: BookCoverStorage {
-    func create(data: BookCoverDTO) async -> Result<Void, MHDataError> {
-        let context = coreDataStorage.persistentContainer.viewContext
-        do {
-            try await context.perform {
-                guard let entity = NSEntityDescription.entity(forEntityName: "BookCoverEntity", in: context) else {
-                    throw MHDataError.noSuchEntity(key: "BookCoverEntity")
-                }
-                let bookCover = NSManagedObject(entity: entity, insertInto: context)
-                bookCover.setValue(data.identifier, forKey: "identifier")
-                bookCover.setValue(data.title, forKey: "title")
-                bookCover.setValue(data.category, forKey: "category")
-                bookCover.setValue(data.color, forKey: "color")
-                bookCover.setValue(data.imageURL, forKey: "imageURL")
-                bookCover.setValue(data.favorite, forKey: "favorite")
-                
-                try context.save()
+    public func create(data: BookCoverDTO) async -> Result<Void, MHDataError> {
+        return await coreDataStorage.performDatabaseTask { context in
+            guard let entity = NSEntityDescription.entity(forEntityName: "BookCoverEntity", in: context) else {
+                throw MHDataError.noSuchEntity(key: "BookCoverEntity")
             }
-            return .success(())
-        } catch let error as MHDataError {
-            MHLogger.debug("Error creating book cover: \(error.description)")
-            return .failure(error)
-        } catch {
-            MHLogger.debug("Unknown Error creating book cover: \(error.localizedDescription)")
-            return .failure(.createEntityFailure)
+            let bookCover = NSManagedObject(entity: entity, insertInto: context)
+            bookCover.setValue(data.id, forKey: "id")
+            bookCover.setValue(data.title, forKey: "title")
+            bookCover.setValue(data.category, forKey: "category")
+            bookCover.setValue(data.color, forKey: "color")
+            bookCover.setValue(data.imageURL, forKey: "imageURL")
+            bookCover.setValue(data.favorite, forKey: "favorite")
+            
+            try context.save()
         }
     }
     
-    func fetch() async -> Result<[BookCoverDTO], MHDataError> {
-        let context = coreDataStorage.persistentContainer.viewContext
-        do {
-            var bookCoverEntities: [BookCoverEntity] = []
-            try await context.perform {
-                let request = BookCoverEntity.fetchRequest()
-                bookCoverEntities = try context.fetch(request)
-            }
-            let result = bookCoverEntities.compactMap { coreBookCoverToDTO($0) }
-            return .success(result)
-        } catch let error as MHDataError {
-            MHLogger.debug("Error fetching book cover: \(error.description)")
-            return .failure(error)
-        } catch {
-            MHLogger.debug("Unknown Error fetching book cover: \(error.localizedDescription)")
-            return .failure(.fetchEntityFaliure)
+    public func fetch() async -> Result<[BookCoverDTO], MHDataError> {
+        return await coreDataStorage.performDatabaseTask { [weak self] context in
+            let request = BookCoverEntity.fetchRequest()
+            let bookCoverEntities = try context.fetch(request)
+            return bookCoverEntities.compactMap { self?.coreBookCoverToDTO($0) }
         }
     }
     
-    func update(with id: UUID, data: BookCoverDTO) async -> Result<Void, MHDataError> {
-        let context = coreDataStorage.persistentContainer.viewContext
-        do {
-            try await context.perform { [weak self] in
-                guard let newEntity = try self?.getEntityByIdentifier(in: context, with: id) else {
-                    throw MHDataError.findEntityFailure
-                }
-                newEntity.setValue(data.identifier, forKey: "identifier")
-                newEntity.setValue(data.title, forKey: "title")
-                newEntity.setValue(data.category, forKey: "category")
-                newEntity.setValue(data.color, forKey: "color")
-                newEntity.setValue(data.imageURL, forKey: "imageURL")
-                newEntity.setValue(data.favorite, forKey: "favorite")
-                
-                try context.save()
+    public func update(with id: UUID, data: BookCoverDTO) async -> Result<Void, MHDataError> {
+        return await coreDataStorage.performDatabaseTask { [weak self] context in
+            guard let newEntity = try self?.getEntityByIdentifier(in: context, with: id) else {
+                throw MHDataError.findEntityFailure
             }
-            return .success(())
-        } catch let error as MHDataError {
-            MHLogger.debug("Error updating book cover: \(error.description)")
-            return .failure(error)
-        } catch {
-            MHLogger.debug("Unknown Error updating book cover: \(error.localizedDescription)")
-            return .failure(.updateEntityFailure)
+            newEntity.setValue(data.id, forKey: "id")
+            newEntity.setValue(data.title, forKey: "title")
+            newEntity.setValue(data.category, forKey: "category")
+            newEntity.setValue(data.color, forKey: "color")
+            newEntity.setValue(data.imageURL, forKey: "imageURL")
+            newEntity.setValue(data.favorite, forKey: "favorite")
+            
+            try context.save()
         }
     }
     
-    func delete(with id: UUID) async -> Result<Void, MHDataError> {
-        let context = coreDataStorage.persistentContainer.viewContext
-        do {
-            try await context.perform { [weak self] in
-                guard let entity = try self?.getEntityByIdentifier(in: context, with: id) else {
-                    throw MHDataError.findEntityFailure
-                }
-                
-                context.delete(entity)
-                
-                try context.save()
+    public func delete(with id: UUID) async -> Result<Void, MHDataError> {
+        return await coreDataStorage.performDatabaseTask { [weak self] context in
+            guard let entity = try self?.getEntityByIdentifier(in: context, with: id) else {
+                throw MHDataError.findEntityFailure
             }
-            return .success(())
-        } catch let error as MHDataError {
-            MHLogger.debug("Error deleting book cover: \(error.description)")
-            return .failure(error)
-        } catch {
-            MHLogger.debug("Unknown Error deleting book cover: \(error.localizedDescription)")
-            return .failure(.deleteEntityFailure)
+            context.delete(entity)
+            
+            try context.save()
         }
     }
     
     private func getEntityByIdentifier(in context: NSManagedObjectContext, with id: UUID) throws -> BookCoverEntity? {
         let request = BookCoverEntity.fetchRequest()
         
-        return try context.fetch(request).first(where: { $0.identifier == id })
+        return try context.fetch(request).first(where: { $0.id == id })
     }
 }
 
@@ -116,12 +74,12 @@ extension CoreDataBookCoverStorage: BookCoverStorage {
 extension CoreDataBookCoverStorage {
     // MARK: - CoreToDTO
     func coreBookCoverToDTO(_ bookCover: BookCoverEntity) -> BookCoverDTO? {
-        guard let identifier = bookCover.identifier,
+        guard let id = bookCover.id,
               let title = bookCover.title,
               let color = bookCover.color else { return nil }
         
         return BookCoverDTO(
-            identifier: identifier,
+            id: id,
             title: title,
             imageURL: bookCover.imageURL,
             color: color,
