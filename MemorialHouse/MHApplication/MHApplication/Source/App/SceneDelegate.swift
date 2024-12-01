@@ -209,9 +209,8 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         )
         
         // MARK: - EditBook ViewModel
-        let fetchBookUseCase = try DIContainer.shared.resolve(FetchBookUseCase.self)
         let updateBookUseCase = try DIContainer.shared.resolve(UpdateBookUseCase.self)
-        let storeBookUseCase = try DIContainer.shared.resolve(PersistentlyStoreMediaUseCase.self)
+        let storeMediaUseCase = try DIContainer.shared.resolve(PersistentlyStoreMediaUseCase.self)
         let createMediaUseCase = try DIContainer.shared.resolve(CreateMediaUseCase.self)
         let fetchMediaUseCase = try DIContainer.shared.resolve(FetchMediaUseCase.self)
         let deleteMediaUseCase = try DIContainer.shared.resolve(DeleteMediaUseCase.self)
@@ -220,7 +219,7 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             object: EditBookViewModelFactory(
                 fetchBookUseCase: fetchBookUseCase,
                 updateBookUseCase: updateBookUseCase,
-                storeBookUseCase: storeBookUseCase,
+                storeMediaUseCase: storeMediaUseCase,
                 createMediaUseCase: createMediaUseCase,
                 fetchMediaUseCase: fetchMediaUseCase,
                 deleteMediaUseCase: deleteMediaUseCase
