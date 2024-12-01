@@ -161,12 +161,12 @@ final class EditPageCell: UITableViewCell {
                 .attachment,
                 in: NSRange(location: 0, length: textStorage.length)
             ) { value, _, _ in
-            if let mediaAttachment = value as? MediaAttachment,
-               mediaAttachment.mediaDescription.id == media.id {
-                attachment = mediaAttachment
-                return
+                if let mediaAttachment = value as? MediaAttachment,
+                   mediaAttachment.mediaDescription.id == media.id {
+                    attachment = mediaAttachment
+                    return
+                }
             }
-        }
         return attachment
     }
     /// Text와 Attachment 정보를 하나의 문자열로 조합합니다.
