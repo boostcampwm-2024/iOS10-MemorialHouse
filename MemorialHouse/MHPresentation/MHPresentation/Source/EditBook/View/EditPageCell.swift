@@ -225,10 +225,19 @@ extension EditPageCell: @preconcurrency MediaAttachmentDataSource {
 extension EditPageCell: UITextViewDelegate {
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         guard let textStorage else { return false }
-        let attributedText = NSAttributedString(
+        let attributedText = NSMutableAttributedString(
             string: text,
             attributes: defaultAttributes
         )
+        
+        // Attachment지우기 전에 드래그해서 알려주기
+        if text.isEmpty && range.length == 1
+            && attachmentAt(range.location) != nil
+            && textView.selectedRange.length == 0 {
+            textView.selectedRange = NSRange(location: range.location, length: 1)
+            return false
+        }
+        
         return text.isEmpty
         || isAcceptableHeight(textStorage, shouldChangeTextIn: range, replacementText: attributedText)
     }
@@ -251,5 +260,11 @@ extension EditPageCell: @preconcurrency NSTextStorageDelegate {
             textStorage.deleteCharacters(in: editedRange)
         }
         saveContents()
+    }
+    // 그곳에 Attachment가 있는지 확인합니다.
+    private func attachmentAt(_ index: Int) -> MediaAttachment? {
+        guard let textStorage else { return nil }
+        guard index >= 0 && index < textStorage.length else { return nil }
+        return textStorage.attributes(at: index, effectiveRange: nil)[.attachment] as? MediaAttachment
     }
 }
