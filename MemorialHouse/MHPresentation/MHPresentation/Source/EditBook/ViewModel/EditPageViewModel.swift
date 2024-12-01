@@ -7,6 +7,7 @@ final class EditPageViewModel: ViewModelType {
     // MARK: - Type
     enum Input {
         case pageWillAppear
+        case pageWillDisappear
         case didEditPage(attributedText: NSAttributedString)
         case didRequestMediaDataForData(media: MediaDescription)
         case didRequestMediaDataForURL(media: MediaDescription)
@@ -47,6 +48,8 @@ final class EditPageViewModel: ViewModelType {
             switch event {
             case .pageWillAppear:
                 self?.pageWillAppear()
+            case .pageWillDisappear:
+                self?.pageWillDisappear()
             case .didEditPage(let attributedText):
                 self?.didEditPage(text: attributedText)
             case .didRequestMediaDataForData(let media):
@@ -60,6 +63,10 @@ final class EditPageViewModel: ViewModelType {
     }
     private func pageWillAppear() {
         output.send(.page(page: page))
+    }
+    private func pageWillDisappear() {
+        cancellables.forEach { $0.cancel() }
+        cancellables = []
     }
     private func didEditPage(text: NSAttributedString) {
         let page = converTextToPage(text: text)

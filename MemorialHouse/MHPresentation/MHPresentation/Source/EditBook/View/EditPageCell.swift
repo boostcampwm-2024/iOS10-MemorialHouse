@@ -51,8 +51,11 @@ final class EditPageCell: UITableViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         
+        input.send(.pageWillDisappear)
+        cancellables.forEach { $0.cancel() }
+        cancellables = []
         viewModel = nil
-        cancellables.removeAll()
+        textView.text = ""
     }
     
     // MARK: - Setup & Configuration
