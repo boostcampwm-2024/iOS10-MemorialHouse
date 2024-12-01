@@ -6,7 +6,7 @@ import MHFoundation
 
 public final class RegisterViewController: UIViewController {
     // MARK: - Property
-    private var viewModel = RegisterViewModel()
+    private var viewModel: RegisterViewModel
     private let input = PassthroughSubject<RegisterViewModel.Input, Never>()
     private var cancellables = Set<AnyCancellable>()
     
@@ -71,7 +71,11 @@ public final class RegisterViewController: UIViewController {
     }
     
     required init?(coder: NSCoder) {
-        self.viewModel = RegisterViewModel()
+        guard let createMHNameUseCase = try? DIContainer.shared.resolve(CreateMemorialHouseNameUseCase.self) else {
+            MHLogger.error("CreateMemorialHouseNameUseCase resolve 실패")
+            return nil
+        }
+        self.viewModel = RegisterViewModel(createMemorialHouseNameUseCase: createMHNameUseCase)
         super.init(coder: coder)
     }
     
@@ -103,6 +107,8 @@ public final class RegisterViewController: UIViewController {
                 self?.registerButton.isEnabled = isEnabled
             case .moveToHome:
                 self?.moveHome()
+            case .createFailure(let errorMessage):
+                self?.handleError(with: errorMessage)
             }
         }.store(in: &cancellables)
     }
