@@ -54,10 +54,16 @@ final class EditBookViewController: UIViewController {
         
         return stackView
     }()
-    private let publishButton: UIButton = {
+    private let addPageButton: UIButton = {
         let button = UIButton()
-        button.setImage(.publishButton, for: .normal)
-        button.imageView?.contentMode = .scaleAspectFit
+        let title = NSAttributedString(
+            string: "페이지 추가",
+            attributes: [
+                .font: UIFont.ownglyphBerry(size: 20),
+                .foregroundColor: UIColor.mhTitle
+            ]
+        )
+        button.setAttributedTitle(title, for: .normal)
         button.backgroundColor = .clear
         
         return button
@@ -88,13 +94,12 @@ final class EditBookViewController: UIViewController {
         
         setup()
         configureNavigationBar()
-        configureSaveButton()
         configureAddSubView()
         configureConstraints()
         configureKeyboard()
         configureBinding()
         configureButtonAction()
-        guard let bookID = id else { return }
+        guard let bookID = id else { return } // TODO: - 나중에 지워야함
         input.send(.viewDidLoad(bookID: bookID))
     }
     
@@ -136,28 +141,12 @@ final class EditBookViewController: UIViewController {
         
         // 네비게이션 오른쪽 아이템
         navigationItem.rightBarButtonItem = UIBarButtonItem(
-            title: "기록",
+            title: "기록 마치기",
             normal: normalAttributes,
             selected: selectedAttributes
         ) { [weak self] in
             self?.input.send(.didSaveButtonTapped)
-            self?.navigationController?.popViewController(animated: true)
-        }
-        
-        // 네비게이션 타이틀
-        // TODO: - ViewModel에서 받아오는 타이틀로 변경
-        navigationItem.title = "책 제목"
-    }
-    private func configureSaveButton() {
-        // BookCreationViewController에서 넘어온 경우에만 저장 버튼 보여주기
-        let isFromCreation = navigationController?.viewControllers
-            .contains { $0 is BookCreationViewController } ?? false
-        
-        if isFromCreation {
-            navigationItem.rightBarButtonItem = nil
-            publishButton.isHidden = false
-        } else {
-            publishButton.isHidden = true
+            self?.navigationController?.popToRootViewController(animated: true)
         }
     }
     private func configureAddSubView() {
@@ -172,7 +161,7 @@ final class EditBookViewController: UIViewController {
         view.addSubview(buttonStackView)
         
         // publishButton
-        view.addSubview(publishButton)
+        view.addSubview(addPageButton)
     }
     private func configureConstraints() {
         // tableView
@@ -196,11 +185,9 @@ final class EditBookViewController: UIViewController {
         buttonStackViewBottomConstraint?.isActive = true
         
         // publishButton
-        publishButton.setAnchor(
+        addPageButton.setAnchor(
             bottom: buttonStackView.bottomAnchor,
-            trailing: editPageTableView.trailingAnchor, constantTrailing: 15,
-            width: 55,
-            height: 40
+            trailing: editPageTableView.trailingAnchor, constantTrailing: 15
         )
     }
     private func configureKeyboard() {
@@ -218,25 +205,24 @@ final class EditBookViewController: UIViewController {
             )
     }
     private func configureBinding() {
-        // TODO: - 추후 로직 추가하기
         let output = viewModel.transform(input: input.eraseToAnyPublisher())
         output.receive(on: DispatchQueue.main)
             .sink { [weak self] event in
                 switch event {
-                case .updateTableView:
+                case .updateViewController(title: let title):
+                    self?.navigationItem.title = title
                     self?.editPageTableView.reloadData()
+                case .error(message: let message):
+                    MHLogger.error(message) // TODO: - Alert 띄우기
                 }
             }
             .store(in: &cancellables)
     }
     private func configureButtonAction() {
-        // TODO: - 로직을 정한다음에 Action 추가
         let addImageAction = UIAction { [weak self] _ in
             // TODO: - 이미지 받는 임시 로직
-            guard let data = UIImage(resource: .bookMake).pngData(),
-                  let currentPage = self?.editPageTableView.indexPathForSelectedRow?.row
-            else { return }
-            self?.input.send(.didAddMediaWithData(type: .image, atPage: currentPage, data: data))
+            guard let data = UIImage(resource: .bookMake).pngData() else { return }
+            self?.input.send(.didAddMediaWithData(type: .image, data: data))
         }
         addImageButton.addAction(addImageAction, for: .touchUpInside)
         
@@ -250,11 +236,10 @@ final class EditBookViewController: UIViewController {
         }
         addAudioButton.addAction(addAudioAction, for: .touchUpInside)
         
-        let publishAction = UIAction { [weak self] _ in
-            self?.input.send(.didSaveButtonTapped)
-            self?.navigationController?.popViewController(animated: true)
+        let addPageAction = UIAction { [weak self] _ in
+            self?.input.send(.addPageButtonTapped)
         }
-        publishButton.addAction(publishAction, for: .touchUpInside)
+        addPageButton.addAction(addPageAction, for: .touchUpInside)
     }
     
     // MARK: - Keyboard Appear & Hide
@@ -284,7 +269,9 @@ extension EditBookViewController {
 
 // MARK: - UITableViewDelegate
 extension EditBookViewController: UITableViewDelegate {
-    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        input.send(.didSelectPage(at: indexPath.row))
+    }
 }
 
 // MARK: - UITableViewDataSource
@@ -295,14 +282,15 @@ extension EditBookViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(
             withIdentifier: EditPageCell.identifier,
-            for: indexPath
-        ) as? EditPageCell else { return UITableViewCell() }
+            for: indexPath) as? EditPageCell
+        else { return UITableViewCell() }
         
-        cell.configure(viewModel: viewModel.page(at: indexPath.row))
+        let editPageViewModel = viewModel.editPageViewModel(at: indexPath.row)
+        cell.configure(viewModel: editPageViewModel)
         
         return cell
     }
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return view.frame.height
+        return view.safeAreaLayoutGuide.layoutFrame.height - buttonStackView.frame.height - 40
     }
 }
