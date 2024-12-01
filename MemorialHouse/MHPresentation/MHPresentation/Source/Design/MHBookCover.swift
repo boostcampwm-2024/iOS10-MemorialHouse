@@ -2,10 +2,10 @@ import UIKit
 import MHFoundation
 import MHDomain
 
-final class MHBookCover: UIView {
+final class MHBookCover: UIButton {
     // MARK: - Property
     private let bookCoverImageView = UIImageView()
-    private let titleLabel: UILabel = {
+    private let bookTitleLabel: UILabel = {
         let label = UILabel(style: .header2)
         label.adjustsFontSizeToFitWidth = true
         
@@ -41,7 +41,7 @@ final class MHBookCover: UIView {
     
     func resetProperties() {
         bookCoverImageView.image = nil
-        titleLabel.text = nil
+        bookTitleLabel.text = nil
         targetImageView.image = nil
     }
     
@@ -52,7 +52,7 @@ final class MHBookCover: UIView {
         targetImage: UIImage,
         houseName: String
     ) {
-        titleLabel.text = title
+        bookTitleLabel.text = title
         bookCoverImageView.image = bookCoverImage
         targetImageView.image = targetImage
         houseLabel.text = houseName
@@ -60,17 +60,17 @@ final class MHBookCover: UIView {
     
     private func configureAddSubView() {
         addSubview(bookCoverImageView)
-        addSubview(titleLabel)
+        addSubview(bookTitleLabel)
         addSubview(targetImageView)
         addSubview(houseLabel)
     }
     
     private func configureConstraints() {
         bookCoverImageView.fillSuperview()
-        titleLabel.setTop(anchor: topAnchor, constant: 16)
-        titleLabel.setLeading(anchor: leadingAnchor, constant: 25)
-        titleLabel.setTrailing(anchor: trailingAnchor, constant: 12)
-        targetImageView.setTop(anchor: titleLabel.bottomAnchor, constant: 14)
+        bookTitleLabel.setTop(anchor: topAnchor, constant: 16)
+        bookTitleLabel.setLeading(anchor: leadingAnchor, constant: 25)
+        bookTitleLabel.setTrailing(anchor: trailingAnchor, constant: 12)
+        targetImageView.setTop(anchor: bookTitleLabel.bottomAnchor, constant: 14)
         targetImageView.setCenterX(view: self, constant: 8)
         targetImageView.setWidthAndHeight(width: 100, height: 110)
         houseLabel.setBottom(anchor: bottomAnchor, constant: 12)

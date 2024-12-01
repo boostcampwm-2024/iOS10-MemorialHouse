@@ -4,6 +4,7 @@ import MHDomain
 import MHCore
 import AVFoundation
 
+// TODO: nil이라면 바로 error를 return하도록 수정
 public struct LocalMediaRepository: MediaRepository, Sendable {
     private let storage: FileStorage
     private let temporaryPath = "temp"
@@ -37,7 +38,11 @@ public struct LocalMediaRepository: MediaRepository, Sendable {
         
         return await storage.copy(at: from, to: path, newFileName: fileName)
     }
-    public func read(media mediaDescription: MediaDescription, from bookID: UUID?) async -> Result<Data, MHDataError> {
+    
+    public func read(
+        media mediaDescription: MediaDescription,
+        from bookID: UUID?
+    ) async -> Result<Data, MHDataError> {
         let path = bookID == nil
         ? temporaryPath
         : bookID!.uuidString
@@ -45,15 +50,11 @@ public struct LocalMediaRepository: MediaRepository, Sendable {
         
         return await storage.read(at: path, fileName: fileName)
     }
-    public func getURL(media mediaDescription: MediaDescription, from bookID: UUID?) async -> Result<URL, MHDataError> {
-        let path = bookID == nil
-        ? temporaryPath
-        : bookID!.uuidString
-        let fileName = fileName(of: mediaDescription)
-        
-        return await storage.getURL(at: path, fileName: fileName)
-    }
-    public func delete(media mediaDescription: MediaDescription, at bookID: UUID?) async -> Result<Void, MHDataError> {
+    
+    public func delete(
+        media mediaDescription: MediaDescription,
+        at bookID: UUID?
+    ) async -> Result<Void, MHDataError> {
         let path = bookID == nil
         ? temporaryPath
         : bookID!.uuidString
@@ -61,12 +62,29 @@ public struct LocalMediaRepository: MediaRepository, Sendable {
         
         return await storage.delete(at: path, fileName: fileName)
     }
-    public func moveTemporaryMedia(_ mediaDescription: MediaDescription, to bookID: UUID) async -> Result<Void, MHDataError> {
+    
+    public func moveTemporaryMedia(
+        _ mediaDescription: MediaDescription,
+        to bookID: UUID
+    ) async -> Result<Void, MHDataError> {
         let path = bookID.uuidString
+        let fileName = mediaDescription.id.uuidString
+        
+        return await storage.move(at: "temp", fileName: fileName, to: path)
+    }
+    
+    public func getURL(
+        media mediaDescription: MediaDescription,
+        from bookID: UUID?
+    ) async -> Result<URL, MHDataError> {
+        let path = bookID == nil
+        ? temporaryPath
+        : bookID!.uuidString
         let fileName = fileName(of: mediaDescription)
         
-        return await storage.move(at: temporaryPath, fileName: fileName, to: path)
+        return await storage.getURL(at: path, fileName: fileName)
     }
+    
     public func moveAllTemporaryMedia(to bookID: UUID) async -> Result<Void, MHDataError> {
         let path = bookID.uuidString
         
