@@ -255,7 +255,7 @@ extension EditPageCell: @preconcurrency NSTextStorageDelegate {
         changeInLength delta: Int
     ) {
         // 입력하는 곳 앞에 Attachment가 있을 때, 줄바꿈을 추가합니다.
-        if editedRange.location > 0, delta > 0,
+        if editedRange.location - 1 > 0, delta > 0,
            attachmentAt(editedRange.location - 1) != nil {
             textStorage.insert(
                 NSAttributedString(
