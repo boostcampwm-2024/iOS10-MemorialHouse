@@ -83,21 +83,21 @@ final class EditPageCell: UITableViewCell {
         output?
             .receive(on: DispatchQueue.main)
             .sink { [weak self] event in
-            switch event {
-            case .page(let page):
-                self?.configurePage(page: page)
-            case let .mediaAddedWithData(media, data):
-                self?.mediaAddedWithData(media: media, data: data)
-            case let .mediaAddedWithURL(media, url):
-                self?.mediaAddedWithURL(media: media, url: url)
-            case let .mediaLoadedWithData(media, data):
-                self?.mediaLoadedWithData(media: media, data: data)
-            case let .mediaLoadedWithURL(media, url):
-                self?.mediaLoadedWithURL(media: media, url: url)
-            case let .error(message):
-                MHLogger.error(message) // 더 좋은 처리가 필요함
-            }
-        }.store(in: &cancellables)
+                switch event {
+                case .page(let page):
+                    self?.configurePage(page: page)
+                case let .mediaAddedWithData(media, data):
+                    self?.mediaAddedWithData(media: media, data: data)
+                case let .mediaAddedWithURL(media, url):
+                    self?.mediaAddedWithURL(media: media, url: url)
+                case let .mediaLoadedWithData(media, data):
+                    self?.mediaLoadedWithData(media: media, data: data)
+                case let .mediaLoadedWithURL(media, url):
+                    self?.mediaLoadedWithURL(media: media, url: url)
+                case let .error(message):
+                    MHLogger.error(message) // 더 좋은 처리가 필요함
+                }
+            }.store(in: &cancellables)
     }
     
     // MARK: - Method
