@@ -9,6 +9,7 @@ public final class HomeViewModel: ViewModelType {
         case selectedCategory(category: String)
         case dragAndDropBookCover(currentIndex: Int, destinationIndex: Int)
         case likeButtonTapped(bookId: UUID)
+        case deleteBookCover(bookId: UUID)
     }
     
     public enum Output: Equatable {
@@ -23,6 +24,7 @@ public final class HomeViewModel: ViewModelType {
     private let fetchMemorialHouseNameUseCase: FetchMemorialHouseNameUseCase
     private let fetchAllBookCoverUseCase: FetchAllBookCoverUseCase
     private let updateBookCoverUseCase: UpdateBookCoverUseCase
+    private let deleteBookCoverUseCase: DeleteBookCoverUseCase
     private var cancellables = Set<AnyCancellable>()
     private(set) var houseName = ""
     private(set) var bookCovers = [BookCover]()
@@ -31,11 +33,13 @@ public final class HomeViewModel: ViewModelType {
     public init(
         fetchMemorialHouseUseCase: FetchMemorialHouseNameUseCase,
         fetchAllBookCoverUseCase: FetchAllBookCoverUseCase,
-        updateBookCoverUseCase: UpdateBookCoverUseCase
+        updateBookCoverUseCase: UpdateBookCoverUseCase,
+        deleteBookCoverUseCase: DeleteBookCoverUseCase
     ) {
         self.fetchMemorialHouseNameUseCase = fetchMemorialHouseUseCase
         self.fetchAllBookCoverUseCase = fetchAllBookCoverUseCase
         self.updateBookCoverUseCase = updateBookCoverUseCase
+        self.deleteBookCoverUseCase = deleteBookCoverUseCase
     }
     
     @MainActor
@@ -84,6 +88,22 @@ public final class HomeViewModel: ViewModelType {
         self.bookCovers = bookCovers
         self.currentBookCovers = bookCovers
         output.send(.fetchedAllBookCover)
+    
+    @MainActor
+    private func deleteBookCover(bookId: UUID) async {
+        do {
+            try await deleteBookCoverUseCase.execute(id: bookId)
+            guard
+                let bookCoverIndex = bookCovers.firstIndex(where: { $0.id == bookId }),
+                let currentBookCoverIndex = currentBookCovers.firstIndex(where: { $0.id == bookId })
+            else { return }
+            
+            bookCovers.remove(at: bookCoverIndex)
+            currentBookCovers.remove(at: currentBookCoverIndex)
+        } catch {
+            MHLogger.error("삭제 에러 발생: \(error.localizedDescription)")
+            output.send(.fetchedFailure("삭제에 실패했습니다."))
+        }
     }
     
     private func filterBooks(by category: String) {
@@ -107,26 +127,5 @@ public final class HomeViewModel: ViewModelType {
         currentBookCovers.remove(at: currentIndex)
         currentBookCovers.insert(currentBookCover, at: destinationIndex)
         output.send(.dragAndDropFinished)
-    }
-    
-    private func likeButtonTapped(bookId: UUID) async throws {
-        guard
-            let bookCoverIndex = bookCovers.firstIndex(where: { $0.id == bookId }),
-            let currentBookCoverindex = currentBookCovers.firstIndex(where: { $0.id == bookId })
-        else { return }
-        
-        let currentBookCover = currentBookCovers[currentBookCoverindex]
-        let bookCover = BookCover(
-            id: currentBookCover.id,
-            order: currentBookCover.order,
-            title: currentBookCover.title,
-            imageURL: currentBookCover.category,
-            color: currentBookCover.color,
-            category: currentBookCover.imageURL,
-            favorite: !currentBookCover.favorite
-        )
-        try await updateBookCoverUseCase.execute(id: bookId, with: bookCover)
-        bookCovers[bookCoverIndex] = bookCover
-        currentBookCovers[currentBookCoverindex] = bookCover
     }
 }
