@@ -9,11 +9,13 @@ public struct UserDefaultsMemorialHouseNameStorage: MemorialHouseNameStorage {
     }
     
     public func create(with memorialHouseName: String) async -> Result<Void, MHDataError> {
-        userDefaults.set(
-            memorialHouseName,
-            forKey: Constant.houseNameUserDefaultKey
-        )
-        return .success(())
+        userDefaults.set(memorialHouseName, forKey: Constant.houseNameUserDefaultKey)
+        
+        if userDefaults.string(forKey: Constant.houseNameUserDefaultKey) == memorialHouseName {
+            return .success(())
+        } else {
+            return .failure(.setUserDefaultFailure)
+        }
     }
     
     public func fetch() async -> Result<String, MHDataError> {
