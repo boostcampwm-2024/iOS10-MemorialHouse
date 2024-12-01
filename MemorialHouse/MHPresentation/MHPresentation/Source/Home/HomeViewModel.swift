@@ -48,27 +48,17 @@ public final class HomeViewModel: ViewModelType {
             switch event {
             case .viewDidLoad:
                 Task {
-                    do {
-                        try await self?.fetchMemorialHouse()
-                        try await self?.fetchAllBookCover()
-                    } catch {
-                        self?.output.send(.fetchedFailure("데이터 로드 중 에러가 발생했습니다."))
-                        MHLogger.error("데이터 로드 에러 발생: \(error.localizedDescription)")
-                    }
+                    await self?.fetchMemorialHouse()
+                    await self?.fetchAllBookCover()
                 }
             case .selectedCategory(let category):
                 self?.filterBooks(by: category)
             case .dragAndDropBookCover(let currentIndex, let destinationIndex):
                 self?.dragAndDropBookCover(from: currentIndex, to: destinationIndex)
             case .likeButtonTapped(let bookId):
-                Task {
-                    do {
-                        try await self?.likeButtonTapped(bookId: bookId)
-                    } catch {
-                        self?.output.send(.fetchedFailure("좋아요에 실패했습니다."))
-                        MHLogger.error("좋아요 에러 발생: \(error.localizedDescription)")
-                    }
-                }
+                Task { await self?.likeButtonTapped(bookId: bookId) }
+            case .deleteBookCover(let bookId):
+                Task { await self?.deleteBookCover(bookId: bookId) }
             }
         }.store(in: &cancellables)
         
@@ -76,18 +66,57 @@ public final class HomeViewModel: ViewModelType {
     }
     
     @MainActor
-    private func fetchMemorialHouse() async throws {
-        let memorialHouseName = try await fetchMemorialHouseNameUseCase.execute()
-        houseName = memorialHouseName
-        output.send(.fetchedMemorialHouseName)
+    private func fetchMemorialHouse() async {
+        do {
+            let memorialHouseName = try await fetchMemorialHouseNameUseCase.execute()
+            houseName = memorialHouseName
+            output.send(.fetchedMemorialHouseName)
+        } catch {
+            output.send(.fetchedFailure("MemorialHouseName 로드 중 에러가 발생했습니다."))
+            MHLogger.error("MemorialHouseName 로드 에러 발생: \(error.localizedDescription)")
+        }
     }
     
     @MainActor
-    private func fetchAllBookCover() async throws {
-        let bookCovers = try await fetchAllBookCoverUseCase.execute()
-        self.bookCovers = bookCovers
-        self.currentBookCovers = bookCovers
-        output.send(.fetchedAllBookCover)
+    private func fetchAllBookCover() async {
+        do {
+            let bookCovers = try await fetchAllBookCoverUseCase.execute()
+            self.bookCovers = bookCovers
+            self.currentBookCovers = bookCovers
+            output.send(.fetchedAllBookCover)
+        } catch {
+            output.send(.fetchedFailure("책들을 불러오는 중에 에러가 발생했습니다."))
+            MHLogger.error("책들을 불러오는 중에 에러 발생: \(error.localizedDescription)")
+        }
+    }
+    
+    @MainActor
+    private func likeButtonTapped(bookId: UUID) async {
+        guard
+            let bookCoverIndex = bookCovers.firstIndex(where: { $0.id == bookId }),
+            let currentBookCoverindex = currentBookCovers.firstIndex(where: { $0.id == bookId })
+        else { return }
+        
+        let currentBookCover = currentBookCovers[currentBookCoverindex]
+        let bookCover = BookCover(
+            id: currentBookCover.id,
+            order: currentBookCover.order,
+            title: currentBookCover.title,
+            imageURL: currentBookCover.category,
+            color: currentBookCover.color,
+            category: currentBookCover.imageURL,
+            favorite: !currentBookCover.favorite
+        )
+        
+        do {
+            try await updateBookCoverUseCase.execute(id: bookId, with: bookCover)
+            bookCovers[bookCoverIndex] = bookCover
+            currentBookCovers[currentBookCoverindex] = bookCover
+        } catch {
+            output.send(.fetchedFailure("좋아요에 실패했습니다."))
+            MHLogger.error("좋아요 에러 발생: \(error.localizedDescription)")
+        }
+    }
     
     @MainActor
     private func deleteBookCover(bookId: UUID) async {
