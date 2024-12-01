@@ -1,3 +1,4 @@
+import MHDomain
 import UIKit
 
 final class MHPolaroidPhotoView: UIView {
@@ -76,5 +77,31 @@ final class MHPolaroidPhotoView: UIView {
         photoImageView.image = image
         captionLabel.text = caption
         creationDateLabel.text = creationDate
+    }
+}
+
+// TODO: - PreConcurrency 제거..?
+extension MHPolaroidPhotoView: @preconcurrency MediaAttachable {
+    func configureSource(with mediaDescription: MediaDescription, data: Data) {
+        var caption: String? = nil
+        if let captionString = mediaDescription.attributes?["caption"] as? String {
+            caption = captionString
+        }
+        let photoImage = UIImage(data: data)
+        guard let creationDate = mediaDescription.attributes?["creationDate"] as? Date else { return }
+        
+        configurePhotoImageView(image: photoImage, caption: caption, creationDate: creationDate.toString())
+    }
+    
+    func configureSource(with mediaDescription: MediaDescription, url: URL) {
+        var caption: String? = nil
+        if let captionString = mediaDescription.attributes?["caption"] as? String {
+            caption = captionString
+        }
+        let photoImage = UIImage(contentsOfFile: url.path)
+        guard let creationDate = mediaDescription.attributes?["creationDate"] as? Date else { return }
+        
+        configurePhotoImageView(image: photoImage, caption: caption, creationDate: creationDate.toString())
+        
     }
 }
