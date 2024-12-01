@@ -1,6 +1,6 @@
 @testable import MHDomain
 
-struct StubMemorialHouseRepository: MemorialHouseRepository {
+struct StubMemorialHouseRepository: MemorialHouseNameRepository {
     private let dummyData: MemorialHouse
     
     init(dummyData: MemorialHouse) {

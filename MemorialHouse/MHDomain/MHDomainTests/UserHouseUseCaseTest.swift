@@ -14,7 +14,7 @@ struct MemorialHouseUseCaseTest {
             ]
         )
         let stubMemorialHouseRepository = StubMemorialHouseRepository(dummyData: dummyMemorialHouse)
-        self.sut = DefaultFetchMemorialHouseUseCase(repository: stubMemorialHouseRepository)
+        self.sut = DefaultFetchMemorialHouseNameUseCase(repository: stubMemorialHouseRepository)
 
         // Act 실행 단계: SUT 메소드를 호출하면서 의존성을 전달해서 결과를 저장하기
         let result = try await sut.execute()
@@ -31,7 +31,7 @@ struct MemorialHouseUseCaseTest {
             bookCovers: []
         )
         let stubMemorialHouseRepository = StubMemorialHouseRepository(dummyData: dummyMemorialHouse)
-        self.sut = DefaultFetchMemorialHouseUseCase(repository: stubMemorialHouseRepository)
+        self.sut = DefaultFetchMemorialHouseNameUseCase(repository: stubMemorialHouseRepository)
 
         // Act 실행 단계: SUT 메소드를 호출하면서 의존성을 전달해서 결과를 저장하기
         let result = try await sut.execute()
@@ -47,7 +47,7 @@ struct MemorialHouseUseCaseTest {
             bookCovers: []
         )
         let stubMemorialHouseRepository = StubMemorialHouseRepository(dummyData: dummyMemorialHouse)
-        self.sut = DefaultFetchMemorialHouseUseCase(repository: stubMemorialHouseRepository)
+        self.sut = DefaultFetchMemorialHouseNameUseCase(repository: stubMemorialHouseRepository)
 
         // Act 실행 단계: SUT 메소드를 호출하면서 의존성을 전달해서 결과를 저장하기
         let result = try await sut.execute()
