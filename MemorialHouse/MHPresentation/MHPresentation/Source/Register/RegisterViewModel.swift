@@ -5,7 +5,7 @@ import Combine
 public final class RegisterViewModel: ViewModelType {
     public enum Input {
         case registerTextFieldEdited(text: String?)
-        case registerButtonTapped(text: String)
+        case registerButtonTapped(memorialHouseName: String)
     }
     
     public enum Output: Equatable {

@@ -191,8 +191,8 @@ public final class RegisterViewController: UIViewController {
     
     private func addTouchEventToRegisterButton(_ button: UIButton) {
         let uiAction = UIAction { [weak self] _ in
-            guard let self, let text = self.registerTextField.text else { return }
-            self.input.send(.registerButtonTapped(text: text))
+            guard let self, let memorialHouseName = self.registerTextField.text else { return }
+            self.input.send(.registerButtonTapped(memorialHouseName: memorialHouseName))
         }
         registerButton.addAction(uiAction, for: .touchUpInside)
     }
