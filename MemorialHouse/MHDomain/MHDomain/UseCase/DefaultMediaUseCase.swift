@@ -11,11 +11,11 @@ public struct DefaultCreateMediaUseCase: CreateMediaUseCase, Sendable {
     }
     
     // MARK: - Method
-    public func execute(media: MediaDescription, data: Data) async throws {
-        try await repository.create(media: media, data: data, to: nil).get()
+    public func execute(media: MediaDescription, data: Data, at bookID: UUID?) async throws {
+        try await repository.create(media: media, data: data, to: bookID).get()
     }
-    public func execute(media: MediaDescription, in url: URL) async throws {
-        try await repository.create(media: media, from: url, to: nil).get()
+    public func execute(media: MediaDescription, from url: URL, at bookID: UUID?) async throws {
+        try await repository.create(media: media, from: url, to: bookID).get()
     }
 }
 
@@ -76,5 +76,9 @@ public struct DefaultPersistentlyStoreMediaUseCase: PersistentlyStoreMediaUseCas
     // MARK: - Method
     public func execute(to bookID: UUID) async throws {
         try await repository.moveAllTemporaryMedia(to: bookID).get()
+    }
+    public func execute(to bookID: UUID, mediaList: [MediaDescription]) async throws {
+        try await repository.createSnapshot(for: mediaList, in: bookID).get()
+        try await repository.deleteMediaBySnapshot(for: bookID).get()
     }
 }

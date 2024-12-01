@@ -10,4 +10,8 @@ public protocol MediaRepository: Sendable {
     func delete(media mediaDescription: MediaDescription, at bookID: UUID?) async -> Result<Void, MHDataError>
     func moveTemporaryMedia(_ mediaDescription: MediaDescription, to bookID: UUID) async -> Result<Void, MHDataError>
     func moveAllTemporaryMedia(to bookID: UUID) async -> Result<Void, MHDataError>
+    
+    // MARK: - Snapshot
+    func createSnapshot(for media: [MediaDescription], in bookID: UUID) async -> Result<Void, MHDataError>
+    func deleteMediaBySnapshot(for bookID: UUID) async -> Result<Void, MHDataError>
 }

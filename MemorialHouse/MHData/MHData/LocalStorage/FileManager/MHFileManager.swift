@@ -22,7 +22,7 @@ extension MHFileManager: FileStorage {
         
         do {
             try fileManager.createDirectory(at: directory, withIntermediateDirectories: true)
-            try data.write(to: dataPath)
+            try data.write(to: dataPath, options: .atomic)
             return .success(())
         } catch {
             return .failure(.fileCreationFailure)
@@ -184,6 +184,20 @@ extension MHFileManager: FileStorage {
         let originDataPath = originDirectory.appendingPathComponent(name)
         
         return .success(originDataPath)
+    }
+    public func getFileNames(at path: String) async -> Result<[String], MHDataError> {
+        guard let originDirectory = fileManager.urls(
+            for: directoryType,
+            in: .userDomainMask
+        ).first?.appending(path: path)
+        else { return .failure(.directorySettingFailure) }
+        
+        do {
+            let files = try fileManager.contentsOfDirectory(atPath: originDirectory.path)
+            return .success(files)
+        } catch {
+            return .failure(.fileNotExists)
+        }
     }
 }
 
