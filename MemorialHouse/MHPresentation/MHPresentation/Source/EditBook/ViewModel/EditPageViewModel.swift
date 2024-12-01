@@ -1,5 +1,5 @@
 import MHFoundation
-@preconcurrency import Combine
+import Combine
 import MHDomain
 import MHCore
 
