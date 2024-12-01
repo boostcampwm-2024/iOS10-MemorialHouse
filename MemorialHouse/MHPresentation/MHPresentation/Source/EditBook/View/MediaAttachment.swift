@@ -9,6 +9,7 @@ protocol MediaAttachmentDataSource: AnyObject {
 final class MediaAttachment: NSTextAttachment {
     // MARK: - Property
     private let view: (UIView & MediaAttachable)
+    var cachedViewProvider: MediaAttachmentViewProvider?
     let mediaDescription: MediaDescription
     weak var dataSource: MediaAttachmentDataSource?
     
@@ -29,6 +30,9 @@ final class MediaAttachment: NSTextAttachment {
         location: any NSTextLocation,
         textContainer: NSTextContainer?
     ) -> NSTextAttachmentViewProvider? {
+        if let provider = cachedViewProvider {
+            return provider
+        }
         let provider = MediaAttachmentViewProvider(
             textAttachment: self,
             parentView: parentView,
@@ -38,6 +42,8 @@ final class MediaAttachment: NSTextAttachment {
         provider.tracksTextAttachmentViewBounds = true
         provider.view = view
         provider.type = mediaDescription.type
+        cachedViewProvider = provider
+        
         return provider
     }
     override func image(
@@ -45,6 +51,7 @@ final class MediaAttachment: NSTextAttachment {
         textContainer: NSTextContainer?,
         characterIndex charIndex: Int
     ) -> UIImage? {
+        cachedViewProvider = nil
         return dataSource?.mediaAttachmentDragingImage(self, about: view)
     }
     
