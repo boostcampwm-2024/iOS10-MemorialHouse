@@ -49,6 +49,7 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     private func registerStorageDepedency() throws {
         DIContainer.shared.register(CoreDataStorage.self, object: CoreDataStorage())
                 
+        // MARK: - CoreData
         let coreDataStorage = try DIContainer.shared.resolve(CoreDataStorage.self)
         DIContainer.shared.register(
             BookCategoryStorage.self,
@@ -61,6 +62,12 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         DIContainer.shared.register(
             BookStorage.self,
             object: CoreDataBookStorage(coreDataStorage: coreDataStorage)
+        )
+        
+        // MARK: - FileManager
+        DIContainer.shared.register(
+            FileStorage.self,
+            object: MHFileManager(directoryType: .documentDirectory)
         )
     }
     
@@ -84,6 +91,11 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         DIContainer.shared.register(
             BookRepository.self,
             object: LocalBookRepository(storage: bookStorage)
+        )
+        let fileStorage = try DIContainer.shared.resolve(FileStorage.self)
+        DIContainer.shared.register(
+            MediaRepository.self,
+            object: LocalMediaRepository(storage: fileStorage)
         )
     }
     
@@ -132,6 +144,25 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             DeleteBookUseCase.self,
             object: DefaultDeleteBookUseCase(repository: bookRepository)
         )
+        
+        // MARK: - Media UseCase
+        let mediaRepository = try DIContainer.shared.resolve(MediaRepository.self)
+        DIContainer.shared.register(
+            CreateMediaUseCase.self,
+            object: DefaultCreateMediaUseCase(repository: mediaRepository)
+        )
+        DIContainer.shared.register(
+            FetchMediaUseCase.self,
+            object: DefaultFetchMediaUseCase(repository: mediaRepository)
+        )
+        DIContainer.shared.register(
+            DeleteMediaUseCase.self,
+            object: DefaultDeleteMediaUseCase(repository: mediaRepository)
+        )
+        DIContainer.shared.register(
+            PersistentlyStoreMediaUseCase.self,
+            object: DefaultPersistentlyStoreMediaUseCase(repository: mediaRepository)
+        )
     }
     
     private func registerViewModelFactoryDependency() throws {
@@ -169,9 +200,17 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         )
         
         // MARK: - Page ViewModel
+        let fetchMediaUseCase = try DIContainer.shared.resolve(FetchMediaUseCase.self)
         DIContainer.shared.register(
             ReadPageViewModelFactory.self,
-            object: ReadPageViewModelFactory()
+            object: ReadPageViewModelFactory(fetchMediaUseCase: fetchMediaUseCase)
+        )
+        
+        // MARK: - Edit ViewModel
+        let createMediaUseCase = try DIContainer.shared.resolve(CreateMediaUseCase.self)
+        DIContainer.shared.register(
+            EditPhotoViewModelFactory.self,
+            object: EditPhotoViewModelFactory(createMediaUseCase: createMediaUseCase)
         )
     }
 }
