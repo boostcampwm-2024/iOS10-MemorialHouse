@@ -79,6 +79,8 @@ public final class HomeViewController: UIViewController {
         view.backgroundColor = .baseBackground
         collectionView.delegate = self
         collectionView.dataSource = self
+        collectionView.dragDelegate = self
+        collectionView.dropDelegate = self
         collectionView.register(
             BookCollectionViewCell.self,
             forCellWithReuseIdentifier: BookCollectionViewCell.identifier
@@ -95,7 +97,7 @@ public final class HomeViewController: UIViewController {
             switch event {
             case .fetchedMemorialHouseAndCategory:
                 self.updateMemorialHouse()
-            case .filteredBooks:
+            case .filteredBooks, .dragAndDropFinished:
                 self.collectionView.reloadData()
             case .fetchedFailure(let errorMessage):
                 self.handleError(with: errorMessage)
@@ -285,8 +287,80 @@ extension HomeViewController: UICollectionViewDataSource {
     }
 }
 
+// MARK: - UICollectionViewDragDelegate
+extension HomeViewController: UICollectionViewDragDelegate {
+    public func collectionView(
+        _ collectionView: UICollectionView,
+        itemsForBeginning session: any UIDragSession,
+        at indexPath: IndexPath
+    ) -> [UIDragItem] {
+        let dragItem = UIDragItem(itemProvider: NSItemProvider())
+        return [dragItem]
+    }
+}
+
+// MARK: - UICollectionViewDropDelegate
+extension HomeViewController: UICollectionViewDropDelegate {
+    public func collectionView(
+        _ collectionView: UICollectionView,
+        dropSessionDidUpdate session: UIDropSession,
+        withDestinationIndexPath destinationIndexPath: IndexPath?
+    ) -> UICollectionViewDropProposal {
+        guard collectionView.hasActiveDrag else { return UICollectionViewDropProposal(operation: .forbidden) }
+        return UICollectionViewDropProposal(operation: .move, intent: .insertAtDestinationIndexPath)
+    }
+    
+    public func collectionView(
+        _ collectionView: UICollectionView,
+        performDropWith coordinator: UICollectionViewDropCoordinator
+    ) {
+        var destinationIndexPath: IndexPath
+        if let indexPath = coordinator.destinationIndexPath {
+            destinationIndexPath = indexPath
+        } else {
+            let row = collectionView.numberOfItems(inSection: 0)
+            destinationIndexPath = IndexPath(item: row - 1, section: 0)
+        }
+        
+        moveItems(
+            coordinator: coordinator,
+            destinationIndexPath: destinationIndexPath,
+            collectionView: collectionView
+        )
+    }
+    
+    private func moveItems(
+        coordinator: UICollectionViewDropCoordinator,
+        destinationIndexPath: IndexPath,
+        collectionView: UICollectionView
+    ) {
+        guard
+            coordinator.proposal.operation == .move,
+            let item = coordinator.items.first,
+            let sourceIndexPath = item.sourceIndexPath
+        else { return }
+        
+        collectionView.performBatchUpdates { [weak self] in
+            guard let self else { return }
+            input.send(
+                .dragAndDropBookCover(
+                    currentIndex: sourceIndexPath.item,
+                    destinationIndex: destinationIndexPath.item
+                )
+            )
+            
+            collectionView.deleteItems(at: [sourceIndexPath])
+            collectionView.insertItems(at: [destinationIndexPath])
+        }
+    }
+}
+
+// MARK: - BookCategoryViewControllerDelegate
 extension HomeViewController: BookCategoryViewControllerDelegate {
-    func categoryViewController(_ categoryViewController: BookCategoryViewController, didSelectCategory category: String) {
+    func categoryViewController(
+        _ categoryViewController: BookCategoryViewController,
+        didSelectCategory category: String
+    ) {
         currentCategory = category
         input.send(.selectedCategory(category: category))
     }
