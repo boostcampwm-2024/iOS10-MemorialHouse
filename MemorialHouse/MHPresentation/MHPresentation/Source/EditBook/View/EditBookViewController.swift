@@ -201,6 +201,7 @@ final class EditBookViewController: UIViewController {
             name: UIResponder.keyboardWillHideNotification,
             object: nil
             )
+        editPageTableView.keyboardDismissMode = .onDrag
     }
     private func configureBinding() {
         let output = viewModel.transform(input: input.eraseToAnyPublisher())
@@ -255,13 +256,6 @@ final class EditBookViewController: UIViewController {
         UIView.animate(withDuration: 0.3) { [weak self] in
             self?.view.layoutIfNeeded()
         }
-    }
-}
-
-// MARK: - UIScrollViewDelegate
-extension EditBookViewController {
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        view.endEditing(true)
     }
 }
 
