@@ -51,7 +51,7 @@ final class EditPageCell: UITableViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         
-        saveContents()
+        viewModel = nil
         cancellables.removeAll()
     }
     
@@ -61,6 +61,8 @@ final class EditPageCell: UITableViewCell {
         selectionStyle = .none
         
         textStorage = textView.textStorage
+        textStorage?.delegate = self
+        textView.delegate = self
     }
     private func configureAddSubView() {
         contentView.addSubview(textView)
@@ -89,6 +91,8 @@ final class EditPageCell: UITableViewCell {
                 self?.mediaLoadedWithData(media: media, data: data)
             case let .mediaLoadedWithURL(media, url):
                 self?.mediaLoadedWithURL(media: media, url: url)
+            case let .error(message):
+                MHLogger.error(message) // 더 좋은 처리가 필요함
             }
         }.store(in: &cancellables)
     }
@@ -110,7 +114,7 @@ final class EditPageCell: UITableViewCell {
     }
     private func mediaAddedWithData(media: MediaDescription, data: Data) {
         let attachment = MediaAttachment(
-            view: MHPolaroidPhotoView(),
+            view: MHPolaroidPhotoView(), // TODO: - 수정 필요
             description: media
         )
         attachment.configure(with: data)
@@ -121,7 +125,7 @@ final class EditPageCell: UITableViewCell {
     }
     private func mediaAddedWithURL(media: MediaDescription, url: URL) {
         let attachment = MediaAttachment(
-            view: MHPolaroidPhotoView(),
+            view: MHPolaroidPhotoView(),// TODO: - 수정 필요
             description: media
         )
         attachment.configure(with: url)
@@ -140,9 +144,8 @@ final class EditPageCell: UITableViewCell {
     }
     private func saveContents() {
         guard let textStorage else { return }
-        let range = NSRange(location: 0, length: textStorage.length)
-        let text = textStorage.attributedSubstring(from: range)
-        input.send(.pageWillDisappear(attributedText: text))
+        
+        input.send(.didEditPage(attributedText: textStorage))
     }
     /// Text에서 특정 Attachment를 찾아서 적용합니다.
     private func findAttachment(
@@ -186,13 +189,17 @@ final class EditPageCell: UITableViewCell {
         
         return mutableAttributedString
     }
-    private func isAcceptableHight(
-        _ textView: UITextView,
+    /// TextView의 높이가 적절한지 확인합니다.
+    private func isAcceptableHeight(
+        _ textStorage: NSTextStorage,
         shouldChangeTextIn range: NSRange,
         replacementText attributedText: NSAttributedString
     ) -> Bool {
-        let updatedText = NSMutableAttributedString(attributedString: textView.attributedText)
-        let textViewWidth = textView.bounds.width
+        let updatedText = NSMutableAttributedString(attributedString: textStorage)
+        let horizontalInset = textView.textContainerInset.left + textView.textContainerInset.right
+        let verticalInset = textView.textContainerInset.top + textView.textContainerInset.bottom
+        let textViewWidth = textView.bounds.width - horizontalInset
+        let textViewHight = textView.bounds.height - verticalInset
         let temporaryTextView = UITextView(
             frame: CGRect(x: 0, y: 0, width: textViewWidth, height: .greatestFiniteMagnitude)
         )
@@ -200,8 +207,7 @@ final class EditPageCell: UITableViewCell {
         temporaryTextView.attributedText = updatedText
         temporaryTextView.sizeToFit()
         
-        return temporaryTextView.contentSize.height <= textView.bounds.height
-                || attributedText.string.isEmpty
+        return temporaryTextView.contentSize.height <= textViewHight
     }
 }
 
@@ -215,10 +221,29 @@ extension EditPageCell: @preconcurrency MediaAttachmentDataSource {
 // MARK: - UITextViewDelegate
 extension EditPageCell: UITextViewDelegate {
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        guard let textStorage else { return false }
         let attributedText = NSAttributedString(
             string: text,
             attributes: defaultAttributes
         )
-        return isAcceptableHight(textView, shouldChangeTextIn: range, replacementText: attributedText)
+        return text.isEmpty
+        || isAcceptableHeight(textStorage, shouldChangeTextIn: range, replacementText: attributedText)
+    }
+}
+
+// MARK: - NSTextStorageDelegate
+extension EditPageCell: @preconcurrency NSTextStorageDelegate {
+    func textStorage(
+        _ textStorage: NSTextStorage,
+        didProcessEditing editedMask: NSTextStorage.EditActions,
+        range editedRange: NSRange,
+        changeInLength delta: Int
+    ) {
+        let text = textStorage.attributedSubstring(from: editedRange)
+        if !isAcceptableHeight(textStorage, shouldChangeTextIn: editedRange, replacementText: text) {
+            // TODO: - 좀더 우아하게 처리하기? 미리 알려주는 로직으로... 개선필요
+            textStorage.deleteCharacters(in: editedRange)
+        }
+        saveContents()
     }
 }
