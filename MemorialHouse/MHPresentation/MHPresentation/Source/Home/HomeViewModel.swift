@@ -19,7 +19,7 @@ public final class HomeViewModel: ViewModelType {
     }
     
     private let output = PassthroughSubject<Output, Never>()
-    private let fetchMemorialHouseUseCase: FetchMemorialHouseNameUseCase
+    private let fetchMemorialHouseNameUseCase: FetchMemorialHouseNameUseCase
     private let fetchAllBookCoverUseCase: FetchAllBookCoverUseCase
     private let updateBookCoverUseCase: UpdateBookCoverUseCase
     private var cancellables = Set<AnyCancellable>()
@@ -32,7 +32,7 @@ public final class HomeViewModel: ViewModelType {
         fetchAllBookCoverUseCase: FetchAllBookCoverUseCase,
         updateBookCoverUseCase: UpdateBookCoverUseCase
     ) {
-        self.fetchMemorialHouseUseCase = fetchMemorialHouseUseCase
+        self.fetchMemorialHouseNameUseCase = fetchMemorialHouseUseCase
         self.fetchAllBookCoverUseCase = fetchAllBookCoverUseCase
         self.updateBookCoverUseCase = updateBookCoverUseCase
     }
@@ -72,7 +72,7 @@ public final class HomeViewModel: ViewModelType {
     }
     
     private func fetchMemorialHouse() async throws {
-        let memorialHouseName = try await fetchMemorialHouseUseCase.execute()
+        let memorialHouseName = try await fetchMemorialHouseNameUseCase.execute()
         houseName = memorialHouseName
     }
     
