@@ -5,13 +5,13 @@ final class BookCollectionViewCell: UICollectionViewCell {
     private let bookCoverView = MHBookCover()
     private let likeButton = UIButton(type: .custom)
     private let dropDownButton = UIButton(type: .custom)
+    private var isLike: Bool = false
     
     // MARK: - Initializer
     override init(frame: CGRect) {
         super.init(frame: frame)
         
         configureAddSubView()
-        configureAction()
         configureConstraints()
     }
     
@@ -19,7 +19,6 @@ final class BookCollectionViewCell: UICollectionViewCell {
         super.init(coder: coder)
         
         configureAddSubView()
-        configureAction()
         configureConstraints()
     }
     
@@ -32,26 +31,56 @@ final class BookCollectionViewCell: UICollectionViewCell {
     
     // MARK: - Configuration
     func configure(
+        id: UUID,
         title: String,
         bookCoverImage: UIImage,
         targetImage: UIImage,
         isLike: Bool,
-        // category: String, // TODO: 카테고리 처리 생각해보기
-        houseName: String
+        houseName: String,
+        bookCoverAction: @escaping () -> Void,
+        likeButtonAction: @escaping () -> Void
     ) {
+        self.isLike = isLike
         bookCoverView.configure(
             title: title,
             bookCoverImage: bookCoverImage,
             targetImage: targetImage,
             houseName: houseName
         )
-
+        changeLikeButtonImage(isLike: isLike)
+        dropDownButton.setImage(.dotHorizontal, for: .normal)
+        configureAction(
+            bookCoverAction: bookCoverAction,
+            likeButtonAction: likeButtonAction
+        )
+    }
+    
+    private func configureAction(
+        bookCoverAction: @escaping () -> Void,
+        likeButtonAction: @escaping () -> Void
+    ) {
+        bookCoverView.addAction(UIAction { _ in
+            bookCoverAction()
+        }, for: .touchUpInside)
+        
+        likeButton.addAction(UIAction { [weak self] _ in
+            guard let self else { return }
+            likeButtonAction()
+            self.isLike.toggle()
+            self.changeLikeButtonImage(isLike: self.isLike)
+        }, for: .touchUpInside)
+        
+        dropDownButton.addAction(UIAction { _ in
+            // TODO: 드랍다운 액션 추가
+        }, for: .touchUpInside)
+    }
+    
+    private func changeLikeButtonImage(isLike: Bool) {
         let likeImage = UIImage.resizedImage(
             image: isLike ? .likeFill : .likeEmpty,
             size: CGSize(width: 28, height: 28)
         )
         likeButton.setImage(likeImage, for: .normal)
-        dropDownButton.setImage(.dotHorizontal, for: .normal)
     }
     
     private func configureAddSubView() {
@@ -60,21 +89,17 @@ final class BookCollectionViewCell: UICollectionViewCell {
         contentView.addSubview(dropDownButton)
     }
     
-    private func configureAction() {
-        likeButton.addAction(UIAction { _ in
-            // TODO: 좋아요 버튼 로직
-        }, for: .touchUpInside)
-        
-        dropDownButton.addAction(UIAction { _ in
-            // TODO: UI Menu 띄우기
-        }, for: .touchUpInside)
-    }
-    
     private func configureConstraints() {
-        bookCoverView.fillSuperview()
+        bookCoverView.setAnchor(
+            top: contentView.topAnchor,
+            leading: contentView.leadingAnchor,
+            bottom: likeButton.topAnchor,
+            trailing: contentView.trailingAnchor
+        )
         likeButton.setAnchor(
-            top: bookCoverView.bottomAnchor,
-            trailing: dropDownButton.leadingAnchor, constantTrailing: 10
+            bottom: contentView.bottomAnchor,
+            trailing: dropDownButton.leadingAnchor, constantTrailing: 10,
+            width: 28, height: 28
         )
         dropDownButton.setAnchor(
             trailing: contentView.trailingAnchor, constantTrailing: 4,

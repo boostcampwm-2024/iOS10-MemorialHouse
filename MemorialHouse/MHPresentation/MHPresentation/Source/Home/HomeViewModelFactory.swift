@@ -2,17 +2,20 @@ import MHDomain
 
 public struct HomeViewModelFactory {
     let fetchMemorialHouseUseCase: FetchMemorialHouseUseCase
-    let fetchCategoryUseCase: FetchBookCategoriesUseCase
+    let updateBookCoverUseCase: UpdateBookCoverUseCase
     
     public init(
         fetchMemorialHouseUseCase: FetchMemorialHouseUseCase,
-        fetchCategoryUseCase: FetchBookCategoriesUseCase
+        updateBookCoverUseCase: UpdateBookCoverUseCase
     ) {
         self.fetchMemorialHouseUseCase = fetchMemorialHouseUseCase
-        self.fetchCategoryUseCase = fetchCategoryUseCase
+        self.updateBookCoverUseCase = updateBookCoverUseCase
     }
     
     public func make() -> HomeViewModel {
-        HomeViewModel(fetchMemorialHouseUseCase: fetchMemorialHouseUseCase)
+        HomeViewModel(
+            fetchMemorialHouseUseCase: fetchMemorialHouseUseCase,
+            updateBookCoverUseCase: updateBookCoverUseCase
+        )
     }
 }

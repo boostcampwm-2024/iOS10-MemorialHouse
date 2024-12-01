@@ -1,12 +1,14 @@
 import Combine
 import MHCore
 import MHDomain
+import MHFoundation
 
 public final class HomeViewModel: ViewModelType {
     public enum Input {
         case viewDidLoad
         case selectedCategory(category: String)
         case dragAndDropBookCover(currentIndex: Int, destinationIndex: Int)
+        case likeButtonTapped(bookId: UUID)
     }
     
     public enum Output {
@@ -18,13 +20,18 @@ public final class HomeViewModel: ViewModelType {
     
     private let output = PassthroughSubject<Output, Never>()
     private let fetchMemorialHouseUseCase: FetchMemorialHouseUseCase
+    private let updateBookCoverUseCase: UpdateBookCoverUseCase
     private var cancellables = Set<AnyCancellable>()
     private(set) var houseName = ""
     private(set) var bookCovers = [BookCover]()
     private(set) var currentBookCovers = [BookCover]()
     
-    public init(fetchMemorialHouseUseCase: FetchMemorialHouseUseCase) {
+    public init(
+        fetchMemorialHouseUseCase: FetchMemorialHouseUseCase,
+        updateBookCoverUseCase: UpdateBookCoverUseCase
+    ) {
         self.fetchMemorialHouseUseCase = fetchMemorialHouseUseCase
+        self.updateBookCoverUseCase = updateBookCoverUseCase
     }
     
     @MainActor
@@ -38,13 +45,22 @@ public final class HomeViewModel: ViewModelType {
                         self?.output.send(.fetchedMemorialHouseAndCategory)
                     } catch {
                         self?.output.send(.fetchedFailure("데이터 로드 중 에러가 발생했습니다."))
-                        MHLogger.error("에러 발생: \(error.localizedDescription)")
+                        MHLogger.error("데이터 로드 에러 발생: \(error.localizedDescription)")
                     }
                 }
             case .selectedCategory(let category):
                 self?.filterBooks(by: category)
             case .dragAndDropBookCover(let currentIndex, let destinationIndex):
                 self?.dragAndDropBookCover(from: currentIndex, to: destinationIndex)
+            case .likeButtonTapped(let bookId):
+                Task {
+                    do {
+                        try await self?.likeButtonTapped(bookId: bookId)
+                    } catch {
+                        self?.output.send(.fetchedFailure("좋아요에 실패했습니다."))
+                        MHLogger.error("좋아요 에러 발생: \(error.localizedDescription)")
+                    }
+                }
             }
         }.store(in: &cancellables)
         
@@ -67,7 +83,7 @@ public final class HomeViewModel: ViewModelType {
         default:
             currentBookCovers = bookCovers.filter { $0.category == category }
         }
-
+        
         output.send(.filteredBooks)
     }
     
@@ -79,5 +95,26 @@ public final class HomeViewModel: ViewModelType {
         currentBookCovers.remove(at: currentIndex)
         currentBookCovers.insert(currentBookCover, at: destinationIndex)
         output.send(.dragAndDropFinished)
+    }
+    
+    private func likeButtonTapped(bookId: UUID) async throws {
+        guard
+            let bookCoverIndex = bookCovers.firstIndex(where: { $0.id == bookId }),
+            let currentBookCoverindex = currentBookCovers.firstIndex(where: { $0.id == bookId })
+        else { return }
+        
+        let currentBookCover = currentBookCovers[currentBookCoverindex]
+        let bookCover = BookCover(
+            id: currentBookCover.id,
+            order: currentBookCover.order,
+            title: currentBookCover.title,
+            imageURL: currentBookCover.category,
+            color: currentBookCover.color,
+            category: currentBookCover.imageURL,
+            favorite: !currentBookCover.favorite
+        )
+        try await updateBookCoverUseCase.execute(id: bookId, with: bookCover)
+        bookCovers[bookCoverIndex] = bookCover
+        currentBookCovers[currentBookCoverindex] = bookCover
     }
 }
