@@ -37,9 +37,9 @@ public final class HomeViewModel: ViewModelType {
     @MainActor
     func transform(input: AnyPublisher<Input, Never>) -> AnyPublisher<Output, Never> {
         input.sink { [weak self] event in
-            Task {
-                switch event {
-                case .viewDidLoad:
+            switch event {
+            case .viewDidLoad:
+                Task {
                     do {
                         try await self?.fetchMemorialHouse()
                         self?.output.send(.fetchedMemorialHouseAndCategory)
@@ -47,11 +47,13 @@ public final class HomeViewModel: ViewModelType {
                         self?.output.send(.fetchedFailure("데이터 로드 중 에러가 발생했습니다."))
                         MHLogger.error("데이터 로드 에러 발생: \(error.localizedDescription)")
                     }
-                case .selectedCategory(let category):
-                    self?.filterBooks(by: category)
-                case .dragAndDropBookCover(let currentIndex, let destinationIndex):
-                    self?.dragAndDropBookCover(from: currentIndex, to: destinationIndex)
-                case .likeButtonTapped(let bookId):
+                }
+            case .selectedCategory(let category):
+                self?.filterBooks(by: category)
+            case .dragAndDropBookCover(let currentIndex, let destinationIndex):
+                self?.dragAndDropBookCover(from: currentIndex, to: destinationIndex)
+            case .likeButtonTapped(let bookId):
+                Task {
                     do {
                         try await self?.likeButtonTapped(bookId: bookId)
                     } catch {
