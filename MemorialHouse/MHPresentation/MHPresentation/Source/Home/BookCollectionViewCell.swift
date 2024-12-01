@@ -72,6 +72,7 @@ final class BookCollectionViewCell: UICollectionViewCell {
         }, for: .touchUpInside)
         
         dropDownButton.addAction(UIAction { _ in
+            // TODO: 드랍다운 액션 추가
         }, for: .touchUpInside)
     }
     

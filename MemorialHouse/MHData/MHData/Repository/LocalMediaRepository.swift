@@ -4,6 +4,7 @@ import MHDomain
 import MHCore
 import AVFoundation
 
+// TODO: nil이라면 바로 error를 return하도록 수정
 public struct LocalMediaRepository: MediaRepository {
     private let storage: FileStorage
     
