@@ -6,7 +6,7 @@ import MHFoundation
 
 public final class RegisterViewController: UIViewController {
     // MARK: - Property
-    private var viewModel = RegisterViewModel()
+    private var viewModel: RegisterViewModel
     private let input = PassthroughSubject<RegisterViewModel.Input, Never>()
     private var cancellables = Set<AnyCancellable>()
     
@@ -71,7 +71,11 @@ public final class RegisterViewController: UIViewController {
     }
     
     required init?(coder: NSCoder) {
-        self.viewModel = RegisterViewModel()
+        guard let createMHNameUseCase = try? DIContainer.shared.resolve(CreateMemorialHouseNameUseCase.self) else {
+            MHLogger.error("CreateMemorialHouseNameUseCase resolve 실패")
+            return nil
+        }
+        self.viewModel = RegisterViewModel(createMemorialHouseNameUseCase: createMHNameUseCase)
         super.init(coder: coder)
     }
     
@@ -102,17 +106,36 @@ public final class RegisterViewController: UIViewController {
             case .registerButtonEnabled(let isEnabled):
                 self?.registerButton.isEnabled = isEnabled
             case .moveToHome:
-                do {
-                    let homeViewModelFactory = try DIContainer.shared.resolve(HomeViewModelFactory.self)
-                    let homeViewModel = homeViewModelFactory.make()
-                    let homeViewController = HomeViewController(viewModel: homeViewModel)
-                    self?.navigationController?.pushViewController(homeViewController, animated: false)
-                    self?.navigationController?.viewControllers.removeFirst()
-                } catch {
-                    MHLogger.error(error.localizedDescription)
-                }
+                self?.moveHome()
+            case .createFailure(let errorMessage):
+                self?.handleError(with: errorMessage)
             }
         }.store(in: &cancellables)
+    }
+    
+    private func moveHome() {
+        do {
+            let homeViewModelFactory = try DIContainer.shared.resolve(HomeViewModelFactory.self)
+            let homeViewModel = homeViewModelFactory.make()
+            let homeViewController = HomeViewController(viewModel: homeViewModel)
+            navigationController?.pushViewController(homeViewController, animated: false)
+            navigationController?.viewControllers.removeFirst()
+        } catch {
+            MHLogger.error(error.localizedDescription)
+            handleError(with: "홈 화면으로 이동 중에 오류가 발생했습니다.")
+        }
+    }
+    
+    private func handleError(with errorMessage: String) {
+        let alertController = UIAlertController(
+            title: "에러",
+            message: errorMessage,
+            preferredStyle: .alert
+        )
+        let okAction = UIAlertAction(title: "확인", style: .default)
+        alertController.addAction(okAction)
+        
+        present(alertController, animated: true)
     }
     
     private func configureAddSubview() {
@@ -168,8 +191,8 @@ public final class RegisterViewController: UIViewController {
     
     private func addTouchEventToRegisterButton(_ button: UIButton) {
         let uiAction = UIAction { [weak self] _ in
-            guard let self, let text = self.registerTextField.text else { return }
-            self.input.send(.registerButtonTapped(text: text))
+            guard let self, let memorialHouseName = self.registerTextField.text else { return }
+            self.input.send(.registerButtonTapped(memorialHouseName: memorialHouseName))
         }
         registerButton.addAction(uiAction, for: .touchUpInside)
     }

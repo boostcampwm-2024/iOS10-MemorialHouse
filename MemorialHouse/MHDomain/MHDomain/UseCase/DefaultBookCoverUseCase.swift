@@ -24,7 +24,7 @@ public struct DefaultFetchBookCoverUseCase: FetchBookCoverUseCase {
     }
 }
 
-public struct DefaultFetchAllBookCoversUseCase: FetchAllBookCoverUseCase {
+public struct DefaultFetchAllBookCoverUseCase: FetchAllBookCoverUseCase {
     private let repository: BookCoverRepository
     
     public init(repository: BookCoverRepository) {

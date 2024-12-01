@@ -11,15 +11,17 @@ public final class HomeViewModel: ViewModelType {
         case likeButtonTapped(bookId: UUID)
     }
     
-    public enum Output {
-        case fetchedMemorialHouseAndCategory
+    public enum Output: Equatable {
+        case fetchedMemorialHouseName
+        case fetchedAllBookCover
         case filteredBooks
         case fetchedFailure(String)
         case dragAndDropFinished
     }
     
     private let output = PassthroughSubject<Output, Never>()
-    private let fetchMemorialHouseUseCase: FetchMemorialHouseUseCase
+    private let fetchMemorialHouseNameUseCase: FetchMemorialHouseNameUseCase
+    private let fetchAllBookCoverUseCase: FetchAllBookCoverUseCase
     private let updateBookCoverUseCase: UpdateBookCoverUseCase
     private var cancellables = Set<AnyCancellable>()
     private(set) var houseName = ""
@@ -27,10 +29,12 @@ public final class HomeViewModel: ViewModelType {
     private(set) var currentBookCovers = [BookCover]()
     
     public init(
-        fetchMemorialHouseUseCase: FetchMemorialHouseUseCase,
+        fetchMemorialHouseUseCase: FetchMemorialHouseNameUseCase,
+        fetchAllBookCoverUseCase: FetchAllBookCoverUseCase,
         updateBookCoverUseCase: UpdateBookCoverUseCase
     ) {
-        self.fetchMemorialHouseUseCase = fetchMemorialHouseUseCase
+        self.fetchMemorialHouseNameUseCase = fetchMemorialHouseUseCase
+        self.fetchAllBookCoverUseCase = fetchAllBookCoverUseCase
         self.updateBookCoverUseCase = updateBookCoverUseCase
     }
     
@@ -42,7 +46,7 @@ public final class HomeViewModel: ViewModelType {
                 Task {
                     do {
                         try await self?.fetchMemorialHouse()
-                        self?.output.send(.fetchedMemorialHouseAndCategory)
+                        try await self?.fetchAllBookCover()
                     } catch {
                         self?.output.send(.fetchedFailure("데이터 로드 중 에러가 발생했습니다."))
                         MHLogger.error("데이터 로드 에러 발생: \(error.localizedDescription)")
@@ -67,11 +71,19 @@ public final class HomeViewModel: ViewModelType {
         return output.eraseToAnyPublisher()
     }
     
+    @MainActor
     private func fetchMemorialHouse() async throws {
-        let memorialHouse = try await fetchMemorialHouseUseCase.execute()
-        self.houseName = memorialHouse.name
-        self.bookCovers = memorialHouse.bookCovers
-        self.currentBookCovers = memorialHouse.bookCovers
+        let memorialHouseName = try await fetchMemorialHouseNameUseCase.execute()
+        houseName = memorialHouseName
+        output.send(.fetchedMemorialHouseName)
+    }
+    
+    @MainActor
+    private func fetchAllBookCover() async throws {
+        let bookCovers = try await fetchAllBookCoverUseCase.execute()
+        self.bookCovers = bookCovers
+        self.currentBookCovers = bookCovers
+        output.send(.fetchedAllBookCover)
     }
     
     private func filterBooks(by category: String) {

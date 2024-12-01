@@ -16,6 +16,7 @@ public enum MHDataError: Error, CustomStringConvertible, Equatable {
     case fileMovingFailure
     case fileNotExists
     case generalFailure
+    case setUserDefaultFailure
     
     public var description: String {
         switch self {
@@ -49,6 +50,8 @@ public enum MHDataError: Error, CustomStringConvertible, Equatable {
             "파일이 존재하지 않습니다"
         case .generalFailure:
             "알 수 없는 에러입니다."
+        case .setUserDefaultFailure:
+            "UserDefault 설정 실패"
         }
     }
 }
