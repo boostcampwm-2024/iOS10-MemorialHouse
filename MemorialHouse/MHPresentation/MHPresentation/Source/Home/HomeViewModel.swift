@@ -19,7 +19,8 @@ public final class HomeViewModel: ViewModelType {
     }
     
     private let output = PassthroughSubject<Output, Never>()
-    private let fetchMemorialHouseUseCase: FetchMemorialHouseUseCase
+    private let fetchMemorialHouseUseCase: FetchMemorialHouseNameUseCase
+    private let fetchAllBookCoverUseCase: FetchAllBookCoverUseCase
     private let updateBookCoverUseCase: UpdateBookCoverUseCase
     private var cancellables = Set<AnyCancellable>()
     private(set) var houseName = ""
@@ -27,10 +28,12 @@ public final class HomeViewModel: ViewModelType {
     private(set) var currentBookCovers = [BookCover]()
     
     public init(
-        fetchMemorialHouseUseCase: FetchMemorialHouseUseCase,
+        fetchMemorialHouseUseCase: FetchMemorialHouseNameUseCase,
+        fetchAllBookCoverUseCase: FetchAllBookCoverUseCase,
         updateBookCoverUseCase: UpdateBookCoverUseCase
     ) {
         self.fetchMemorialHouseUseCase = fetchMemorialHouseUseCase
+        self.fetchAllBookCoverUseCase = fetchAllBookCoverUseCase
         self.updateBookCoverUseCase = updateBookCoverUseCase
     }
     
@@ -42,6 +45,7 @@ public final class HomeViewModel: ViewModelType {
                 Task {
                     do {
                         try await self?.fetchMemorialHouse()
+                        try await self?.fetchAllBookCover()
                         self?.output.send(.fetchedMemorialHouseAndCategory)
                     } catch {
                         self?.output.send(.fetchedFailure("데이터 로드 중 에러가 발생했습니다."))
@@ -68,10 +72,14 @@ public final class HomeViewModel: ViewModelType {
     }
     
     private func fetchMemorialHouse() async throws {
-        let memorialHouse = try await fetchMemorialHouseUseCase.execute()
-        self.houseName = memorialHouse.name
-        self.bookCovers = memorialHouse.bookCovers
-        self.currentBookCovers = memorialHouse.bookCovers
+        let memorialHouseName = try await fetchMemorialHouseUseCase.execute()
+        houseName = memorialHouseName
+    }
+    
+    private func fetchAllBookCover() async throws {
+        let bookCovers = try await fetchAllBookCoverUseCase.execute()
+        self.bookCovers = bookCovers
+        self.currentBookCovers = bookCovers
     }
     
     private func filterBooks(by category: String) {
