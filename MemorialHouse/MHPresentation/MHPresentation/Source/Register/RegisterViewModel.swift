@@ -3,12 +3,12 @@ import MHDomain
 import Combine
 
 public final class RegisterViewModel: ViewModelType {
-    enum Input {
+    public enum Input {
         case registerTextFieldEdited(text: String?)
         case registerButtonTapped(text: String)
     }
     
-    enum Output {
+    public enum Output: Equatable {
         case registerButtonEnabled(isEnabled: Bool)
         case moveToHome
         case createFailure(errorMessage: String)
