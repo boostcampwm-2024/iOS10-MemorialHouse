@@ -1,3 +1,4 @@
+import MHFoundation
 import MHDomain
 
 public struct EditBookViewModelFactory {
@@ -24,14 +25,15 @@ public struct EditBookViewModelFactory {
         self.deleteMediaUseCase = deleteMediaUseCase
     }
     
-    func make() -> EditBookViewModel {
+    func make(bookID: UUID) -> EditBookViewModel {
         EditBookViewModel(
             fetchBookUseCase: fetchBookUseCase,
             updateBookUseCase: updateBookUseCase,
             storeMediaUseCase: storeMediaUseCase,
             createMediaUseCase: createMediaUseCase,
             fetchMediaUseCase: fetchMediaUseCase,
-            deleteMediaUseCase: deleteMediaUseCase
+            deleteMediaUseCase: deleteMediaUseCase,
+            bookID: bookID
         )
     }
 }

@@ -74,7 +74,6 @@ final class EditBookViewController: UIViewController {
     private let viewModel: EditBookViewModel
     private let input = PassthroughSubject<EditBookViewModel.Input, Never>()
     private var cancellables = Set<AnyCancellable>()
-    var id: UUID? // TODO: - 지워야함
     
     // MARK: - Initializer
     init(viewModel: EditBookViewModel) {
@@ -84,7 +83,7 @@ final class EditBookViewController: UIViewController {
     }
     required init?(coder: NSCoder) {
         guard let viewModel = try? DIContainer.shared.resolve(EditBookViewModelFactory.self) else { return nil }
-        self.viewModel = viewModel.make()
+        self.viewModel = viewModel.make(bookID: .init())
         super.init(coder: coder)
     }
     
@@ -99,8 +98,7 @@ final class EditBookViewController: UIViewController {
         configureKeyboard()
         configureBinding()
         configureButtonAction()
-        guard let bookID = id else { return } // TODO: - 나중에 지워야함
-        input.send(.viewDidLoad(bookID: bookID))
+        input.send(.viewDidLoad)
     }
     
     // MARK: - Setup & Configuration

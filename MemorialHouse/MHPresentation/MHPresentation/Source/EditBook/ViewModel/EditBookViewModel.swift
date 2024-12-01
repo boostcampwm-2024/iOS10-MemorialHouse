@@ -6,7 +6,7 @@ import MHCore
 final class EditBookViewModel: ViewModelType {
     // MARK: - Type
     enum Input {
-        case viewDidLoad(bookID: UUID)
+        case viewDidLoad
         case didSelectPage(at: Int)
         case didAddMediaWithData(type: MediaType, data: Data)
         case didAddMediaInURL(type: MediaType, url: URL)
@@ -27,7 +27,7 @@ final class EditBookViewModel: ViewModelType {
     private let createMediaUseCase: CreateMediaUseCase
     private let fetchMediaUseCase: FetchMediaUseCase
     private let deleteMediaUseCase: DeleteMediaUseCase
-    private var bookID: UUID?
+    private let bookID: UUID
     private var title: String = ""
     private var editPageViewModels: [EditPageViewModel] = []
     private var currentPageIndex = 0
@@ -39,7 +39,8 @@ final class EditBookViewModel: ViewModelType {
         storeMediaUseCase: PersistentlyStoreMediaUseCase,
         createMediaUseCase: CreateMediaUseCase,
         fetchMediaUseCase: FetchMediaUseCase,
-        deleteMediaUseCase: DeleteMediaUseCase
+        deleteMediaUseCase: DeleteMediaUseCase,
+        bookID: UUID
     ) {
         self.fetchBookUseCase = fetchBookUseCase
         self.updateBookUseCase = updateBookUseCase
@@ -47,14 +48,15 @@ final class EditBookViewModel: ViewModelType {
         self.createMediaUseCase = createMediaUseCase
         self.fetchMediaUseCase = fetchMediaUseCase
         self.deleteMediaUseCase = deleteMediaUseCase
+        self.bookID = bookID
     }
     
     // MARK: - Binding Method
     func transform(input: AnyPublisher<Input, Never>) -> AnyPublisher<Output, Never> {
         input.sink { [weak self] event in
             switch event {
-            case let .viewDidLoad(bookID):
-                Task { await self?.fetchBook(bookID: bookID) }
+            case .viewDidLoad:
+                Task { await self?.fetchBook() }
             case let .didSelectPage(at: index):
                 self?.currentPageIndex = index
             case let .didAddMediaWithData(type, data):
@@ -70,8 +72,7 @@ final class EditBookViewModel: ViewModelType {
         
         return output.eraseToAnyPublisher()
     }
-    private func fetchBook(bookID: UUID) async {
-        self.bookID = bookID
+    private func fetchBook() async {
         do {
             let book = try await fetchBookUseCase.execute(id: bookID)
             title = book.title
@@ -116,7 +117,6 @@ final class EditBookViewModel: ViewModelType {
         }
     }
     private func addEmptyPage() {
-        guard let bookID else { return }
         let page = Page(id: UUID(), metadata: [:], text: "")
         let editPageViewModel = EditPageViewModel(
             fetchMediaUseCase: fetchMediaUseCase,
@@ -128,7 +128,6 @@ final class EditBookViewModel: ViewModelType {
         output.send(.updateViewController(title: title))
     }
     private func saveMediaAll() async {
-        guard let bookID else { return }
         let pages = editPageViewModels.map { $0.page }
         let book = Book(id: bookID, title: title, pages: pages)
         let mediaList = pages.flatMap { $0.metadata.values }
