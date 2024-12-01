@@ -250,11 +250,54 @@ extension EditPageCell: UITextViewDelegate {
 extension EditPageCell: @preconcurrency NSTextStorageDelegate {
     func textStorage(
         _ textStorage: NSTextStorage,
+        willProcessEditing editedMask: NSTextStorage.EditActions,
+        range editedRange: NSRange,
+        changeInLength delta: Int
+    ) {
+        // 입력하는 곳 앞에 Attachment가 있을 때, 줄바꿈을 추가합니다.
+        if editedRange.location > 0, delta > 0,
+           attachmentAt(editedRange.location - 1) != nil {
+            textStorage.insert(
+                NSAttributedString(
+                    string: "\n",
+                    attributes: defaultAttributes
+                ),
+                at: editedRange.location
+            )
+            textView.selectedRange = NSRange(location: editedRange.location + 1, length: 0)
+        }
+        
+        // 입력하는 곳 뒤에 Attachment가 있을 때, 줄바꿈을 추가합니다.
+        let nextIndex = editedRange.location + editedRange.length
+        if nextIndex < textStorage.length,
+           let attachment = attachmentAt(nextIndex) {
+            attachment.cachedViewProvider = nil
+            // 입력하려는 문자끝에 \n이 있으면 아래 로직 무시
+            guard textStorage.attributedSubstring(
+                from: NSRange(location: editedRange.location, length: 1)
+            ).string != "\n" else { return }
+            textStorage.insert(
+                NSAttributedString(
+                    string: "\n",
+                    attributes: defaultAttributes
+                ),
+                at: nextIndex
+            )
+        }
+    }
+    func textStorage(
+        _ textStorage: NSTextStorage,
         didProcessEditing editedMask: NSTextStorage.EditActions,
         range editedRange: NSRange,
         changeInLength delta: Int
     ) {
         let text = textStorage.attributedSubstring(from: editedRange)
+        
+        let nextIndex = editedRange.location + editedRange.length
+        if nextIndex < textStorage.length, editedRange.length >= 1,
+           let attachment = attachmentAt(nextIndex) {
+            attachment.cachedViewProvider = nil
+        }
         if !isAcceptableHeight(textStorage, shouldChangeTextIn: editedRange, replacementText: text) {
             // TODO: - 좀더 우아하게 처리하기? 미리 알려주는 로직으로... 개선필요
             textStorage.deleteCharacters(in: editedRange)
