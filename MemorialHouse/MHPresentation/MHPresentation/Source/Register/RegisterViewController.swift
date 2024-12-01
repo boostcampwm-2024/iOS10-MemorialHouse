@@ -102,17 +102,34 @@ public final class RegisterViewController: UIViewController {
             case .registerButtonEnabled(let isEnabled):
                 self?.registerButton.isEnabled = isEnabled
             case .moveToHome:
-                do {
-                    let homeViewModelFactory = try DIContainer.shared.resolve(HomeViewModelFactory.self)
-                    let homeViewModel = homeViewModelFactory.make()
-                    let homeViewController = HomeViewController(viewModel: homeViewModel)
-                    self?.navigationController?.pushViewController(homeViewController, animated: false)
-                    self?.navigationController?.viewControllers.removeFirst()
-                } catch {
-                    MHLogger.error(error.localizedDescription)
-                }
+                self?.moveHome()
             }
         }.store(in: &cancellables)
+    }
+    
+    private func moveHome() {
+        do {
+            let homeViewModelFactory = try DIContainer.shared.resolve(HomeViewModelFactory.self)
+            let homeViewModel = homeViewModelFactory.make()
+            let homeViewController = HomeViewController(viewModel: homeViewModel)
+            navigationController?.pushViewController(homeViewController, animated: false)
+            navigationController?.viewControllers.removeFirst()
+        } catch {
+            MHLogger.error(error.localizedDescription)
+            handleError(with: "홈 화면으로 이동 중에 오류가 발생했습니다.")
+        }
+    }
+    
+    private func handleError(with errorMessage: String) {
+        let alertController = UIAlertController(
+            title: "에러",
+            message: errorMessage,
+            preferredStyle: .alert
+        )
+        let okAction = UIAlertAction(title: "확인", style: .default)
+        alertController.addAction(okAction)
+        
+        present(alertController, animated: true)
     }
     
     private func configureAddSubview() {
