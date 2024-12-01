@@ -1,4 +1,5 @@
 import UIKit
+import MHCore
 import Combine
 
 final class BookCreationViewController: UIViewController {
@@ -210,10 +211,12 @@ final class BookCreationViewController: UIViewController {
             normal: normalAttributes,
             selected: selectedAttributes
         ) { [weak self] in
-            // TODO: - 추후 뷰모델 관련 생성 이슈 조정 필요
-            let editBookViewModel = EditBookViewModel()
+            // TODO: - 추후 DIContainer resolve 실패 처리 필요
+            // TODO: - bookID에 bookCoverID 넣어주기 필요
+            guard let editBookViewModelFactory = try? DIContainer.shared.resolve(EditBookViewModelFactory.self) else { return }
+            let viewModel = editBookViewModelFactory.make(bookID: .init())
             self?.navigationController?.pushViewController(
-                EditBookViewController(viewModel: editBookViewModel),
+                EditBookViewController(viewModel: viewModel),
                 animated: true
             )
         }
