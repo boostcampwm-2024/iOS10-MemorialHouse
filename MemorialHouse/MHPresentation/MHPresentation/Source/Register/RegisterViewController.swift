@@ -80,6 +80,8 @@ public final class RegisterViewController: UIViewController {
     
     private func setup() {
         view.backgroundColor = .baseBackground
+        hideKeyboardWhenTappedView()
+        mhRegisterView.registerTextField.delegate = self
 
         addTouchEventToRegisterButton(registerButton)
         mhRegisterView.configure { [weak self] text in
@@ -184,5 +186,12 @@ public final class RegisterViewController: UIViewController {
             self.input.send(.registerButtonTapped(memorialHouseName: memorialHouseName))
         }
         registerButton.addAction(uiAction, for: .touchUpInside)
+    }
+}
+
+extension RegisterViewController: UITextFieldDelegate {
+    public func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
     }
 }
