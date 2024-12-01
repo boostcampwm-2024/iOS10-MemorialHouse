@@ -2,10 +2,14 @@ import MHCore
 import MHFoundation
 
 public struct UserDefaultsMemorialHouseNameStorage: MemorialHouseNameStorage {
-    public init() { }
+    private nonisolated(unsafe) let userDefaults: UserDefaults
+
+    public init(userDefaults: UserDefaults = .standard) {
+        self.userDefaults = userDefaults
+    }
     
     public func create(with memorialHouseName: String) async -> Result<Void, MHDataError> {
-        UserDefaults.standard.set(
+        userDefaults.set(
             memorialHouseName,
             forKey: Constant.houseNameUserDefaultKey
         )
@@ -13,7 +17,8 @@ public struct UserDefaultsMemorialHouseNameStorage: MemorialHouseNameStorage {
     }
     
     public func fetch() async -> Result<String, MHDataError> {
-        guard let memorialHouseName = UserDefaults.standard.string(forKey: Constant.houseNameUserDefaultKey) else {
+        guard let memorialHouseName = userDefaults.string(forKey: Constant.houseNameUserDefaultKey) else {
+            MHLogger.error("MemorialHouseName을 찾을 수 없습니다: \(Constant.houseNameUserDefaultKey)")
             return .failure(.noSuchEntity(key: Constant.houseNameUserDefaultKey))
         }
         return .success(memorialHouseName)
