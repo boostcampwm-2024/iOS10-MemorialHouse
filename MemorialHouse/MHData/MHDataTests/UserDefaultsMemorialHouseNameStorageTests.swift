@@ -4,8 +4,7 @@ import Testing
 @testable import MHFoundation
 
 struct UserDefaultsMemorialHouseNameStorageTest {
-    @MainActor
-    @Test mutating func test저장소에_기록소_이름을_저장한다() async throws {
+    @Test func test저장소에_기록소_이름을_저장한다() async throws {
         // Arrange
         let suiteName = UUID().uuidString
         let userDefaults = UserDefaults(suiteName: suiteName)!
@@ -28,8 +27,7 @@ struct UserDefaultsMemorialHouseNameStorageTest {
         userDefaults.removePersistentDomain(forName: suiteName)
     }
 
-    @MainActor
-    @Test mutating func test_fetch_저장소에서_기록소_이름을_불러온다() async throws {
+    @Test func test_fetch_저장소에서_기록소_이름을_불러온다() async throws {
         // Arrange
         let suiteName = UUID().uuidString
         let userDefaults = UserDefaults(suiteName: suiteName)!
@@ -51,8 +49,7 @@ struct UserDefaultsMemorialHouseNameStorageTest {
         userDefaults.removePersistentDomain(forName: suiteName)
     }
 
-    @MainActor
-    @Test mutating func test_fetch_기록소_이름이_없을때_에러를_반환한다() async throws {
+    @Test func test_fetch_기록소_이름이_없을때_에러를_반환한다() async throws {
         // Arrange
         let suiteName = UUID().uuidString
         let userDefaults = UserDefaults(suiteName: suiteName)!
