@@ -11,8 +11,9 @@ public final class HomeViewModel: ViewModelType {
         case likeButtonTapped(bookId: UUID)
     }
     
-    public enum Output {
-        case fetchedMemorialHouseAndCategory
+    public enum Output: Equatable {
+        case fetchedMemorialHouseName
+        case fetchedAllBookCover
         case filteredBooks
         case fetchedFailure(String)
         case dragAndDropFinished
@@ -46,7 +47,6 @@ public final class HomeViewModel: ViewModelType {
                     do {
                         try await self?.fetchMemorialHouse()
                         try await self?.fetchAllBookCover()
-                        self?.output.send(.fetchedMemorialHouseAndCategory)
                     } catch {
                         self?.output.send(.fetchedFailure("데이터 로드 중 에러가 발생했습니다."))
                         MHLogger.error("데이터 로드 에러 발생: \(error.localizedDescription)")
@@ -71,15 +71,19 @@ public final class HomeViewModel: ViewModelType {
         return output.eraseToAnyPublisher()
     }
     
+    @MainActor
     private func fetchMemorialHouse() async throws {
         let memorialHouseName = try await fetchMemorialHouseNameUseCase.execute()
         houseName = memorialHouseName
+        output.send(.fetchedMemorialHouseName)
     }
     
+    @MainActor
     private func fetchAllBookCover() async throws {
         let bookCovers = try await fetchAllBookCoverUseCase.execute()
         self.bookCovers = bookCovers
         self.currentBookCovers = bookCovers
+        output.send(.fetchedAllBookCover)
     }
     
     private func filterBooks(by category: String) {

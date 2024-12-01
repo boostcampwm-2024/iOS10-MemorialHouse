@@ -95,9 +95,9 @@ public final class HomeViewController: UIViewController {
         output.sink { [weak self] event in
             guard let self else { return }
             switch event {
-            case .fetchedMemorialHouseAndCategory:
+            case .fetchedMemorialHouseName:
                 self.updateMemorialHouse()
-            case .filteredBooks, .dragAndDropFinished:
+            case .fetchedAllBookCover, .filteredBooks, .dragAndDropFinished:
                 self.collectionView.reloadData()
             case .fetchedFailure(let errorMessage):
                 self.handleError(with: errorMessage)
