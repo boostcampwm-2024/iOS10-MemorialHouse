@@ -3,11 +3,16 @@ import MHFoundation
 import MHDomain
 import MHCore
 
+protocol EditPageViewModelDelegate: AnyObject {
+    func didBeginEditingPage(_ editPageViewModel: EditPageViewModel, page: Page)
+}
+
 final class EditPageViewModel: ViewModelType {
     // MARK: - Type
     enum Input {
         case pageWillAppear
         case pageWillDisappear
+        case didBeginEditingPage
         case didEditPage(attributedText: NSAttributedString)
         case didRequestMediaDataForData(media: MediaDescription)
         case didRequestMediaDataForURL(media: MediaDescription)
@@ -26,6 +31,7 @@ final class EditPageViewModel: ViewModelType {
     private var cancellables = Set<AnyCancellable>()
     private let fetchMediaUseCase: FetchMediaUseCase
     private let deleteMediaUseCase: DeleteMediaUseCase
+    weak var delegate: EditPageViewModelDelegate?
     private let bookID: UUID
     private(set) var page: Page
     
@@ -50,6 +56,8 @@ final class EditPageViewModel: ViewModelType {
                 self?.pageWillAppear()
             case .pageWillDisappear:
                 self?.pageWillDisappear()
+            case .didBeginEditingPage:
+                self?.didBeginEditingPage()
             case .didEditPage(let attributedText):
                 self?.didEditPage(text: attributedText)
             case .didRequestMediaDataForData(let media):
@@ -97,6 +105,9 @@ final class EditPageViewModel: ViewModelType {
     }
     func addMedia(media: MediaDescription, url: URL) {
         output.send(.mediaAddedWithURL(media: media, url: url))
+    }
+    func didBeginEditingPage() {
+        delegate?.didBeginEditingPage(self, page: page)
     }
     
     // MARK: - Helper

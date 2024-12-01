@@ -261,8 +261,8 @@ final class EditBookViewController: UIViewController {
 
 // MARK: - UITableViewDelegate
 extension EditBookViewController: UITableViewDelegate {
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        input.send(.didSelectPage(at: indexPath.row))
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return view.safeAreaLayoutGuide.layoutFrame.height - buttonStackView.frame.height - 40
     }
 }
 
@@ -281,8 +281,5 @@ extension EditBookViewController: UITableViewDataSource {
         cell.configure(viewModel: editPageViewModel)
         
         return cell
-    }
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return view.safeAreaLayoutGuide.layoutFrame.height - buttonStackView.frame.height - 40
     }
 }

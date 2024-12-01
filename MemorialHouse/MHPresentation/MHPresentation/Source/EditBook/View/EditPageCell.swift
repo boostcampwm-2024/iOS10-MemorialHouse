@@ -232,6 +232,9 @@ extension EditPageCell: UITextViewDelegate {
         return text.isEmpty
         || isAcceptableHeight(textStorage, shouldChangeTextIn: range, replacementText: attributedText)
     }
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        input.send(.didBeginEditingPage)
+    }
 }
 
 // MARK: - NSTextStorageDelegate

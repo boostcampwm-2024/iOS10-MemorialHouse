@@ -1,5 +1,5 @@
 import MHFoundation
-@preconcurrency import Combine
+import Combine
 import MHDomain
 import MHCore
 
@@ -7,7 +7,6 @@ final class EditBookViewModel: ViewModelType {
     // MARK: - Type
     enum Input {
         case viewDidLoad
-        case didSelectPage(at: Int)
         case didAddMediaWithData(type: MediaType, data: Data)
         case didAddMediaInURL(type: MediaType, url: URL)
         case addPageButtonTapped
@@ -57,8 +56,6 @@ final class EditBookViewModel: ViewModelType {
             switch event {
             case .viewDidLoad:
                 Task { await self?.fetchBook() }
-            case let .didSelectPage(at: index):
-                self?.currentPageIndex = index
             case let .didAddMediaWithData(type, data):
                 Task { await self?.addMedia(type: type, with: data) }
             case let .didAddMediaInURL(type, url):
@@ -77,12 +74,14 @@ final class EditBookViewModel: ViewModelType {
             let book = try await fetchBookUseCase.execute(id: bookID)
             title = book.title
             editPageViewModels = book.pages.map { page in
-                EditPageViewModel(
+                let editPageViewModel = EditPageViewModel(
                     fetchMediaUseCase: fetchMediaUseCase,
                     deleteMediaUseCase: deleteMediaUseCase,
                     bookID: bookID,
                     page: page
                 )
+                editPageViewModel.delegate = self
+                return editPageViewModel
             }
             output.send(.updateViewController(title: title))
         } catch {
@@ -124,6 +123,7 @@ final class EditBookViewModel: ViewModelType {
             bookID: bookID,
             page: page
         )
+        editPageViewModel.delegate = self
         editPageViewModels.append(editPageViewModel)
         output.send(.updateViewController(title: title))
     }
@@ -140,7 +140,7 @@ final class EditBookViewModel: ViewModelType {
         }
     }
     
-    // MARK: - Method
+    // MARK: - Method For ViewController
     func numberOfPages() -> Int {
         return editPageViewModels.count
     }
@@ -148,5 +148,12 @@ final class EditBookViewModel: ViewModelType {
         let editPageViewModel = editPageViewModels[index]
         
         return editPageViewModel
+    }
+}
+
+extension EditBookViewModel: EditPageViewModelDelegate {
+    func didBeginEditingPage(_ editPageViewModel: EditPageViewModel, page: Page) {
+        let pageID = page.id
+        currentPageIndex = editPageViewModels.firstIndex { $0.page.id == pageID } ?? 0
     }
 }
