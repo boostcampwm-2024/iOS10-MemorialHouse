@@ -17,28 +17,58 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window = UIWindow(windowScene: windowScene)
         registerDependency()
         
-        guard let createMemorialHouseNameUseCase = try? DIContainer.shared.resolve(CreateMemorialHouseNameUseCase.self) else {
-            return
-        }
-        let registerViewModelFactory = RegisterViewModelFactory(createMemorialHouseNameUseCase: createMemorialHouseNameUseCase)
-        let registerViewModel = registerViewModelFactory.make()
-        var initialViewController: UIViewController = RegisterViewController(viewModel: registerViewModel)
-        if UserDefaults.standard.object(forKey: Constant.houseNameUserDefaultKey) != nil {
-            do {
-                let homeViewModelFactory = try DIContainer.shared.resolve(HomeViewModelFactory.self)
-                let homeViewModel = homeViewModelFactory.make()
-                initialViewController = HomeViewController(viewModel: homeViewModel)
-            } catch {
-                MHLogger.error(error.localizedDescription)
-            }
-        }
-        
-        let navigationController = UINavigationController(rootViewController: initialViewController)
-        window?.rootViewController = navigationController
+        let initialViewController = createInitialViewController()
+        window?.rootViewController = UINavigationController(rootViewController: initialViewController)
         window?.makeKeyAndVisible()
     }
     
-    func registerDependency() {
+    private func createInitialViewController() -> UIViewController {
+        if isUserRegistered() {
+            return createHomeViewController()
+        } else {
+            return createRegisterViewController()
+        }
+    }
+    
+    private func isUserRegistered() -> Bool {
+        return UserDefaults.standard.object(forKey: Constant.houseNameUserDefaultKey) != nil
+    }
+    
+    private func createHomeViewController() -> UIViewController {
+        do {
+            let homeViewModelFactory = try DIContainer.shared.resolve(HomeViewModelFactory.self)
+            let homeViewModel = homeViewModelFactory.make()
+            return HomeViewController(viewModel: homeViewModel)
+        } catch {
+            MHLogger.error("HomeViewModelFactory 해제 실패: \(error.localizedDescription)")
+            return createErrorViewController()
+        }
+    }
+    
+    private func createRegisterViewController() -> UIViewController {
+        do {
+            let registerViewModelFactory = try DIContainer.shared.resolve(RegisterViewModelFactory.self)
+            let registerViewModel = registerViewModelFactory.make()
+            return RegisterViewController(viewModel: registerViewModel)
+        } catch {
+            MHLogger.error("CreateMemorialHouseNameUseCase 해제 실패: \(error.localizedDescription)")
+            return createErrorViewController()
+        }
+    }
+    
+    private func createErrorViewController() -> UIViewController {
+        let errorViewController = UIViewController()
+        errorViewController.view.backgroundColor = .systemRed
+        let label = UILabel()
+        label.text = "오류가 발생했습니다."
+        label.textColor = .white
+        label.textAlignment = .center
+        label.frame = errorViewController.view.bounds
+        errorViewController.view.addSubview(label)
+        return errorViewController
+    }
+    
+    private func registerDependency() {
         do {
             try registerStorageDepedency()
             try registerRepositoryDependency()
@@ -53,7 +83,7 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     private func registerStorageDepedency() throws {
         DIContainer.shared.register(CoreDataStorage.self, object: CoreDataStorage())
-                
+        
         let coreDataStorage = try DIContainer.shared.resolve(CoreDataStorage.self)
         DIContainer.shared.register(
             BookCategoryStorage.self,
