@@ -47,7 +47,7 @@ public struct LocalBookCoverRepository: BookCoverRepository {
         }
     }
     
-    public func updateBookCover(id: UUID, with bookCover: BookCover) async -> Result<Void, MHCore.MHDataError> {
+    public func updateBookCover(id: UUID, with bookCover: BookCover) async -> Result<Void, MHDataError> {
         let bookCoverDTO = BookCoverDTO(
             id: bookCover.id,
             order: bookCover.order,

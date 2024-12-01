@@ -27,7 +27,6 @@ final class BookCollectionViewCell: UICollectionViewCell {
         
         bookCoverView.resetProperties()
         likeButton.imageView?.image = nil
-        likeButton.removeTarget(nil, action: nil, for: .allEvents)
     }
     
     // MARK: - Configuration
