@@ -7,7 +7,7 @@ final class EditPageViewModel: ViewModelType {
     // MARK: - Type
     enum Input {
         case pageWillAppear
-        case pageWillDisappear(attributedText: NSAttributedString)
+        case didEditPage(attributedText: NSAttributedString)
         case didRequestMediaDataForData(media: MediaDescription)
         case didRequestMediaDataForURL(media: MediaDescription)
     }
@@ -17,26 +17,24 @@ final class EditPageViewModel: ViewModelType {
         case mediaAddedWithURL(media: MediaDescription, url: URL)
         case mediaLoadedWithData(media: MediaDescription, data: Data)
         case mediaLoadedWithURL(media: MediaDescription, url: URL)
+        case error(message: String)
     }
     
     // MARK: - Property
     private let output = PassthroughSubject<Output, Never>()
     private var cancellables = Set<AnyCancellable>()
-    private let createMediaUseCase: CreateMediaUseCase
     private let fetchMediaUseCase: FetchMediaUseCase
     private let deleteMediaUseCase: DeleteMediaUseCase
-    private var bookID: UUID
-    private var page: Page
+    private let bookID: UUID
+    private(set) var page: Page
     
     // MARK: - Initializer
     init(
-        createMediaUseCase: CreateMediaUseCase,
         fetchMediaUseCase: FetchMediaUseCase,
         deleteMediaUseCase: DeleteMediaUseCase,
         bookID: UUID,
         page: Page
     ) {
-        self.createMediaUseCase = createMediaUseCase
         self.fetchMediaUseCase = fetchMediaUseCase
         self.deleteMediaUseCase = deleteMediaUseCase
         self.bookID = bookID
@@ -49,8 +47,8 @@ final class EditPageViewModel: ViewModelType {
             switch event {
             case .pageWillAppear:
                 self?.pageWillAppear()
-            case .pageWillDisappear(let attributedText):
-                self?.pageWillDisappear(text: attributedText)
+            case .didEditPage(let attributedText):
+                self?.didEditPage(text: attributedText)
             case .didRequestMediaDataForData(let media):
                 Task { await self?.loadMediaForData(media: media) }
             case .didRequestMediaDataForURL(let media):
@@ -63,19 +61,27 @@ final class EditPageViewModel: ViewModelType {
     private func pageWillAppear() {
         output.send(.page(page: page))
     }
-    private func pageWillDisappear(text: NSAttributedString) {
+    private func didEditPage(text: NSAttributedString) {
         let page = converTextToPage(text: text)
         self.page = page
     }
     private func loadMediaForData(media: MediaDescription) async {
-        // TODO: - Loading실패시 로딩실패 처리
-        guard let mediaData: Data = try? await fetchMediaUseCase.execute(media: media, in: bookID) else { return }
-        output.send(.mediaLoadedWithData(media: media, data: mediaData))
+        do {
+            let mediaData: Data = try await fetchMediaUseCase.execute(media: media, in: bookID)
+            output.send(.mediaLoadedWithData(media: media, data: mediaData))
+        } catch {
+            output.send(.error(message: "미디어 로딩에 실패하였습니다."))
+            MHLogger.error(error.localizedDescription + #function)
+        }
     }
     private func loadMediaForURL(media: MediaDescription) async {
-        // TODO: - Loading실패시 로딩실패 처리
-        guard let mediaURL: URL = try? await fetchMediaUseCase.execute(media: media, in: bookID) else { return }
-        output.send(.mediaLoadedWithURL(media: media, url: mediaURL))
+        do {
+            let mediaURL: URL = try await fetchMediaUseCase.execute(media: media, in: bookID)
+            output.send(.mediaLoadedWithURL(media: media, url: mediaURL))
+        } catch {
+            output.send(.error(message: "미디어 로딩에 실패하였습니다."))
+            MHLogger.error(error.localizedDescription + #function)
+        }
     }
     
     // MARK: - Method
