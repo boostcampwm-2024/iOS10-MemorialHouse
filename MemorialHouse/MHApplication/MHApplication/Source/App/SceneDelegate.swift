@@ -176,9 +176,11 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         // MARK: - Book UseCase
         let bookRepository = try DIContainer.shared.resolve(BookRepository.self)
+        let mediaRepository = try DIContainer.shared.resolve(MediaRepository.self)
         DIContainer.shared.register(
             CreateBookUseCase.self,
-            object: DefaultCreateBookUseCase(repository: bookRepository)
+            object: DefaultCreateBookUseCase(repository: bookRepository,
+                                             mediaRepository: mediaRepository)
         )
         DIContainer.shared.register(
             FetchBookUseCase.self,
@@ -204,7 +206,6 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             object: DefaultUpdateBookCoverUseCase(repository: bookCoverRepository)
         )
         // MARK: - EditBook UseCase
-        let mediaRepository = try DIContainer.shared.resolve(MediaRepository.self)
         DIContainer.shared.register(
             PersistentlyStoreMediaUseCase.self,
             object: DefaultPersistentlyStoreMediaUseCase(repository: mediaRepository)

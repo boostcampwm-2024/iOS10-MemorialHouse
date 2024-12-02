@@ -132,6 +132,7 @@ final class EditBookViewController: UIViewController {
             )
             alert.addAction(UIAlertAction(title: "취소", style: .cancel))
             alert.addAction(UIAlertAction(title: "확인", style: .default) { _ in
+                self?.input.send(.didCancelButtonTapped)
                 self?.navigationController?.popViewController(animated: true)
             })
             self?.present(alert, animated: true)

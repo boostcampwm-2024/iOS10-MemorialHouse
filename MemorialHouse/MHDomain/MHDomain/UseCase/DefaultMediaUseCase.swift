@@ -77,8 +77,11 @@ public struct DefaultPersistentlyStoreMediaUseCase: PersistentlyStoreMediaUseCas
     public func execute(to bookID: UUID) async throws { // TODO: - 없어질 로직
         try await repository.moveAllTemporaryMedia(to: bookID).get()
     }
-    public func execute(to bookID: UUID, mediaList: [MediaDescription]) async throws {
-        try await repository.createSnapshot(for: mediaList, in: bookID).get()
+    public func execute(to bookID: UUID, mediaList: [MediaDescription]?) async throws {
+        if let mediaList {
+            try await repository.createSnapshot(for: mediaList, in: bookID).get()
+        }
+        
         try await repository.deleteMediaBySnapshot(for: bookID).get()
     }
 }

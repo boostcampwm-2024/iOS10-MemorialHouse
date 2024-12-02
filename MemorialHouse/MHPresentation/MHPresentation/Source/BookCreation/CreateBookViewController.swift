@@ -217,7 +217,7 @@ final class CreateBookViewController: UIViewController {
             Task {
                 guard let editBookViewModelFactory = try? DIContainer.shared.resolve(EditBookViewModelFactory.self) else { return }
                 let book = Book(id: .init(), title: "HIHI", pages: [.init(metadata: [:], text: "")])
-                try? await DIContainer.shared.resolve(BookRepository.self).create(book: book)
+                try? await DIContainer.shared.resolve(CreateBookUseCase.self).execute(book: book)
                 let viewModel = editBookViewModelFactory.make(bookID: book.id)
                 self?.navigationController?.pushViewController(
                     EditBookViewController(viewModel: viewModel),

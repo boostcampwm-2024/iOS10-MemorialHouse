@@ -11,6 +11,7 @@ final class EditBookViewModel: ViewModelType {
         case didAddMediaInURL(type: MediaType, url: URL)
         case addPageButtonTapped
         case didSaveButtonTapped
+        case didCancelButtonTapped
     }
     enum Output {
         case updateViewController(title: String)
@@ -64,6 +65,8 @@ final class EditBookViewModel: ViewModelType {
                 self?.addEmptyPage()
             case .didSaveButtonTapped:
                 Task { await self?.saveMediaAll() }
+            case .didCancelButtonTapped:
+                Task { await self?.revokeMediaAll() }
             }
         }.store(in: &cancellables)
         
@@ -136,6 +139,14 @@ final class EditBookViewModel: ViewModelType {
             try await storeMediaUseCase.execute(to: bookID, mediaList: mediaList)
         } catch {
             output.send(.error(message: "책을 저장하는데 실패했습니다."))
+            MHLogger.error(error.localizedDescription + #function)
+        }
+    }
+    private func revokeMediaAll() async {
+        do {
+            try await storeMediaUseCase.execute(to: bookID, mediaList: nil)
+        } catch {
+            output.send(.error(message: "저장 취소하는데 실패했습니다."))
             MHLogger.error(error.localizedDescription + #function)
         }
     }
