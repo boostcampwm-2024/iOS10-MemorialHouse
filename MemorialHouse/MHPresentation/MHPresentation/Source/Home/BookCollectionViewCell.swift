@@ -30,15 +30,13 @@ final class BookCollectionViewCell: UICollectionViewCell {
     }
     
     // MARK: - Configuration
-    func configure(
+    func configureCell(
         id: UUID,
         title: String,
         bookCoverImage: UIImage,
         targetImage: UIImage,
         isLike: Bool,
-        houseName: String,
-        bookCoverAction: @escaping () -> Void,
-        likeButtonAction: @escaping () -> Void
+        houseName: String
     ) {
         self.isLike = isLike
         bookCoverView.configure(
@@ -49,15 +47,13 @@ final class BookCollectionViewCell: UICollectionViewCell {
         )
         changeLikeButtonImage(isLike: isLike)
         dropDownButton.setImage(.dotHorizontal, for: .normal)
-        configureAction(
-            bookCoverAction: bookCoverAction,
-            likeButtonAction: likeButtonAction
-        )
     }
     
-    private func configureAction(
+    func configureButtonAction(
         bookCoverAction: @escaping () -> Void,
-        likeButtonAction: @escaping () -> Void
+        likeButtonAction: @escaping () -> Void,
+        dropDownButtonEditAction: @escaping () -> Void,
+        dropDownButtonDeleteAction: @escaping () -> Void
     ) {
         bookCoverView.addAction(UIAction { _ in
             bookCoverAction()
@@ -70,9 +66,23 @@ final class BookCollectionViewCell: UICollectionViewCell {
             self.changeLikeButtonImage(isLike: self.isLike)
         }, for: .touchUpInside)
         
-        dropDownButton.addAction(UIAction { _ in
-            // TODO: 드랍다운 액션 추가
-        }, for: .touchUpInside)
+        dropDownButton.showsMenuAsPrimaryAction = true
+        dropDownButton.menu = UIMenu(
+            title: "",
+            children: [
+                UIAction(
+                    title: "책 커버 수정",
+                    image: UIImage(systemName: "pencil"),
+                    handler: { _ in dropDownButtonEditAction() }
+                ),
+                UIAction(
+                    title: "책 커버 삭제",
+                    image: UIImage(systemName: "trash"),
+                    attributes: .destructive,
+                    handler: { _ in dropDownButtonDeleteAction() }
+                )
+            ]
+        )
     }
     
     private func changeLikeButtonImage(isLike: Bool) {

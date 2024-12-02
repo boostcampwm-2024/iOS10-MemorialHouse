@@ -205,6 +205,10 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             UpdateBookCoverUseCase.self,
             object: DefaultUpdateBookCoverUseCase(repository: bookCoverRepository)
         )
+        DIContainer.shared.register(
+            DeleteBookCoverUseCase.self,
+            object: DefaultDeleteBookCoverUseCase(repository: bookCoverRepository)
+        )
         // MARK: - EditBook UseCase
         DIContainer.shared.register(
             PersistentlyStoreMediaUseCase.self,
@@ -236,12 +240,14 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let fetchMemorialHouseNameUseCase = try DIContainer.shared.resolve(FetchMemorialHouseNameUseCase.self)
         let fetchAllBookCoverUseCase = try DIContainer.shared.resolve(FetchAllBookCoverUseCase.self)
         let updateBookCoverUseCase = try DIContainer.shared.resolve(UpdateBookCoverUseCase.self)
+        let deleteBookCoverUseCase = try DIContainer.shared.resolve(DeleteBookCoverUseCase.self)
         DIContainer.shared.register(
             HomeViewModelFactory.self,
             object: HomeViewModelFactory(
                 fetchMemorialHouseNameUseCase: fetchMemorialHouseNameUseCase,
                 fetchAllBookCoverUseCase: fetchAllBookCoverUseCase,
-                updateBookCoverUseCase: updateBookCoverUseCase
+                updateBookCoverUseCase: updateBookCoverUseCase,
+                deleteBookCoverUseCase: deleteBookCoverUseCase
             )
         )
         
