@@ -47,15 +47,23 @@ final class MHBookCover: UIButton {
     
     // MARK: - Configuration
     func configure(
-        title: String,
-        bookCoverImage: UIImage,
-        targetImage: UIImage,
-        houseName: String
+        title: String? = nil,
+        bookCoverImage: UIImage? = nil,
+        targetImage: UIImage? = nil,
+        houseName: String? = nil
     ) {
-        bookTitleLabel.text = title
-        bookCoverImageView.image = bookCoverImage
-        targetImageView.image = targetImage
-        houseLabel.text = houseName
+        if let title {
+            bookTitleLabel.text = title
+        }
+        if let bookCoverImage {
+            bookCoverImageView.image = bookCoverImage
+        }
+        if let targetImage {
+            targetImageView.image = targetImage
+        }
+        if let houseName {
+            houseLabel.text = houseName
+        }
     }
     
     private func configureAddSubView() {
