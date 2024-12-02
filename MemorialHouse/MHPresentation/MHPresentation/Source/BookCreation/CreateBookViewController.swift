@@ -1,9 +1,10 @@
 import UIKit
+import MHDomain // TODO: - 추후 로직에 따라 제거 필요
 import MHCore
 import Combine
 
 final class CreateBookViewController: UIViewController {
-    // MARK: - Property
+    // MARK: - UI Components
     private let bookCoverView: MHBookCover = MHBookCover()
     private let bookTitleTextField: UITextField = {
         let textField = UITextField()
@@ -216,13 +217,18 @@ final class CreateBookViewController: UIViewController {
             normal: normalAttributes,
             selected: selectedAttributes
         ) { [weak self] in
-            // TODO: - 추후 뷰모델 관련 생성 이슈 조정 필요
-            let editBookViewModel = EditBookViewModel()
-            self?.input.send(.createBook)
-            self?.navigationController?.pushViewController(
-                EditBookViewController(viewModel: editBookViewModel),
-                animated: true
-            )
+            // TODO: - 추후 DIContainer resolve 실패 처리 필요
+            // TODO: - bookID에 bookCoverID 넣어주기 필요
+            Task {
+                guard let editBookViewModelFactory = try? DIContainer.shared.resolve(EditBookViewModelFactory.self) else { return }
+                let book = Book(id: .init(), title: "HIHI", pages: [.init(metadata: [:], text: "")])
+                try? await DIContainer.shared.resolve(CreateBookUseCase.self).execute(book: book)
+                let viewModel = editBookViewModelFactory.make(bookID: book.id)
+                self?.navigationController?.pushViewController(
+                    EditBookViewController(viewModel: viewModel),
+                    animated: true
+                )
+            }
         }
     }
     
@@ -280,6 +286,8 @@ final class CreateBookViewController: UIViewController {
             MHLogger.error(error)
         }
     }
+    
+    // TODO: ViewModel에 @Published 제거해야 함
     private func configureViewModelBinding() {
         $viewModel
             .receive(on: DispatchQueue.main)

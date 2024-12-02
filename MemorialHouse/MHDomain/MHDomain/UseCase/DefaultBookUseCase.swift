@@ -2,13 +2,16 @@ import MHFoundation
 
 public struct DefaultCreateBookUseCase: CreateBookUseCase {
     private let repository: BookRepository
+    private let mediaRepository: MediaRepository
     
-    public init(repository: BookRepository) {
+    public init(repository: BookRepository, mediaRepository: MediaRepository) {
         self.repository = repository
+        self.mediaRepository = mediaRepository
     }
     
     public func execute(book: Book) async throws {
         try await repository.create(book: book).get()
+        try await mediaRepository.createSnapshot(for: [], in: book.id).get()
     }
 }
 
