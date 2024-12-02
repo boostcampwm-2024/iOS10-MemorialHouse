@@ -31,7 +31,7 @@ final class BookCategoryViewController: UIViewController {
         guard let viewModelFactory = try? DIContainer.shared.resolve(BookCategoryViewModelFactory.self) else {
             return nil
         }
-        self.viewModel = viewModelFactory.make()
+        self.viewModel = viewModelFactory.makeForHome()
         super.init(coder: coder)
     }
     
