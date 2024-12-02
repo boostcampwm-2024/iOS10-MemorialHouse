@@ -24,22 +24,24 @@ final class BookCategoryViewModel: ViewModelType {
     private let deleteBookCategoryUseCase: DeleteBookCategoryUseCase
     private let output = PassthroughSubject<Output, Never>()
     private var cancellables = Set<AnyCancellable>()
-    private(set) var categories = [
-        BookCategory(order: 0, name: "전체"),
-        BookCategory(order: 1, name: "즐겨찾기")
-    ]
+    private(set) var categories = [BookCategory]()
     private(set) var currentCategoryName = ""
     
     init(
         createBookCategoryUseCase: CreateBookCategoryUseCase,
         fetchBookCategoriesUseCase: FetchBookCategoriesUseCase,
         updateBookCategoryUseCase: UpdateBookCategoryUseCase,
-        deleteBookCategoryUseCase: DeleteBookCategoryUseCase
+        deleteBookCategoryUseCase: DeleteBookCategoryUseCase,
+        categories: [BookCategory] = [
+            BookCategory(order: 0, name: "전체"),
+            BookCategory(order: 1, name: "즐겨찾기")
+        ]
     ) {
         self.createBookCategoryUseCase = createBookCategoryUseCase
         self.fetchBookCategoriesUseCase = fetchBookCategoriesUseCase
         self.updateBookCategoryUseCase = updateBookCategoryUseCase
         self.deleteBookCategoryUseCase = deleteBookCategoryUseCase
+        self.categories = categories
     }
     
     func setup(currentCategory: String) {

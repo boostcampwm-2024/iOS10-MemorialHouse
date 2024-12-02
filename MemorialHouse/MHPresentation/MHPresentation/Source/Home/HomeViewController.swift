@@ -139,7 +139,7 @@ public final class HomeViewController: UIViewController {
             do {
                 guard let self else { return }
                 let categoryViewModelFactory = try DIContainer.shared.resolve(BookCategoryViewModelFactory.self)
-                let categoryViewModel = categoryViewModelFactory.make()
+                let categoryViewModel = categoryViewModelFactory.makeForHome()
                 categoryViewModel.setup(currentCategory: self.currentCategory)
                 let categoryViewController = BookCategoryViewController(viewModel: categoryViewModel)
                 categoryViewController.delegate = self
