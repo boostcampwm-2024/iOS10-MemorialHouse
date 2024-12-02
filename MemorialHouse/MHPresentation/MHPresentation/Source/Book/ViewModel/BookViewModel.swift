@@ -10,26 +10,26 @@ public final class BookViewModel: ViewModelType {
     }
     
     enum Output {
-        case fetchBook(bookTitle: String?)
+        case setBookTitle(with: String?)
         case loadFirstPage(page: Page?)
     }
     
-    private let identifier: UUID
     private let fetchBookUseCase: FetchBookUseCase
     private let output = PassthroughSubject<Output, Never>()
     private var cancellables = Set<AnyCancellable>()
     
+    let identifier: UUID
     private var book: Book?
     private var nowPageIndex: Int = 0
     var previousPage: Page? { nowPageIndex > 0 ? book?.pages[nowPageIndex - 1] : nil }
     var nextPage: Page? { nowPageIndex < (book?.pages.count ?? 0) - 1 ? book?.pages[nowPageIndex + 1] : nil }
     
     init(
-        identifier: UUID,
-        fetchBookUseCase: FetchBookUseCase
+        fetchBookUseCase: FetchBookUseCase,
+        identifier: UUID
     ) {
-        self.identifier = identifier
         self.fetchBookUseCase = fetchBookUseCase
+        self.identifier = identifier
     }
     
     @MainActor
@@ -55,7 +55,7 @@ public final class BookViewModel: ViewModelType {
     
     private func fetchBook() async throws {
         book = try await fetchBookUseCase.execute(id: identifier)
-        output.send(.fetchBook(bookTitle: book?.title))
+        output.send(.setBookTitle(with: book?.title))
         output.send(.loadFirstPage(page: book?.pages[nowPageIndex]))
     }
 }

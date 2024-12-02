@@ -216,6 +216,14 @@ final class CustomAlbumViewController: UIViewController {
             navigationController?.show(imagePicker, sender: nil)
         }
     }
+    
+    private func moveToEditView(image: UIImage?, creationDate: Date) {
+        guard let viewModelFactory = try? DIContainer.shared.resolve(EditPhotoViewModelFactory.self) else { return }
+        let editPhotoViewModel = viewModelFactory.make(creationDate: creationDate)
+        let editPhotoViewController = EditPhotoViewController(viewModel: editPhotoViewModel)
+        editPhotoViewController.setPhoto(image: image)
+        self.navigationController?.pushViewController(editPhotoViewController, animated: true)
+    }
 }
 
 // MARK: - UICollectionViewDelegate
@@ -232,12 +240,9 @@ extension CustomAlbumViewController: UICollectionViewDelegate {
                 await LocalPhotoManager.shared.requestThumbnailImage(with: asset) { [weak self] image in
                     guard let self else { return }
                     if self.mediaType == .image {
-                        let editPhotoViewController = EditPhotoViewController()
-                        editPhotoViewController.setPhoto(image: image, date: asset.creationDate)
-                        self.navigationController?.pushViewController(editPhotoViewController, animated: true)
+                        moveToEditView(image: image, creationDate: asset.creationDate ?? .now)
                     } else {
-                        let editVideoViewController = EditVideoViewController()
-                        
+                        // TODO: - 동영상 편집 뷰로 이동
                     }
                 }
             }
@@ -286,11 +291,8 @@ extension CustomAlbumViewController: UIImagePickerControllerDelegate, UINavigati
         didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]
     ) {
         dismiss(animated: true)
-        if let image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
-            let editViewController = EditPhotoViewController()
-            editViewController.setPhoto(image: image, date: .now)
-            self.navigationController?.pushViewController(editViewController, animated: true)
-        }
+        let image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage
+        moveToEditView(image: image, creationDate: .now)
     }
 }
 
