@@ -148,21 +148,17 @@ final class EditBookViewController: UIViewController {
         }
     }
     private func configureAddSubView() {
-        // editPageTableView
         view.addSubview(editPageTableView)
         
-        // buttonStackView
         buttonStackView.addArrangedSubview(addImageButton)
         buttonStackView.addArrangedSubview(addTextButton)
         buttonStackView.addArrangedSubview(addVideoButton)
         buttonStackView.addArrangedSubview(addAudioButton)
         view.addSubview(buttonStackView)
         
-        // publishButton
         view.addSubview(addPageButton)
     }
     private func configureConstraints() {
-        // tableView
         editPageTableView.setAnchor(
             top: view.safeAreaLayoutGuide.topAnchor,
             leading: view.leadingAnchor,
@@ -170,7 +166,6 @@ final class EditBookViewController: UIViewController {
             trailing: view.trailingAnchor
         )
         
-        // buttonStackView
         buttonStackView.setAnchor(
             leading: editPageTableView.leadingAnchor, constantLeading: 10,
             height: 40
@@ -182,7 +177,6 @@ final class EditBookViewController: UIViewController {
         )
         buttonStackViewBottomConstraint?.isActive = true
         
-        // publishButton
         addPageButton.setAnchor(
             bottom: buttonStackView.bottomAnchor,
             trailing: editPageTableView.trailingAnchor, constantTrailing: 15
