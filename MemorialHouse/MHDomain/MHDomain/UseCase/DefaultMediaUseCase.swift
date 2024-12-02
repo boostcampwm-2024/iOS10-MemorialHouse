@@ -31,9 +31,9 @@ public struct DefaultFetchMediaUseCase: FetchMediaUseCase {
     // MARK: - Method
     public func execute(media: MediaDescription, in bookID: UUID) async throws -> Data {
         do {
-            return try await repository.read(media: media, from: nil).get()
+            return try await repository.fetch(media: media, from: nil).get()
         } catch {
-            return try await repository.read(media: media, from: bookID).get()
+            return try await repository.fetch(media: media, from: bookID).get()
         }
     }
     public func execute(media: MediaDescription, in bookID: UUID) async throws -> URL {

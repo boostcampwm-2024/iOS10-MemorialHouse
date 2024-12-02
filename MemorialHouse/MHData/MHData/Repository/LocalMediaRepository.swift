@@ -39,7 +39,7 @@ public struct LocalMediaRepository: MediaRepository, Sendable {
         return await storage.copy(at: from, to: path, newFileName: fileName)
     }
     
-    public func read(
+    public func fetch(
         media mediaDescription: MediaDescription,
         from bookID: UUID?
     ) async -> Result<Data, MHDataError> {
