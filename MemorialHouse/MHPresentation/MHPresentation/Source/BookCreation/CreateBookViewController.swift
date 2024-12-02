@@ -3,8 +3,6 @@ import MHCore
 import Combine
 
 final class CreateBookViewController: UIViewController {
-    // MARK: - Constant
-    static let maxTitleLength = 10
     // MARK: - Property
     private let bookCoverView: MHBookCover = MHBookCover()
     private let bookTitleTextField: UITextField = {
@@ -78,6 +76,7 @@ final class CreateBookViewController: UIViewController {
     @Published
     private var viewModel: CreateBookViewModel
     private var cancellables: Set<AnyCancellable> = []
+    private let maxTitleLength = 10
     
     // MARK: - Initializer
     init(viewModel: CreateBookViewModel) {
