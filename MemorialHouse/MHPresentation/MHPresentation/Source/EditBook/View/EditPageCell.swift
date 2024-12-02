@@ -198,11 +198,6 @@ extension EditPageCell: @preconcurrency MediaAttachmentDataSource {
 extension EditPageCell: UITextViewDelegate {
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         guard let textStorage else { return false }
-        let attributedText = NSMutableAttributedString(
-            string: text,
-            attributes: defaultAttributes
-        )
-        
         // Attachment지우기 전에 드래그해서 알려주기
         if text.isEmpty && range.length == 1
             && attachmentAt(range.location) != nil
@@ -210,6 +205,11 @@ extension EditPageCell: UITextViewDelegate {
             textView.selectedRange = NSRange(location: range.location, length: 1)
             return false
         }
+        
+        let attributedText = NSMutableAttributedString(
+            string: text,
+            attributes: defaultAttributes
+        )
         
         return text.isEmpty
         || isAcceptableHeight(textStorage, shouldChangeTextIn: range, replacementText: attributedText)
@@ -248,35 +248,8 @@ extension EditPageCell: @preconcurrency NSTextStorageDelegate {
         changeInLength delta: Int
     ) {
         // 입력하는 곳 앞에 Attachment가 있을 때, 줄바꿈을 추가합니다.
-        if editedRange.location - 1 > 0, delta > 0,
-           attachmentAt(editedRange.location - 1) != nil {
-            textStorage.insert(
-                NSAttributedString(
-                    string: "\n",
-                    attributes: defaultAttributes
-                ),
-                at: editedRange.location
-            )
-            textView.selectedRange = NSRange(location: editedRange.location + 1, length: 0)
-        }
-        
-        // 입력하는 곳 뒤에 Attachment가 있을 때, 줄바꿈을 추가합니다.
-        let nextIndex = editedRange.location + editedRange.length
-        if nextIndex < textStorage.length,
-           let attachment = attachmentAt(nextIndex) {
-            attachment.cachedViewProvider = nil
-            // 입력하려는 문자끝에 \n이 있으면 아래 로직 무시
-            guard textStorage.attributedSubstring(
-                from: NSRange(location: editedRange.location, length: 1)
-            ).string != "\n" else { return }
-            textStorage.insert(
-                NSAttributedString(
-                    string: "\n",
-                    attributes: defaultAttributes
-                ),
-                at: nextIndex
-            )
-        }
+        guard delta > 0 else { return }
+        lineBreakForAttachment(in: editedRange)
     }
     func textStorage(
         _ textStorage: NSTextStorage,
@@ -285,12 +258,6 @@ extension EditPageCell: @preconcurrency NSTextStorageDelegate {
         changeInLength delta: Int
     ) {
         let text = textStorage.attributedSubstring(from: editedRange)
-        
-        let nextIndex = editedRange.location + editedRange.length
-        if nextIndex < textStorage.length, editedRange.length >= 1,
-           let attachment = attachmentAt(nextIndex) {
-            attachment.cachedViewProvider = nil
-        }
         if !isAcceptableHeight(textStorage, shouldChangeTextIn: editedRange, replacementText: text) {
             // TODO: - 좀더 우아하게 처리하기? 미리 알려주는 로직으로... 개선필요
             textStorage.deleteCharacters(in: editedRange)
@@ -302,5 +269,24 @@ extension EditPageCell: @preconcurrency NSTextStorageDelegate {
         guard let textStorage else { return nil }
         guard index >= 0 && index < textStorage.length else { return nil }
         return textStorage.attributes(at: index, effectiveRange: nil)[.attachment] as? MediaAttachment
+    }
+    private func lineBreakForAttachment(in range: NSRange) {
+        guard let currentString = textStorage?.string else { return }
+        let startIndex = currentString.startIndex
+        let range = NSRange(location: 0, length: currentString.count)
+        textStorage?.enumerateAttribute(.attachment, in: range, using: { value, range, _ in
+            guard let attachment = value as? MediaAttachment else { return }
+            let location = range.location
+            if location > 0
+               && currentString[currentString.index(startIndex, offsetBy: location-1)] != "\n" {
+                textStorage?.insert(NSAttributedString(string: "\n"), at: location)
+                attachment.cachedViewProvider = nil
+            }
+            let nextLocation = location + range.length
+            if nextLocation < currentString.count
+                && currentString[currentString.index(startIndex, offsetBy: nextLocation)] != "\n" {
+                textStorage?.insert(NSAttributedString(string: "\n"), at: nextLocation)
+            }
+        })
     }
 }
