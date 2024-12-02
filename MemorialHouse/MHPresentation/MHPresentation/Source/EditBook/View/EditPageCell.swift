@@ -151,7 +151,7 @@ final class EditPageCell: UITableViewCell {
     }
     private func mediaAddedWithURL(media: MediaDescription, url: URL) {
         let attachment = MediaAttachment(
-            view: MHPolaroidPhotoView(),// TODO: - 수정 필요
+            view: mediaViewFactory(type: media.type),// TODO: - 수정 필요
             description: media
         )
         attachment.configure(with: url)
@@ -184,6 +184,19 @@ final class EditPageCell: UITableViewCell {
                 attachment = mediaAttachment
             }
         return attachment
+    }
+    
+    private func mediaViewFactory(type: MediaType) -> UIView & MediaAttachable {
+        switch type {
+        case .image:
+            MHPolaroidPhotoView()
+        case .video:
+            MHPolaroidPhotoView()
+        case .audio:
+            MHAudioPlayerView()
+        default:
+            MHPolaroidPhotoView()
+        }
     }
 }
 
