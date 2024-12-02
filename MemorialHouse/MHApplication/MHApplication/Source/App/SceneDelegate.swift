@@ -209,6 +209,7 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             DeleteBookCoverUseCase.self,
             object: DefaultDeleteBookCoverUseCase(repository: bookCoverRepository)
         )
+        
         // MARK: - EditBook UseCase
         DIContainer.shared.register(
             PersistentlyStoreMediaUseCase.self,
@@ -273,13 +274,6 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             object: BookViewModelFactory(fetchBookUseCase: fetchBookUseCase)
         )
         
-        // MARK: - Page ViewModel
-        let fetchMediaUseCase = try DIContainer.shared.resolve(FetchMediaUseCase.self)
-        DIContainer.shared.register(
-            ReadPageViewModelFactory.self,
-            object: ReadPageViewModelFactory(fetchMediaUseCase: fetchMediaUseCase)
-        )
-        
         // MARK: - EditBook ViewModel
         let updateBookUseCase = try DIContainer.shared.resolve(UpdateBookUseCase.self)
         let storeMediaUseCase = try DIContainer.shared.resolve(PersistentlyStoreMediaUseCase.self)
@@ -298,8 +292,13 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             )
         )
         
-        // MARK: - Edit ViewModel
-        let createMediaUseCase = try DIContainer.shared.resolve(CreateMediaUseCase.self)
+        // MARK: - Page ViewModel
+        DIContainer.shared.register(
+            ReadPageViewModelFactory.self,
+            object: ReadPageViewModelFactory(fetchMediaUseCase: fetchMediaUseCase)
+        )
+        
+        // MARK: - EditPhoto ViewModel
         DIContainer.shared.register(
             EditPhotoViewModelFactory.self,
             object: EditPhotoViewModelFactory(createMediaUseCase: createMediaUseCase)

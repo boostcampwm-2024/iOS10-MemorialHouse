@@ -1,7 +1,6 @@
 import MHFoundation
 import MHDomain
 import UIKit
-import MHDomain
 
 final class MHPolaroidPhotoView: UIView {
     // MARK: - UI Components
