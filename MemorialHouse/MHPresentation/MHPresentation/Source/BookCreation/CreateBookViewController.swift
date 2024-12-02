@@ -78,7 +78,6 @@ final class CreateBookViewController: UIViewController {
     // MARK: - Property
     @Published
     private var viewModel: CreateBookViewModel
-    private let input = PassthroughSubject<CreateBookViewModel.Input, Never>()
     private var cancellables: Set<AnyCancellable> = []
     private let maxTitleLength = 10
     
@@ -89,10 +88,7 @@ final class CreateBookViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
     }
     required init?(coder: NSCoder) {
-        guard let createBookViewModelFactory = try? DIContainer.shared.resolve(CreateBookViewModelFactory.self) else {
-            return nil
-        }
-        viewModel = createBookViewModelFactory.make(houseName: "")
+        viewModel = CreateBookViewModel()
         
         super.init(coder: coder)
     }

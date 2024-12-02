@@ -255,15 +255,6 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             )
         )
         
-        // MARK: - BookCover ViewModel
-        let createBookCoverUseCase = try DIContainer.shared.resolve(CreateBookCoverUseCase.self)
-        DIContainer.shared.register(
-            CreateBookViewModelFactory.self,
-            object: CreateBookViewModelFactory(
-                createBookCoverUseCase: createBookCoverUseCase
-            )
-        )
-        
         // MARK: Category ViewModel
         let createBookCategoryUseCase = try DIContainer.shared.resolve(CreateBookCategoryUseCase.self)
         let fetchBookCategoriesUseCase = try DIContainer.shared.resolve(FetchBookCategoriesUseCase.self)
