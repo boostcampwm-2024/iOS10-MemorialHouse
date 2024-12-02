@@ -304,7 +304,7 @@ extension BookCoverViewController {
             normal: normalAttributes,
             selected: selectedAttributes
         ) { [weak self] in
-            self?.modifyInput.send(.saveBookCover(bookTitle: self?.bookTitleTextField.text ?? ""))
+            self?.modifyInput.send(.saveBookCover)
         }
     }
     private func configureAddSubviews() {

@@ -21,6 +21,7 @@ final class CreateBookCoverViewModel: ViewModelType {
         case bookCategory(category: String?)
         case moveToNext(bookID: UUID)
         case moveToHome
+        case settingFailure
     }
     
     private let fetchMemorialHouseNameUseCase: FetchMemorialHouseNameUseCase
@@ -104,7 +105,10 @@ final class CreateBookCoverViewModel: ViewModelType {
     }
     
     private func saveBookCover() async throws {
-        guard let bookTitle, let bookColor else { return }
+        guard let bookTitle, !bookTitle.isEmpty, let bookColor else {
+            output.send(.settingFailure)
+            return
+        }
         let newBookCover = BookCover(
             order: bookOrder,
             title: bookTitle,
