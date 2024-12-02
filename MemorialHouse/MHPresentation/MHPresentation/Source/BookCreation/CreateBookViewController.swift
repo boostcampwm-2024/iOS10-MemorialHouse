@@ -240,8 +240,8 @@ final class CreateBookViewController: UIViewController {
         // TitleTextField 변경
         let titleAction = UIAction { [weak self] _ in
             guard let self else { return }
-            if self.bookTitleTextField.text?.count ?? 0 > Self.maxTitleLength {
-                self.bookTitleTextField.text = String(self.bookTitleTextField.text?.prefix(Self.maxTitleLength) ?? "")
+            if self.bookTitleTextField.text?.count ?? 0 > maxTitleLength {
+                self.bookTitleTextField.text = String(self.bookTitleTextField.text?.prefix(maxTitleLength) ?? "")
             }
             
             self.viewModel.bookTitle = self.bookTitleTextField.text ?? ""
