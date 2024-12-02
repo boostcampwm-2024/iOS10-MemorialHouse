@@ -231,10 +231,12 @@ final class EditBookViewController: UIViewController {
             // TODO: - 오디오 추가 로직
             let audioViewModel = CreateAudioViewModel()
             let audioViewController = CreateAudioViewController(viewModel: audioViewModel)
+            
+            audioViewController.audioCreationCompletion = { uuid in
+                MHLogger.debug(uuid)
+            }
             if let sheet = audioViewController.sheetPresentationController {
-                sheet.detents = [.custom {
-                    detent in 0.35 * detent.maximumDetentValue
-                }]
+                sheet.detents = [.custom { detent in 0.35 * detent.maximumDetentValue }]
                 sheet.prefersGrabberVisible = true
             }
             

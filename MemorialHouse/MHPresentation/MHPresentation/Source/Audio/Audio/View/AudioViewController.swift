@@ -31,6 +31,7 @@ final public class CreateAudioViewController: UIViewController {
     ]
     // UUID
     private let identifier: UUID = UUID()
+    var audioCreationCompletion: (((UUID?) -> Void))?
     
     // MARK: - UI Component
     // title and buttons
@@ -376,9 +377,14 @@ final public class CreateAudioViewController: UIViewController {
             for: .touchUpInside)
     }
     private func addTappedEventToSaveButton() {
-        saveButton.addAction(UIAction { _ in
-            self.input.send(.saveButtonTapped)
-            self.dismiss(animated: true)
+        saveButton.addAction(UIAction { [weak self] _ in
+            self?.completeAudioCreation(uuid: self?.identifier)
         }, for: .touchUpInside)
+    }
+    
+    private func completeAudioCreation(uuid: UUID?) {
+        self.input.send(.saveButtonTapped)
+        dismiss(animated: true)
+        audioCreationCompletion?(uuid)
     }
 }
