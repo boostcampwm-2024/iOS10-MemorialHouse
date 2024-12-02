@@ -158,7 +158,7 @@ public final class HomeViewController: UIViewController {
         }, for: .touchUpInside)
         
         makingBookFloatingButton.addAction(UIAction { [weak self] _ in
-            self?.moveMakingBookViewController()
+            self?.moveBookCoverViewController()
         }, for: .touchUpInside)
         
         navigationBar.configureSettingAction(action: UIAction { [weak self] _ in
@@ -169,9 +169,15 @@ public final class HomeViewController: UIViewController {
         })
     }
     
-    private func moveMakingBookViewController() {
-        let bookCreationViewController = CreateBookViewController(viewModel: CreateBookViewModel())
-        navigationController?.pushViewController(bookCreationViewController, animated: true)
+    private func moveBookCoverViewController(bookID: UUID? = nil) {
+        if let bookID {
+            // TODO: - Modify ViewModel 필요
+        } else {
+            let viewModelFactory = try? DIContainer.shared.resolve(CreateBookCoverViewModelFactory.self)
+            let createBookCoverViewModel = viewModelFactory?.make(bookCount: viewModel.currentBookCovers.count)
+            let bookCreationViewController = BookCoverViewController(createViewModel: createBookCoverViewModel)
+            navigationController?.pushViewController(bookCreationViewController, animated: true)
+        }
     }
     
     private func configureConstraints() {
@@ -281,7 +287,7 @@ extension HomeViewController: UICollectionViewDataSource {
                 self?.input.send(.likeButtonTapped(bookId: bookCover.id))
             },
             dropDownButtonEditAction: { [weak self] in
-                self?.moveMakingBookViewController()
+                self?.moveBookCoverViewController(bookID: bookCover.id)
             },
             dropDownButtonDeleteAction: { [weak self] in
                 self?.input.send(.deleteBookCover(bookId: bookCover.id))

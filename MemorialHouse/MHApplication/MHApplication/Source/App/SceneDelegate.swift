@@ -271,6 +271,21 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             )
         )
         
+        // MARK: - Create BookCover ViewModel
+        let createBookCoverUseCase = try DIContainer.shared.resolve(CreateBookCoverUseCase.self)
+        let createBookUseCase = try DIContainer.shared.resolve(CreateBookUseCase.self)
+        let deleteBookUseCase = try DIContainer.shared.resolve(DeleteBookUseCase.self)
+        DIContainer.shared.register(
+            CreateBookCoverViewModelFactory.self,
+            object: CreateBookCoverViewModelFactory(
+                fetchMemorialHouseNameUseCase: fetchMemorialHouseNameUseCase,
+                createBookCoverUseCase: createBookCoverUseCase,
+                deleteBookCoverUseCase: deleteBookCoverUseCase,
+                createBookUseCase: createBookUseCase,
+                deleteBookUseCase: deleteBookUseCase
+            )
+        )
+        
         // MARK: - Book ViewModel
         let fetchBookUseCase = try DIContainer.shared.resolve(FetchBookUseCase.self)
         DIContainer.shared.register(
