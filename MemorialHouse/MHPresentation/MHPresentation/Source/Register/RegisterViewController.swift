@@ -28,6 +28,7 @@ public final class RegisterViewController: UIViewController {
         textLabel.textAlignment = .center
         textLabel.font = registerFont
         textLabel.numberOfLines = 2
+        textLabel.adjustsFontSizeToFitWidth = true
         
         return textLabel
     }()
