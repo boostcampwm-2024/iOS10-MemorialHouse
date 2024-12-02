@@ -156,15 +156,12 @@ final class CustomAlbumViewController: UIViewController {
                     Task { [weak self] in
                         await self?.openCamera()
                     }
-                } else {
-                    // TODO: 카메라 권한 설정 페이지로 이동
-                    MHLogger.info("카메라 권한 거부")
                 }
             }
         case .authorized:
             openCamera()
         case .restricted, .denied:
-            // TODO: 카메라 권한 설정 페이지로 이동
+            showsRedirectSettingAlert(with: .camera)
             MHLogger.info("카메라 권한 거부")
         default:
             MHLogger.error(authorization)
@@ -196,14 +193,13 @@ extension CustomAlbumViewController: UICollectionViewDelegate {
         } else {
             guard let asset = viewModel.photoAsset?[indexPath.item - 1] else { return }
             Task {
-                await LocalPhotoManager.shared.requestImage(with: asset) { [weak self] image in
+                await LocalPhotoManager.shared.requestThumbnailImage(with: asset) { [weak self] image in
                     guard let self else { return }
                     if self.mediaType == .image {
                         let editPhotoViewController = EditPhotoViewController()
                         editPhotoViewController.setPhoto(image: image, date: asset.creationDate)
                         self.navigationController?.pushViewController(editPhotoViewController, animated: true)
                     } else {
-                        // TODO: - 비디오 넘기기
                         let editVideoViewController = EditVideoViewController()
                         
                     }
@@ -238,7 +234,7 @@ extension CustomAlbumViewController: UICollectionViewDataSource {
             guard let asset = viewModel.photoAsset?[indexPath.item - 1] else { return cell }
             let cellSize = cell.bounds.size
             Task {
-                await LocalPhotoManager.shared.requestImage(with: asset, cellSize: cellSize) { image in
+                await LocalPhotoManager.shared.requestThumbnailImage(with: asset, cellSize: cellSize) { image in
                     cell.setPhoto(image)
                 }
             }
