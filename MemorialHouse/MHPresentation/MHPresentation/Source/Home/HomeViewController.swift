@@ -170,7 +170,7 @@ public final class HomeViewController: UIViewController {
     }
     
     private func moveMakingBookViewController() {
-        let bookCreationViewController = BookCreationViewController(viewModel: BookCreationViewModel())
+        let bookCreationViewController = CreateBookViewController(viewModel: CreateBookViewModel())
         navigationController?.pushViewController(bookCreationViewController, animated: true)
     }
     

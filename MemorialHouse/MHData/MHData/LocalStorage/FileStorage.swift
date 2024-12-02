@@ -1,7 +1,7 @@
 import MHFoundation
 import MHCore
 
-public protocol FileStorage {
+public protocol FileStorage: Sendable {
     /// 지정된 경로에 파일을 생성합니다.
     /// Documents폴더에 파일을 생성합니다.
     /// 중간 경로 폴더를 자동으로 생성합니다.
@@ -69,4 +69,12 @@ public protocol FileStorage {
     ///   - name: Documents/{path}/{name} 이 파일 URL을 반환합니다. (확장자 명시 필요)
     /// - Returns: 파일 URL을 반환합니다.
     func getURL(at path: String, fileName name: String) async -> Result<URL, MHDataError>
+    
+    /// 지정된 경로의 파일 목록을 반환합니다.
+    /// Documents폴더를 기준으로 파일 이름 목록을 반환합니다.
+    /// path는 디렉토리여야 합니다.
+    /// - Parameters:
+    ///   - path: Documents/{path} 이런식으로 들어갑니다
+    /// - Returns: 파일 이름 목록을 반환합니다
+    func getFileNames(at path: String) async -> Result<[String], MHDataError>
 }

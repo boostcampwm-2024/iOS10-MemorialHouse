@@ -1,6 +1,14 @@
 import UIKit
+import Combine
+import MHDomain
+import MHCore
 
 final class EditPageCell: UITableViewCell {
+    // MARK: - Constant
+    private let defaultAttributes: [NSAttributedString.Key: Any] = [
+        .font: UIFont.ownglyphBerry(size: 20),
+        .foregroundColor: UIColor.mhTitle
+    ]
     // MARK: - Property
     private let textView: UITextView = {
         let textView = UITextView()
@@ -18,9 +26,10 @@ final class EditPageCell: UITableViewCell {
         
         return textView
     }()
-    private var textLayoutManager: NSTextLayoutManager?
     private var textStorage: NSTextStorage?
-    private var textContainer: NSTextContainer?
+    private var viewModel: EditPageViewModel?
+    private let input = PassthroughSubject<EditPageViewModel.Input, Never>()
+    private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Initializer
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -30,7 +39,6 @@ final class EditPageCell: UITableViewCell {
         configureAddSubView()
         configureConstraints()
     }
-    
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         
@@ -39,31 +47,260 @@ final class EditPageCell: UITableViewCell {
         configureConstraints()
     }
     
+    // MARK: - LifeCycle
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        input.send(.pageWillDisappear)
+        cancellables.forEach { $0.cancel() }
+        cancellables = []
+        viewModel = nil
+        textView.text = ""
+    }
+    
     // MARK: - Setup & Configuration
     private func setup() {
         backgroundColor = .clear
         selectionStyle = .none
         
-        textLayoutManager = textView.textLayoutManager
         textStorage = textView.textStorage
-        textContainer = textView.textContainer
+        textStorage?.delegate = self
+        textView.delegate = self
     }
     private func configureAddSubView() {
-        addSubview(textView)
+        contentView.addSubview(textView)
     }
     private func configureConstraints() {
         textView.setAnchor(
-            top: topAnchor, constantTop: 10,
-            leading: leadingAnchor, constantLeading: 10,
-            bottom: bottomAnchor, constantBottom: 10,
-            trailing: trailingAnchor, constantTrailing: 10
+            top: contentView.topAnchor, constantTop: 10,
+            leading: contentView.leadingAnchor, constantLeading: 10,
+            bottom: contentView.bottomAnchor, constantBottom: 10,
+            trailing: contentView.trailingAnchor, constantTrailing: 10
         )
     }
+    private func configureBinding() {
+        let output = viewModel?.transform(input: input.eraseToAnyPublisher())
+        output?
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] event in
+                switch event {
+                case .page(let page):
+                    self?.configurePage(page: page)
+                case let .mediaAddedWithData(media, data):
+                    self?.mediaAddedWithData(media: media, data: data)
+                case let .mediaAddedWithURL(media, url):
+                    self?.mediaAddedWithURL(media: media, url: url)
+                case let .mediaLoadedWithData(media, data):
+                    self?.mediaLoadedWithData(media: media, data: data)
+                case let .mediaLoadedWithURL(media, url):
+                    self?.mediaLoadedWithURL(media: media, url: url)
+                case let .error(message):
+                    MHLogger.error(message) // 더 좋은 처리가 필요함
+                }
+            }.store(in: &cancellables)
+    }
     
-    // MARK: - TouchEvent
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        textView.becomeFirstResponder()
+    // MARK: - Method
+    func configure(viewModel: EditPageViewModel) {
+        self.viewModel = viewModel
+        configureBinding()
+        input.send(.pageWillAppear)
+    }
+    
+    // MARK: - Helper
+    private func configurePage(page: Page) {
+        let mergedText = mergeStorageInformation(
+            text: page.text,
+            attachmentMetaData: page.metadata
+        )
+        textStorage?.setAttributedString(mergedText)
+    }
+    /// Text와 Attachment 정보를 하나의 문자열로 조합합니다.
+    private func mergeStorageInformation(
+        text: String,
+        attachmentMetaData: [Int: MediaDescription]
+    ) -> NSAttributedString {
+        let mutableAttributedString = NSMutableAttributedString(string: text)
+        attachmentMetaData.forEach { location, description in
+            let range = NSRange(location: location, length: 1)
+            let mediaAttachment = MediaAttachment(
+                view: MHPolaroidPhotoView(), // TODO: - 이거 바꿔줘야함...
+                description: description
+            )
+            let attachmentString = NSAttributedString(attachment: mediaAttachment)
+            // Placeholder(공백) 교체
+            mutableAttributedString.replaceCharacters(in: range, with: attachmentString)
+            input.send(.didRequestMediaDataForData(media: description))
+        }
         
-        super.touchesBegan(touches, with: event)
+        mutableAttributedString.addAttributes(defaultAttributes,
+                                              range: NSRange(location: 0, length: mutableAttributedString.length))
+        
+        return mutableAttributedString
+    }
+    private func mediaAddedWithData(media: MediaDescription, data: Data) {
+        let attachment = MediaAttachment(
+            view: MHPolaroidPhotoView(), // TODO: - 수정 필요
+            description: media
+        )
+        attachment.configure(with: data)
+        let text = NSMutableAttributedString(attachment: attachment)
+        text.addAttributes(defaultAttributes,
+                           range: NSRange(location: 0, length: 1))
+        textStorage?.append(text)
+    }
+    private func mediaAddedWithURL(media: MediaDescription, url: URL) {
+        let attachment = MediaAttachment(
+            view: MHPolaroidPhotoView(),// TODO: - 수정 필요
+            description: media
+        )
+        attachment.configure(with: url)
+        let text = NSMutableAttributedString(attachment: attachment)
+        text.addAttributes(defaultAttributes,
+                           range: NSRange(location: 0, length: 1))
+        textStorage?.append(text)
+    }
+    private func mediaLoadedWithData(media: MediaDescription, data: Data) {
+        let attachment = findAttachment(by: media)
+        attachment?.configure(with: data)
+    }
+    private func mediaLoadedWithURL(media: MediaDescription, url: URL) {
+        let attachment = findAttachment(by: media)
+        attachment?.configure(with: url)
+    }
+    /// Text에서 특정 Attachment를 찾아서 적용합니다.
+    private func findAttachment(
+        by media: MediaDescription
+    ) -> MediaAttachment? {
+        var attachment: MediaAttachment?
+        guard let textStorage else { return attachment }
+        textStorage
+            .enumerateAttribute(
+                .attachment,
+                in: NSRange(location: 0, length: textStorage.length)
+            ) { value, _, _ in
+                guard let mediaAttachment = value as? MediaAttachment,
+                   mediaAttachment.mediaDescription.id == media.id else { return }
+                attachment = mediaAttachment
+            }
+        return attachment
+    }
+}
+
+// MARK: - MediaAttachmentDataSource
+extension EditPageCell: @preconcurrency MediaAttachmentDataSource {
+    func mediaAttachmentDragingImage(_ mediaAttachment: MediaAttachment, about view: UIView?) -> UIImage? {
+        view?.snapshotImage()
+    }
+}
+
+// MARK: - UITextViewDelegate
+extension EditPageCell: UITextViewDelegate {
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        guard let textStorage else { return false }
+        let attributedText = NSMutableAttributedString(
+            string: text,
+            attributes: defaultAttributes
+        )
+        
+        // Attachment지우기 전에 드래그해서 알려주기
+        if text.isEmpty && range.length == 1
+            && attachmentAt(range.location) != nil
+            && textView.selectedRange.length == 0 {
+            textView.selectedRange = NSRange(location: range.location, length: 1)
+            return false
+        }
+        
+        return text.isEmpty
+        || isAcceptableHeight(textStorage, shouldChangeTextIn: range, replacementText: attributedText)
+    }
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        input.send(.didBeginEditingPage)
+    }
+    /// TextView의 높이가 적절한지 확인합니다.
+    private func isAcceptableHeight(
+        _ textStorage: NSTextStorage,
+        shouldChangeTextIn range: NSRange,
+        replacementText attributedText: NSAttributedString
+    ) -> Bool {
+        let updatedText = NSMutableAttributedString(attributedString: textStorage)
+        let horizontalInset = textView.textContainerInset.left + textView.textContainerInset.right
+        let verticalInset = textView.textContainerInset.top + textView.textContainerInset.bottom
+        let textViewWidth = textView.bounds.width - horizontalInset
+        let textViewHight = textView.bounds.height - verticalInset
+        let temporaryTextView = UITextView(
+            frame: CGRect(x: 0, y: 0, width: textViewWidth, height: .greatestFiniteMagnitude)
+        )
+        updatedText.replaceCharacters(in: range, with: attributedText)
+        temporaryTextView.attributedText = updatedText
+        temporaryTextView.sizeToFit()
+        
+        return temporaryTextView.contentSize.height <= textViewHight
+    }
+}
+
+// MARK: - NSTextStorageDelegate
+extension EditPageCell: @preconcurrency NSTextStorageDelegate {
+    func textStorage(
+        _ textStorage: NSTextStorage,
+        willProcessEditing editedMask: NSTextStorage.EditActions,
+        range editedRange: NSRange,
+        changeInLength delta: Int
+    ) {
+        // 입력하는 곳 앞에 Attachment가 있을 때, 줄바꿈을 추가합니다.
+        if editedRange.location - 1 > 0, delta > 0,
+           attachmentAt(editedRange.location - 1) != nil {
+            textStorage.insert(
+                NSAttributedString(
+                    string: "\n",
+                    attributes: defaultAttributes
+                ),
+                at: editedRange.location
+            )
+            textView.selectedRange = NSRange(location: editedRange.location + 1, length: 0)
+        }
+        
+        // 입력하는 곳 뒤에 Attachment가 있을 때, 줄바꿈을 추가합니다.
+        let nextIndex = editedRange.location + editedRange.length
+        if nextIndex < textStorage.length,
+           let attachment = attachmentAt(nextIndex) {
+            attachment.cachedViewProvider = nil
+            // 입력하려는 문자끝에 \n이 있으면 아래 로직 무시
+            guard textStorage.attributedSubstring(
+                from: NSRange(location: editedRange.location, length: 1)
+            ).string != "\n" else { return }
+            textStorage.insert(
+                NSAttributedString(
+                    string: "\n",
+                    attributes: defaultAttributes
+                ),
+                at: nextIndex
+            )
+        }
+    }
+    func textStorage(
+        _ textStorage: NSTextStorage,
+        didProcessEditing editedMask: NSTextStorage.EditActions,
+        range editedRange: NSRange,
+        changeInLength delta: Int
+    ) {
+        let text = textStorage.attributedSubstring(from: editedRange)
+        
+        let nextIndex = editedRange.location + editedRange.length
+        if nextIndex < textStorage.length, editedRange.length >= 1,
+           let attachment = attachmentAt(nextIndex) {
+            attachment.cachedViewProvider = nil
+        }
+        if !isAcceptableHeight(textStorage, shouldChangeTextIn: editedRange, replacementText: text) {
+            // TODO: - 좀더 우아하게 처리하기? 미리 알려주는 로직으로... 개선필요
+            textStorage.deleteCharacters(in: editedRange)
+        }
+        input.send(.didEditPage(attributedText: textStorage))
+    }
+    // 그곳에 Attachment가 있는지 확인합니다.
+    private func attachmentAt(_ index: Int) -> MediaAttachment? {
+        guard let textStorage else { return nil }
+        guard index >= 0 && index < textStorage.length else { return nil }
+        return textStorage.attributes(at: index, effectiveRange: nil)[.attachment] as? MediaAttachment
     }
 }

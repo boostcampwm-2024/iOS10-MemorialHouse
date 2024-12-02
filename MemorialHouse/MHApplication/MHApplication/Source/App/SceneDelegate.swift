@@ -80,11 +80,18 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             MHLogger.error("\(error.localizedDescription)")
         }
     }
-    
     private func registerStorageDepedency() throws {
         DIContainer.shared.register(CoreDataStorage.self, object: CoreDataStorage())
         
         let coreDataStorage = try DIContainer.shared.resolve(CoreDataStorage.self)
+        DIContainer.shared.register(
+            CoreDataBookCoverStorage.self,
+            object: CoreDataBookCoverStorage(coreDataStorage: coreDataStorage)
+        )
+        DIContainer.shared.register(
+            CoreDataBookStorage.self,
+            object: CoreDataBookStorage(coreDataStorage: coreDataStorage)
+        )
         DIContainer.shared.register(
             BookCategoryStorage.self,
             object: CoreDataBookCategoryStorage(coreDataStorage: coreDataStorage)
@@ -100,6 +107,10 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         DIContainer.shared.register(
             MemorialHouseNameStorage.self,
             object: UserDefaultsMemorialHouseNameStorage()
+        )
+        DIContainer.shared.register(
+            MHFileManager.self,
+            object: MHFileManager(directoryType: .documentDirectory)
         )
     }
     
@@ -124,6 +135,11 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         DIContainer.shared.register(
             BookRepository.self,
             object: LocalBookRepository(storage: bookStorage)
+        )
+        let fileManager = try DIContainer.shared.resolve(MHFileManager.self)
+        DIContainer.shared.register(
+            MediaRepository.self,
+            object: LocalMediaRepository(storage: fileManager)
         )
     }
     
@@ -160,9 +176,11 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         // MARK: - Book UseCase
         let bookRepository = try DIContainer.shared.resolve(BookRepository.self)
+        let mediaRepository = try DIContainer.shared.resolve(MediaRepository.self)
         DIContainer.shared.register(
             CreateBookUseCase.self,
-            object: DefaultCreateBookUseCase(repository: bookRepository)
+            object: DefaultCreateBookUseCase(repository: bookRepository,
+                                             mediaRepository: mediaRepository)
         )
         DIContainer.shared.register(
             FetchBookUseCase.self,
@@ -190,6 +208,23 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         DIContainer.shared.register(
             DeleteBookCoverUseCase.self,
             object: DefaultDeleteBookCoverUseCase(repository: bookCoverRepository)
+        )
+        // MARK: - EditBook UseCase
+        DIContainer.shared.register(
+            PersistentlyStoreMediaUseCase.self,
+            object: DefaultPersistentlyStoreMediaUseCase(repository: mediaRepository)
+        )
+        DIContainer.shared.register(
+            CreateMediaUseCase.self,
+            object: DefaultCreateMediaUseCase(repository: mediaRepository)
+        )
+        DIContainer.shared.register(
+            FetchMediaUseCase.self,
+            object: DefaultFetchMediaUseCase(repository: mediaRepository)
+        )
+        DIContainer.shared.register(
+            DeleteMediaUseCase.self,
+            object: DefaultDeleteMediaUseCase(repository: mediaRepository)
         )
     }
     
@@ -242,6 +277,24 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         DIContainer.shared.register(
             ReadPageViewModelFactory.self,
             object: ReadPageViewModelFactory()
+        )
+        
+        // MARK: - EditBook ViewModel
+        let updateBookUseCase = try DIContainer.shared.resolve(UpdateBookUseCase.self)
+        let storeMediaUseCase = try DIContainer.shared.resolve(PersistentlyStoreMediaUseCase.self)
+        let createMediaUseCase = try DIContainer.shared.resolve(CreateMediaUseCase.self)
+        let fetchMediaUseCase = try DIContainer.shared.resolve(FetchMediaUseCase.self)
+        let deleteMediaUseCase = try DIContainer.shared.resolve(DeleteMediaUseCase.self)
+        DIContainer.shared.register(
+            EditBookViewModelFactory.self,
+            object: EditBookViewModelFactory(
+                fetchBookUseCase: fetchBookUseCase,
+                updateBookUseCase: updateBookUseCase,
+                storeMediaUseCase: storeMediaUseCase,
+                createMediaUseCase: createMediaUseCase,
+                fetchMediaUseCase: fetchMediaUseCase,
+                deleteMediaUseCase: deleteMediaUseCase
+            )
         )
     }
 }

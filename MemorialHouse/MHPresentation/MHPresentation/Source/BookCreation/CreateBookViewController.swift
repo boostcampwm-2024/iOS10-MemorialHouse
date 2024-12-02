@@ -1,7 +1,9 @@
 import UIKit
+import MHDomain // TODO: - 추후 로직에 따라 제거 필요
+import MHCore
 import Combine
 
-final class BookCreationViewController: UIViewController {
+final class CreateBookViewController: UIViewController {
     // MARK: - Constant
     static let maxTitleLength = 10
     // MARK: - Property
@@ -74,18 +76,19 @@ final class BookCreationViewController: UIViewController {
         
         return shadowLayer
     }()
+    // TODO: - 뷰모델 개선 필요
     @Published
-    private var viewModel: BookCreationViewModel
+    private var viewModel: CreateBookViewModel
     private var cancellables: Set<AnyCancellable> = []
     
     // MARK: - Initializer
-    init(viewModel: BookCreationViewModel) {
+    init(viewModel: CreateBookViewModel) {
         self.viewModel = viewModel
         
         super.init(nibName: nil, bundle: nil)
     }
     required init?(coder: NSCoder) {
-        viewModel = BookCreationViewModel()
+        viewModel = CreateBookViewModel()
         
         super.init(coder: coder)
     }
@@ -210,12 +213,18 @@ final class BookCreationViewController: UIViewController {
             normal: normalAttributes,
             selected: selectedAttributes
         ) { [weak self] in
-            // TODO: - 추후 뷰모델 관련 생성 이슈 조정 필요
-            let editBookViewModel = EditBookViewModel()
-            self?.navigationController?.pushViewController(
-                EditBookViewController(viewModel: editBookViewModel),
-                animated: true
-            )
+            // TODO: - 추후 DIContainer resolve 실패 처리 필요
+            // TODO: - bookID에 bookCoverID 넣어주기 필요
+            Task {
+                guard let editBookViewModelFactory = try? DIContainer.shared.resolve(EditBookViewModelFactory.self) else { return }
+                let book = Book(id: .init(), title: "HIHI", pages: [.init(metadata: [:], text: "")])
+                try? await DIContainer.shared.resolve(CreateBookUseCase.self).execute(book: book)
+                let viewModel = editBookViewModelFactory.make(bookID: book.id)
+                self?.navigationController?.pushViewController(
+                    EditBookViewController(viewModel: viewModel),
+                    animated: true
+                )
+            }
         }
     }
     
@@ -330,7 +339,7 @@ final class BookCreationViewController: UIViewController {
     }
 }
 
-extension BookCreationViewController: UITextFieldDelegate {
+extension CreateBookViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         return true
