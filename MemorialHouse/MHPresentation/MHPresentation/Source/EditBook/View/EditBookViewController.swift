@@ -195,6 +195,7 @@ final class EditBookViewController: UIViewController {
             name: UIResponder.keyboardWillHideNotification,
             object: nil
             )
+        // 스크롤이 될 때 키보드 내려가게 설정
         editPageTableView.keyboardDismissMode = .onDrag
     }
     private func configureBinding() {
