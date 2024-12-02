@@ -308,12 +308,6 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             object: BookViewModelFactory(fetchBookUseCase: fetchBookUseCase)
         )
         
-        // MARK: - Page ViewModel
-        DIContainer.shared.register(
-            ReadPageViewModelFactory.self,
-            object: ReadPageViewModelFactory()
-        )
-        
         // MARK: - EditBook ViewModel
         let updateBookUseCase = try DIContainer.shared.resolve(UpdateBookUseCase.self)
         let storeMediaUseCase = try DIContainer.shared.resolve(PersistentlyStoreMediaUseCase.self)
@@ -330,6 +324,18 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 fetchMediaUseCase: fetchMediaUseCase,
                 deleteMediaUseCase: deleteMediaUseCase
             )
+        )
+        
+        // MARK: - Page ViewModel
+        DIContainer.shared.register(
+            ReadPageViewModelFactory.self,
+            object: ReadPageViewModelFactory(fetchMediaUseCase: fetchMediaUseCase)
+        )
+        
+        // MARK: - EditPhoto ViewModel
+        DIContainer.shared.register(
+            EditPhotoViewModelFactory.self,
+            object: EditPhotoViewModelFactory(createMediaUseCase: createMediaUseCase)
         )
     }
 }

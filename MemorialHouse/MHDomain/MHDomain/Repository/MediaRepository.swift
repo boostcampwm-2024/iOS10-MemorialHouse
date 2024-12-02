@@ -1,6 +1,5 @@
 import MHFoundation
 import MHCore
-import Photos
 
 public protocol MediaRepository: Sendable {
     func create(media mediaDescription: MediaDescription, data: Data, to bookID: UUID?) async -> Result<Void, MHDataError>

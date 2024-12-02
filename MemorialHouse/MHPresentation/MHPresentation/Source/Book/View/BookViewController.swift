@@ -45,7 +45,7 @@ final class BookViewController: UIViewController {
         output.receive(on: DispatchQueue.main)
             .sink { [weak self] event in
             switch event {
-            case .fetchBook(let bookTitle):
+            case .setBookTitle(let bookTitle):
                 self?.title = bookTitle
             case .loadFirstPage(let page):
                 guard let page else { return }
@@ -112,8 +112,10 @@ final class BookViewController: UIViewController {
     }
     
     private func makeNewPageViewController(page: Page) -> ReadPageViewController? {
-        guard let readPageViewModelFactory = try? DIContainer.shared.resolve(ReadPageViewModelFactory.self) else { return nil }
-        let readPageViewModel = readPageViewModelFactory.make(page: page)
+        guard let readPageViewModelFactory = try? DIContainer.shared.resolve(ReadPageViewModelFactory.self) else {
+            return nil
+        }
+        let readPageViewModel = readPageViewModelFactory.make(bookID: viewModel.identifier, page: page)
         
         return ReadPageViewController(viewModel: readPageViewModel)
     }
