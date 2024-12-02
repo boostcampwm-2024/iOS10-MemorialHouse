@@ -367,7 +367,6 @@ extension BookCoverViewController {
         bookTitleTextField.addAction(titleAction, for: .editingChanged)
         
         let selectPhotoAction = UIAction { [weak self] _ in
-            // TODO: - 사진 접근 제어 추가
             let albumViewModel = CustomAlbumViewModel()
             let customAlbumViewController = CustomAlbumViewController(viewModel: albumViewModel, mediaType: .image)
             self?.navigationController?.pushViewController(customAlbumViewController, animated: true)
