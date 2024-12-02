@@ -93,10 +93,6 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             object: CoreDataBookStorage(coreDataStorage: coreDataStorage)
         )
         DIContainer.shared.register(
-            MHFileManager.self,
-            object: MHFileManager(directoryType: .documentDirectory)
-        )
-        DIContainer.shared.register(
             BookCategoryStorage.self,
             object: CoreDataBookCategoryStorage(coreDataStorage: coreDataStorage)
         )
@@ -111,6 +107,10 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         DIContainer.shared.register(
             MemorialHouseNameStorage.self,
             object: UserDefaultsMemorialHouseNameStorage()
+        )
+        DIContainer.shared.register(
+            MHFileManager.self,
+            object: MHFileManager(directoryType: .documentDirectory)
         )
     }
     
