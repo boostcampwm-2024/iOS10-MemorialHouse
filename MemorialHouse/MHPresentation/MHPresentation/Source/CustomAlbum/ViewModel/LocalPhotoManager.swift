@@ -28,6 +28,6 @@ actor LocalPhotoManager {
             options: imageRequestOptions,
             resultHandler: { image, _ in
                 Task { await completion(image) }
-            })
+        })
     }
 }

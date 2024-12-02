@@ -199,11 +199,13 @@ extension CustomAlbumViewController: UICollectionViewDelegate {
                 await LocalPhotoManager.shared.requestImage(with: asset) { [weak self] image in
                     guard let self else { return }
                     if self.mediaType == .image {
-                        let editViewController = EditPhotoViewController()
-                        editViewController.setPhoto(image: image, date: asset.creationDate)
-                        self.navigationController?.pushViewController(editViewController, animated: true)
+                        let editPhotoViewController = EditPhotoViewController()
+                        editPhotoViewController.setPhoto(image: image, date: asset.creationDate)
+                        self.navigationController?.pushViewController(editPhotoViewController, animated: true)
                     } else {
                         // TODO: - 비디오 넘기기
+                        let editVideoViewController = EditVideoViewController()
+                        
                     }
                 }
             }
