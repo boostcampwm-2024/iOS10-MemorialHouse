@@ -14,7 +14,7 @@ actor LocalPhotoManager {
     
     private init() { }
     
-    func requestImage(
+    func requestThumbnailImage(
         with asset: PHAsset?,
         cellSize: CGSize = .zero,
         completion: @escaping @MainActor (UIImage?) -> Void
