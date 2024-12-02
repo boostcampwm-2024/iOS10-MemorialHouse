@@ -213,30 +213,32 @@ extension EditPageCell: UITextViewDelegate {
             textView.selectedRange = NSRange(location: range.location, length: 1)
             return false
         }
+        // 갖은 경우의 수 별로 cachedViewProvider를 nil로 변경합니다.
+        // 왜냐하면, 줄바꿈을 추가했을 때, 캐시된 View가 업데이트 되어야 하기 때문입니다.
         if range.location > 0
             && viewText[viewText.index(startIndex, offsetBy: range.location-1)] == "\n"
             && text.count == 1,
-            let attachment = (attachmentAt(range.location) ?? attachmentAt(range.location+1))  {
+           let attachment = (attachmentAt(range.location) ?? attachmentAt(min(range.location+1, viewText.count-1))) {
             attachment.cachedViewProvider = nil
         }
-        if text == "\n" {
-            if let attachment = attachmentAt(range.location) {
+        if text == "\n" { // 줄바꿈을 추가할때
+            if let attachment = attachmentAt(range.location) { // Attachment 앞에 줄바꿈을 추가할때
                 attachment.cachedViewProvider = nil
             }
-            if let attachment = attachmentAt(range.location+1) {
+            else if let attachment = attachmentAt(range.location+1) { // Attachment 1칸 앞에 줄바꿈을 추가할때
                 attachment.cachedViewProvider = nil
             }
         }
-        if text.isEmpty {
-            if let attachment = attachmentAt(range.location+1) {
-                if range.location < 1 {
+        if text.isEmpty { // 지우기할때
+            if let attachment = attachmentAt(range.location+1) {  // Attachment 1칸 앞에 줄바꿈을 추가할때
+                if range.location < 1 { // 첫째 줄에 도달하기 전에 지우기할때
                     attachment.cachedViewProvider = nil
                     return true
                 }
                 textView.selectedRange = NSRange(location: range.location, length: 0)
                 return false
             }
-            if let attachment = attachmentAt(range.location+2),
+            else if let attachment = attachmentAt(range.location+2), // Attachment 2칸 앞에 줄바꿈을 추가할때
                 textView.text[textView.text.index(textView.text.startIndex, offsetBy: range.location+1)] == "\n" {
                 attachment.cachedViewProvider = nil
             }
@@ -309,12 +311,14 @@ extension EditPageCell: @preconcurrency NSTextStorageDelegate {
         textStorage?.enumerateAttribute(.attachment, in: range, using: { value, range, _ in
             guard let attachment = value as? MediaAttachment else { return }
             let location = range.location
+            // Attachment 앞에 줄바꿈이 없을 때, 줄바꿈을 추가합니다.
             if location > 0 {
                 if currentString[currentString.index(startIndex, offsetBy: location-1)] != "\n" {
                     textStorage?.insert(newLine, at: location)
                     attachment.cachedViewProvider = nil
                 }
             }
+            // Attachment 뒤에 줄바꿈이 없을 때, 줄바꿈을 추가합니다.
             let nextLocation = location + range.length
             if nextLocation < currentString.count
                 && currentString[currentString.index(startIndex, offsetBy: nextLocation)] != "\n" {
