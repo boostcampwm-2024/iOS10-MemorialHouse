@@ -62,7 +62,6 @@ public final class HomeViewController: UIViewController {
         
         setup()
         bind()
-        input.send(.viewDidLoad)
         configureAddSubView()
         configureAction()
         configureConstraints()
@@ -72,6 +71,7 @@ public final class HomeViewController: UIViewController {
         super.viewWillAppear(animated)
         
         navigationController?.navigationBar.isHidden = true
+        input.send(.loadAllBookCovers)
     }
     
     // MARK: - Setup & Configuration

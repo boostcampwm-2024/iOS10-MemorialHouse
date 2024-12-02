@@ -5,7 +5,7 @@ import MHFoundation
 
 public final class HomeViewModel: ViewModelType {
     public enum Input {
-        case viewDidLoad
+        case loadAllBookCovers
         case selectedCategory(category: String)
         case dragAndDropBookCover(currentIndex: Int, destinationIndex: Int)
         case likeButtonTapped(bookId: UUID)
@@ -46,7 +46,7 @@ public final class HomeViewModel: ViewModelType {
     func transform(input: AnyPublisher<Input, Never>) -> AnyPublisher<Output, Never> {
         input.sink { [weak self] event in
             switch event {
-            case .viewDidLoad:
+            case .loadAllBookCovers:
                 Task {
                     await self?.fetchMemorialHouse()
                     await self?.fetchAllBookCover()
