@@ -51,7 +51,7 @@ final class CustomAlbumViewController: UIViewController {
         configureConstraints()
         configureNavigationBar()
         bind()
-        input.send(.viewDidLoad(mediaType: mediaType))
+        checkThumbnailAuthorization()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -66,7 +66,7 @@ final class CustomAlbumViewController: UIViewController {
 
         if status == .denied || status == .restricted {
             let type: AlertType = mediaType == .image ? .image : .camera
-            showsRedirectSettingAlert(with: type)
+            showRedirectSettingAlert(with: type)
         }
     }
     
@@ -111,7 +111,7 @@ final class CustomAlbumViewController: UIViewController {
             normal: normalAttributes,
             selected: selectedAttributes
         ) { [weak self] in
-            self?.navigationController?.popViewController(animated: true)
+            self?.dismiss(animated: true)
         }
     }
     
@@ -155,7 +155,31 @@ final class CustomAlbumViewController: UIViewController {
             .store(in: &cancellables)
     }
     
-    // MARK: - Camera
+    // MARK: - Media
+    private func checkThumbnailAuthorization() {
+        let authorization = PHPhotoLibrary.authorizationStatus()
+
+        switch authorization {
+        case .notDetermined:
+            PHPhotoLibrary.requestAuthorization(for: .readWrite) { @Sendable [weak self] status in
+                Task { @MainActor in
+                    guard let self = self else { return }
+                    if status == .authorized || status == .limited {
+                        self.input.send(.viewDidLoad(mediaType: self.mediaType))
+                    } else {
+                        self.dismiss(animated: true)
+                    }
+                }
+            }
+        case .authorized, .limited:
+            input.send(.viewDidLoad(mediaType: mediaType))
+        case .restricted, .denied:
+            MHLogger.info("앨범 접근 권한 거부로 뷰를 닫았습니다.")
+        default:
+            MHLogger.error("알 수 없는 권한 상태로 인해 뷰를 닫았습니다.")
+        }
+    }
+    
     private func checkCameraAuthorization() {
         let authorization = AVCaptureDevice.authorizationStatus(for: .video)
         
