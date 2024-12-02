@@ -58,16 +58,6 @@ final class CustomAlbumViewController: UIViewController {
         super.viewWillAppear(animated)
         
         configureNavigationAppearance()
-        checkPhotoLibraryAuthorizationForAlert()
-    }
-
-    private func checkPhotoLibraryAuthorizationForAlert() {
-        let status = PHPhotoLibrary.authorizationStatus()
-
-        if status == .denied || status == .restricted {
-            let type: AlertType = mediaType == .image ? .image : .camera
-            showRedirectSettingAlert(with: type)
-        }
     }
     
     // MARK: - Setup & Configure
@@ -174,8 +164,10 @@ final class CustomAlbumViewController: UIViewController {
         case .authorized, .limited:
             input.send(.viewDidLoad(mediaType: mediaType))
         case .restricted, .denied:
+            showRedirectSettingAlert(with: .image)
             MHLogger.info("앨범 접근 권한 거부로 뷰를 닫았습니다.")
         default:
+            showRedirectSettingAlert(with: .image)
             MHLogger.error("알 수 없는 권한 상태로 인해 뷰를 닫았습니다.")
         }
     }
