@@ -263,6 +263,7 @@ final class CreateBookViewController: UIViewController {
             let categoryViewModel = categoryViewModelFactory.makeForCreateBook()
             let categoryViewController = BookCategoryViewController(viewModel: categoryViewModel)
             let navigationController = UINavigationController(rootViewController: categoryViewController)
+            categoryViewController.delegate = self
             
             if let sheet = navigationController.sheetPresentationController {
                 sheet.detents = [.medium(), .large()]
@@ -353,5 +354,17 @@ extension CreateBookViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         return true
+    }
+}
+
+extension CreateBookViewController: BookCategoryViewControllerDelegate {
+    func categoryViewController(
+        _ categoryViewController: BookCategoryViewController,
+        didSelectCategory category: String
+    ) {
+        var attributedTitle = AttributedString(stringLiteral: category)
+        attributedTitle.font = UIFont.ownglyphBerry(size: 25)
+        
+        categorySelectionButton.setAttributedTitle(NSAttributedString(attributedTitle), for: .normal)
     }
 }
