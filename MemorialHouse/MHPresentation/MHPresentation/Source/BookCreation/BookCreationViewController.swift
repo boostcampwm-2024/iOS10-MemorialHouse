@@ -23,7 +23,7 @@ final class BookCreationViewController: UIViewController {
     }()
     private let bookColorButtons: [UIButton] = zip(
         ["분 홍", "초 록", "파 랑", "주 황", "베이지", ""],
-        [UIColor.mhPink, .mhGreen, .mhBlue, .mhOrange, .mhBeige, .clear]
+        [.mhPink, .mhGreen, .mhBlue, .mhOrange, .mhBeige, .clear]
     ).map { (title: String, color: UIColor) in
         let button = UIButton(frame: CGRect(origin: .zero, size: .init(width: 66, height: 30)))
         var attributedTitle = AttributedString(stringLiteral: title)

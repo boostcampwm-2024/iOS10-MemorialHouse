@@ -21,7 +21,7 @@ public final class HomeViewController: UIViewController {
         let flowLayout = UICollectionViewFlowLayout()
         let cellWidth = (self.view.bounds.inset(by: self.view.safeAreaInsets).width - 80) / 2
         flowLayout.itemSize = .init(width: cellWidth, height: cellWidth * 1.5)
-        flowLayout.minimumLineSpacing = 40
+        flowLayout.minimumLineSpacing = 25
         flowLayout.minimumInteritemSpacing = 20
         flowLayout.sectionInset = UIEdgeInsets(top: 0, left: 20, bottom: 30, right: 20)
         flowLayout.scrollDirection = .vertical
@@ -158,9 +158,7 @@ public final class HomeViewController: UIViewController {
         }, for: .touchUpInside)
         
         makingBookFloatingButton.addAction(UIAction { [weak self] _ in
-            guard let self else { return }
-            let bookCreationViewController = BookCreationViewController(viewModel: BookCreationViewModel())
-            self.navigationController?.pushViewController(bookCreationViewController, animated: true)
+            self?.moveMakingBookViewController()
         }, for: .touchUpInside)
         
         navigationBar.configureSettingAction(action: UIAction { [weak self] _ in
@@ -169,6 +167,11 @@ public final class HomeViewController: UIViewController {
             let settingViewController = SettingViewController(viewModel: settingViewModel)
             self.navigationController?.pushViewController(settingViewController, animated: true)
         })
+    }
+    
+    private func moveMakingBookViewController() {
+        let bookCreationViewController = BookCreationViewController(viewModel: BookCreationViewModel())
+        navigationController?.pushViewController(bookCreationViewController, animated: true)
     }
     
     private func configureConstraints() {
@@ -262,18 +265,26 @@ extension HomeViewController: UICollectionViewDataSource {
         // TODO: Image Loader 필요 & 메모리 캐싱 필요
         
         let bookCover = viewModel.currentBookCovers[indexPath.item]
-        cell.configure(
+        cell.configureCell(
             id: bookCover.id,
             title: bookCover.title,
             bookCoverImage: bookCover.color.image,
             targetImage: UIImage(systemName: "person")!,
             isLike: bookCover.favorite,
-            houseName: viewModel.houseName,
+            houseName: viewModel.houseName
+        )
+        cell.configureButtonAction(
             bookCoverAction: { [weak self] in
                 self?.bookCoverTapped(indexPath: indexPath)
             },
             likeButtonAction: { [weak self] in
                 self?.input.send(.likeButtonTapped(bookId: bookCover.id))
+            },
+            dropDownButtonEditAction: { [weak self] in
+                self?.moveMakingBookViewController()
+            },
+            dropDownButtonDeleteAction: { [weak self] in
+                self?.input.send(.deleteBookCover(bookId: bookCover.id))
             }
         )
         

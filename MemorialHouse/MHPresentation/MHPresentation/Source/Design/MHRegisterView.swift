@@ -3,7 +3,7 @@ import UIKit
 final class MHRegisterView: UIView {
     // MARK: UI Components
     let registerTextField: UITextField = {
-        let registerFont = UIFont.ownglyphBerry(size: 12)
+        let registerFont = UIFont.ownglyphBerry(size: 20)
         
         let textField = UITextField()
         textField.font = registerFont
