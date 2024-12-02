@@ -170,8 +170,14 @@ public final class HomeViewController: UIViewController {
     }
     
     private func moveMakingBookViewController() {
-        let bookCreationViewController = CreateBookViewController(viewModel: CreateBookViewModel())
-        navigationController?.pushViewController(bookCreationViewController, animated: true)
+        do {
+            let createBookViewModelFactory = try DIContainer.shared.resolve(CreateBookViewModelFactory.self)
+            let createBookViewModel = createBookViewModelFactory.make(houseName: viewModel.houseName)
+            let bookCreationViewController = CreateBookViewController(viewModel: createBookViewModel)
+            navigationController?.pushViewController(bookCreationViewController, animated: true)
+        } catch {
+            MHLogger.error(error.localizedDescription)
+        }
     }
     
     private func configureConstraints() {
