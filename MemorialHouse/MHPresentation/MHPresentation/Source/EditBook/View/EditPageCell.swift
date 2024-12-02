@@ -161,11 +161,9 @@ final class EditPageCell: UITableViewCell {
                 .attachment,
                 in: NSRange(location: 0, length: textStorage.length)
             ) { value, _, _ in
-                if let mediaAttachment = value as? MediaAttachment,
-                   mediaAttachment.mediaDescription.id == media.id {
-                    attachment = mediaAttachment
-                    return
-                }
+                guard let mediaAttachment = value as? MediaAttachment,
+                   mediaAttachment.mediaDescription.id == media.id else { return }
+                attachment = mediaAttachment
             }
         return attachment
     }
