@@ -232,8 +232,10 @@ final class EditBookViewController: UIViewController {
             let audioViewModel = CreateAudioViewModel()
             let audioViewController = CreateAudioViewController(viewModel: audioViewModel)
             
-            audioViewController.audioCreationCompletion = { uuid in
-                MHLogger.debug(uuid)
+            audioViewController.audioCreationCompletion = { url in
+                guard let url else { return }
+                MHLogger.debug(url)
+                self?.input.send(.didAddMediaInURL(type: .audio, url: url))
             }
             if let sheet = audioViewController.sheetPresentationController {
                 sheet.detents = [.custom { detent in 0.35 * detent.maximumDetentValue }]
