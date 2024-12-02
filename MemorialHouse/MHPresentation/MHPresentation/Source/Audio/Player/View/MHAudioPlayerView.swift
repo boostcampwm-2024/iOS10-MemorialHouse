@@ -44,6 +44,7 @@ final public class MHAudioPlayerView: UIView {
         
         return backgroundView
     }()
+    var progressViewWidthConstraint: NSLayoutConstraint?
     var progressViewConstraints: [NSLayoutConstraint] = []
     let audioStateButton: UIButton = {
         let button = UIButton()
@@ -116,12 +117,14 @@ final public class MHAudioPlayerView: UIView {
             trailing: trailingAnchor
         )
         
-        audioProgressView.setAnchor(
-            top: topAnchor, constantTop: 29,
-            leading: leadingAnchor, constantLeading: 4,
-            bottom: bottomAnchor, constantBottom: 29,
-            width: 0
-        )
+        audioProgressView.translatesAutoresizingMaskIntoConstraints = false
+        progressViewWidthConstraint = audioProgressView.widthAnchor.constraint(equalToConstant: 0)
+        NSLayoutConstraint.activate([
+            audioProgressView.topAnchor.constraint(equalTo: topAnchor, constant: 29),
+            audioProgressView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 4),
+            audioProgressView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -29),
+            progressViewWidthConstraint ?? audioProgressView.widthAnchor.constraint(equalToConstant: 0)
+        ])
         
         audioStateButton.setAnchor(
             top: topAnchor, constantTop: 25,
@@ -168,16 +171,11 @@ final public class MHAudioPlayerView: UIView {
     private func updatePlayAudioProgress() {
         guard let audioPlayer else { return }
         let width = ceil(Float(audioPlayer.currentTime) / Float(audioPlayer.duration) * Float(299))
-        NSLayoutConstraint.deactivate(audioProgressView.constraints)
         
-        audioProgressView.setAnchor(
-            top: topAnchor, constantTop: 29,
-            leading: leadingAnchor, constantLeading: 4,
-            bottom: bottomAnchor, constantBottom: 29,
-            // TODO: - width
-            width: CGFloat(width)
-        )
-        NSLayoutConstraint.activate(audioProgressView.constraints)
+        progressViewWidthConstraint?.constant = CGFloat(width)
+        UIView.animate(withDuration: 0) {
+            self.layoutIfNeeded()
+        }
     }
     
     private func startTimer() {
@@ -195,7 +193,8 @@ final public class MHAudioPlayerView: UIView {
     }
     
     private func stopTimer() {
-        
+        timer?.invalidate()
+        timer = nil
     }
     
     private func setTimeLabel(seconds recordingSeconds: Int?) {
@@ -214,15 +213,12 @@ extension MHAudioPlayerView: AVAudioPlayerDelegate {
             self.audioPlayState = .pause
             self.audioStateButton.setImage(playImage, for: .normal)
             
-            NSLayoutConstraint.deactivate(audioProgressView.constraints)
-            audioProgressView.setAnchor(
-                top: topAnchor, constantTop: 29,
-                leading: leadingAnchor, constantLeading: 4,
-                bottom: bottomAnchor, constantBottom: 29,
-                // TODO: - width
-                width: 290
-            )
-            NSLayoutConstraint.activate(audioProgressView.constraints)
+            stopTimer()
+            
+            progressViewWidthConstraint?.constant = CGFloat(290)
+            UIView.animate(withDuration: 0) {
+                self.layoutIfNeeded()
+            }
         }
     }
 }
