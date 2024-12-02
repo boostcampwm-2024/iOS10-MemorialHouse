@@ -6,7 +6,7 @@ public struct ModifyBookCoverViewModelFactory {
     private let fetchBookCoverUseCase: FetchBookCoverUseCase
     private let updateBookCoverUseCase: UpdateBookCoverUseCase
     
-    init(
+    public init(
         fetchMemorialHouseNameUseCase: FetchMemorialHouseNameUseCase,
         fetchBookCoverUseCase: FetchBookCoverUseCase,
         updateBookCoverUseCase: UpdateBookCoverUseCase

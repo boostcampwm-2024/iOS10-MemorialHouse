@@ -3,6 +3,11 @@ import MHCore
 import Combine
 
 final class BookCoverViewController: UIViewController {
+    enum Mode {
+        case create
+        case modify
+    }
+    
     // MARK: - UI Components
     private let bookCoverView: MHBookCover = MHBookCover()
     private let bookTitleTextField: UITextField = {
@@ -64,7 +69,7 @@ final class BookCoverViewController: UIViewController {
         shadowLayer.cornerRadius = 15
         shadowLayer.fillColor = nil
         shadowLayer.masksToBounds = true
-
+        
         // 그림자 경로 생성
         shadowLayer.shadowColor = UIColor.black.cgColor
         shadowLayer.shadowOpacity = 0.35
@@ -85,9 +90,9 @@ final class BookCoverViewController: UIViewController {
         .embededInDefaultBackground()
     private lazy var imageSelectionButtonBackground = imageSelectionButton
         .embededInDefaultBackground()
-    private let bookCoverImageArray: [UIImage] = [.pinkBook, .greenBook, .blueBook, .orangeBook, .beigeBook]
     
     // MARK: - Property
+    private let mode: Mode
     private let createViewModel: CreateBookCoverViewModel?
     private let modifyViewModel: ModifyBookCoverViewModel?
     private let createInput = PassthroughSubject<CreateBookCoverViewModel.Input, Never>()
@@ -97,10 +102,12 @@ final class BookCoverViewController: UIViewController {
     // MARK: - Initializer
     init(
         createViewModel: CreateBookCoverViewModel? = nil,
-        modifyViewModel: ModifyBookCoverViewModel? = nil
+        modifyViewModel: ModifyBookCoverViewModel? = nil,
+        mode: Mode
     ) {
         self.createViewModel = createViewModel
         self.modifyViewModel = modifyViewModel
+        self.mode = mode
         
         super.init(nibName: nil, bundle: nil)
     }
@@ -108,6 +115,7 @@ final class BookCoverViewController: UIViewController {
     required init?(coder: NSCoder) {
         createViewModel = nil
         modifyViewModel = nil
+        mode = .create
         
         super.init(coder: coder)
     }
@@ -123,6 +131,7 @@ final class BookCoverViewController: UIViewController {
         configureConstraints()
         configureAction()
         createInput.send(.viewDidAppear)
+        modifyInput.send(.loadBookCover)
     }
     
     // MARK: - TouchEvent
@@ -134,60 +143,82 @@ final class BookCoverViewController: UIViewController {
     
     // MARK: - Binding
     private func bind() {
-        if let createViewModel {
-            let output = createViewModel.transform(input: createInput.eraseToAnyPublisher())
-            
-            output
-                .receive(on: DispatchQueue.main)
-                .sink { [weak self] event in
-                    switch event {
-                    case .memorialHouseName(let name):
-                        self?.bookCoverView.configure(houseName: name)
-                    case .bookTitle(let title):
-                        self?.bookCoverView.configure(title: title)
-                    case .bookColorIndex(let previousIndex, let nowIndex, let bookColor):
-                        self?.bookColorButtonTapped(
-                            previousIndex: previousIndex,
-                            nowIndex: nowIndex,
-                            bookCoverImage: bookColor.image
-                        )
-                    case .bookCategory(let category):
-                        self?.setCategorySelectionButton(category: category)
-                    case .moveToNext(let bookID):
-                        self?.presentEditBookView(bookID: bookID)
-                    case .moveToHome:
-                        self?.navigationController?.popViewController(animated: true)
-                    }
-                }.store(in: &cancellables)
-        }
-        
-        if let modifyViewModel {
-            let output = modifyViewModel.transform(input: modifyInput.eraseToAnyPublisher())
-            
-            output.sink { [weak self] event in
-                switch event {
-                    
-                }
-            }.store(in: &cancellables)
+        switch mode {
+        case .create:
+            createViewModelBind()
+        case .modify:
+            modifyViewModelBind()
         }
     }
     
-    // MARK: - Setup & Configure
+    private func createViewModelBind() {
+        let output = createViewModel?.transform(input: createInput.eraseToAnyPublisher())
+        
+        output?
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] event in
+                switch event {
+                case .memorialHouseName(let name):
+                    self?.bookCoverView.configure(houseName: name)
+                case .bookTitle(let title):
+                    self?.bookCoverView.configure(title: title)
+                case .bookColorIndex(let previousIndex, let nowIndex, let bookColor):
+                    self?.bookColorButtonTapped(
+                        previousIndex: previousIndex,
+                        nowIndex: nowIndex,
+                        bookCoverImage: bookColor.image
+                    )
+                case .bookCategory(let category):
+                    self?.setCategorySelectionButton(category: category)
+                case .moveToNext(let bookID):
+                    self?.presentEditBookView(bookID: bookID)
+                case .moveToHome:
+                    self?.navigationController?.popViewController(animated: true)
+                }
+            }.store(in: &cancellables)
+    }
+    
+    private func modifyViewModelBind() {
+        let output = modifyViewModel?.transform(input: modifyInput.eraseToAnyPublisher())
+        
+        output?
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] event in
+                switch event {
+                case .memorialHouseName(let name):
+                    self?.bookCoverView.configure(houseName: name)
+                case .setModifyView(let title, let category):
+                    self?.setBookCoverView(title: title, category: category)
+                case .bookTitle(let title):
+                    self?.bookCoverView.configure(title: title)
+                case .bookColorIndex(let previousIndex, let nowIndex, let bookColor):
+                    self?.bookColorButtonTapped(
+                        previousIndex: previousIndex,
+                        nowIndex: nowIndex,
+                        bookCoverImage: bookColor.image
+                    )
+                case .bookCategory(let category):
+                    self?.setCategorySelectionButton(category: category)
+                case .moveToHome:
+                    self?.navigationController?.popViewController(animated: true)
+                }
+            }.store(in: &cancellables)
+    }
+    
+    // MARK: - Setup
     private func setup() {
         view.backgroundColor = .baseBackground
         bookTitleTextField.delegate = self
         bookColorButtons.last?.isUserInteractionEnabled = false // 마지막 버튼은 크기 조절을 위한 것
     }
     
+    private func setBookCoverView(title: String?, category: String?) {
+        bookTitleTextField.text = title
+        setCategorySelectionButton(category: category)
+    }
+    
+    // MARK: - Configure NavigationBar
     private func configureNavigationBar() {
-        navigationController?.navigationBar.isHidden = false
-        navigationController?.navigationBar.titleTextAttributes = [
-            .font: UIFont.ownglyphBerry(size: 17),
-            .foregroundColor: UIColor.mhTitle
-        ]
-        title = "책 표지 만들기"
-        
-        // 공통 스타일 정의
         let normalAttributes: [NSAttributedString.Key: Any] = [
             .font: UIFont.ownglyphBerry(size: 17),
             .foregroundColor: UIColor.mhTitle
@@ -196,8 +227,22 @@ final class BookCoverViewController: UIViewController {
             .font: UIFont.ownglyphBerry(size: 17),
             .foregroundColor: UIColor.mhTitle
         ]
+        navigationController?.navigationBar.isHidden = false
+        navigationController?.navigationBar.titleTextAttributes = normalAttributes
         
-        // 왼쪽 닫기 버튼
+        switch mode {
+        case .create:
+            createNavigationBar(normalAttributes: normalAttributes, selectedAttributes: selectedAttributes)
+        case .modify:
+            modifyNavigationBar(normalAttributes: normalAttributes, selectedAttributes: selectedAttributes)
+        }
+    }
+    
+    private func createNavigationBar(
+        normalAttributes: [NSAttributedString.Key: Any],
+        selectedAttributes: [NSAttributedString.Key: Any]
+    ) {
+        title = "책 표지 만들기"
         navigationItem.leftBarButtonItem = UIBarButtonItem(
             title: "닫기",
             normal: normalAttributes,
@@ -205,14 +250,34 @@ final class BookCoverViewController: UIViewController {
         ) { [weak self] in
             self?.createInput.send(.deleteBookCover)
         }
-        
-        // 오른쪽 책 속지 만들기 버튼
         navigationItem.rightBarButtonItem = UIBarButtonItem(
             title: "책 속지 만들기",
             normal: normalAttributes,
             selected: selectedAttributes
         ) { [weak self] in
             self?.createInput.send(.saveBookCover)
+        }
+    }
+    
+    private func modifyNavigationBar(
+        normalAttributes: [NSAttributedString.Key: Any],
+        selectedAttributes: [NSAttributedString.Key: Any]
+    ) {
+        title = "책 표지 수정"
+        navigationItem.leftBarButtonItem = UIBarButtonItem(
+            title: "닫기",
+            normal: normalAttributes,
+            selected: selectedAttributes
+        ) { [weak self] in
+            // TODO: - Alert 띄우기
+            self?.modifyInput.send(.cancelModifyBookCover)
+        }
+        navigationItem.rightBarButtonItem = UIBarButtonItem(
+            title: "완료",
+            normal: normalAttributes,
+            selected: selectedAttributes
+        ) { [weak self] in
+            self?.modifyInput.send(.saveBookCover)
         }
     }
     
@@ -261,6 +326,7 @@ final class BookCoverViewController: UIViewController {
         bookColorButtons.enumerated().forEach { index, button in
             let colorButtonAction = UIAction { [weak self] _ in
                 self?.createInput.send(.changedBookColor(colorIndex: index))
+                self?.modifyInput.send(.changedBookColor(colorIndex: index))
             }
             button.addAction(colorButtonAction, for: .touchUpInside)
         }
@@ -272,6 +338,7 @@ final class BookCoverViewController: UIViewController {
                 self.bookTitleTextField.text = String(self.bookTitleTextField.text?.prefix(maxTitleLength) ?? "")
             }
             self.createInput.send(.changedBookTitle(title: bookTitleTextField.text))
+            self.modifyInput.send(.changedBookTitle(title: bookTitleTextField.text))
         }
         bookTitleTextField.addAction(titleAction, for: .editingChanged)
         
@@ -329,43 +396,10 @@ final class BookCoverViewController: UIViewController {
             MHLogger.error(error)
         }
     }
-    
-    // MARK: - Category Bottom Sheet
-    private func presentCategorySelectionView() {
-        do {
-            let categoryViewModelFactory = try DIContainer.shared.resolve(BookCategoryViewModelFactory.self)
-            let categoryViewModel = categoryViewModelFactory.makeForCreateBook()
-            let categoryViewController = BookCategoryViewController(viewModel: categoryViewModel)
-            let navigationController = UINavigationController(rootViewController: categoryViewController)
-            categoryViewController.delegate = self
-            
-            if let sheet = navigationController.sheetPresentationController {
-                sheet.detents = [.medium(), .large()]
-            }
-            
-            self.present(navigationController, animated: true)
-        } catch {
-            MHLogger.error(error)
-        }
-    }
-    
-    private func setCategorySelectionButton(category: String?) {
-        if let category {
-            categorySelectionButton.setTitleColor(.mhTitle, for: .normal)
-            categorySelectionButton.setAttributedTitle(
-                NSAttributedString(string: category, attributes: [.font: UIFont.ownglyphBerry(size: 25)]),
-                for: .normal
-            )
-        } else {
-            categorySelectionButton.setTitleColor(.systemGray3, for: .normal)
-            categorySelectionButton.setAttributedTitle(
-                NSAttributedString(string: "카테고리를 선택해주세요", attributes: [.font: UIFont.ownglyphBerry(size: 25)]),
-                for: .normal
-            )
-        }
-    }
-    
-    // MARK: - Color Button
+}
+
+// MARK: - Color Button (Lint 에러로 분리)
+extension BookCoverViewController {
     private func bookColorButtonTapped(previousIndex: Int?, nowIndex: Int, bookCoverImage: UIImage) {
         if let previousIndex {
             let previousColorButton = bookColorButtons[previousIndex]
@@ -401,6 +435,7 @@ final class BookCoverViewController: UIViewController {
     }
 }
 
+// MARK: - UITextFieldDelegate
 extension BookCoverViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
@@ -408,11 +443,47 @@ extension BookCoverViewController: UITextFieldDelegate {
     }
 }
 
+// MARK: - Category Bottom Sheet
 extension BookCoverViewController: BookCategoryViewControllerDelegate {
+    private func presentCategorySelectionView() {
+        do {
+            let categoryViewModelFactory = try DIContainer.shared.resolve(BookCategoryViewModelFactory.self)
+            let categoryViewModel = categoryViewModelFactory.makeForCreateBook()
+            let categoryViewController = BookCategoryViewController(viewModel: categoryViewModel)
+            let navigationController = UINavigationController(rootViewController: categoryViewController)
+            categoryViewController.delegate = self
+            
+            if let sheet = navigationController.sheetPresentationController {
+                sheet.detents = [.medium(), .large()]
+            }
+            
+            self.present(navigationController, animated: true)
+        } catch {
+            MHLogger.error(error)
+        }
+    }
+    
+    private func setCategorySelectionButton(category: String?) {
+        if let category {
+            categorySelectionButton.setTitleColor(.mhTitle, for: .normal)
+            categorySelectionButton.setAttributedTitle(
+                NSAttributedString(string: category, attributes: [.font: UIFont.ownglyphBerry(size: 25)]),
+                for: .normal
+            )
+        } else {
+            categorySelectionButton.setTitleColor(.systemGray3, for: .normal)
+            categorySelectionButton.setAttributedTitle(
+                NSAttributedString(string: "카테고리를 선택해주세요", attributes: [.font: UIFont.ownglyphBerry(size: 25)]),
+                for: .normal
+            )
+        }
+    }
+    
     func categoryViewController(
         _ categoryViewController: BookCategoryViewController,
         didSelectCategory category: String
     ) {
         createInput.send(.changedBookCategory(category: category))
+        modifyInput.send(.changedBookCategory(category: category))
     }
 }

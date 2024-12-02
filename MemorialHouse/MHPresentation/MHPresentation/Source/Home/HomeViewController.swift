@@ -173,12 +173,21 @@ public final class HomeViewController: UIViewController {
     
     private func moveBookCoverViewController(bookID: UUID? = nil) {
         if let bookID {
-            // TODO: - Modify ViewModel 필요
+            let viewModelFactory = try? DIContainer.shared.resolve(ModifyBookCoverViewModelFactory.self)
+            let modifyBookCoverViewModel = viewModelFactory?.make(bookID: bookID)
+            let modifyBookCoverViewController = BookCoverViewController(
+                modifyViewModel: modifyBookCoverViewModel,
+                mode: .modify
+            )
+            navigationController?.pushViewController(modifyBookCoverViewController, animated: true)
         } else {
             let viewModelFactory = try? DIContainer.shared.resolve(CreateBookCoverViewModelFactory.self)
             let createBookCoverViewModel = viewModelFactory?.make(bookCount: viewModel.currentBookCovers.count)
-            let bookCreationViewController = BookCoverViewController(createViewModel: createBookCoverViewModel)
-            navigationController?.pushViewController(bookCreationViewController, animated: true)
+            let createBookCoverViewController = BookCoverViewController(
+                createViewModel: createBookCoverViewModel,
+                mode: .create
+            )
+            navigationController?.pushViewController(createBookCoverViewController, animated: true)
         }
     }
     

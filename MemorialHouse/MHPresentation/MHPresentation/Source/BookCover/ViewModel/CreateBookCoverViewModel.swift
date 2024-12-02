@@ -63,7 +63,7 @@ final class CreateBookCoverViewModel: ViewModelType {
             case .changedBookColor(let colorIndex):
                 self?.setBookColor(nowIndex: colorIndex)
             case .changedBookCategory(let category):
-                self?.output.send(.bookCategory(category: category))
+                self?.setBookCategory(category: category)
             case .saveBookCover:
                 Task { try await self?.saveBookCover() }
             case .deleteBookCover:
@@ -90,6 +90,11 @@ final class CreateBookCoverViewModel: ViewModelType {
     private func setBookTitle(title: String?) {
         bookTitle = title
         output.send(.bookTitle(title: title))
+    }
+    
+    private func setBookCategory(category: String?) {
+        bookCategory = category
+        output.send(.bookCategory(category: category))
     }
     
     private func fetchMemorialHouseName() async throws {

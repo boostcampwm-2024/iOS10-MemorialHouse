@@ -206,6 +206,10 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             object: DefaultFetchAllBookCoverUseCase(repository: bookCoverRepository)
         )
         DIContainer.shared.register(
+            FetchBookCoverUseCase.self,
+            object: DefaultFetchBookCoverUseCase(repository: bookCoverRepository)
+        )
+        DIContainer.shared.register(
             UpdateBookCoverUseCase.self,
             object: DefaultUpdateBookCoverUseCase(repository: bookCoverRepository)
         )
@@ -283,6 +287,17 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 deleteBookCoverUseCase: deleteBookCoverUseCase,
                 createBookUseCase: createBookUseCase,
                 deleteBookUseCase: deleteBookUseCase
+            )
+        )
+        
+        // MARK: - Modify BookCover ViewModel
+        let fetchBookCoverUseCase = try DIContainer.shared.resolve(FetchBookCoverUseCase.self)
+        DIContainer.shared.register(
+            ModifyBookCoverViewModelFactory.self,
+            object: ModifyBookCoverViewModelFactory(
+                fetchMemorialHouseNameUseCase: fetchMemorialHouseNameUseCase,
+                fetchBookCoverUseCase: fetchBookCoverUseCase,
+                updateBookCoverUseCase: updateBookCoverUseCase
             )
         )
         
