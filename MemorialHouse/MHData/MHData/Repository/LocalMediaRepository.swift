@@ -7,7 +7,7 @@ import AVFoundation
 // TODO: nil이라면 바로 error를 return하도록 수정
 public struct LocalMediaRepository: MediaRepository, Sendable {
     private let storage: FileStorage
-    private let temporaryPath = "temp"
+    private let temporaryPath = "temp" // TODO: - 지워질 것임!
     private let snapshotFileName = ".snapshot"
     
     public init(storage: FileStorage) {
