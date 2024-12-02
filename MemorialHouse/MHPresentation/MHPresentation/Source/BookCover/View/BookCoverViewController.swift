@@ -146,12 +146,15 @@ final class BookCoverViewController: UIViewController {
                     case .bookTitle(let title):
                         self?.bookCoverView.configure(title: title)
                     case .bookColorIndex(let previousIndex, let nowIndex, let bookColor):
-                        self?.bookColorButtonTapped(previousIndex: previousIndex, nowIndex: nowIndex, bookCoverImage: bookColor.image)
+                        self?.bookColorButtonTapped(
+                            previousIndex: previousIndex,
+                            nowIndex: nowIndex,
+                            bookCoverImage: bookColor.image
+                        )
                     case .bookCategory(let category):
                         self?.setCategorySelectionButton(category: category)
-                    case .moveToNext:
-                        // TODO: - 속지 페이지로 이동
-                        break
+                    case .moveToNext(let bookID):
+                        self?.presentEditBookView(bookID: bookID)
                     }
                 }.store(in: &cancellables)
         }
@@ -198,6 +201,7 @@ final class BookCoverViewController: UIViewController {
             normal: normalAttributes,
             selected: selectedAttributes
         ) { [weak self] in
+            // TODO: - Book Delete 기능 구현
             self?.navigationController?.popViewController(animated: true)
         }
         
@@ -207,8 +211,6 @@ final class BookCoverViewController: UIViewController {
             normal: normalAttributes,
             selected: selectedAttributes
         ) { [weak self] in
-            // TODO: - 추후 DIContainer resolve 실패 처리 필요
-            // TODO: - bookID에 bookCoverID 넣어주기 필요
             self?.createInput.send(.saveBookCover)
         }
     }
@@ -313,6 +315,18 @@ final class BookCoverViewController: UIViewController {
             .embededInDefaultBackground()
         
         return bookColorSelectionBackground
+    }
+    
+    // MARK: - Present EditBookViewController
+    private func presentEditBookView(bookID: UUID) {
+        do {
+            let editBookViewModelFactory = try DIContainer.shared.resolve(EditBookViewModelFactory.self)
+            let editBookViewModel = editBookViewModelFactory.make(bookID: bookID)
+            let editBookViewController = EditBookViewController(viewModel: editBookViewModel)
+            navigationController?.pushViewController(editBookViewController, animated: true)
+        } catch {
+            MHLogger.error(error)
+        }
     }
     
     // MARK: - Category Bottom Sheet
