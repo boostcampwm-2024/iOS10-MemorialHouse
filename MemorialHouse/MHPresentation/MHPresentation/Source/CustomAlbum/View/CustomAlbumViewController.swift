@@ -111,7 +111,7 @@ final class CustomAlbumViewController: UIViewController {
             normal: normalAttributes,
             selected: selectedAttributes
         ) { [weak self] in
-            self?.dismiss(animated: true)
+            self?.navigationController?.popViewController(animated: true)
         }
     }
     
@@ -167,7 +167,7 @@ final class CustomAlbumViewController: UIViewController {
                     if status == .authorized || status == .limited {
                         self.input.send(.viewDidLoad(mediaType: self.mediaType))
                     } else {
-                        self.dismiss(animated: true)
+                        self.navigationController?.popViewController(animated: true)
                     }
                 }
             }
@@ -196,9 +196,10 @@ final class CustomAlbumViewController: UIViewController {
             openCamera()
             albumCollectionView.reloadData()
         case .restricted, .denied:
-            showsRedirectSettingAlert(with: .camera)
+            showRedirectSettingAlert(with: .camera)
             MHLogger.info("카메라 권한 거부")
         default:
+            showRedirectSettingAlert(with: .camera)
             MHLogger.error(authorization)
         }
     }
