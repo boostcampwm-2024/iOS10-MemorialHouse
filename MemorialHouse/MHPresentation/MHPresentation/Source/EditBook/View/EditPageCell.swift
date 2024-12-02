@@ -144,10 +144,7 @@ final class EditPageCell: UITableViewCell {
             description: media
         )
         attachment.configure(with: data)
-        let text = NSMutableAttributedString(attachment: attachment)
-        text.addAttributes(defaultAttributes,
-                           range: NSRange(location: 0, length: 1))
-        textStorage?.append(text)
+        appendAttachment(attachment)
     }
     private func mediaAddedWithURL(media: MediaDescription, url: URL) {
         let attachment = MediaAttachment(
@@ -155,10 +152,7 @@ final class EditPageCell: UITableViewCell {
             description: media
         )
         attachment.configure(with: url)
-        let text = NSMutableAttributedString(attachment: attachment)
-        text.addAttributes(defaultAttributes,
-                           range: NSRange(location: 0, length: 1))
-        textStorage?.append(text)
+        appendAttachment(attachment)
     }
     private func mediaLoadedWithData(media: MediaDescription, data: Data) {
         let attachment = findAttachment(by: media)
@@ -185,6 +179,18 @@ final class EditPageCell: UITableViewCell {
             }
         return attachment
     }
+    private func appendAttachment(_ attachment: MediaAttachment) {
+        guard let textStorage else { return }
+        let text = NSMutableAttributedString(attachment: attachment)
+        text.addAttributes(defaultAttributes,
+                           range: NSRange(location: 0, length: 1))
+        guard isAcceptableHeight(textStorage,
+                               shouldChangeTextIn: NSRange(location: textStorage.length, length: 0),
+                               replacementText: text) else { return }
+        textStorage.beginEditing()
+        textStorage.append(text)
+        textStorage.endEditing()
+    }
 }
 
 // MARK: - MediaAttachmentDataSource
@@ -198,11 +204,8 @@ extension EditPageCell: @preconcurrency MediaAttachmentDataSource {
 extension EditPageCell: UITextViewDelegate {
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         guard let textStorage else { return false }
-        let attributedText = NSMutableAttributedString(
-            string: text,
-            attributes: defaultAttributes
-        )
-        
+        guard let viewText = textView.text else { return false }
+        let startIndex = textView.text.startIndex
         // Attachment지우기 전에 드래그해서 알려주기
         if text.isEmpty && range.length == 1
             && attachmentAt(range.location) != nil
@@ -210,7 +213,41 @@ extension EditPageCell: UITextViewDelegate {
             textView.selectedRange = NSRange(location: range.location, length: 1)
             return false
         }
+        // 갖은 경우의 수 별로 cachedViewProvider를 nil로 변경합니다.
+        // 왜냐하면, 줄바꿈을 추가했을 때, 캐시된 View가 업데이트 되어야 하기 때문입니다.
+        if range.location > 0
+            && viewText[viewText.index(startIndex, offsetBy: range.location-1)] == "\n"
+            && text.count == 1,
+           let attachment = (attachmentAt(range.location) ?? attachmentAt(min(range.location+1, viewText.count-1))) {
+            attachment.cachedViewProvider = nil
+        }
+        if text == "\n" { // 줄바꿈을 추가할때
+            if let attachment = attachmentAt(range.location) { // Attachment 앞에 줄바꿈을 추가할때
+                attachment.cachedViewProvider = nil
+            }
+            else if let attachment = attachmentAt(range.location+1) { // Attachment 1칸 앞에 줄바꿈을 추가할때
+                attachment.cachedViewProvider = nil
+            }
+        }
+        if text.isEmpty { // 지우기할때
+            if let attachment = attachmentAt(range.location+1) {  // Attachment 1칸 앞에 줄바꿈을 추가할때
+                if range.location < 1 { // 첫째 줄에 도달하기 전에 지우기할때
+                    attachment.cachedViewProvider = nil
+                    return true
+                }
+                textView.selectedRange = NSRange(location: range.location, length: 0)
+                return false
+            }
+            else if let attachment = attachmentAt(range.location+2), // Attachment 2칸 앞에 줄바꿈을 추가할때
+                textView.text[textView.text.index(textView.text.startIndex, offsetBy: range.location+1)] == "\n" {
+                attachment.cachedViewProvider = nil
+            }
+        }
         
+        let attributedText = NSMutableAttributedString(
+            string: text,
+            attributes: defaultAttributes
+        )
         return text.isEmpty
         || isAcceptableHeight(textStorage, shouldChangeTextIn: range, replacementText: attributedText)
     }
@@ -231,6 +268,7 @@ extension EditPageCell: UITextViewDelegate {
         let temporaryTextView = UITextView(
             frame: CGRect(x: 0, y: 0, width: textViewWidth, height: .greatestFiniteMagnitude)
         )
+        
         updatedText.replaceCharacters(in: range, with: attributedText)
         temporaryTextView.attributedText = updatedText
         temporaryTextView.sizeToFit()
@@ -248,35 +286,8 @@ extension EditPageCell: @preconcurrency NSTextStorageDelegate {
         changeInLength delta: Int
     ) {
         // 입력하는 곳 앞에 Attachment가 있을 때, 줄바꿈을 추가합니다.
-        if editedRange.location - 1 > 0, delta > 0,
-           attachmentAt(editedRange.location - 1) != nil {
-            textStorage.insert(
-                NSAttributedString(
-                    string: "\n",
-                    attributes: defaultAttributes
-                ),
-                at: editedRange.location
-            )
-            textView.selectedRange = NSRange(location: editedRange.location + 1, length: 0)
-        }
-        
-        // 입력하는 곳 뒤에 Attachment가 있을 때, 줄바꿈을 추가합니다.
-        let nextIndex = editedRange.location + editedRange.length
-        if nextIndex < textStorage.length,
-           let attachment = attachmentAt(nextIndex) {
-            attachment.cachedViewProvider = nil
-            // 입력하려는 문자끝에 \n이 있으면 아래 로직 무시
-            guard textStorage.attributedSubstring(
-                from: NSRange(location: editedRange.location, length: 1)
-            ).string != "\n" else { return }
-            textStorage.insert(
-                NSAttributedString(
-                    string: "\n",
-                    attributes: defaultAttributes
-                ),
-                at: nextIndex
-            )
-        }
+        guard delta > 0 else { return }
+        lineBreakForAttachment()
     }
     func textStorage(
         _ textStorage: NSTextStorage,
@@ -284,17 +295,6 @@ extension EditPageCell: @preconcurrency NSTextStorageDelegate {
         range editedRange: NSRange,
         changeInLength delta: Int
     ) {
-        let text = textStorage.attributedSubstring(from: editedRange)
-        
-        let nextIndex = editedRange.location + editedRange.length
-        if nextIndex < textStorage.length, editedRange.length >= 1,
-           let attachment = attachmentAt(nextIndex) {
-            attachment.cachedViewProvider = nil
-        }
-        if !isAcceptableHeight(textStorage, shouldChangeTextIn: editedRange, replacementText: text) {
-            // TODO: - 좀더 우아하게 처리하기? 미리 알려주는 로직으로... 개선필요
-            textStorage.deleteCharacters(in: editedRange)
-        }
         input.send(.didEditPage(attributedText: textStorage))
     }
     // 그곳에 Attachment가 있는지 확인합니다.
@@ -302,5 +302,30 @@ extension EditPageCell: @preconcurrency NSTextStorageDelegate {
         guard let textStorage else { return nil }
         guard index >= 0 && index < textStorage.length else { return nil }
         return textStorage.attributes(at: index, effectiveRange: nil)[.attachment] as? MediaAttachment
+    }
+    private func lineBreakForAttachment() {
+        guard let currentString = textStorage?.string else { return }
+        let startIndex = currentString.startIndex
+        let range = NSRange(location: 0, length: currentString.count)
+        let newLine = NSAttributedString(string: "\n", attributes: defaultAttributes)
+        textStorage?.enumerateAttribute(.attachment, in: range, using: { value, range, _ in
+            guard let attachment = value as? MediaAttachment else { return }
+            let location = range.location
+            // Attachment 앞에 줄바꿈이 없을 때, 줄바꿈을 추가합니다.
+            if location > 0 {
+                if currentString[currentString.index(startIndex, offsetBy: location-1)] != "\n" {
+                    textStorage?.insert(newLine, at: location)
+                    attachment.cachedViewProvider = nil
+                }
+            }
+            // Attachment 뒤에 줄바꿈이 없을 때, 줄바꿈을 추가합니다.
+            let nextLocation = location + range.length
+            if nextLocation < currentString.count
+                && currentString[currentString.index(startIndex, offsetBy: nextLocation)] != "\n" {
+                textStorage?.insert(newLine, at: nextLocation)
+                guard nextLocation+1 < textStorage?.length ?? -1 else { return }
+                textView.selectedRange = NSRange(location: nextLocation+1, length: 0)
+            }
+        })
     }
 }
