@@ -136,7 +136,7 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             BookRepository.self,
             object: LocalBookRepository(storage: bookStorage)
         )
-        guard let fileManager = try? DIContainer.shared.resolve(MHFileManager.self) else { return }
+        let fileManager = try DIContainer.shared.resolve(MHFileManager.self)
         DIContainer.shared.register(
             MediaRepository.self,
             object: LocalMediaRepository(storage: fileManager)
