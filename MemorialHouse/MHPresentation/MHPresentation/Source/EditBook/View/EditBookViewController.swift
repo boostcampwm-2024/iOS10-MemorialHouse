@@ -229,6 +229,16 @@ final class EditBookViewController: UIViewController {
         
         let addAudioAction = UIAction { [weak self] _ in
             // TODO: - 오디오 추가 로직
+            let audioViewModel = CreateAudioViewModel()
+            let audioViewController = CreateAudioViewController(viewModel: audioViewModel)
+            if let sheet = audioViewController.sheetPresentationController {
+                sheet.detents = [.custom {
+                    detent in 0.35 * detent.maximumDetentValue
+                }]
+                sheet.prefersGrabberVisible = true
+            }
+            
+            self?.present(audioViewController, animated: true)
         }
         addAudioButton.addAction(addAudioAction, for: .touchUpInside)
         
