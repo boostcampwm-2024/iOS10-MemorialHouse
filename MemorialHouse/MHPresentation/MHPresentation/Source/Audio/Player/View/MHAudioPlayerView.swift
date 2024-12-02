@@ -2,18 +2,18 @@ import UIKit
 import Combine
 import AVFAudio
 import MHCore
+import MHDomain
 
 
-final public class AudioPlayerView: UIView {
-    
+final public class MHAudioPlayerView: UIView {
     // MARK: - Property
     // data bind
     private var viewModel: AudioPlayerViewModel?
     private let input = PassthroughSubject<AudioPlayerViewModel.Input, Never>()
     private var cancellables = Set<AnyCancellable>()
     // audio
-    let audioPlayer: AVAudioPlayer?
-    var audioPlayState: AudioPlayState
+    var audioPlayer: AVAudioPlayer?
+    var audioPlayState: AudioPlayState = .pause
     
     // MARK: - ViewComponent
     let audioProgressView: UIView = {
@@ -25,6 +25,7 @@ final public class AudioPlayerView: UIView {
     }()
     let audioStateButton: UIButton = {
         let button = UIButton()
+        button.setImage(UIImage(systemName: "play.fill"), for: .normal)
         return button
     }()
     let playImage = UIImage(systemName: "play.fill")
@@ -46,19 +47,27 @@ final public class AudioPlayerView: UIView {
     }()
     
     public override init(frame: CGRect) {
-        audioPlayer = try? AVAudioPlayer(contentsOf: .documentsDirectory.appendingPathComponent("audio.m4a"))
         super.init(frame: frame)
+        
+        setup()
+        bind()
+        configureAddSubview()
+        configureContstraints()
+        configureAddActions()
     }
     
     public required init?(coder: NSCoder) {
-        audioPlayer = try? AVAudioPlayer(contentsOf: .documentsDirectory.appendingPathComponent("audio.m4a"))
         super.init(frame: .zero)
     }
     
     // MARK: - setup
     private func setup() {
-        backgroundColor = .baseBackground
+        backgroundColor = .blue
         layer.cornerRadius = 5
+        
+        let audioSession = AVAudioSession.sharedInstance()
+        try? audioSession.setCategory(.playback, mode: .default, options: [])
+        try? audioSession.setActive(true)
     }
     
     // MARK: - bind
@@ -80,37 +89,61 @@ final public class AudioPlayerView: UIView {
     
     private func configureContstraints() {
         audioProgressView.setAnchor(
-            top: topAnchor,
+            top: topAnchor, constantTop: 10,
             leading: leadingAnchor,
-            bottom: bottomAnchor,
-            width: 10
+            bottom: bottomAnchor, constantBottom: 10,
+            width: 50
         )
         
         audioStateButton.setAnchor(
             top: topAnchor,
             leading: leadingAnchor,
             bottom: bottomAnchor,
-            width: frame.height
+            width: 80
         )
         
         audioPlayTimeLabel.setAnchor(
             top: topAnchor,
             leading: audioStateButton.trailingAnchor,
             bottom: bottomAnchor,
-            width: frame.height * 2
+            width: 160
         )
+    }
+    
+    private func configureAddActions() {
+        audioStateButton.addAction(UIAction { [weak self] _ in
+            guard let audioPlayState = self?.audioPlayState else { return }
+            self?.updateAudioPlayImage(audioPlayState: audioPlayState)
+            
+            self?.input.send(.audioStateButtonTapped)
+        }, for: .touchUpInside)
     }
     
     private func updateAudioPlayImage(audioPlayState state: AudioPlayState) {
         switch state {
         case .play:
+            MHLogger.debug("pause")
             audioStateButton.setImage(playImage, for: .normal)
-            audioPlayer?.play()
-            audioPlayState = .play
-        case .pause:
-            audioStateButton.setImage(pauseImage, for: .normal)
             audioPlayer?.pause()
             audioPlayState = .pause
+        case .pause:
+            audioStateButton.setImage(pauseImage, for: .normal)
+            if audioPlayer?.play() == false {
+                MHLogger.error("do not play")
+            } else {
+                MHLogger.debug("do play")
+            }
+            audioPlayState = .play
+            
+//            Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] timer in
+//                Task { @MainActor in
+//                    guard let player = self?.audioPlayer else {
+//                        print("audio player not init")
+//                        return }
+//                    print("Current playback time: \(player.currentTime) seconds")
+//                    
+//                }
+//            }
         }
     }
     
@@ -118,14 +151,40 @@ final public class AudioPlayerView: UIView {
         audioProgressView.setAnchor(
             top: topAnchor,
             leading: leadingAnchor,
-            bottom: bottomAnchor,
-            width: (audioPlayer?.currentTime / audioPlayer?.duration) * frame.width
+            bottom: bottomAnchor
+            // TODO: - width
         )
+    }
+    
+    private func setTimeLabel(seconds recordingSeconds: Int?) {
+        guard let recordingSeconds = recordingSeconds else { return }
+        let minutes = recordingSeconds / 60
+        let seconds = recordingSeconds % 60
+        audioPlayTimeLabel.text = String(format: "%02d:%02d", minutes, seconds)
     }
 }
 
-extension AudioPlayerView: AVAudioPlayerDelegate {
+extension MHAudioPlayerView: AVAudioPlayerDelegate {
     nonisolated public func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
         MHLogger.debug("audio player finished")
+        
+        Task { @MainActor in
+            self.audioPlayState = .pause
+            self.audioStateButton.setImage(playImage, for: .normal)
+        }
+    }
+}
+
+extension MHAudioPlayerView: @preconcurrency MediaAttachable {
+    func configureSource(with mediaDescription: MediaDescription, data: Data) {
+        
+    }
+    
+    func configureSource(with mediaDescription: MediaDescription, url: URL) {
+        MHLogger.debug("configure source \(url)")
+        audioPlayer = try? AVAudioPlayer(contentsOf: url)
+        guard let audioPlayer else { return }
+        audioPlayer.delegate = self
+        self.setTimeLabel(seconds: Int(audioPlayer.duration.rounded()))
     }
 }
