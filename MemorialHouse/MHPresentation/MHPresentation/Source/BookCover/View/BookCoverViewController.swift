@@ -125,10 +125,6 @@ final class BookCoverViewController: UIViewController {
         createInput.send(.viewDidAppear)
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-    }
-    
     // MARK: - TouchEvent
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         view.endEditing(true)
@@ -141,19 +137,23 @@ final class BookCoverViewController: UIViewController {
         if let createViewModel {
             let output = createViewModel.transform(input: createInput.eraseToAnyPublisher())
             
-            output.sink { [weak self] event in
-                switch event {
-                case .bookTitle(let title):
-                    self?.bookCoverView.configure(title: title)
-                case .bookColorIndex(let previousIndex, let nowIndex, let bookColor):
-                    self?.bookColorButtonTapped(previousIndex: previousIndex, nowIndex: nowIndex, bookCoverImage: bookColor.image)
-                case .bookCategory(let category):
-                    self?.setCategorySelectionButton(category: category)
-                case .moveToNext:
-                    // TODO: - 속지 페이지로 이동
-                    break
-                }
-            }.store(in: &cancellables)
+            output
+                .receive(on: DispatchQueue.main)
+                .sink { [weak self] event in
+                    switch event {
+                    case .memorialHouseName(let name):
+                        self?.bookCoverView.configure(houseName: name)
+                    case .bookTitle(let title):
+                        self?.bookCoverView.configure(title: title)
+                    case .bookColorIndex(let previousIndex, let nowIndex, let bookColor):
+                        self?.bookColorButtonTapped(previousIndex: previousIndex, nowIndex: nowIndex, bookCoverImage: bookColor.image)
+                    case .bookCategory(let category):
+                        self?.setCategorySelectionButton(category: category)
+                    case .moveToNext:
+                        // TODO: - 속지 페이지로 이동
+                        break
+                    }
+                }.store(in: &cancellables)
         }
         
         if let modifyViewModel {

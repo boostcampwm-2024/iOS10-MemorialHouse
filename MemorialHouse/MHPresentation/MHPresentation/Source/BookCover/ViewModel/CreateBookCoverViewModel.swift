@@ -13,6 +13,7 @@ final class CreateBookCoverViewModel: ViewModelType {
     }
     
     enum Output {
+        case memorialHouseName(name: String)
         case bookTitle(title: String?)
         case bookColorIndex(previousIndex: Int?, nowIndex: Int, bookColor: BookColor)
         case bookCategory(category: String?)
@@ -53,6 +54,7 @@ final class CreateBookCoverViewModel: ViewModelType {
             switch event {
             case .viewDidAppear:
                 self?.setBookColor(nowIndex: 0)
+                Task { try await self?.fetchMemorialHouseName() }
             case .changedBookTitle(let title):
                 self?.output.send(.bookTitle(title: title))
             case .changedBookColor(let colorIndex):
@@ -75,6 +77,11 @@ final class CreateBookCoverViewModel: ViewModelType {
         let bookColor = BookColor.indexToColor(index: nowIndex)
         self.bookColor = bookColor
         output.send(.bookColorIndex(previousIndex: previousIndex, nowIndex: nowIndex, bookColor: bookColor))
+    }
+    
+    private func fetchMemorialHouseName() async throws {
+        let memorialHouseName = try await fetchMemorialHouseNameUseCase.execute()
+        self.output.send(.memorialHouseName(name: memorialHouseName))
     }
     
     private func saveBookCover() async throws {
