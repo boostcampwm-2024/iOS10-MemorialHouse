@@ -52,6 +52,7 @@ extension CoreDataBookCoverStorage: BookCoverStorage {
         }
     }
     
+    // TODO: 책 커버 삭제 시, 책 내용 모두 삭제되게끔 수정 필요
     public func delete(with id: UUID) async -> Result<Void, MHDataError> {
         return await coreDataStorage.performDatabaseTask { [weak self] context in
             guard let entity = try self?.getEntityByIdentifier(in: context, with: id) else {
@@ -80,6 +81,7 @@ extension CoreDataBookCoverStorage {
         
         return BookCoverDTO(
             id: id,
+            order: Int(bookCover.order),
             title: title,
             imageURL: bookCover.imageURL,
             color: color,

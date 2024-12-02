@@ -30,7 +30,9 @@ extension CoreDataBookStorage: BookStorage {
             guard let bookEntity = try self?.getEntityByIdentifier(in: context, with: id) else {
                 throw MHDataError.findEntityFailure
             }
-            guard let bookDTO = self?.coreBookToDTO(bookEntity) else { throw MHDataError.convertDTOFailure }
+            guard let bookDTO = self?.coreBookToDTO(bookEntity) else {
+                throw MHDataError.convertDTOFailure
+            }
             
             return bookDTO
         }

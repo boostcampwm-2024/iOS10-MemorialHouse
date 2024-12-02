@@ -2,15 +2,14 @@ import UIKit
 import AVKit
 import MHDomain
 
-// MARK: - MediaAttachmentDataSource
 protocol MediaAttachmentDataSource: AnyObject {
     func mediaAttachmentDragingImage(_ mediaAttachment: MediaAttachment, about view: UIView?) -> UIImage?
 }
 
-// MARK: - MediaAttachment
 final class MediaAttachment: NSTextAttachment {
     // MARK: - Property
     private let view: (UIView & MediaAttachable)
+    var cachedViewProvider: MediaAttachmentViewProvider?
     let mediaDescription: MediaDescription
     weak var dataSource: MediaAttachmentDataSource?
     
@@ -31,6 +30,9 @@ final class MediaAttachment: NSTextAttachment {
         location: any NSTextLocation,
         textContainer: NSTextContainer?
     ) -> NSTextAttachmentViewProvider? {
+        if let provider = cachedViewProvider {
+            return provider
+        }
         let provider = MediaAttachmentViewProvider(
             textAttachment: self,
             parentView: parentView,
@@ -40,6 +42,8 @@ final class MediaAttachment: NSTextAttachment {
         provider.tracksTextAttachmentViewBounds = true
         provider.view = view
         provider.type = mediaDescription.type
+        cachedViewProvider = provider
+        
         return provider
     }
     override func image(
@@ -47,6 +51,7 @@ final class MediaAttachment: NSTextAttachment {
         textContainer: NSTextContainer?,
         characterIndex charIndex: Int
     ) -> UIImage? {
+        cachedViewProvider = nil
         return dataSource?.mediaAttachmentDragingImage(self, about: view)
     }
     
@@ -57,40 +62,4 @@ final class MediaAttachment: NSTextAttachment {
     func configure(with url: URL) {
         view.configureSource(with: mediaDescription, url: url)
     }
-}
-
-// MARK: - MediaAttachmentViewProvider
-final class MediaAttachmentViewProvider: NSTextAttachmentViewProvider {
-    // MARK: - Property
-    var type: MediaType?
-    private var height: CGFloat {
-        switch type { // TODO: - 조정 필요
-        case .image:
-            310
-        case .video:
-            200
-        case .audio:
-            100
-        case nil:
-            10
-        default:
-            100
-        }
-    }
-    
-    override func attachmentBounds(
-        for attributes: [NSAttributedString.Key: Any],
-        location: NSTextLocation,
-        textContainer: NSTextContainer?,
-        proposedLineFragment: CGRect,
-        position: CGPoint
-    ) -> CGRect {
-        return CGRect(x: 0, y: 0, width: proposedLineFragment.width, height: height)
-    }
-}
-
-// MARK: - MediaAttachable
-protocol MediaAttachable {
-    func configureSource(with mediaDescription: MediaDescription, data: Data)
-    func configureSource(with mediaDescription: MediaDescription, url: URL)
 }

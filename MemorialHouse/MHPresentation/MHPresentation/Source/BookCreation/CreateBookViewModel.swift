@@ -2,7 +2,7 @@ import MHDomain
 import MHFoundation
 import Photos
 
-struct BookCreationViewModel {
+struct CreateBookViewModel {
     var bookTitle: String = ""
     var bookCategory: String = ""
     var previousColorNumber: Int = -1

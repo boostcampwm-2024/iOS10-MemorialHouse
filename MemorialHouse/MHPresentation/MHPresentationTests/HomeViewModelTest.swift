@@ -1,74 +1,80 @@
 import Combine
 import Testing
+import MHFoundation
 @testable import MHPresentation
 @testable import MHDomain
 
 struct HomeViewModelTest {
-    var sut: HomeViewModel!
-    var cancellables = Set<AnyCancellable>()
-    
+    private var sut: HomeViewModel!
+    private var cancellables = Set<AnyCancellable>()
+    private static let bookCovers = [
+        BookCover(id: UUID(), order: 0, title: "title1", imageURL: nil, color: .blue, category: nil, favorite: false),
+        BookCover(id: UUID(), order: 1, title: "title2", imageURL: nil, color: .blue, category: nil, favorite: false),
+        BookCover(id: UUID(), order: 2, title: "title3", imageURL: nil, color: .blue, category: nil, favorite: false)
+    ]
+
     @MainActor
-    @Test mutating func test시작할때_MemorialHouse_모델을_가져온다() async throws {
-        // Arrange 준비 단계: 테스트 대상 시스템(SUT)와 의존성을 원하는 상태로 만들기
-        let dummyMemorialHouse = MemorialHouse(
-            name: "효준",
-            bookCovers: [
-                BookCover(title: "책1", imageURL: "Temp", color: .beige, category: "가족"),
-                BookCover(title: "책2", imageURL: "Temp", color: .beige, category: "친구")
-            ]
+    @Test mutating func test홈화면을_시작할때_MemorialHouse_이름과_책커버들을_가져온다() async throws {
+        // Arrange
+        let stubFetchMemorialHouseNameUseCase = StubFetchMemorialHouseNameUseCase(dummyMemorialHouseName: "효준")
+        let stubFetchAllBookCoverUseCase = StubFetchAllBookCoverUseCase()
+        let stubBookCovers = try await stubFetchAllBookCoverUseCase.execute()
+        sut = HomeViewModel(
+            fetchMemorialHouseUseCase: stubFetchMemorialHouseNameUseCase,
+            fetchAllBookCoverUseCase: stubFetchAllBookCoverUseCase,
+            updateBookCoverUseCase: StubUpdateBookCoverUseCase()
         )
-        let stubFetchMemorialHouseUseCase = StubFetchMemorialHouseUseCase(dummyMemorialHouse: dummyMemorialHouse)
-        self.sut = HomeViewModel(fetchMemorialHouseUseCase: stubFetchMemorialHouseUseCase)
-        
+
         let input = PassthroughSubject<HomeViewModel.Input, Never>()
-        var receivedOutputs: [HomeViewModel.Output] = []
-        
+        var receivedOutput: [HomeViewModel.Output] = []
+
         sut.transform(input: input.eraseToAnyPublisher())
             .sink { output in
-                receivedOutputs.append(output)
+                receivedOutput.append(output)
             }
             .store(in: &cancellables)
-        
-        // Act 실행 단계: SUT 메소드를 호출하면서 의존성을 전달해서 결과를 저장하기
+
+        // Act
+        receivedOutput.removeAll()
         input.send(.viewDidLoad)
         try await Task.sleep(nanoseconds: 500_000_000)
-        
-        // Assert 검증 단계: 결과와 기대치를 비교해서 검증하기
+
+        // Assert
+        #expect(receivedOutput.count == 2)
+        #expect(receivedOutput.contains(.fetchedMemorialHouseName))
+        #expect(receivedOutput.contains(.fetchedAllBookCover))
         #expect(sut.houseName == "효준")
-        #expect(sut.bookCovers.count == 2)
+        #expect(sut.bookCovers == stubBookCovers)
     }
-    
+
     @MainActor
     @Test mutating func test카테고리_선택시_해당_카테고리에_맞는_책들로_필터링한다() async throws {
-        // Arrange 준비 단계: 테스트 대상 시스템(SUT)와 의존성을 원하는 상태로 만들기
-        let dummyMemorialHouse = MemorialHouse(
-            name: "효준",
-            bookCovers: [
-                BookCover(title: "책1", imageURL: "Temp", color: .beige, category: "가족"),
-                BookCover(title: "책2", imageURL: "Temp", color: .beige, category: "친구")
-            ]
+        // Arrange
+        sut = HomeViewModel(
+            fetchMemorialHouseUseCase: StubFetchMemorialHouseNameUseCase(dummyMemorialHouseName: "효준"),
+            fetchAllBookCoverUseCase: StubFetchAllBookCoverUseCase(),
+            updateBookCoverUseCase: StubUpdateBookCoverUseCase()
         )
-        let stubFetchMemorialHouseUseCase = StubFetchMemorialHouseUseCase(dummyMemorialHouse: dummyMemorialHouse)
-        self.sut = HomeViewModel(fetchMemorialHouseUseCase: stubFetchMemorialHouseUseCase)
-        
         let input = PassthroughSubject<HomeViewModel.Input, Never>()
-        var receivedOutputs: [HomeViewModel.Output] = []
-        
+        var receivedOutput: [HomeViewModel.Output] = []
         sut.transform(input: input.eraseToAnyPublisher())
             .sink { output in
-                receivedOutputs.append(output)
+                receivedOutput.append(output)
             }
             .store(in: &cancellables)
         
+        // Act
         input.send(.viewDidLoad)
         try await Task.sleep(nanoseconds: 500_000_000)
+        receivedOutput.removeAll()
         
-        // Act 실행 단계: SUT 메소드를 호출하면서 의존성을 전달해서 결과를 저장하기
-        input.send(.selectedCategory(category: "친구")) // 전체, 즐겨찾기, 가족, 친구 중에서 친구 선택
+        input.send(.selectedCategory(category: "친구"))
         try await Task.sleep(nanoseconds: 500_000_000)
-        
-        // Assert 검증 단계: 결과와 기대치를 비교해서 검증하기
+
+        // Assert
+        #expect(receivedOutput.count == 1)
+        #expect(receivedOutput.contains(.filteredBooks))
         #expect(sut.currentBookCovers.count == 1)
-        #expect(sut.currentBookCovers.first?.title == "책2")
+        #expect(sut.currentBookCovers.first?.title == "title1")
     }
 }

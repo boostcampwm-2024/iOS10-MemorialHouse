@@ -2,6 +2,7 @@ import MHFoundation
 
 public struct BookCover: Identifiable, Equatable, Sendable {
     public let id: UUID
+    public let order: Int
     public let title: String
     public let imageURL: String?
     public let color: BookColor
@@ -10,6 +11,7 @@ public struct BookCover: Identifiable, Equatable, Sendable {
     
     public init(
         id: UUID = .init(),
+        order: Int,
         title: String,
         imageURL: String?,
         color: BookColor,
@@ -17,6 +19,7 @@ public struct BookCover: Identifiable, Equatable, Sendable {
         favorite: Bool = false
     ) {
         self.id = id
+        self.order = order
         self.title = title
         self.imageURL = imageURL
         self.color = color

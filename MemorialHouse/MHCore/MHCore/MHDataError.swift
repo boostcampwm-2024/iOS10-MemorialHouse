@@ -18,6 +18,7 @@ public enum MHDataError: Error, CustomStringConvertible, Equatable {
     case snapshotEncodingFailure
     case snapshotDecodingFailure
     case generalFailure
+    case setUserDefaultFailure
     
     public var description: String {
         switch self {
@@ -55,6 +56,8 @@ public enum MHDataError: Error, CustomStringConvertible, Equatable {
             "Snapshot 디코딩 실패"
         case .generalFailure:
             "알 수 없는 에러입니다."
+        case .setUserDefaultFailure:
+            "UserDefault 설정 실패"
         }
     }
 }
