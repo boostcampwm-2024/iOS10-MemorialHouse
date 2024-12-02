@@ -73,8 +73,11 @@ final class CreateBookViewController: UIViewController {
         
         return shadowLayer
     }()
+    
+    // MARK: - Property
     @Published
     private var viewModel: CreateBookViewModel
+    private let input = PassthroughSubject<CreateBookViewModel.Input, Never>()
     private var cancellables: Set<AnyCancellable> = []
     private let maxTitleLength = 10
     
@@ -85,7 +88,10 @@ final class CreateBookViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
     }
     required init?(coder: NSCoder) {
-        viewModel = CreateBookViewModel()
+        guard let createBookViewModelFactory = try? DIContainer.shared.resolve(CreateBookViewModelFactory.self) else {
+            return nil
+        }
+        viewModel = createBookViewModelFactory.make(houseName: "")
         
         super.init(coder: coder)
     }
@@ -212,6 +218,7 @@ final class CreateBookViewController: UIViewController {
         ) { [weak self] in
             // TODO: - 추후 뷰모델 관련 생성 이슈 조정 필요
             let editBookViewModel = EditBookViewModel()
+            self?.input.send(.createBook)
             self?.navigationController?.pushViewController(
                 EditBookViewController(viewModel: editBookViewModel),
                 animated: true
