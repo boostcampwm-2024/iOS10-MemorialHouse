@@ -5,7 +5,7 @@ final class CreateBookViewController: UIViewController {
     // MARK: - Constant
     static let maxTitleLength = 10
     // MARK: - Property
-    private let bookView: MHBookCover = MHBookCover()
+    private let bookCoverView: MHBookCover = MHBookCover()
     private let bookTitleTextField: UITextField = {
         let textField = UITextField()
         textField.font = UIFont.ownglyphBerry(size: 25)
@@ -121,8 +121,8 @@ final class CreateBookViewController: UIViewController {
     }
     private func configureConstraints() {
         // 책 미리보기
-        let bookPreviewViewBackground = bookView.embededInDefaultBackground(
-            with: UIEdgeInsets(top: 70, left: 100, bottom: 70, right: 100)
+        let bookPreviewViewBackground = bookCoverView.embededInDefaultBackground(
+            with: UIEdgeInsets(top: 50, left: 80, bottom: 50, right: 80)
         )
         view.addSubview(bookPreviewViewBackground)
         bookPreviewViewBackground.setAnchor(
@@ -259,7 +259,7 @@ final class CreateBookViewController: UIViewController {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] viewModel in
                 guard let self else { return }
-                self.bookView.configure(
+                self.bookCoverView.configure(
                     title: viewModel.bookTitle,
                     bookCoverImage: viewModel.currentColor.image,
                     // TODO: -  이미지 선택시 변경
