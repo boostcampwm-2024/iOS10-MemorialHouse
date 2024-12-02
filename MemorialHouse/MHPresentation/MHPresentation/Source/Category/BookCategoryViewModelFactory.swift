@@ -26,4 +26,14 @@ public struct BookCategoryViewModelFactory {
             deleteBookCategoryUseCase: deleteBookCategoryUseCase
         )
     }
+    
+    func makeForCreateBook() -> BookCategoryViewModel {
+        BookCategoryViewModel(
+            createBookCategoryUseCase: createBookCategoryUseCase,
+            fetchBookCategoriesUseCase: fetchBookCategoriesUseCase,
+            updateBookCategoryUseCase: updateBookCategoryUseCase,
+            deleteBookCategoryUseCase: deleteBookCategoryUseCase,
+            categories: []
+        )
+    }
 }
