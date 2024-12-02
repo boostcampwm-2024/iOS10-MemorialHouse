@@ -147,7 +147,7 @@ public final class RegisterViewController: UIViewController {
         
         registerTextLabel.setAnchor(
             top: coverImageView.topAnchor, constantTop: 38,
-            leading: coverImageView.leadingAnchor, constantLeading: 80,
+            leading: coverImageView.leadingAnchor, constantLeading: 72,
             trailing: coverImageView.trailingAnchor, constantTrailing: 40
         )
         
@@ -155,7 +155,7 @@ public final class RegisterViewController: UIViewController {
         coverImageView.addSubview(registerTextFieldBackground)
         registerTextFieldBackground.setAnchor(
             top: registerTextLabel.bottomAnchor, constantTop: 24,
-            leading: coverImageView.leadingAnchor, constantLeading: 52,
+            leading: coverImageView.leadingAnchor, constantLeading: 60,
             trailing: coverImageView.trailingAnchor, constantTrailing: 28,
             height: 60
         )
