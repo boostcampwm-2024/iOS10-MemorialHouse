@@ -147,7 +147,7 @@ final class EditBookViewController: UIViewController {
     private func configureSaveButton() {
         // BookCreationViewController에서 넘어온 경우에만 저장 버튼 보여주기
         let isFromCreation = navigationController?.viewControllers
-            .contains { $0 is BookCreationViewController } ?? false
+            .contains { $0 is CreateBookViewController } ?? false
         
         if isFromCreation {
             navigationItem.rightBarButtonItem = nil
