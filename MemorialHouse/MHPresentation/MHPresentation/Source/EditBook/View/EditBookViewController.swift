@@ -1,6 +1,6 @@
 import UIKit
 import MHCore
-@preconcurrency import Combine
+import Combine
 
 final class EditBookViewController: UIViewController {
     // MARK: - Constant
