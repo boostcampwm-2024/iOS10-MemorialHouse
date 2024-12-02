@@ -159,8 +159,8 @@ public final class HomeViewController: UIViewController {
         
         makingBookFloatingButton.addAction(UIAction { [weak self] _ in
             guard let self else { return }
-            let bookCreationViewController = BookCreationViewController(viewModel: BookCreationViewModel())
-            self.navigationController?.pushViewController(bookCreationViewController, animated: true)
+            let createBookViewController = CreateBookViewController(viewModel: CreateBookViewModel())
+            self.navigationController?.pushViewController(createBookViewController, animated: true)
         }, for: .touchUpInside)
         
         navigationBar.configureSettingAction(action: UIAction { [weak self] _ in

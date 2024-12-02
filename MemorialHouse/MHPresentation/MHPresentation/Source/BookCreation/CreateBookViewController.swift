@@ -2,7 +2,7 @@ import UIKit
 import MHCore
 import Combine
 
-final class BookCreationViewController: UIViewController {
+final class CreateBookViewController: UIViewController {
     // MARK: - Constant
     static let maxTitleLength = 10
     // MARK: - Property
@@ -76,17 +76,17 @@ final class BookCreationViewController: UIViewController {
         return shadowLayer
     }()
     @Published
-    private var viewModel: BookCreationViewModel
+    private var viewModel: CreateBookViewModel
     private var cancellables: Set<AnyCancellable> = []
     
     // MARK: - Initializer
-    init(viewModel: BookCreationViewModel) {
+    init(viewModel: CreateBookViewModel) {
         self.viewModel = viewModel
         
         super.init(nibName: nil, bundle: nil)
     }
     required init?(coder: NSCoder) {
-        viewModel = BookCreationViewModel()
+        viewModel = CreateBookViewModel()
         
         super.init(coder: coder)
     }
@@ -333,7 +333,7 @@ final class BookCreationViewController: UIViewController {
     }
 }
 
-extension BookCreationViewController: UITextFieldDelegate {
+extension CreateBookViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         return true
