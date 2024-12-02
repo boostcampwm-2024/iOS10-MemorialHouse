@@ -27,7 +27,9 @@ extension CoreDataBookStorage: BookStorage {
     
     public func fetch(with id: UUID) async -> Result<BookDTO, MHDataError> {
         return await coreDataStorage.performDatabaseTask { [weak self] context in
-            guard let bookEntity = try self?.getEntityByIdentifier(in: context, with: id) else { throw MHDataError.findEntityFailure }
+            guard let bookEntity = try self?.getEntityByIdentifier(in: context, with: id) else {
+                throw MHDataError.findEntityFailure
+            }
             guard let bookDTO = self?.coreBookToDTO(bookEntity) else { throw MHDataError.convertDTOFailure }
             
             return bookDTO

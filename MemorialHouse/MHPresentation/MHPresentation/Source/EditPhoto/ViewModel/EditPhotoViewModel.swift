@@ -4,7 +4,7 @@ import Combine
 
 final class EditPhotoViewModel: ViewModelType {
     enum Input {
-        case doneEditPhoto(imageData: Data, caption:String?)
+        case doneEditPhoto(imageData: Data, caption: String?)
     }
     
     enum Output {
@@ -35,8 +35,12 @@ final class EditPhotoViewModel: ViewModelType {
         return output.eraseToAnyPublisher()
     }
     
+    @MainActor
     private func createPhotoData(imageData: Data, caption: String?) async {
-        let media = MediaDescription(type: .image, attributes: [Constant.photoCaption: caption, Constant.photoCreationDate: creationDate])
+        let media = MediaDescription(
+            type: .image,
+            attributes: [Constant.photoCaption: caption, Constant.photoCreationDate: creationDate.toString()]
+        )
         try? await createMediaUseCase.execute(media: media, data: imageData, at: media.id)
         output.send(.moveToNextView)
     }

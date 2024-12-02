@@ -112,7 +112,9 @@ final class BookViewController: UIViewController {
     }
     
     private func makeNewPageViewController(page: Page) -> ReadPageViewController? {
-        guard let readPageViewModelFactory = try? DIContainer.shared.resolve(ReadPageViewModelFactory.self) else { return nil }
+        guard let readPageViewModelFactory = try? DIContainer.shared.resolve(ReadPageViewModelFactory.self) else {
+            return nil
+        }
         let readPageViewModel = readPageViewModelFactory.make(bookID: viewModel.identifier, page: page)
         
         return ReadPageViewController(viewModel: readPageViewModel)
