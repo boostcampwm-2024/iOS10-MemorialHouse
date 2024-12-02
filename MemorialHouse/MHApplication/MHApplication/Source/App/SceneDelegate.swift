@@ -213,6 +213,7 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             DeleteBookCoverUseCase.self,
             object: DefaultDeleteBookCoverUseCase(repository: bookCoverRepository)
         )
+        
         // MARK: - EditBook UseCase
         DIContainer.shared.register(
             PersistentlyStoreMediaUseCase.self,
