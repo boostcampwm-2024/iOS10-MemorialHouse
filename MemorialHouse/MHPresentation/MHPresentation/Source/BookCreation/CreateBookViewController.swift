@@ -1,4 +1,5 @@
 import UIKit
+import MHDomain // TODO: - 추후 로직에 따라 제거 필요
 import MHCore
 import Combine
 
@@ -213,12 +214,16 @@ final class CreateBookViewController: UIViewController {
         ) { [weak self] in
             // TODO: - 추후 DIContainer resolve 실패 처리 필요
             // TODO: - bookID에 bookCoverID 넣어주기 필요
-            guard let editBookViewModelFactory = try? DIContainer.shared.resolve(EditBookViewModelFactory.self) else { return }
-            let viewModel = editBookViewModelFactory.make(bookID: .init())
-            self?.navigationController?.pushViewController(
-                EditBookViewController(viewModel: viewModel),
-                animated: true
-            )
+            Task {
+                guard let editBookViewModelFactory = try? DIContainer.shared.resolve(EditBookViewModelFactory.self) else { return }
+                let book = Book(id: .init(), title: "HIHI", pages: [.init(metadata: [:], text: "")])
+                try? await DIContainer.shared.resolve(BookRepository.self).create(book: book)
+                let viewModel = editBookViewModelFactory.make(bookID: book.id)
+                self?.navigationController?.pushViewController(
+                    EditBookViewController(viewModel: viewModel),
+                    animated: true
+                )
+            }
         }
     }
     
