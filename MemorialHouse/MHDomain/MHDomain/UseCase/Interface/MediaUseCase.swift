@@ -16,6 +16,6 @@ public protocol DeleteMediaUseCase: Sendable {
 
 public protocol PersistentlyStoreMediaUseCase: Sendable {
     @available(*, deprecated, message: "temp를 더이상 사용하지 않습니다.")
-    func execute(to bookID: UUID) async throws
+    func execute(to bookID: UUID) async throws // TODO: - 없애야함
     func execute(to bookID: UUID, mediaList: [MediaDescription]) async throws
 }
