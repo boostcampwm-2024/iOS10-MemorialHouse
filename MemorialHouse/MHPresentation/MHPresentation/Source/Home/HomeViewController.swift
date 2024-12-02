@@ -92,17 +92,19 @@ public final class HomeViewController: UIViewController {
     private func bind() {
         let output = viewModel.transform(input: input.eraseToAnyPublisher())
         
-        output.sink { [weak self] event in
-            guard let self else { return }
-            switch event {
-            case .fetchedMemorialHouseName:
-                self.updateMemorialHouse()
-            case .fetchedAllBookCover, .filteredBooks, .dragAndDropFinished:
-                self.collectionView.reloadData()
-            case .fetchedFailure(let errorMessage):
-                self.handleError(with: errorMessage)
-            }
-        }.store(in: &cancellables)
+        output
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] event in
+                guard let self else { return }
+                switch event {
+                case .fetchedMemorialHouseName:
+                    self.updateMemorialHouse()
+                case .reloadData:
+                    self.collectionView.reloadData()
+                case .fetchedFailure(let errorMessage):
+                    self.handleError(with: errorMessage)
+                }
+            }.store(in: &cancellables)
     }
     
     private func updateMemorialHouse() {

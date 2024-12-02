@@ -14,10 +14,8 @@ public final class HomeViewModel: ViewModelType {
     
     public enum Output: Equatable {
         case fetchedMemorialHouseName
-        case fetchedAllBookCover
-        case filteredBooks
+        case reloadData
         case fetchedFailure(String)
-        case dragAndDropFinished
     }
     
     private let output = PassthroughSubject<Output, Never>()
@@ -42,7 +40,6 @@ public final class HomeViewModel: ViewModelType {
         self.deleteBookCoverUseCase = deleteBookCoverUseCase
     }
     
-    @MainActor
     func transform(input: AnyPublisher<Input, Never>) -> AnyPublisher<Output, Never> {
         input.sink { [weak self] event in
             switch event {
@@ -65,7 +62,6 @@ public final class HomeViewModel: ViewModelType {
         return output.eraseToAnyPublisher()
     }
     
-    @MainActor
     private func fetchMemorialHouse() async {
         do {
             let memorialHouseName = try await fetchMemorialHouseNameUseCase.execute()
@@ -77,20 +73,18 @@ public final class HomeViewModel: ViewModelType {
         }
     }
     
-    @MainActor
     private func fetchAllBookCover() async {
         do {
             let bookCovers = try await fetchAllBookCoverUseCase.execute()
             self.bookCovers = bookCovers
             self.currentBookCovers = bookCovers
-            output.send(.fetchedAllBookCover)
+            output.send(.reloadData)
         } catch {
             output.send(.fetchedFailure("책들을 불러오는 중에 에러가 발생했습니다."))
             MHLogger.error("책들을 불러오는 중에 에러 발생: \(error.localizedDescription)")
         }
     }
     
-    @MainActor
     private func likeButtonTapped(bookId: UUID) async {
         guard
             let bookCoverIndex = bookCovers.firstIndex(where: { $0.id == bookId }),
@@ -118,7 +112,6 @@ public final class HomeViewModel: ViewModelType {
         }
     }
     
-    @MainActor
     private func deleteBookCover(bookId: UUID) async {
         do {
             try await deleteBookCoverUseCase.execute(id: bookId)
@@ -129,6 +122,7 @@ public final class HomeViewModel: ViewModelType {
             
             bookCovers.remove(at: bookCoverIndex)
             currentBookCovers.remove(at: currentBookCoverIndex)
+            output.send(.reloadData)
         } catch {
             MHLogger.error("삭제 에러 발생: \(error.localizedDescription)")
             output.send(.fetchedFailure("삭제에 실패했습니다."))
@@ -145,7 +139,7 @@ public final class HomeViewModel: ViewModelType {
             currentBookCovers = bookCovers.filter { $0.category == category }
         }
         
-        output.send(.filteredBooks)
+        output.send(.reloadData)
     }
     
     private func dragAndDropBookCover(from currentIndex: Int, to destinationIndex: Int) {
@@ -155,6 +149,6 @@ public final class HomeViewModel: ViewModelType {
         bookCovers.insert(currentBookCover, at: targetBookCover.order)
         currentBookCovers.remove(at: currentIndex)
         currentBookCovers.insert(currentBookCover, at: destinationIndex)
-        output.send(.dragAndDropFinished)
+        output.send(.reloadData)
     }
 }
