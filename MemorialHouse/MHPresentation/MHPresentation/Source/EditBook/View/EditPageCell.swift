@@ -144,10 +144,7 @@ final class EditPageCell: UITableViewCell {
             description: media
         )
         attachment.configure(with: data)
-        let text = NSMutableAttributedString(attachment: attachment)
-        text.addAttributes(defaultAttributes,
-                           range: NSRange(location: 0, length: 1))
-        textStorage?.append(text)
+        appendAttachment(attachment)
     }
     private func mediaAddedWithURL(media: MediaDescription, url: URL) {
         let attachment = MediaAttachment(
@@ -155,10 +152,7 @@ final class EditPageCell: UITableViewCell {
             description: media
         )
         attachment.configure(with: url)
-        let text = NSMutableAttributedString(attachment: attachment)
-        text.addAttributes(defaultAttributes,
-                           range: NSRange(location: 0, length: 1))
-        textStorage?.append(text)
+        appendAttachment(attachment)
     }
     private func mediaLoadedWithData(media: MediaDescription, data: Data) {
         let attachment = findAttachment(by: media)
@@ -185,6 +179,18 @@ final class EditPageCell: UITableViewCell {
             }
         return attachment
     }
+    private func appendAttachment(_ attachment: MediaAttachment) {
+        guard let textStorage else { return }
+        let text = NSMutableAttributedString(attachment: attachment)
+        text.addAttributes(defaultAttributes,
+                           range: NSRange(location: 0, length: 1))
+        guard isAcceptableHeight(textStorage,
+                               shouldChangeTextIn: NSRange(location: textStorage.length, length: 0),
+                               replacementText: text) else { return }
+        textStorage.beginEditing()
+        textStorage.append(text)
+        textStorage.endEditing()
+    }
 }
 
 // MARK: - MediaAttachmentDataSource
@@ -198,6 +204,8 @@ extension EditPageCell: @preconcurrency MediaAttachmentDataSource {
 extension EditPageCell: UITextViewDelegate {
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         guard let textStorage else { return false }
+        guard let viewText = textView.text else { return false }
+        let startIndex = textView.text.startIndex
         // Attachment지우기 전에 드래그해서 알려주기
         if text.isEmpty && range.length == 1
             && attachmentAt(range.location) != nil
@@ -205,12 +213,39 @@ extension EditPageCell: UITextViewDelegate {
             textView.selectedRange = NSRange(location: range.location, length: 1)
             return false
         }
+        if range.location > 0
+            && viewText[viewText.index(startIndex, offsetBy: range.location-1)] == "\n"
+            && text.count == 1,
+            let attachment = (attachmentAt(range.location) ?? attachmentAt(range.location+1))  {
+            attachment.cachedViewProvider = nil
+        }
+        if text == "\n" {
+            if let attachment = attachmentAt(range.location) {
+                attachment.cachedViewProvider = nil
+            }
+            if let attachment = attachmentAt(range.location+1) {
+                attachment.cachedViewProvider = nil
+            }
+        }
+        if text.isEmpty {
+            if let attachment = attachmentAt(range.location+1) {
+                if range.location < 1 {
+                    attachment.cachedViewProvider = nil
+                    return true
+                }
+                textView.selectedRange = NSRange(location: range.location, length: 0)
+                return false
+            }
+            if let attachment = attachmentAt(range.location+2),
+                textView.text[textView.text.index(textView.text.startIndex, offsetBy: range.location+1)] == "\n" {
+                attachment.cachedViewProvider = nil
+            }
+        }
         
         let attributedText = NSMutableAttributedString(
             string: text,
             attributes: defaultAttributes
         )
-        
         return text.isEmpty
         || isAcceptableHeight(textStorage, shouldChangeTextIn: range, replacementText: attributedText)
     }
@@ -231,6 +266,7 @@ extension EditPageCell: UITextViewDelegate {
         let temporaryTextView = UITextView(
             frame: CGRect(x: 0, y: 0, width: textViewWidth, height: .greatestFiniteMagnitude)
         )
+        
         updatedText.replaceCharacters(in: range, with: attributedText)
         temporaryTextView.attributedText = updatedText
         temporaryTextView.sizeToFit()
@@ -249,7 +285,7 @@ extension EditPageCell: @preconcurrency NSTextStorageDelegate {
     ) {
         // 입력하는 곳 앞에 Attachment가 있을 때, 줄바꿈을 추가합니다.
         guard delta > 0 else { return }
-        lineBreakForAttachment(in: editedRange)
+        lineBreakForAttachment()
     }
     func textStorage(
         _ textStorage: NSTextStorage,
@@ -257,11 +293,6 @@ extension EditPageCell: @preconcurrency NSTextStorageDelegate {
         range editedRange: NSRange,
         changeInLength delta: Int
     ) {
-        let text = textStorage.attributedSubstring(from: editedRange)
-        if !isAcceptableHeight(textStorage, shouldChangeTextIn: editedRange, replacementText: text) {
-            // TODO: - 좀더 우아하게 처리하기? 미리 알려주는 로직으로... 개선필요
-            textStorage.deleteCharacters(in: editedRange)
-        }
         input.send(.didEditPage(attributedText: textStorage))
     }
     // 그곳에 Attachment가 있는지 확인합니다.
@@ -270,22 +301,26 @@ extension EditPageCell: @preconcurrency NSTextStorageDelegate {
         guard index >= 0 && index < textStorage.length else { return nil }
         return textStorage.attributes(at: index, effectiveRange: nil)[.attachment] as? MediaAttachment
     }
-    private func lineBreakForAttachment(in range: NSRange) {
+    private func lineBreakForAttachment() {
         guard let currentString = textStorage?.string else { return }
         let startIndex = currentString.startIndex
         let range = NSRange(location: 0, length: currentString.count)
+        let newLine = NSAttributedString(string: "\n", attributes: defaultAttributes)
         textStorage?.enumerateAttribute(.attachment, in: range, using: { value, range, _ in
             guard let attachment = value as? MediaAttachment else { return }
             let location = range.location
-            if location > 0
-               && currentString[currentString.index(startIndex, offsetBy: location-1)] != "\n" {
-                textStorage?.insert(NSAttributedString(string: "\n"), at: location)
-                attachment.cachedViewProvider = nil
+            if location > 0 {
+                if currentString[currentString.index(startIndex, offsetBy: location-1)] != "\n" {
+                    textStorage?.insert(newLine, at: location)
+                    attachment.cachedViewProvider = nil
+                }
             }
             let nextLocation = location + range.length
             if nextLocation < currentString.count
                 && currentString[currentString.index(startIndex, offsetBy: nextLocation)] != "\n" {
-                textStorage?.insert(NSAttributedString(string: "\n"), at: nextLocation)
+                textStorage?.insert(newLine, at: nextLocation)
+                guard nextLocation+1 < textStorage?.length ?? -1 else { return }
+                textView.selectedRange = NSRange(location: nextLocation+1, length: 0)
             }
         })
     }
