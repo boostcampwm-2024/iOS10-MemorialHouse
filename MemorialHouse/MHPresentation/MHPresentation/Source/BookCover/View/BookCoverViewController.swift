@@ -155,6 +155,8 @@ final class BookCoverViewController: UIViewController {
                         self?.setCategorySelectionButton(category: category)
                     case .moveToNext(let bookID):
                         self?.presentEditBookView(bookID: bookID)
+                    case .moveToHome:
+                        self?.navigationController?.popViewController(animated: true)
                     }
                 }.store(in: &cancellables)
         }
@@ -201,8 +203,7 @@ final class BookCoverViewController: UIViewController {
             normal: normalAttributes,
             selected: selectedAttributes
         ) { [weak self] in
-            // TODO: - Book Delete 기능 구현
-            self?.navigationController?.popViewController(animated: true)
+            self?.createInput.send(.deleteBookCover)
         }
         
         // 오른쪽 책 속지 만들기 버튼

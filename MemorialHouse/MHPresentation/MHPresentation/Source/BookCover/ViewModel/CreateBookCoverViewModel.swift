@@ -10,6 +10,7 @@ final class CreateBookCoverViewModel: ViewModelType {
         case changedBookColor(colorIndex: Int)
         case changedBookCategory(category: String?)
         case saveBookCover
+        case deleteBookCover
     }
     
     enum Output {
@@ -18,6 +19,7 @@ final class CreateBookCoverViewModel: ViewModelType {
         case bookColorIndex(previousIndex: Int?, nowIndex: Int, bookColor: BookColor)
         case bookCategory(category: String?)
         case moveToNext(bookID: UUID)
+        case moveToHome
     }
     
     private let fetchMemorialHouseNameUseCase: FetchMemorialHouseNameUseCase
@@ -28,6 +30,7 @@ final class CreateBookCoverViewModel: ViewModelType {
     private let output = PassthroughSubject<Output, Never>()
     private var cancellables = Set<AnyCancellable>()
     
+    private var bookID: UUID?
     private let bookOrder: Int
     private var bookTitle: String?
     private var bookColor: BookColor?
@@ -63,6 +66,11 @@ final class CreateBookCoverViewModel: ViewModelType {
                 self?.output.send(.bookCategory(category: category))
             case .saveBookCover:
                 Task { try await self?.saveBookCover() }
+            case .deleteBookCover:
+                Task {
+                    try await self?.deleteBookCover()
+                    self?.output.send(.moveToHome)
+                }
             }
         }.store(in: &cancellables)
         
@@ -100,6 +108,7 @@ final class CreateBookCoverViewModel: ViewModelType {
         )
         try await createBookCoverUseCase.execute(with: newBookCover)
         try await createBook(bookID: newBookCover.id)
+        bookID = newBookCover.id
         output.send(.moveToNext(bookID: newBookCover.id))
     }
     
@@ -111,5 +120,11 @@ final class CreateBookCoverViewModel: ViewModelType {
             pages: [Page()]
         )
         try await createBookUseCase.execute(book: newBook)
+    }
+    
+    private func deleteBookCover() async throws {
+        guard let bookID else { return }
+        try await deleteBookUseCase.execute(id: bookID)
+        try await deleteBookCoverUseCase.execute(id: bookID)
     }
 }
