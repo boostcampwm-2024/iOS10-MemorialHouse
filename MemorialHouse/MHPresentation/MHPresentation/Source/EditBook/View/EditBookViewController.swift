@@ -2,6 +2,7 @@ import UIKit
 import MHCore
 import Combine
 
+// TODO: - 페이지 없애는 기능 추가
 final class EditBookViewController: UIViewController {
     // MARK: - Constant
     static let buttonBottomConstant: CGFloat = -20

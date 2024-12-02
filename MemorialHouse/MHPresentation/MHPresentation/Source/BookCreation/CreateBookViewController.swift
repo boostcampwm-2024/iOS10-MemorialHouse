@@ -76,6 +76,7 @@ final class CreateBookViewController: UIViewController {
         
         return shadowLayer
     }()
+    // TODO: - 뷰모델 개선 필요
     @Published
     private var viewModel: CreateBookViewModel
     private var cancellables: Set<AnyCancellable> = []
