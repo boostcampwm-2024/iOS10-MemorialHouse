@@ -1,4 +1,5 @@
 import UIKit
+import Combine
 
 final class EditPhotoViewController: UIViewController {
     // MARK: - UI Components
@@ -64,10 +65,27 @@ final class EditPhotoViewController: UIViewController {
     }()
     private var captionTextFieldBottomConstraint: NSLayoutConstraint?
     
+    // MARK: - Properties
+    private let viewModel: EditPhotoViewModel
+    private let input = PassthroughSubject<EditPhotoViewModel.Input, Never>()
+    private var cancellables = Set<AnyCancellable>()
+    
+    init(viewModel: EditPhotoViewModel) {
+        self.viewModel = viewModel
+        
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    // TODO: ViewModel Factory 수정
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     // MARK: - View Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        bind()
         setup()
         configureNavigationBar()
         configureAddSubView()
@@ -79,6 +97,19 @@ final class EditPhotoViewController: UIViewController {
         super.viewWillAppear(animated)
         
         configureNavigationAppearance()
+    }
+    
+    // MARK: - Binding
+    private func bind() {
+        let output = viewModel.transform(input: input.eraseToAnyPublisher())
+        
+        output.sink { event in
+            switch event {
+            case .moveToNextView:
+                // TODO: - 다음 뷰로 이동 로직
+                break
+            }
+        }.store(in: &cancellables)
     }
     
     // MARK: - Setup
@@ -127,8 +158,10 @@ final class EditPhotoViewController: UIViewController {
             title: "완료",
             normal: normalAttributes,
             selected: selectedAttributes
-        ) {
-            // TODO: 다음 화면으로 전환 및 cropImage 호출
+        ) { [weak self] in
+            guard let imageData = self?.cropImage()?.pngData() else { return }
+            let caption = self?.captionTextField.text
+            self?.input.send(.doneEditPhoto(imageData: imageData, caption: caption))
         }
     }
     
@@ -268,7 +301,7 @@ final class EditPhotoViewController: UIViewController {
     }
     
     // MARK: - Set Photo from Custom Album
-    func setPhoto(image: UIImage?, date: Date?) {
+    func setPhoto(image: UIImage?) {
         photoImageView.image = image
     }
 }

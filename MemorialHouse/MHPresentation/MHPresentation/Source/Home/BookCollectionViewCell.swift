@@ -6,6 +6,8 @@ final class BookCollectionViewCell: UICollectionViewCell {
     private let likeButton = UIButton(type: .custom)
     private let dropDownButton = UIButton(type: .custom)
     private var isLike: Bool = false
+    private var bookCoverAction: UIAction?
+    private var likeButtonAction: UIAction?
     
     // MARK: - Initializer
     override init(frame: CGRect) {
@@ -27,6 +29,13 @@ final class BookCollectionViewCell: UICollectionViewCell {
         
         bookCoverView.resetProperties()
         likeButton.imageView?.image = nil
+        dropDownButton.menu = nil
+        if let bookCoverAction {
+            bookCoverView.removeAction(bookCoverAction, for: .touchUpInside)
+        }
+        if let likeButtonAction {
+            likeButton.removeAction(likeButtonAction, for: .touchUpInside)
+        }
     }
     
     // MARK: - Configuration
@@ -55,17 +64,21 @@ final class BookCollectionViewCell: UICollectionViewCell {
         dropDownButtonEditAction: @escaping () -> Void,
         dropDownButtonDeleteAction: @escaping () -> Void
     ) {
-        bookCoverView.addAction(UIAction { _ in
+        self.bookCoverAction = UIAction { _ in
             bookCoverAction()
-        }, for: .touchUpInside)
-        
-        likeButton.addAction(UIAction { [weak self] _ in
+        }
+        if let bookCoverAction = self.bookCoverAction {
+            bookCoverView.addAction(bookCoverAction, for: .touchUpInside)
+        }
+        self.likeButtonAction = UIAction { [weak self] _ in
             guard let self else { return }
             likeButtonAction()
             self.isLike.toggle()
             self.changeLikeButtonImage(isLike: self.isLike)
-        }, for: .touchUpInside)
-        
+        }
+        if let likeButtonAction = self.likeButtonAction {
+            likeButton.addAction(likeButtonAction, for: .touchUpInside)
+        }
         dropDownButton.showsMenuAsPrimaryAction = true
         dropDownButton.menu = UIMenu(
             title: "",

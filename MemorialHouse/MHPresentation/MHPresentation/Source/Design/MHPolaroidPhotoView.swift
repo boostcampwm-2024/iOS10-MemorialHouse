@@ -1,5 +1,6 @@
-import UIKit
+import MHFoundation
 import MHDomain
+import UIKit
 
 final class MHPolaroidPhotoView: UIView {
     // MARK: - UI Components
@@ -80,11 +81,27 @@ final class MHPolaroidPhotoView: UIView {
     }
 }
 
+// TODO: - PreConcurrency 제거..?
 extension MHPolaroidPhotoView: @preconcurrency MediaAttachable {
     func configureSource(with mediaDescription: MediaDescription, data: Data) {
-        photoImageView.image = UIImage(data: data)
+        var caption: String?
+        if let captionString = mediaDescription.attributes?[Constant.photoCaption] as? String {
+            caption = captionString
+        }
+        let photoImage = UIImage(data: data)
+        guard let creationDate = mediaDescription.attributes?[Constant.photoCreationDate] as? String else { return }
+        
+        configurePhotoImageView(image: photoImage, caption: caption, creationDate: creationDate)
     }
+    
     func configureSource(with mediaDescription: MediaDescription, url: URL) {
-        photoImageView.image = UIImage(contentsOfFile: url.path)
+        var caption: String?
+        if let captionString = mediaDescription.attributes?[Constant.photoCaption] as? String {
+            caption = captionString
+        }
+        let photoImage = UIImage(contentsOfFile: url.path)
+        guard let creationDate = mediaDescription.attributes?[Constant.photoCreationDate] as? String else { return }
+        
+        configurePhotoImageView(image: photoImage, caption: caption, creationDate: creationDate)
     }
 }

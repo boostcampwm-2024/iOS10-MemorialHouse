@@ -37,6 +37,7 @@ public struct LocalBookRepository: BookRepository {
         return await storage.delete(with: id)
     }
     
+    // MARK: - Mapping
     private func mappingBookToDTO(_ book: Book) -> BookDTO {
         let pages = book.pages.map { mappingPageToDTO($0) }
         return BookDTO(
