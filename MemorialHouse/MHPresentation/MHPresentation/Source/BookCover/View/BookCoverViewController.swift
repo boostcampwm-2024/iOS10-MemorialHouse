@@ -111,7 +111,6 @@ final class BookCoverViewController: UIViewController {
         
         super.init(nibName: nil, bundle: nil)
     }
-    
     required init?(coder: NSCoder) {
         createViewModel = nil
         modifyViewModel = nil
@@ -174,6 +173,8 @@ final class BookCoverViewController: UIViewController {
                     self?.presentEditBookView(bookID: bookID)
                 case .moveToHome:
                     self?.navigationController?.popViewController(animated: true)
+                case .settingFailure:
+                    self?.showFailureAlert()
                 }
             }.store(in: &cancellables)
     }
@@ -201,11 +202,38 @@ final class BookCoverViewController: UIViewController {
                     self?.setCategorySelectionButton(category: category)
                 case .moveToHome:
                     self?.navigationController?.popViewController(animated: true)
+                case .settingFailure:
+                    self?.showFailureAlert()
                 }
             }.store(in: &cancellables)
     }
     
-    // MARK: - Setup
+    private func showFailureAlert() {
+        let alert = UIAlertController(
+            title: "책 표지 생성 실패",
+            message: "책 제목을 입력해주세요",
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "확인", style: .default))
+        
+        present(alert, animated: true)
+    }
+    
+    // MARK: - Present EditBookViewController
+    private func presentEditBookView(bookID: UUID) {
+        do {
+            let editBookViewModelFactory = try DIContainer.shared.resolve(EditBookViewModelFactory.self)
+            let editBookViewModel = editBookViewModelFactory.make(bookID: bookID)
+            let editBookViewController = EditBookViewController(viewModel: editBookViewModel)
+            navigationController?.pushViewController(editBookViewController, animated: true)
+        } catch {
+            MHLogger.error(error)
+        }
+    }
+}
+
+// MARK: - Setup & Configure
+extension BookCoverViewController {
     private func setup() {
         view.backgroundColor = .baseBackground
         bookTitleTextField.delegate = self
@@ -217,7 +245,6 @@ final class BookCoverViewController: UIViewController {
         setCategorySelectionButton(category: category)
     }
     
-    // MARK: - Configure NavigationBar
     private func configureNavigationBar() {
         let normalAttributes: [NSAttributedString.Key: Any] = [
             .font: UIFont.ownglyphBerry(size: 17),
@@ -277,10 +304,9 @@ final class BookCoverViewController: UIViewController {
             normal: normalAttributes,
             selected: selectedAttributes
         ) { [weak self] in
-            self?.modifyInput.send(.saveBookCover)
+            self?.modifyInput.send(.saveBookCover(bookTitle: self?.bookTitleTextField.text ?? ""))
         }
     }
-    
     private func configureAddSubviews() {
         view.addSubview(bookPreviewViewBackground)
         view.addSubview(bookTitleTextFieldBackground)
@@ -288,7 +314,6 @@ final class BookCoverViewController: UIViewController {
         view.addSubview(categorySelectionButtonBackground)
         view.addSubview(imageSelectionButtonBackground)
     }
-    
     private func configureConstraints() {
         bookPreviewViewBackground.setAnchor(
             top: view.safeAreaLayoutGuide.topAnchor,
@@ -321,7 +346,6 @@ final class BookCoverViewController: UIViewController {
             height: 63
         )
     }
-    
     private func configureAction() {
         bookColorButtons.enumerated().forEach { index, button in
             let colorButtonAction = UIAction { [weak self] _ in
@@ -355,7 +379,6 @@ final class BookCoverViewController: UIViewController {
         }
         categorySelectionButton.addAction(selectCategoryAction, for: .touchUpInside)
     }
-    
     private func configuredColorButtons() -> UIView {
         let firstLineColorButtonStackView  = UIStackView()
         firstLineColorButtonStackView.axis = .horizontal
@@ -383,18 +406,6 @@ final class BookCoverViewController: UIViewController {
             .embededInDefaultBackground()
         
         return bookColorSelectionBackground
-    }
-    
-    // MARK: - Present EditBookViewController
-    private func presentEditBookView(bookID: UUID) {
-        do {
-            let editBookViewModelFactory = try DIContainer.shared.resolve(EditBookViewModelFactory.self)
-            let editBookViewModel = editBookViewModelFactory.make(bookID: bookID)
-            let editBookViewController = EditBookViewController(viewModel: editBookViewModel)
-            navigationController?.pushViewController(editBookViewController, animated: true)
-        } catch {
-            MHLogger.error(error)
-        }
     }
 }
 
