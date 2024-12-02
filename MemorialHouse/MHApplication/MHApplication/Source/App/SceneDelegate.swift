@@ -17,23 +17,58 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window = UIWindow(windowScene: windowScene)
         registerDependency()
         
-        var initialViewController: UIViewController = RegisterViewController(viewModel: RegisterViewModel())
-        if UserDefaults.standard.object(forKey: Constant.houseNameUserDefaultKey) != nil {
-            do {
-                let viewModelFactory = try DIContainer.shared.resolve(HomeViewModelFactory.self)
-                let viewModel = viewModelFactory.make()
-                initialViewController = HomeViewController(viewModel: viewModel)
-            } catch {
-                MHLogger.error(error.localizedDescription)
-            }
-        }
-        
-        let navigationController = UINavigationController(rootViewController: initialViewController)
-        window?.rootViewController = navigationController
+        let initialViewController = createInitialViewController()
+        window?.rootViewController = UINavigationController(rootViewController: initialViewController)
         window?.makeKeyAndVisible()
     }
     
-    func registerDependency() {
+    private func createInitialViewController() -> UIViewController {
+        if isUserRegistered() {
+            return createHomeViewController()
+        } else {
+            return createRegisterViewController()
+        }
+    }
+    
+    private func isUserRegistered() -> Bool {
+        return UserDefaults.standard.object(forKey: Constant.houseNameUserDefaultKey) != nil
+    }
+    
+    private func createHomeViewController() -> UIViewController {
+        do {
+            let homeViewModelFactory = try DIContainer.shared.resolve(HomeViewModelFactory.self)
+            let homeViewModel = homeViewModelFactory.make()
+            return HomeViewController(viewModel: homeViewModel)
+        } catch {
+            MHLogger.error("HomeViewModelFactory 해제 실패: \(error.localizedDescription)")
+            return createErrorViewController()
+        }
+    }
+    
+    private func createRegisterViewController() -> UIViewController {
+        do {
+            let registerViewModelFactory = try DIContainer.shared.resolve(RegisterViewModelFactory.self)
+            let registerViewModel = registerViewModelFactory.make()
+            return RegisterViewController(viewModel: registerViewModel)
+        } catch {
+            MHLogger.error("CreateMemorialHouseNameUseCase 해제 실패: \(error.localizedDescription)")
+            return createErrorViewController()
+        }
+    }
+    
+    private func createErrorViewController() -> UIViewController {
+        let errorViewController = UIViewController()
+        errorViewController.view.backgroundColor = .systemRed
+        let label = UILabel()
+        label.text = "오류가 발생했습니다."
+        label.textColor = .white
+        label.textAlignment = .center
+        label.frame = errorViewController.view.bounds
+        errorViewController.view.addSubview(label)
+        return errorViewController
+    }
+    
+    private func registerDependency() {
         do {
             try registerStorageDepedency()
             try registerRepositoryDependency()
@@ -45,11 +80,18 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             MHLogger.error("\(error.localizedDescription)")
         }
     }
-    
     private func registerStorageDepedency() throws {
         DIContainer.shared.register(CoreDataStorage.self, object: CoreDataStorage())
-                
+        
         let coreDataStorage = try DIContainer.shared.resolve(CoreDataStorage.self)
+        DIContainer.shared.register(
+            CoreDataBookCoverStorage.self,
+            object: CoreDataBookCoverStorage(coreDataStorage: coreDataStorage)
+        )
+        DIContainer.shared.register(
+            CoreDataBookStorage.self,
+            object: CoreDataBookStorage(coreDataStorage: coreDataStorage)
+        )
         DIContainer.shared.register(
             BookCategoryStorage.self,
             object: CoreDataBookCategoryStorage(coreDataStorage: coreDataStorage)
@@ -62,12 +104,21 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             BookStorage.self,
             object: CoreDataBookStorage(coreDataStorage: coreDataStorage)
         )
+        DIContainer.shared.register(
+            MemorialHouseNameStorage.self,
+            object: UserDefaultsMemorialHouseNameStorage()
+        )
+        DIContainer.shared.register(
+            MHFileManager.self,
+            object: MHFileManager(directoryType: .documentDirectory)
+        )
     }
     
     private func registerRepositoryDependency() throws {
+        let memorialHouseNameStorage = try DIContainer.shared.resolve(MemorialHouseNameStorage.self)
         DIContainer.shared.register(
-            MemorialHouseRepository.self,
-            object: DefaultMemorialHouseRepository()
+            MemorialHouseNameRepository.self,
+            object: LocalMemorialHouseNameRepository(storage: memorialHouseNameStorage)
         )
         
         let bookCategoryStorage = try DIContainer.shared.resolve(BookCategoryStorage.self)
@@ -85,14 +136,23 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             BookRepository.self,
             object: LocalBookRepository(storage: bookStorage)
         )
+        let fileManager = try DIContainer.shared.resolve(MHFileManager.self)
+        DIContainer.shared.register(
+            MediaRepository.self,
+            object: LocalMediaRepository(storage: fileManager)
+        )
     }
     
     private func registerUseCaseDependency() throws {
         // MARK: MemorialHouse UseCase
-        let memorialHouseRepository = try DIContainer.shared.resolve(MemorialHouseRepository.self)
+        let memorialHouseNameRepository = try DIContainer.shared.resolve(MemorialHouseNameRepository.self)
         DIContainer.shared.register(
-            FetchMemorialHouseUseCase.self,
-            object: DefaultFetchMemorialHouseUseCase(repository: memorialHouseRepository)
+            CreateMemorialHouseNameUseCase.self,
+            object: DefaultCreateMemorialHouseNameUseCase(repository: memorialHouseNameRepository)
+        )
+        DIContainer.shared.register(
+            FetchMemorialHouseNameUseCase.self,
+            object: DefaultFetchMemorialHouseNameUseCase(repository: memorialHouseNameRepository)
         )
         
         // MARK: Category UseCase
@@ -116,9 +176,11 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         // MARK: - Book UseCase
         let bookRepository = try DIContainer.shared.resolve(BookRepository.self)
+        let mediaRepository = try DIContainer.shared.resolve(MediaRepository.self)
         DIContainer.shared.register(
             CreateBookUseCase.self,
-            object: DefaultCreateBookUseCase(repository: bookRepository)
+            object: DefaultCreateBookUseCase(repository: bookRepository,
+                                             mediaRepository: mediaRepository)
         )
         DIContainer.shared.register(
             FetchBookUseCase.self,
@@ -132,17 +194,65 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             DeleteBookUseCase.self,
             object: DefaultDeleteBookUseCase(repository: bookRepository)
         )
+        
+        // MARK: - BookCover UseCase
+        let bookCoverRepository = try DIContainer.shared.resolve(BookCoverRepository.self)
+        DIContainer.shared.register(
+            CreateBookCoverUseCase.self,
+            object: DefaultCreateBookCoverUseCase(repository: bookCoverRepository)
+        )
+        DIContainer.shared.register(
+            FetchAllBookCoverUseCase.self,
+            object: DefaultFetchAllBookCoverUseCase(repository: bookCoverRepository)
+        )
+        DIContainer.shared.register(
+            UpdateBookCoverUseCase.self,
+            object: DefaultUpdateBookCoverUseCase(repository: bookCoverRepository)
+        )
+        DIContainer.shared.register(
+            DeleteBookCoverUseCase.self,
+            object: DefaultDeleteBookCoverUseCase(repository: bookCoverRepository)
+        )
+        
+        // MARK: - EditBook UseCase
+        DIContainer.shared.register(
+            PersistentlyStoreMediaUseCase.self,
+            object: DefaultPersistentlyStoreMediaUseCase(repository: mediaRepository)
+        )
+        DIContainer.shared.register(
+            CreateMediaUseCase.self,
+            object: DefaultCreateMediaUseCase(repository: mediaRepository)
+        )
+        DIContainer.shared.register(
+            FetchMediaUseCase.self,
+            object: DefaultFetchMediaUseCase(repository: mediaRepository)
+        )
+        DIContainer.shared.register(
+            DeleteMediaUseCase.self,
+            object: DefaultDeleteMediaUseCase(repository: mediaRepository)
+        )
     }
     
     private func registerViewModelFactoryDependency() throws {
-        // MARK: MemorialHouse ViewModel
-        let fetchMemorialHouseUseCase = try DIContainer.shared.resolve(FetchMemorialHouseUseCase.self)
-        let fetchBookCategoryUseCase = try DIContainer.shared.resolve(FetchBookCategoriesUseCase.self)
+        // MARK: Register ViewModel
+        let createMemorialHouseNameUseCase = try DIContainer.shared.resolve(CreateMemorialHouseNameUseCase.self)
+        DIContainer.shared.register(
+            RegisterViewModelFactory.self,
+            object: RegisterViewModelFactory(createMemorialHouseNameUseCase: createMemorialHouseNameUseCase)
+        )
+        
+        // MARK: Home ViewModel
+        let fetchMemorialHouseNameUseCase = try DIContainer.shared.resolve(FetchMemorialHouseNameUseCase.self)
+        let fetchAllBookCoverUseCase = try DIContainer.shared.resolve(FetchAllBookCoverUseCase.self)
+        let updateBookCoverUseCase = try DIContainer.shared.resolve(UpdateBookCoverUseCase.self)
+        let deleteBookCoverUseCase = try DIContainer.shared.resolve(DeleteBookCoverUseCase.self)
         DIContainer.shared.register(
             HomeViewModelFactory.self,
             object: HomeViewModelFactory(
-                fetchMemorialHouseUseCase: fetchMemorialHouseUseCase,
-                fetchCategoryUseCase: fetchBookCategoryUseCase
+                fetchMemorialHouseNameUseCase: fetchMemorialHouseNameUseCase,
+                fetchAllBookCoverUseCase: fetchAllBookCoverUseCase,
+                updateBookCoverUseCase: updateBookCoverUseCase,
+                deleteBookCoverUseCase: deleteBookCoverUseCase
             )
         )
         
@@ -172,6 +282,24 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         DIContainer.shared.register(
             ReadPageViewModelFactory.self,
             object: ReadPageViewModelFactory()
+        )
+        
+        // MARK: - EditBook ViewModel
+        let updateBookUseCase = try DIContainer.shared.resolve(UpdateBookUseCase.self)
+        let storeMediaUseCase = try DIContainer.shared.resolve(PersistentlyStoreMediaUseCase.self)
+        let createMediaUseCase = try DIContainer.shared.resolve(CreateMediaUseCase.self)
+        let fetchMediaUseCase = try DIContainer.shared.resolve(FetchMediaUseCase.self)
+        let deleteMediaUseCase = try DIContainer.shared.resolve(DeleteMediaUseCase.self)
+        DIContainer.shared.register(
+            EditBookViewModelFactory.self,
+            object: EditBookViewModelFactory(
+                fetchBookUseCase: fetchBookUseCase,
+                updateBookUseCase: updateBookUseCase,
+                storeMediaUseCase: storeMediaUseCase,
+                createMediaUseCase: createMediaUseCase,
+                fetchMediaUseCase: fetchMediaUseCase,
+                deleteMediaUseCase: deleteMediaUseCase
+            )
         )
     }
 }

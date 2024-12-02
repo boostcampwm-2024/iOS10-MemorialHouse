@@ -1,11 +1,11 @@
 import UIKit
+import MHDomain // TODO: - 추후 로직에 따라 제거 필요
+import MHCore
 import Combine
 
-final class BookCreationViewController: UIViewController {
-    // MARK: - Constant
-    static let maxTitleLength = 10
-    // MARK: - Property
-    private let bookView: MHBookCover = MHBookCover()
+final class CreateBookViewController: UIViewController {
+    // MARK: - UI Components
+    private let bookCoverView: MHBookCover = MHBookCover()
     private let bookTitleTextField: UITextField = {
         let textField = UITextField()
         textField.font = UIFont.ownglyphBerry(size: 25)
@@ -23,7 +23,7 @@ final class BookCreationViewController: UIViewController {
     }()
     private let bookColorButtons: [UIButton] = zip(
         ["분 홍", "초 록", "파 랑", "주 황", "베이지", ""],
-        [UIColor.mhPink, .mhGreen, .mhBlue, .mhOrange, .mhBeige, .clear]
+        [.mhPink, .mhGreen, .mhBlue, .mhOrange, .mhBeige, .clear]
     ).map { (title: String, color: UIColor) in
         let button = UIButton(frame: CGRect(origin: .zero, size: .init(width: 66, height: 30)))
         var attributedTitle = AttributedString(stringLiteral: title)
@@ -41,11 +41,11 @@ final class BookCreationViewController: UIViewController {
     }
     private let categorySelectionButton: UIButton = {
         let button = UIButton()
-        var attributedTitle = AttributedString(stringLiteral: "없음")
+        var attributedTitle = AttributedString(stringLiteral: "카테고리를 선택해주세요")
         attributedTitle.font = UIFont.ownglyphBerry(size: 25)
         
         button.setAttributedTitle(NSAttributedString(attributedTitle), for: .normal)
-        button.setTitleColor(.mhTitle, for: .normal)
+        button.setTitleColor(.systemGray3, for: .normal) // TODO: - 우측에 > 이미지 추가
         button.contentHorizontalAlignment = .left
         
         return button
@@ -74,18 +74,21 @@ final class BookCreationViewController: UIViewController {
         
         return shadowLayer
     }()
+    
+    // MARK: - Property
     @Published
-    private var viewModel: BookCreationViewModel
+    private var viewModel: CreateBookViewModel
     private var cancellables: Set<AnyCancellable> = []
+    private let maxTitleLength = 10
     
     // MARK: - Initializer
-    init(viewModel: BookCreationViewModel) {
+    init(viewModel: CreateBookViewModel) {
         self.viewModel = viewModel
         
         super.init(nibName: nil, bundle: nil)
     }
     required init?(coder: NSCoder) {
-        viewModel = BookCreationViewModel()
+        viewModel = CreateBookViewModel()
         
         super.init(coder: coder)
     }
@@ -121,8 +124,8 @@ final class BookCreationViewController: UIViewController {
     }
     private func configureConstraints() {
         // 책 미리보기
-        let bookPreviewViewBackground = bookView.embededInDefaultBackground(
-            with: UIEdgeInsets(top: 70, left: 100, bottom: 70, right: 100)
+        let bookPreviewViewBackground = bookCoverView.embededInDefaultBackground(
+            with: UIEdgeInsets(top: 50, left: 80, bottom: 50, right: 80)
         )
         view.addSubview(bookPreviewViewBackground)
         bookPreviewViewBackground.setAnchor(
@@ -210,12 +213,18 @@ final class BookCreationViewController: UIViewController {
             normal: normalAttributes,
             selected: selectedAttributes
         ) { [weak self] in
-            // TODO: - 추후 뷰모델 관련 생성 이슈 조정 필요
-            let editBookViewModel = EditBookViewModel()
-            self?.navigationController?.pushViewController(
-                EditBookViewController(viewModel: editBookViewModel),
-                animated: true
-            )
+            // TODO: - 추후 DIContainer resolve 실패 처리 필요
+            // TODO: - bookID에 bookCoverID 넣어주기 필요
+            Task {
+                guard let editBookViewModelFactory = try? DIContainer.shared.resolve(EditBookViewModelFactory.self) else { return }
+                let book = Book(id: .init(), title: "HIHI", pages: [.init(metadata: [:], text: "")])
+                try? await DIContainer.shared.resolve(CreateBookUseCase.self).execute(book: book)
+                let viewModel = editBookViewModelFactory.make(bookID: book.id)
+                self?.navigationController?.pushViewController(
+                    EditBookViewController(viewModel: viewModel),
+                    animated: true
+                )
+            }
         }
     }
     
@@ -233,8 +242,8 @@ final class BookCreationViewController: UIViewController {
         // TitleTextField 변경
         let titleAction = UIAction { [weak self] _ in
             guard let self else { return }
-            if self.bookTitleTextField.text?.count ?? 0 > Self.maxTitleLength {
-                self.bookTitleTextField.text = String(self.bookTitleTextField.text?.prefix(Self.maxTitleLength) ?? "")
+            if self.bookTitleTextField.text?.count ?? 0 > maxTitleLength {
+                self.bookTitleTextField.text = String(self.bookTitleTextField.text?.prefix(maxTitleLength) ?? "")
             }
             
             self.viewModel.bookTitle = self.bookTitleTextField.text ?? ""
@@ -252,14 +261,35 @@ final class BookCreationViewController: UIViewController {
         imageSelectionButton.addAction(pictureSelectingAction, for: .touchUpInside)
         
         // TODO: - 사진 선택 뷰모델?에 반영
-        
+        categorySelectionButton.addAction(UIAction { [weak self] _ in
+            self?.presentCategorySelectionView()
+        }, for: .touchUpInside)
     }
+    private func presentCategorySelectionView() {
+        do {
+            let categoryViewModelFactory = try DIContainer.shared.resolve(BookCategoryViewModelFactory.self)
+            let categoryViewModel = categoryViewModelFactory.makeForCreateBook()
+            let categoryViewController = BookCategoryViewController(viewModel: categoryViewModel)
+            let navigationController = UINavigationController(rootViewController: categoryViewController)
+            categoryViewController.delegate = self
+            
+            if let sheet = navigationController.sheetPresentationController {
+                sheet.detents = [.medium(), .large()]
+            }
+            
+            self.present(navigationController, animated: true)
+        } catch {
+            MHLogger.error(error)
+        }
+    }
+    
+    // TODO: ViewModel에 @Published 제거해야 함
     private func configureViewModelBinding() {
         $viewModel
             .receive(on: DispatchQueue.main)
             .sink { [weak self] viewModel in
                 guard let self else { return }
-                self.bookView.configure(
+                self.bookCoverView.configure(
                     title: viewModel.bookTitle,
                     bookCoverImage: viewModel.currentColor.image,
                     // TODO: -  이미지 선택시 변경
@@ -330,9 +360,22 @@ final class BookCreationViewController: UIViewController {
     }
 }
 
-extension BookCreationViewController: UITextFieldDelegate {
+extension CreateBookViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         return true
+    }
+}
+
+extension CreateBookViewController: BookCategoryViewControllerDelegate {
+    func categoryViewController(
+        _ categoryViewController: BookCategoryViewController,
+        didSelectCategory category: String
+    ) {
+        var attributedTitle = AttributedString(stringLiteral: category)
+        attributedTitle.font = UIFont.ownglyphBerry(size: 25)
+        
+        categorySelectionButton.setTitleColor(.mhTitle, for: .normal)
+        categorySelectionButton.setAttributedTitle(NSAttributedString(attributedTitle), for: .normal)
     }
 }

@@ -20,8 +20,8 @@ public final class HomeViewController: UIViewController {
     private lazy var collectionView: UICollectionView = {
         let flowLayout = UICollectionViewFlowLayout()
         let cellWidth = (self.view.bounds.inset(by: self.view.safeAreaInsets).width - 80) / 2
-        flowLayout.itemSize = .init(width: cellWidth, height: 210)
-        flowLayout.minimumLineSpacing = 40
+        flowLayout.itemSize = .init(width: cellWidth, height: cellWidth * 1.5)
+        flowLayout.minimumLineSpacing = 25
         flowLayout.minimumInteritemSpacing = 20
         flowLayout.sectionInset = UIEdgeInsets(top: 0, left: 20, bottom: 30, right: 20)
         flowLayout.scrollDirection = .vertical
@@ -95,9 +95,9 @@ public final class HomeViewController: UIViewController {
         output.sink { [weak self] event in
             guard let self else { return }
             switch event {
-            case .fetchedMemorialHouseAndCategory:
+            case .fetchedMemorialHouseName:
                 self.updateMemorialHouse()
-            case .filteredBooks, .dragAndDropFinished:
+            case .fetchedAllBookCover, .filteredBooks, .dragAndDropFinished:
                 self.collectionView.reloadData()
             case .fetchedFailure(let errorMessage):
                 self.handleError(with: errorMessage)
@@ -106,11 +106,9 @@ public final class HomeViewController: UIViewController {
     }
     
     private func updateMemorialHouse() {
-        // 네비게이션 타이틀 설정
         let houseName = viewModel.houseName
         navigationBar.configureTitle(with: houseName)
         
-        // BoockCover 설정
         collectionView.reloadData()
     }
     
@@ -141,7 +139,7 @@ public final class HomeViewController: UIViewController {
             do {
                 guard let self else { return }
                 let categoryViewModelFactory = try DIContainer.shared.resolve(BookCategoryViewModelFactory.self)
-                let categoryViewModel = categoryViewModelFactory.make()
+                let categoryViewModel = categoryViewModelFactory.makeForHome()
                 categoryViewModel.setup(currentCategory: self.currentCategory)
                 let categoryViewController = BookCategoryViewController(viewModel: categoryViewModel)
                 categoryViewController.delegate = self
@@ -160,9 +158,7 @@ public final class HomeViewController: UIViewController {
         }, for: .touchUpInside)
         
         makingBookFloatingButton.addAction(UIAction { [weak self] _ in
-            guard let self else { return }
-            let bookCreationViewController = BookCreationViewController(viewModel: BookCreationViewModel())
-            self.navigationController?.pushViewController(bookCreationViewController, animated: true)
+            self?.moveMakingBookViewController()
         }, for: .touchUpInside)
         
         navigationBar.configureSettingAction(action: UIAction { [weak self] _ in
@@ -171,6 +167,11 @@ public final class HomeViewController: UIViewController {
             let settingViewController = SettingViewController(viewModel: settingViewModel)
             self.navigationController?.pushViewController(settingViewController, animated: true)
         })
+    }
+    
+    private func moveMakingBookViewController() {
+        let bookCreationViewController = CreateBookViewController(viewModel: CreateBookViewModel())
+        navigationController?.pushViewController(bookCreationViewController, animated: true)
     }
     
     private func configureConstraints() {
@@ -207,17 +208,6 @@ public final class HomeViewController: UIViewController {
 
 // MARK: - UICollectionViewDelegate
 extension HomeViewController: UICollectionViewDelegate {
-    public func collectionView(
-        _ collectionView: UICollectionView,
-        didSelectItemAt indexPath: IndexPath
-    ) {
-        let bookID = viewModel.currentBookCovers[indexPath.row].id
-        guard let bookViewModelFactory = try? DIContainer.shared.resolve(BookViewModelFactory.self) else { return }
-        let bookViewModel = bookViewModelFactory.make(bookID: bookID)
-        let bookViewController = BookViewController(viewModel: bookViewModel)
-        navigationController?.pushViewController(bookViewController, animated: true)
-    }
-    
     public func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let offsetY = scrollView.contentOffset.y
         let contentHeight = scrollView.contentSize.height
@@ -275,15 +265,40 @@ extension HomeViewController: UICollectionViewDataSource {
         // TODO: Image Loader 필요 & 메모리 캐싱 필요
         
         let bookCover = viewModel.currentBookCovers[indexPath.item]
-        cell.configure(
+        cell.configureCell(
+            id: bookCover.id,
             title: bookCover.title,
             bookCoverImage: bookCover.color.image,
             targetImage: UIImage(systemName: "person")!,
             isLike: bookCover.favorite,
             houseName: viewModel.houseName
         )
+        cell.configureButtonAction(
+            bookCoverAction: { [weak self] in
+                self?.bookCoverTapped(indexPath: indexPath)
+            },
+            likeButtonAction: { [weak self] in
+                self?.input.send(.likeButtonTapped(bookId: bookCover.id))
+            },
+            dropDownButtonEditAction: { [weak self] in
+                self?.moveMakingBookViewController()
+            },
+            dropDownButtonDeleteAction: { [weak self] in
+                self?.input.send(.deleteBookCover(bookId: bookCover.id))
+            }
+        )
         
         return cell
+    }
+    
+    private func bookCoverTapped(indexPath: IndexPath) {
+        let bookID = viewModel.currentBookCovers[indexPath.row].id
+        guard let bookViewModelFactory = try? DIContainer.shared.resolve(BookViewModelFactory.self) else {
+            return
+        }
+        let bookViewModel = bookViewModelFactory.make(bookID: bookID)
+        let bookViewController = BookViewController(viewModel: bookViewModel)
+        navigationController?.pushViewController(bookViewController, animated: true)
     }
 }
 

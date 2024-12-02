@@ -1,13 +1,18 @@
+@testable import MHCore
 @testable import MHDomain
 
-struct StubMemorialHouseRepository: MemorialHouseRepository {
-    private let dummyData: MemorialHouse
+struct StubMemorialHouseRepository: MemorialHouseNameRepository {
+    private let dummyMemorialHouseName: String
     
-    init(dummyData: MemorialHouse) {
-        self.dummyData = dummyData
+    init(dummyMemorialHouseName: String) {
+        self.dummyMemorialHouseName = dummyMemorialHouseName
     }
     
-    func fetchMemorialHouse() async -> Result<MemorialHouse, any Error> {
-        return .success(dummyData)
+    func createMemorialHouseName(with name: String) async -> Result<Void, MHDataError> {
+        .success(())
+    }
+    
+    func fetchMemorialHouseName() async -> Result<String, MHDataError> {
+        .success(dummyMemorialHouseName)
     }
 }
