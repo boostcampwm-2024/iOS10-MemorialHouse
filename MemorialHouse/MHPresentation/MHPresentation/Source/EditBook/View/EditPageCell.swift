@@ -115,6 +115,29 @@ final class EditPageCell: UITableViewCell {
         )
         textStorage?.setAttributedString(mergedText)
     }
+    /// Text와 Attachment 정보를 하나의 문자열로 조합합니다.
+    private func mergeStorageInformation(
+        text: String,
+        attachmentMetaData: [Int: MediaDescription]
+    ) -> NSAttributedString {
+        let mutableAttributedString = NSMutableAttributedString(string: text)
+        attachmentMetaData.forEach { location, description in
+            let range = NSRange(location: location, length: 1)
+            let mediaAttachment = MediaAttachment(
+                view: MHPolaroidPhotoView(), // TODO: - 이거 바꿔줘야함...
+                description: description
+            )
+            input.send(.didRequestMediaDataForData(media: description))
+            let attachmentString = NSAttributedString(attachment: mediaAttachment)
+            // Placeholder(공백) 교체
+            mutableAttributedString.replaceCharacters(in: range, with: attachmentString)
+        }
+        
+        mutableAttributedString.addAttributes(defaultAttributes,
+                                              range: NSRange(location: 0, length: mutableAttributedString.length))
+        
+        return mutableAttributedString
+    }
     private func mediaAddedWithData(media: MediaDescription, data: Data) {
         let attachment = MediaAttachment(
             view: MHPolaroidPhotoView(), // TODO: - 수정 필요
@@ -145,11 +168,6 @@ final class EditPageCell: UITableViewCell {
         let attachment = findAttachment(by: media)
         attachment?.configure(with: url)
     }
-    private func saveContents() {
-        guard let textStorage else { return }
-        
-        input.send(.didEditPage(attributedText: textStorage))
-    }
     /// Text에서 특정 Attachment를 찾아서 적용합니다.
     private func findAttachment(
         by media: MediaDescription
@@ -166,49 +184,6 @@ final class EditPageCell: UITableViewCell {
                 attachment = mediaAttachment
             }
         return attachment
-    }
-    /// Text와 Attachment 정보를 하나의 문자열로 조합합니다.
-    private func mergeStorageInformation(
-        text: String,
-        attachmentMetaData: [Int: MediaDescription]
-    ) -> NSAttributedString {
-        let mutableAttributedString = NSMutableAttributedString(string: text)
-        attachmentMetaData.forEach { location, description in
-            let range = NSRange(location: location, length: 1)
-            let mediaAttachment = MediaAttachment(
-                view: MHPolaroidPhotoView(), // TODO: - 이거 바꿔줘야함...
-                description: description
-            )
-            input.send(.didRequestMediaDataForData(media: description))
-            let attachmentString = NSAttributedString(attachment: mediaAttachment)
-            // Placeholder(공백) 교체
-            mutableAttributedString.replaceCharacters(in: range, with: attachmentString)
-        }
-        
-        mutableAttributedString.addAttributes(defaultAttributes,
-                                              range: NSRange(location: 0, length: mutableAttributedString.length))
-        
-        return mutableAttributedString
-    }
-    /// TextView의 높이가 적절한지 확인합니다.
-    private func isAcceptableHeight(
-        _ textStorage: NSTextStorage,
-        shouldChangeTextIn range: NSRange,
-        replacementText attributedText: NSAttributedString
-    ) -> Bool {
-        let updatedText = NSMutableAttributedString(attributedString: textStorage)
-        let horizontalInset = textView.textContainerInset.left + textView.textContainerInset.right
-        let verticalInset = textView.textContainerInset.top + textView.textContainerInset.bottom
-        let textViewWidth = textView.bounds.width - horizontalInset
-        let textViewHight = textView.bounds.height - verticalInset
-        let temporaryTextView = UITextView(
-            frame: CGRect(x: 0, y: 0, width: textViewWidth, height: .greatestFiniteMagnitude)
-        )
-        updatedText.replaceCharacters(in: range, with: attributedText)
-        temporaryTextView.attributedText = updatedText
-        temporaryTextView.sizeToFit()
-        
-        return temporaryTextView.contentSize.height <= textViewHight
     }
 }
 
@@ -241,6 +216,26 @@ extension EditPageCell: UITextViewDelegate {
     }
     func textViewDidBeginEditing(_ textView: UITextView) {
         input.send(.didBeginEditingPage)
+    }
+    /// TextView의 높이가 적절한지 확인합니다.
+    private func isAcceptableHeight(
+        _ textStorage: NSTextStorage,
+        shouldChangeTextIn range: NSRange,
+        replacementText attributedText: NSAttributedString
+    ) -> Bool {
+        let updatedText = NSMutableAttributedString(attributedString: textStorage)
+        let horizontalInset = textView.textContainerInset.left + textView.textContainerInset.right
+        let verticalInset = textView.textContainerInset.top + textView.textContainerInset.bottom
+        let textViewWidth = textView.bounds.width - horizontalInset
+        let textViewHight = textView.bounds.height - verticalInset
+        let temporaryTextView = UITextView(
+            frame: CGRect(x: 0, y: 0, width: textViewWidth, height: .greatestFiniteMagnitude)
+        )
+        updatedText.replaceCharacters(in: range, with: attributedText)
+        temporaryTextView.attributedText = updatedText
+        temporaryTextView.sizeToFit()
+        
+        return temporaryTextView.contentSize.height <= textViewHight
     }
 }
 
@@ -300,7 +295,7 @@ extension EditPageCell: @preconcurrency NSTextStorageDelegate {
             // TODO: - 좀더 우아하게 처리하기? 미리 알려주는 로직으로... 개선필요
             textStorage.deleteCharacters(in: editedRange)
         }
-        saveContents()
+        input.send(.didEditPage(attributedText: textStorage))
     }
     // 그곳에 Attachment가 있는지 확인합니다.
     private func attachmentAt(_ index: Int) -> MediaAttachment? {
