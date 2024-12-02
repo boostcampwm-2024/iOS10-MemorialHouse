@@ -24,7 +24,7 @@ public struct DefaultFetchMemorialHouseNameUseCase: FetchMemorialHouseNameUseCas
         switch fetchMemorialHouseResult {
         case .success(let memorialHouseName):
             let transformedName = transformHouseName(with: memorialHouseName)
-            MHLogger.info("Memorial house fetched: \(transformedName)")
+            MHLogger.info("저장된 기록소 이름: \(transformedName)")
             
             return transformedName
         case .failure(let failure):

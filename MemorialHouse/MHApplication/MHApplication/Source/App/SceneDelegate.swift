@@ -23,15 +23,13 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     
     private func createInitialViewController() -> UIViewController {
-        if isUserRegistered() {
-            return createHomeViewController()
-        } else {
-            return createRegisterViewController()
-        }
+        isUserRegistered()
+        ? createHomeViewController()
+        : createRegisterViewController()
     }
     
     private func isUserRegistered() -> Bool {
-        return UserDefaults.standard.object(forKey: Constant.houseNameUserDefaultKey) != nil
+        UserDefaults.standard.object(forKey: Constant.houseNameUserDefaultKey) != nil
     }
     
     private func createHomeViewController() -> UIViewController {
