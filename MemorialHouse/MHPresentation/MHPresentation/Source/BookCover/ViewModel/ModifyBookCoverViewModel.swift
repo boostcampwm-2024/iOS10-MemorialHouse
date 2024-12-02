@@ -20,6 +20,7 @@ final class ModifyBookCoverViewModel: ViewModelType {
         case bookColorIndex(previousIndex: Int?, nowIndex: Int, bookColor: BookColor)
         case bookCategory(category: String?)
         case moveToHome
+        case settingFailure
     }
     
     private let fetchMemorialHouseNameUseCase: FetchMemorialHouseNameUseCase
@@ -110,7 +111,10 @@ final class ModifyBookCoverViewModel: ViewModelType {
     }
     
     private func saveBookCover() async throws {
-        guard let bookOrder, let bookTitle, let bookColor else { return }
+        guard let bookTitle, !bookTitle.isEmpty, let bookOrder, let bookColor else {
+            output.send(.settingFailure)
+            return
+        }
         let newBookCover = BookCover(
             order: bookOrder,
             title: bookTitle,

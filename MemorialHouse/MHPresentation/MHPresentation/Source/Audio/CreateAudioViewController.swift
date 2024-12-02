@@ -3,7 +3,7 @@ import AVFoundation
 import Combine
 import MHCore
 
-final public class CreateAudioViewController: UIViewController {
+final class CreateAudioViewController: UIViewController {
     // MARK: - Property
     // data bind
     private var viewModel: CreateAudioViewModel?
@@ -95,18 +95,18 @@ final public class CreateAudioViewController: UIViewController {
     }()
     
     // MARK: - Initializer
-    public init(viewModel: CreateAudioViewModel) {
+    init(viewModel: CreateAudioViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
     
-    public required init?(coder: NSCoder) {
+    required init?(coder: NSCoder) {
         self.viewModel = CreateAudioViewModel()
         super.init(nibName: nil, bundle: nil)
     }
     
     // MARK: - Life Cycle
-    public override func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
         
         setup()
@@ -117,7 +117,7 @@ final public class CreateAudioViewController: UIViewController {
         configureAddActions()
     }
     
-    public override func viewDidDisappear(_ animated: Bool) {
+    override func viewDidDisappear(_ animated: Bool) {
         self.input.send(.viewDidDisappear)
     }
     
