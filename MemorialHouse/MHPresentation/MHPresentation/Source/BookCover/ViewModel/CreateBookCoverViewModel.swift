@@ -3,6 +3,7 @@ import MHDomain
 import Combine
 import Photos
 
+// TODO: - 에러 처리 필요
 final class CreateBookCoverViewModel: ViewModelType {
     enum Input {
         case viewDidAppear
