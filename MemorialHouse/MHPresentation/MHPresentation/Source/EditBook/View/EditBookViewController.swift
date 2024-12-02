@@ -203,7 +203,7 @@ final class EditBookViewController: UIViewController {
         output.receive(on: DispatchQueue.main)
             .sink { [weak self] event in
                 switch event {
-                case .updateViewController(title: let title):
+                case let .updateViewController(title):
                     self?.navigationItem.title = title
                     self?.editPageTableView.reloadData()
                 case .error(message: let message):
