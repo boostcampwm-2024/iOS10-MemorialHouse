@@ -12,17 +12,39 @@ final public class MHAudioPlayerView: UIView {
     private let input = PassthroughSubject<AudioPlayerViewModel.Input, Never>()
     private var cancellables = Set<AnyCancellable>()
     // audio
-    var audioPlayer: AVAudioPlayer?
-    var audioPlayState: AudioPlayState = .pause
+    nonisolated(unsafe) var audioPlayer: AVAudioPlayer?
+    var audioPlayState: AudioPlayState = .pause {
+        didSet {
+            switch audioPlayState {
+            case .play:
+                startTimer()
+            case .pause:
+                stopTimer()
+            }
+        }
+    }
+    var timer: Timer?
     
     // MARK: - ViewComponent
+    let backgroundBorderView: UIView = {
+        let backgroundBorderView = UIView()
+        backgroundBorderView.backgroundColor = .baseBackground
+        backgroundBorderView.layer.borderWidth = 4
+        backgroundBorderView.layer.cornerRadius = 25
+        backgroundBorderView.layer.borderColor = UIColor.captionPlaceHolder.cgColor
+        
+        return backgroundBorderView
+    }()
     let audioProgressView: UIView = {
         let backgroundView = UIView()
         backgroundView.backgroundColor = .mhPink
-        backgroundView.layer.cornerRadius = 5
+//        backgroundView.layer.borderWidth = 4
+        backgroundView.layer.cornerRadius = 21
+//        backgroundView.layer.borderColor = UIColor.baseBackground.cgColor
         
         return backgroundView
     }()
+    var progressViewConstraints: [NSLayoutConstraint] = []
     let audioStateButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(systemName: "play.fill"), for: .normal)
@@ -39,9 +61,9 @@ final public class MHAudioPlayerView: UIView {
     let audioPlayTimeLabel: UILabel = {
         let label = UILabel()
         label.text = "00:00"
-        label.font = UIFont.ownglyphBerry(size: 14)
+        label.font = UIFont.ownglyphBerry(size: 21)
         label.textAlignment = .left
-        label.textColor = .black
+        label.textColor = .dividedLine
         
         return label
     }()
@@ -62,9 +84,7 @@ final public class MHAudioPlayerView: UIView {
     
     // MARK: - setup
     private func setup() {
-        backgroundColor = .blue
-        layer.cornerRadius = 5
-        
+        backgroundColor = .baseBackground
         let audioSession = AVAudioSession.sharedInstance()
         try? audioSession.setCategory(.playback, mode: .default, options: [])
         try? audioSession.setActive(true)
@@ -82,31 +102,39 @@ final public class MHAudioPlayerView: UIView {
     }
     
     private func configureAddSubview() {
+        addSubview(backgroundBorderView)
         addSubview(audioProgressView)
         addSubview(audioStateButton)
         addSubview(audioPlayTimeLabel)
     }
     
     private func configureContstraints() {
-        audioProgressView.setAnchor(
-            top: topAnchor, constantTop: 10,
+        backgroundBorderView.setAnchor(
+            top: topAnchor, constantTop: 25,
             leading: leadingAnchor,
-            bottom: bottomAnchor, constantBottom: 10,
-            width: 50
+            bottom: bottomAnchor, constantBottom: 25,
+            trailing: trailingAnchor
+        )
+        
+        audioProgressView.setAnchor(
+            top: topAnchor, constantTop: 29,
+            leading: leadingAnchor, constantLeading: 4,
+            bottom: bottomAnchor, constantBottom: 29,
+            width: 0
         )
         
         audioStateButton.setAnchor(
-            top: topAnchor,
+            top: topAnchor, constantTop: 25,
             leading: leadingAnchor,
-            bottom: bottomAnchor,
-            width: 80
+            bottom: bottomAnchor, constantBottom: 25,
+            width: 50
         )
         
         audioPlayTimeLabel.setAnchor(
-            top: topAnchor,
+            top: topAnchor, constantTop: 25,
             leading: audioStateButton.trailingAnchor,
-            bottom: bottomAnchor,
-            width: 160
+            bottom: bottomAnchor, constantBottom: 25,
+            width: 100
         )
     }
     
@@ -134,26 +162,40 @@ final public class MHAudioPlayerView: UIView {
                 MHLogger.debug("do play")
             }
             audioPlayState = .play
-            
-//            Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] timer in
-//                Task { @MainActor in
-//                    guard let player = self?.audioPlayer else {
-//                        print("audio player not init")
-//                        return }
-//                    print("Current playback time: \(player.currentTime) seconds")
-//                    
-//                }
-//            }
         }
     }
     
-    private func playAudioProgress() {
+    private func updatePlayAudioProgress() {
+        guard let audioPlayer else { return }
+        let width = ceil(Float(audioPlayer.currentTime) / Float(audioPlayer.duration) * Float(299))
+        NSLayoutConstraint.deactivate(audioProgressView.constraints)
+        
         audioProgressView.setAnchor(
-            top: topAnchor,
-            leading: leadingAnchor,
-            bottom: bottomAnchor
+            top: topAnchor, constantTop: 29,
+            leading: leadingAnchor, constantLeading: 4,
+            bottom: bottomAnchor, constantBottom: 29,
             // TODO: - width
+            width: CGFloat(width)
         )
+        NSLayoutConstraint.activate(audioProgressView.constraints)
+    }
+    
+    private func startTimer() {
+        timer?.invalidate()
+        timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
+            guard let audioPlayer = self?.audioPlayer else { return }
+            Task { @MainActor in
+                if audioPlayer.isPlaying {
+                    self?.updatePlayAudioProgress()
+                } else {
+                    
+                }
+            }
+        }
+    }
+    
+    private func stopTimer() {
+        
     }
     
     private func setTimeLabel(seconds recordingSeconds: Int?) {
@@ -171,6 +213,16 @@ extension MHAudioPlayerView: AVAudioPlayerDelegate {
         Task { @MainActor in
             self.audioPlayState = .pause
             self.audioStateButton.setImage(playImage, for: .normal)
+            
+            NSLayoutConstraint.deactivate(audioProgressView.constraints)
+            audioProgressView.setAnchor(
+                top: topAnchor, constantTop: 29,
+                leading: leadingAnchor, constantLeading: 4,
+                bottom: bottomAnchor, constantBottom: 29,
+                // TODO: - width
+                width: 290
+            )
+            NSLayoutConstraint.activate(audioProgressView.constraints)
         }
     }
 }
