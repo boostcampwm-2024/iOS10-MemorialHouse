@@ -254,12 +254,10 @@ final class CreateBookViewController: UIViewController {
         
         // 사진선택 버튼
         let pictureSelectingAction = UIAction { [weak self] _ in
-            // 사진 접근 허용
-            
-            
             let albumViewModel = CustomAlbumViewModel()
             let customAlbumViewController = CustomAlbumViewController(viewModel: albumViewModel, mediaType: .image)
-            self?.navigationController?.pushViewController(customAlbumViewController, animated: true)
+            let navigationController = UINavigationController(rootViewController: customAlbumViewController)
+            self?.present(navigationController, animated: true)
         }
         imageSelectionButton.addAction(pictureSelectingAction, for: .touchUpInside)
         

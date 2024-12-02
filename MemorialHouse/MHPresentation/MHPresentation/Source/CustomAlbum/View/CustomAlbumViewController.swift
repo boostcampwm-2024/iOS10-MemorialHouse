@@ -194,6 +194,7 @@ final class CustomAlbumViewController: UIViewController {
             }
         case .authorized:
             openCamera()
+            albumCollectionView.reloadData()
         case .restricted, .denied:
             showsRedirectSettingAlert(with: .camera)
             MHLogger.info("카메라 권한 거부")
