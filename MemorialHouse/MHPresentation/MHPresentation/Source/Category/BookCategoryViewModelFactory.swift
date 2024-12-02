@@ -18,7 +18,7 @@ public struct BookCategoryViewModelFactory {
         self.deleteBookCategoryUseCase = deleteBookCategoryUseCase
     }
     
-    func make() -> BookCategoryViewModel {
+    func makeForHome() -> BookCategoryViewModel {
         BookCategoryViewModel(
             createBookCategoryUseCase: createBookCategoryUseCase,
             fetchBookCategoriesUseCase: fetchBookCategoriesUseCase,

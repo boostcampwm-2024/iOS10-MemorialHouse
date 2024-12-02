@@ -1,4 +1,5 @@
 import UIKit
+import MHCore
 import Combine
 
 final class CreateBookViewController: UIViewController {
@@ -252,7 +253,25 @@ final class CreateBookViewController: UIViewController {
         imageSelectionButton.addAction(pictureSelectingAction, for: .touchUpInside)
         
         // TODO: - 사진 선택 뷰모델?에 반영
-        
+        categorySelectionButton.addAction(UIAction { [weak self] _ in
+            self?.presentCategorySelectionView()
+        }, for: .touchUpInside)
+    }
+    private func presentCategorySelectionView() {
+        do {
+            let categoryViewModelFactory = try DIContainer.shared.resolve(BookCategoryViewModelFactory.self)
+            let categoryViewModel = categoryViewModelFactory.makeForCreateBook()
+            let categoryViewController = BookCategoryViewController(viewModel: categoryViewModel)
+            let navigationController = UINavigationController(rootViewController: categoryViewController)
+            
+            if let sheet = navigationController.sheetPresentationController {
+                sheet.detents = [.medium(), .large()]
+            }
+            
+            self.present(navigationController, animated: true)
+        } catch {
+            MHLogger.error(error)
+        }
     }
     private func configureViewModelBinding() {
         $viewModel
