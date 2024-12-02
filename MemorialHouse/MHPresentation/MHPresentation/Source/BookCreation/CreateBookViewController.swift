@@ -42,11 +42,11 @@ final class CreateBookViewController: UIViewController {
     }
     private let categorySelectionButton: UIButton = {
         let button = UIButton()
-        var attributedTitle = AttributedString(stringLiteral: "없음")
+        var attributedTitle = AttributedString(stringLiteral: "카테고리를 선택해주세요")
         attributedTitle.font = UIFont.ownglyphBerry(size: 25)
         
         button.setAttributedTitle(NSAttributedString(attributedTitle), for: .normal)
-        button.setTitleColor(.mhTitle, for: .normal)
+        button.setTitleColor(.systemGray3, for: .normal) // TODO: - 우측에 > 이미지 추가
         button.contentHorizontalAlignment = .left
         
         return button
@@ -365,6 +365,7 @@ extension CreateBookViewController: BookCategoryViewControllerDelegate {
         var attributedTitle = AttributedString(stringLiteral: category)
         attributedTitle.font = UIFont.ownglyphBerry(size: 25)
         
+        categorySelectionButton.setTitleColor(.mhTitle, for: .normal)
         categorySelectionButton.setAttributedTitle(NSAttributedString(attributedTitle), for: .normal)
     }
 }
