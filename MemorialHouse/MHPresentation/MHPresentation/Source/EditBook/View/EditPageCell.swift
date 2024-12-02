@@ -127,10 +127,10 @@ final class EditPageCell: UITableViewCell {
                 view: MHPolaroidPhotoView(), // TODO: - 이거 바꿔줘야함...
                 description: description
             )
-            input.send(.didRequestMediaDataForData(media: description))
             let attachmentString = NSAttributedString(attachment: mediaAttachment)
             // Placeholder(공백) 교체
             mutableAttributedString.replaceCharacters(in: range, with: attachmentString)
+            input.send(.didRequestMediaDataForData(media: description))
         }
         
         mutableAttributedString.addAttributes(defaultAttributes,
