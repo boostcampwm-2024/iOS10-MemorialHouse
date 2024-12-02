@@ -58,6 +58,16 @@ final class CustomAlbumViewController: UIViewController {
         super.viewWillAppear(animated)
         
         configureNavigationAppearance()
+        checkPhotoLibraryAuthorizationForAlert()
+    }
+
+    private func checkPhotoLibraryAuthorizationForAlert() {
+        let status = PHPhotoLibrary.authorizationStatus()
+
+        if status == .denied || status == .restricted {
+            let type: AlertType = mediaType == .image ? .image : .camera
+            showsRedirectSettingAlert(with: type)
+        }
     }
     
     // MARK: - Setup & Configure

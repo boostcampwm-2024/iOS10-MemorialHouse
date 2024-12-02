@@ -2,14 +2,14 @@ import UIKit
 
 enum AlertType: CustomStringConvertible {
     case camera
-    case photoLibrary
+    case image
     case audio
     
     var description: String {
         switch self {
         case .camera:
             "카메라"
-        case .photoLibrary:
+        case .image:
             "사진"
         case .audio:
             "마이크"
