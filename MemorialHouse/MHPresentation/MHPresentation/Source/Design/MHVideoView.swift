@@ -27,21 +27,9 @@ final class MHVideoView: UIView {
         playerViewController.showsPlaybackControls = true
     }
     
-    func configureConstraint() {
+    private func configureConstraint() {
         addSubview(playerViewController.view)
         playerViewController.view.fillSuperview()
-    }
-
-    func play() {
-        playerViewController.player?.play()
-    }
-
-    func pause() {
-        playerViewController.player?.pause()
-    }
-
-    func seek(to time: CMTime) {
-        playerViewController.player?.seek(to: time)
     }
 }
 
@@ -52,7 +40,6 @@ extension MHVideoView: @preconcurrency MediaAttachable {
     
     func configureSource(with mediaDescription: MediaDescription, url: URL) {
         let player = AVPlayer(url: url)
-        MHLogger.debug("\(#function): \(url)")
         configurePlayer(player: player)
     }
 }
