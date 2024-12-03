@@ -99,13 +99,15 @@ final class EditPageCell: UITableViewCell {
                 case let .mediaLoadedWithURL(media, url):
                     self?.mediaLoadedWithURL(media: media, url: url)
                 case let .error(message):
-                    MHLogger.error(message) // 더 좋은 처리가 필요함
+                    MHLogger.error(message) // TODO: 더 좋은 처리가 필요함
                 }
             }.store(in: &cancellables)
     }
     
     // MARK: - Method
-    func configure(viewModel: EditPageViewModel) {
+    func configure(
+        viewModel: EditPageViewModel
+    ) {
         self.viewModel = viewModel
         configureBinding()
         input.send(.pageWillAppear)
@@ -135,10 +137,16 @@ final class EditPageCell: UITableViewCell {
                     view: MHPolaroidPhotoView(),
                     description: description
                 )
+                input.send(.didRequestMediaDataForData(media: description))
+            case .video:
+                mediaAttachment = MediaAttachment(
+                    view: MHVideoView(),
+                    description: description
+                )
+                input.send(.didRequestMediaDataForURL(media: description))
             default:
                 break
             }
-            input.send(.didRequestMediaDataForData(media: description))
             
             guard let mediaAttachment else { return }
             let range = NSRange(location: location, length: 1)
@@ -167,9 +175,8 @@ final class EditPageCell: UITableViewCell {
                 description: media
             )
         case .video:
-            // TODO: - video 추가 필요
             attachment = MediaAttachment(
-                view: MHPolaroidPhotoView(),
+                view: MHVideoView(),
                 description: media
             )
         case .audio:
@@ -195,9 +202,8 @@ final class EditPageCell: UITableViewCell {
                 description: media
             )
         case .video:
-            // TODO: - video 추가 필요
             attachment = MediaAttachment(
-                view: MHPolaroidPhotoView(),
+                view: MHVideoView(),
                 description: media
             )
         case .audio:
@@ -236,7 +242,7 @@ final class EditPageCell: UITableViewCell {
                 in: NSRange(location: 0, length: textStorage.length)
             ) { value, _, _ in
                 guard let mediaAttachment = value as? MediaAttachment,
-                   mediaAttachment.mediaDescription.id == media.id else { return }
+                      mediaAttachment.mediaDescription.id == media.id else { return }
                 attachment = mediaAttachment
             }
         return attachment
@@ -245,11 +251,16 @@ final class EditPageCell: UITableViewCell {
     private func appendAttachment(_ attachment: MediaAttachment) {
         guard let textStorage else { return }
         let text = NSMutableAttributedString(attachment: attachment)
-        text.addAttributes(defaultAttributes,
-                           range: NSRange(location: 0, length: 1))
-        guard isAcceptableHeight(textStorage,
-                               shouldChangeTextIn: NSRange(location: textStorage.length, length: 0),
-                               replacementText: text) else { return }
+        text.addAttributes(
+            defaultAttributes,
+            range: NSRange(location: 0, length: 1)
+        )
+        
+        guard isAcceptableHeight(
+            textStorage,
+            shouldChangeTextIn: NSRange(location: textStorage.length, length: 0),
+            replacementText: text
+        ) else { return }
         textStorage.beginEditing()
         textStorage.append(text)
         textStorage.endEditing()
@@ -302,7 +313,7 @@ extension EditPageCell: UITextViewDelegate {
                 return false
             }
             else if let attachment = attachmentAt(range.location+2), // Attachment 2칸 앞에 줄바꿈을 추가할때
-                textView.text[textView.text.index(textView.text.startIndex, offsetBy: range.location+1)] == "\n" {
+                    textView.text[textView.text.index(textView.text.startIndex, offsetBy: range.location+1)] == "\n" {
                 attachment.cachedViewProvider = nil
             }
         }

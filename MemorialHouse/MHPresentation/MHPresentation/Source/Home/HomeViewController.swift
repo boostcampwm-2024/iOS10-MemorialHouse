@@ -102,7 +102,7 @@ public final class HomeViewController: UIViewController {
                 case .reloadData:
                     self.collectionView.reloadData()
                 case .fetchedFailure(let errorMessage):
-                    self.handleError(with: errorMessage)
+                    self.showErrorAlert(with: errorMessage)
                 }
             }.store(in: &cancellables)
     }
@@ -112,18 +112,6 @@ public final class HomeViewController: UIViewController {
         navigationBar.configureTitle(with: houseName)
         
         collectionView.reloadData()
-    }
-    
-    private func handleError(with errorMessage: String) {
-        let alertController = UIAlertController(
-            title: "에러",
-            message: errorMessage,
-            preferredStyle: .alert
-        )
-        let okAction = UIAlertAction(title: "확인", style: .default)
-        alertController.addAction(okAction)
-        
-        present(alertController, animated: true)
     }
     
     private func configureAddSubView() {

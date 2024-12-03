@@ -9,7 +9,7 @@ final class MediaAttachmentViewProvider: NSTextAttachmentViewProvider {
         case .image:
             300
         case .video:
-            200
+            400
         case .audio:
             100
         case nil:

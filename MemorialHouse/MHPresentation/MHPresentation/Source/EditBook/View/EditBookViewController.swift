@@ -75,7 +75,7 @@ final class EditBookViewController: UIViewController {
         return button
     }()
     private var buttonStackViewBottomConstraint: NSLayoutConstraint?
-
+    
     // MARK: - Property
     private let viewModel: EditBookViewModel
     private let input = PassthroughSubject<EditBookViewModel.Input, Never>()
@@ -212,13 +212,13 @@ final class EditBookViewController: UIViewController {
             selector: #selector(keyboardWillAppear),
             name: UIResponder.keyboardWillShowNotification,
             object: nil
-            )
+        )
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(keyboardWillHide),
             name: UIResponder.keyboardWillHideNotification,
             object: nil
-            )
+        )
         // 스크롤이 될 때 키보드 내려가게 설정
         editPageTableView.keyboardDismissMode = .onDrag
     }
@@ -242,8 +242,8 @@ final class EditBookViewController: UIViewController {
                     }
                 case .revokeDone:
                     self?.navigationController?.popViewController(animated: true)
-                case .error(message: let message):
-                    MHLogger.error(message) // TODO: - Alert 띄우기
+                case .error(let message):
+                    self?.showErrorAlert(with: message)
                 }
             }
             .store(in: &cancellables)
@@ -254,7 +254,8 @@ final class EditBookViewController: UIViewController {
             let customAlbumViewController = CustomAlbumViewController(
                 viewModel: albumViewModel,
                 mediaType: .image,
-                mode: .editPage
+                mode: .editPage,
+                videoSelectCompletionHandler: nil
             ) { imageData, creationDate, caption in
                 let attributes: [String: any Sendable] = [
                     Constant.photoCreationDate: creationDate?.toString(),
@@ -269,7 +270,18 @@ final class EditBookViewController: UIViewController {
         addImageButton.addAction(addImageAction, for: .touchUpInside)
         
         let addVideoAction = UIAction { [weak self] _ in
-            // TODO: - 비디오 추가 로직
+            let albumViewModel = CustomAlbumViewModel()
+            let customAlbumViewController = CustomAlbumViewController(
+                viewModel: albumViewModel,
+                mediaType: .video,
+                videoSelectCompletionHandler: { url in
+                    self?.input.send(.didAddMediaInURL(type: .video, attributes: nil, url: url))
+                }
+            )
+            
+            let navigationViewController = UINavigationController(rootViewController: customAlbumViewController)
+            navigationViewController.modalPresentationStyle = .fullScreen
+            self?.present(navigationViewController, animated: true)
         }
         addVideoButton.addAction(addVideoAction, for: .touchUpInside)
         

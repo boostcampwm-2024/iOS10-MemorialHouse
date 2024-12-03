@@ -80,6 +80,7 @@ extension MHFileManager: FileStorage {
         else { return .failure(.directorySettingFailure) }
         
         let newDataPath = newDirectory.appendingPathComponent(name)
+        MHLogger.debug("\(#function) \(newDataPath)")
         
         do {
             try fileManager.createDirectory(at: newDirectory, withIntermediateDirectories: true)
