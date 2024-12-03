@@ -175,11 +175,10 @@ final class EditPageCell: UITableViewCell {
                 description: media
             )
         case .video:
-            let view = MHVideoView()
-                attachment = MediaAttachment(
-                    view: view,
-                    description: media
-                )
+            attachment = MediaAttachment(
+                view: MHVideoView(),
+                description: media
+            )
         case .audio:
             // TODO: - audio 추가 필요
             attachment = MediaAttachment(
@@ -204,10 +203,10 @@ final class EditPageCell: UITableViewCell {
             )
         case .video:
             let view = MHVideoView()
-                attachment = MediaAttachment(
-                    view: view,
-                    description: media
-                )
+            attachment = MediaAttachment(
+                view: view,
+                description: media
+            )
         case .audio:
             // TODO: - audio 추가 필요
             attachment = MediaAttachment(
@@ -245,7 +244,7 @@ final class EditPageCell: UITableViewCell {
                 in: NSRange(location: 0, length: textStorage.length)
             ) { value, _, _ in
                 guard let mediaAttachment = value as? MediaAttachment,
-                   mediaAttachment.mediaDescription.id == media.id else { return }
+                      mediaAttachment.mediaDescription.id == media.id else { return }
                 attachment = mediaAttachment
             }
         return attachment
@@ -254,11 +253,16 @@ final class EditPageCell: UITableViewCell {
     private func appendAttachment(_ attachment: MediaAttachment) {
         guard let textStorage else { return }
         let text = NSMutableAttributedString(attachment: attachment)
-        text.addAttributes(defaultAttributes,
-                           range: NSRange(location: 0, length: 1))
-        guard isAcceptableHeight(textStorage,
-                               shouldChangeTextIn: NSRange(location: textStorage.length, length: 0),
-                               replacementText: text) else { return }
+        text.addAttributes(
+            defaultAttributes,
+            range: NSRange(location: 0, length: 1)
+        )
+        
+        guard isAcceptableHeight(
+            textStorage,
+            shouldChangeTextIn: NSRange(location: textStorage.length, length: 0),
+            replacementText: text
+        ) else { return }
         textStorage.beginEditing()
         textStorage.append(text)
         textStorage.endEditing()
@@ -311,7 +315,7 @@ extension EditPageCell: UITextViewDelegate {
                 return false
             }
             else if let attachment = attachmentAt(range.location+2), // Attachment 2칸 앞에 줄바꿈을 추가할때
-                textView.text[textView.text.index(textView.text.startIndex, offsetBy: range.location+1)] == "\n" {
+                    textView.text[textView.text.index(textView.text.startIndex, offsetBy: range.location+1)] == "\n" {
                 attachment.cachedViewProvider = nil
             }
         }
