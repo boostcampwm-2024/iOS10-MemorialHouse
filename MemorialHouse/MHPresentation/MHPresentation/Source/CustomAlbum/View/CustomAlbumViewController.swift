@@ -235,6 +235,7 @@ final class CustomAlbumViewController: UIViewController {
         case .editPage:
             editPhotoViewController = EditPhotoViewController(
                 mode: .editPage,
+                creationDate: creationDate,
                 completionHandler: completionHandler
             )
         }

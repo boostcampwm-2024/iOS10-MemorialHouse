@@ -39,6 +39,7 @@ final class EditPageCell: UITableViewCell {
         configureAddSubView()
         configureConstraints()
     }
+    
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         
@@ -67,9 +68,11 @@ final class EditPageCell: UITableViewCell {
         textStorage?.delegate = self
         textView.delegate = self
     }
+    
     private func configureAddSubView() {
         contentView.addSubview(textView)
     }
+    
     private func configureConstraints() {
         textView.setAnchor(
             top: contentView.topAnchor, constantTop: 10,
@@ -78,6 +81,7 @@ final class EditPageCell: UITableViewCell {
             trailing: contentView.trailingAnchor, constantTrailing: 10
         )
     }
+    
     private func configureBinding() {
         let output = viewModel?.transform(input: input.eraseToAnyPublisher())
         output?
@@ -115,6 +119,7 @@ final class EditPageCell: UITableViewCell {
         )
         textStorage?.setAttributedString(mergedText)
     }
+    
     /// Text와 Attachment 정보를 하나의 문자열로 조합합니다.
     private func mergeStorageInformation(
         text: String,
@@ -122,46 +127,103 @@ final class EditPageCell: UITableViewCell {
     ) -> NSAttributedString {
         let mutableAttributedString = NSMutableAttributedString(string: text)
         attachmentMetaData.forEach { location, description in
+            // TODO: - MediaType 별로 바꿔줘야함
+            var mediaAttachment: MediaAttachment?
+            switch description.type {
+            case .image:
+                mediaAttachment = MediaAttachment(
+                    view: MHPolaroidPhotoView(),
+                    description: description
+                )
+            default:
+                break
+            }
+            input.send(.didRequestMediaDataForData(media: description))
+            
+            guard let mediaAttachment else { return }
             let range = NSRange(location: location, length: 1)
-            let mediaAttachment = MediaAttachment(
-                view: MHPolaroidPhotoView(), // TODO: - 이거 바꿔줘야함...
-                description: description
-            )
             let attachmentString = NSAttributedString(attachment: mediaAttachment)
             // Placeholder(공백) 교체
             mutableAttributedString.replaceCharacters(in: range, with: attachmentString)
-            input.send(.didRequestMediaDataForData(media: description))
         }
         
-        mutableAttributedString.addAttributes(defaultAttributes,
-                                              range: NSRange(location: 0, length: mutableAttributedString.length))
+        mutableAttributedString.addAttributes(
+            defaultAttributes,
+            range: NSRange(
+                location: 0,
+                length: mutableAttributedString.length
+            )
+        )
         
         return mutableAttributedString
     }
+    
     private func mediaAddedWithData(media: MediaDescription, data: Data) {
-        let attachment = MediaAttachment(
-            view: MHPolaroidPhotoView(), // TODO: - 수정 필요
-            description: media
-        )
+        var attachment: MediaAttachment?
+        switch media.type {
+        case .image:
+            attachment = MediaAttachment(
+                view: MHPolaroidPhotoView(),
+                description: media
+            )
+        case .video:
+            // TODO: - video 추가 필요
+            attachment = MediaAttachment(
+                view: MHPolaroidPhotoView(),
+                description: media
+            )
+        case .audio:
+            // TODO: - audio 추가 필요
+            attachment = MediaAttachment(
+                view: MHPolaroidPhotoView(),
+                description: media
+            )
+        default:
+            break
+        }
+        guard let attachment else { return }
         attachment.configure(with: data)
         appendAttachment(attachment)
     }
+    
     private func mediaAddedWithURL(media: MediaDescription, url: URL) {
-        let attachment = MediaAttachment(
-            view: MHPolaroidPhotoView(),// TODO: - 수정 필요
-            description: media
-        )
+        var attachment: MediaAttachment?
+        switch media.type {
+        case .image:
+            attachment = MediaAttachment(
+                view: MHPolaroidPhotoView(),
+                description: media
+            )
+        case .video:
+            // TODO: - video 추가 필요
+            attachment = MediaAttachment(
+                view: MHPolaroidPhotoView(),
+                description: media
+            )
+        case .audio:
+            // TODO: - audio 추가 필요
+            attachment = MediaAttachment(
+                view: MHPolaroidPhotoView(),
+                description: media
+            )
+        default:
+            break
+        }
+        guard let attachment else { return }
         attachment.configure(with: url)
         appendAttachment(attachment)
     }
+    
     private func mediaLoadedWithData(media: MediaDescription, data: Data) {
         let attachment = findAttachment(by: media)
         attachment?.configure(with: data)
     }
+    
     private func mediaLoadedWithURL(media: MediaDescription, url: URL) {
         let attachment = findAttachment(by: media)
         attachment?.configure(with: url)
     }
+    
     /// Text에서 특정 Attachment를 찾아서 적용합니다.
     private func findAttachment(
         by media: MediaDescription
@@ -179,6 +241,7 @@ final class EditPageCell: UITableViewCell {
             }
         return attachment
     }
+    
     private func appendAttachment(_ attachment: MediaAttachment) {
         guard let textStorage else { return }
         let text = NSMutableAttributedString(attachment: attachment)
@@ -251,9 +314,11 @@ extension EditPageCell: UITextViewDelegate {
         return text.isEmpty
         || isAcceptableHeight(textStorage, shouldChangeTextIn: range, replacementText: attributedText)
     }
+    
     func textViewDidBeginEditing(_ textView: UITextView) {
         input.send(.didBeginEditingPage)
     }
+    
     /// TextView의 높이가 적절한지 확인합니다.
     private func isAcceptableHeight(
         _ textStorage: NSTextStorage,
@@ -289,6 +354,7 @@ extension EditPageCell: @preconcurrency NSTextStorageDelegate {
         guard delta > 0 else { return }
         lineBreakForAttachment()
     }
+    
     func textStorage(
         _ textStorage: NSTextStorage,
         didProcessEditing editedMask: NSTextStorage.EditActions,
@@ -297,12 +363,14 @@ extension EditPageCell: @preconcurrency NSTextStorageDelegate {
     ) {
         input.send(.didEditPage(attributedText: textStorage))
     }
+    
     // 그곳에 Attachment가 있는지 확인합니다.
     private func attachmentAt(_ index: Int) -> MediaAttachment? {
         guard let textStorage else { return nil }
         guard index >= 0 && index < textStorage.length else { return nil }
         return textStorage.attributes(at: index, effectiveRange: nil)[.attachment] as? MediaAttachment
     }
+    
     private func lineBreakForAttachment() {
         guard let currentString = textStorage?.string else { return }
         let startIndex = currentString.startIndex
