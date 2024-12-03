@@ -1,5 +1,6 @@
-import UIKit
+import MHFoundation
 import MHCore
+import UIKit
 import Combine
 
 // TODO: - 페이지 없애는 기능 추가
@@ -216,9 +217,21 @@ final class EditBookViewController: UIViewController {
     }
     private func configureButtonAction() {
         let addImageAction = UIAction { [weak self] _ in
-            // TODO: - 이미지 받는 임시 로직
-            guard let data = UIImage(resource: .bookMake).pngData() else { return }
-            self?.input.send(.didAddMediaWithData(type: .image, data: data))
+            let albumViewModel = CustomAlbumViewModel()
+            let customAlbumViewController = CustomAlbumViewController(
+                viewModel: albumViewModel,
+                mediaType: .image,
+                mode: .editPage
+            ) { imageData, creationDate, caption in
+                let attributes: [String: any Sendable] = [
+                    Constant.photoCreationDate: creationDate?.toString(),
+                    Constant.photoCaption: caption
+                ]
+                self?.input.send(.didAddMediaWithData(type: .image, attributes: attributes, data: imageData))
+            }
+            let navigationViewController = UINavigationController(rootViewController: customAlbumViewController)
+            navigationViewController.modalPresentationStyle = .fullScreen
+            self?.present(navigationViewController, animated: true)
         }
         addImageButton.addAction(addImageAction, for: .touchUpInside)
         
