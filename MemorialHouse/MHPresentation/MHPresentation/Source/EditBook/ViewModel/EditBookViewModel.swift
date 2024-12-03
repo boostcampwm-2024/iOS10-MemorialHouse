@@ -9,6 +9,7 @@ final class EditBookViewModel: ViewModelType {
         case viewDidLoad
         case didAddMediaWithData(type: MediaType, data: Data)
         case didAddMediaInURL(type: MediaType, url: URL)
+        case didAddMediaInTemporary(media: MediaDescription)
         case addPageButtonTapped
         case didSaveButtonTapped
         case didCancelButtonTapped
@@ -27,7 +28,7 @@ final class EditBookViewModel: ViewModelType {
     private let createMediaUseCase: CreateMediaUseCase
     private let fetchMediaUseCase: FetchMediaUseCase
     private let deleteMediaUseCase: DeleteMediaUseCase
-    let bookID: UUID
+    private let bookID: UUID
     private var title: String = ""
     private var editPageViewModels: [EditPageViewModel] = []
     private var currentPageIndex = 0
@@ -61,6 +62,8 @@ final class EditBookViewModel: ViewModelType {
                 Task { await self?.addMedia(type: type, with: data) }
             case let .didAddMediaInURL(type, url):
                 Task { await self?.addMedia(type: type, in: url) }
+            case let .didAddMediaInTemporary(media):
+                Task { await self?.addMedia(media) }
             case .addPageButtonTapped:
                 self?.addEmptyPage()
             case .didSaveButtonTapped:
@@ -112,6 +115,16 @@ final class EditBookViewModel: ViewModelType {
         )
         do {
             try await createMediaUseCase.execute(media: description, from: url, at: bookID)
+            editPageViewModels[currentPageIndex].addMedia(media: description, url: url)
+        } catch {
+            output.send(.error(message: "미디어를 추가하는데 실패했습니다."))
+            MHLogger.error(error.localizedDescription + #function)
+        }
+    }
+    private func addMedia(_ description: MediaDescription) async {
+        do {
+            try await storeMediaUseCase.excute(media: description, to: bookID)
+            let url: URL = try await fetchMediaUseCase.execute(media: description, in: bookID)
             editPageViewModels[currentPageIndex].addMedia(media: description, url: url)
         } catch {
             output.send(.error(message: "미디어를 추가하는데 실패했습니다."))
