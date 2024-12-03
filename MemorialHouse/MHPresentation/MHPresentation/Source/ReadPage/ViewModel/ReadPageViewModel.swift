@@ -61,7 +61,6 @@ public final class ReadPageViewModel: ViewModelType {
     
     private func loadMediaForURL(media: MediaDescription) async {
         do {
-            MHLogger.debug("\(#function) \(bookID)")
             let mediaURL: URL = try await fetchMediaUseCase.execute(media: media, in: bookID)
             output.send(.mediaLoadedWithURL(media: media, url: mediaURL))
         } catch {
