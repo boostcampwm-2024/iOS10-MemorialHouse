@@ -9,6 +9,7 @@ final class CustomAlbumViewController: UIViewController {
         case bookCover
         case editPage
     }
+    
     // MARK: - UI Components
     private lazy var albumCollectionView: UICollectionView = {
         let flowLayout = UICollectionViewFlowLayout()
@@ -28,9 +29,9 @@ final class CustomAlbumViewController: UIViewController {
     private let input = PassthroughSubject<CustomAlbumViewModel.Input, Never>()
     private var cancellables = Set<AnyCancellable>()
     private let mediaType: PHAssetMediaType
-    private let videoSelectCompletionHandler: ((URL) -> Void)?
     private let mode: Mode
-    private let completionHandler: (_ imageData: Data, _ creationDate: Date?, _ caption: String?) -> Void
+    private let videoSelectCompletionHandler: ((URL) -> Void)?
+    private let photoSelectCompletionHandler: ((Data, Date?, String?) -> Void)?
     
     // MARK: - Initializer
     init(
@@ -38,13 +39,13 @@ final class CustomAlbumViewController: UIViewController {
         mediaType: PHAssetMediaType,
         mode: Mode = .editPage,
         videoSelectCompletionHandler: ((URL) -> Void)? = nil,
-        completionHandler: @escaping (_ imageData: Data, _ creationDate: Date?, _ caption: String?) -> Void
+        photoSelectCompletionHandler: ((Data, Date?, String?) -> Void)? = nil
      ) {
         self.viewModel = viewModel
         self.mediaType = mediaType
         self.mode = mode
          self.videoSelectCompletionHandler = videoSelectCompletionHandler
-        self.completionHandler = completionHandler
+        self.photoSelectCompletionHandler = photoSelectCompletionHandler
         
         super.init(nibName: nil, bundle: nil)
     }
@@ -54,7 +55,7 @@ final class CustomAlbumViewController: UIViewController {
         self.mediaType = .image
         self.mode = .bookCover
         self.videoSelectCompletionHandler = { _ in }
-        self.completionHandler = { _, _, _ in }
+        self.photoSelectCompletionHandler = { _, _, _ in }
         
         super.init(nibName: nil, bundle: nil)
     }
@@ -229,17 +230,18 @@ final class CustomAlbumViewController: UIViewController {
         }
     }
     private func moveToEditPhotoView(image: UIImage?, creationDate: Date) {
+        guard let photoSelectCompletionHandler else { return }
         var editPhotoViewController: EditPhotoViewController
         switch mode {
         case .bookCover:
             editPhotoViewController = EditPhotoViewController(
                 mode: .bookCover,
-                completionHandler: completionHandler
+                completionHandler: photoSelectCompletionHandler
             )
         case .editPage:
             editPhotoViewController = EditPhotoViewController(
                 mode: .editPage,
-                completionHandler: completionHandler
+                completionHandler: photoSelectCompletionHandler
             )
         }
         editPhotoViewController.setPhoto(image: image)

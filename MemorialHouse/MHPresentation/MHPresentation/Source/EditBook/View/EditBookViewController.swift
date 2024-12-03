@@ -226,10 +226,11 @@ final class EditBookViewController: UIViewController {
             let albumViewModel = CustomAlbumViewModel()
             let customAlbumViewController = CustomAlbumViewController(
                 viewModel: albumViewModel,
-                mediaType: .video
-            ) { url in
-                self?.input.send(.didAddMediaInURL(type: .video, url: url))
-            }
+                mediaType: .video,
+                videoSelectCompletionHandler: { url in
+                    self?.input.send(.didAddMediaInURL(type: .video, url: url))
+                }
+            )
             
             self?.navigationController?.pushViewController(customAlbumViewController, animated: true)
         }

@@ -377,7 +377,8 @@ extension BookCoverViewController {
             let customAlbumViewController = CustomAlbumViewController(
                 viewModel: albumViewModel,
                 mediaType: .image,
-                mode: .bookCover
+                mode: .bookCover,
+                videoSelectCompletionHandler: nil
             ) { imageData, _, _ in
                 self?.createInput.send(.changedBookImage(bookImage: imageData))
                 self?.modifyInput.send(.changedBookImage(bookImage: imageData))
