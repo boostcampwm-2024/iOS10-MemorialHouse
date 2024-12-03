@@ -25,8 +25,8 @@ final class EditVideoViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        configureAudioSessionForPlayback()
         setup()
+        configureAudioSessionForPlayback()
         configureVideoView()
         configureNavigationBar()
     }
@@ -39,6 +39,7 @@ final class EditVideoViewController: UIViewController {
     }
     
     private func configureVideoView() {
+        addChild(videoView.playerViewController)
         view.addSubview(videoView)
         videoView.fillSuperview()
     }

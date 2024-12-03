@@ -4,19 +4,15 @@ import MHDomain
 
 final class MHVideoView: UIView {
     // MARK: - Property
-    private let playerViewController: AVPlayerViewController
+    let playerViewController = AVPlayerViewController()
 
     // MARK: - Initializer
     init() {
-        self.playerViewController = AVPlayerViewController()
-        
         super.init(frame: .zero)
         configureConstraint()
     }
 
     required init?(coder: NSCoder) {
-        self.playerViewController = AVPlayerViewController()
-        
         super.init(coder: coder)
         configureConstraint()
     }
