@@ -1,13 +1,16 @@
 import AVKit
+import MHCore
+import MHDomain
 
 final class MHVideoView: UIView {
+    // MARK: - Property
     private let playerViewController: AVPlayerViewController
 
-    init(player: AVPlayer) {
+    // MARK: - Initializer
+    init() {
         self.playerViewController = AVPlayerViewController()
         
         super.init(frame: .zero)
-        setupPlayer(player: player)
     }
 
     required init?(coder: NSCoder) {
@@ -15,8 +18,9 @@ final class MHVideoView: UIView {
         
         super.init(coder: coder)
     }
-        
-    private func setupPlayer(player: AVPlayer) {
+    
+    // MARK: - Configuration
+    func configurePlayer(player: AVPlayer) {
         playerViewController.player = player
         playerViewController.showsPlaybackControls = true
     }
@@ -40,5 +44,17 @@ final class MHVideoView: UIView {
 
     func seek(to time: CMTime) {
         playerViewController.player?.seek(to: time)
+    }
+}
+
+extension MHVideoView: @preconcurrency MediaAttachable {
+    func configureSource(with mediaDescription: MediaDescription, data: Data) {
+        MHLogger.debug(#function)
+    }
+    
+    func configureSource(with mediaDescription: MediaDescription, url: URL) {
+        let player = AVPlayer(url: url)
+        MHLogger.debug("\(#function): \(url)")
+        configurePlayer(player: player)
     }
 }
