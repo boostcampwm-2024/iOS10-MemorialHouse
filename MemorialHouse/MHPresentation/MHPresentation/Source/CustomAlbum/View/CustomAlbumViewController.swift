@@ -4,6 +4,10 @@ import Photos
 import Combine
 
 final class CustomAlbumViewController: UIViewController {
+    enum Mode {
+        case bookCover
+        case editPage
+    }
     // MARK: - UI Components
     private lazy var albumCollectionView: UICollectionView = {
         let flowLayout = UICollectionViewFlowLayout()
@@ -23,11 +27,20 @@ final class CustomAlbumViewController: UIViewController {
     private let input = PassthroughSubject<CustomAlbumViewModel.Input, Never>()
     private var cancellables = Set<AnyCancellable>()
     private let mediaType: PHAssetMediaType
+    private let mode: Mode
+    private let completionHandler: (_ imageData: Data, _ creationDate: Date?, _ caption: String?) -> Void
     
     // MARK: - Initializer
-    init(viewModel: CustomAlbumViewModel, mediaType: PHAssetMediaType) {
+    init(
+        viewModel: CustomAlbumViewModel,
+        mediaType: PHAssetMediaType,
+        mode: Mode = .editPage,
+        completionHandler: @escaping (_ imageData: Data, _ creationDate: Date?, _ caption: String?) -> Void
+    ) {
         self.viewModel = viewModel
         self.mediaType = mediaType
+        self.mode = mode
+        self.completionHandler = completionHandler
         
         super.init(nibName: nil, bundle: nil)
     }
@@ -35,6 +48,8 @@ final class CustomAlbumViewController: UIViewController {
     required init?(coder: NSCoder) {
         self.viewModel = CustomAlbumViewModel()
         self.mediaType = .image
+        self.mode = .bookCover
+        self.completionHandler = { _, _, _ in }
         
         super.init(nibName: nil, bundle: nil)
     }
@@ -51,7 +66,7 @@ final class CustomAlbumViewController: UIViewController {
         configureConstraints()
         configureNavigationBar()
         bind()
-        input.send(.viewDidLoad(mediaType: mediaType))
+        checkThumbnailAuthorization()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -101,7 +116,7 @@ final class CustomAlbumViewController: UIViewController {
             normal: normalAttributes,
             selected: selectedAttributes
         ) { [weak self] in
-            self?.navigationController?.popViewController(animated: true)
+            self?.dismiss(animated: true)
         }
     }
     
@@ -145,7 +160,33 @@ final class CustomAlbumViewController: UIViewController {
             .store(in: &cancellables)
     }
     
-    // MARK: - Camera
+    // MARK: - Media
+    private func checkThumbnailAuthorization() {
+        let authorization = PHPhotoLibrary.authorizationStatus()
+
+        switch authorization {
+        case .notDetermined:
+            PHPhotoLibrary.requestAuthorization(for: .readWrite) { @Sendable [weak self] status in
+                Task { @MainActor in
+                    guard let self = self else { return }
+                    if status == .authorized || status == .limited {
+                        self.input.send(.viewDidLoad(mediaType: self.mediaType))
+                    } else {
+                        self.dismiss(animated: true)
+                    }
+                }
+            }
+        case .authorized, .limited:
+            input.send(.viewDidLoad(mediaType: mediaType))
+        case .restricted, .denied:
+            showRedirectSettingAlert(with: .image)
+            MHLogger.info("앨범 접근 권한 거부로 뷰를 닫았습니다.")
+        default:
+            showRedirectSettingAlert(with: .image)
+            MHLogger.error("알 수 없는 권한 상태로 인해 뷰를 닫았습니다.")
+        }
+    }
+    
     private func checkCameraAuthorization() {
         let authorization = AVCaptureDevice.authorizationStatus(for: .video)
         
@@ -156,17 +197,16 @@ final class CustomAlbumViewController: UIViewController {
                     Task { [weak self] in
                         await self?.openCamera()
                     }
-                } else {
-                    // TODO: 카메라 권한 설정 페이지로 이동
-                    MHLogger.info("카메라 권한 거부")
                 }
             }
         case .authorized:
             openCamera()
+            albumCollectionView.reloadData()
         case .restricted, .denied:
-            // TODO: 카메라 권한 설정 페이지로 이동
+            showRedirectSettingAlert(with: .camera)
             MHLogger.info("카메라 권한 거부")
         default:
+            showRedirectSettingAlert(with: .camera)
             MHLogger.error(authorization)
         }
     }
@@ -183,6 +223,24 @@ final class CustomAlbumViewController: UIViewController {
             navigationController?.show(imagePicker, sender: nil)
         }
     }
+    
+    private func moveToEditView(image: UIImage?, creationDate: Date) {
+        var editPhotoViewController: EditPhotoViewController
+        switch mode {
+        case .bookCover:
+            editPhotoViewController = EditPhotoViewController(
+                mode: .bookCover,
+                completionHandler: completionHandler
+            )
+        case .editPage:
+            editPhotoViewController = EditPhotoViewController(
+                mode: .editPage,
+                completionHandler: completionHandler
+            )
+        }
+        editPhotoViewController.setPhoto(image: image)
+        self.navigationController?.pushViewController(editPhotoViewController, animated: true)
+    }
 }
 
 // MARK: - UICollectionViewDelegate
@@ -196,14 +254,12 @@ extension CustomAlbumViewController: UICollectionViewDelegate {
         } else {
             guard let asset = viewModel.photoAsset?[indexPath.item - 1] else { return }
             Task {
-                await LocalPhotoManager.shared.requestImage(with: asset) { [weak self] image in
+                await LocalPhotoManager.shared.requestThumbnailImage(with: asset) { [weak self] image in
                     guard let self else { return }
                     if self.mediaType == .image {
-                        let editViewController = EditPhotoViewController()
-                        editViewController.setPhoto(image: image, date: asset.creationDate)
-                        self.navigationController?.pushViewController(editViewController, animated: true)
+                        moveToEditView(image: image, creationDate: asset.creationDate ?? .now)
                     } else {
-                        // TODO: - 비디오 넘기기
+                        // TODO: - 동영상 편집 뷰로 이동
                     }
                 }
             }
@@ -236,7 +292,7 @@ extension CustomAlbumViewController: UICollectionViewDataSource {
             guard let asset = viewModel.photoAsset?[indexPath.item - 1] else { return cell }
             let cellSize = cell.bounds.size
             Task {
-                await LocalPhotoManager.shared.requestImage(with: asset, cellSize: cellSize) { image in
+                await LocalPhotoManager.shared.requestThumbnailImage(with: asset, cellSize: cellSize) { image in
                     cell.setPhoto(image)
                 }
             }
@@ -252,11 +308,8 @@ extension CustomAlbumViewController: UIImagePickerControllerDelegate, UINavigati
         didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]
     ) {
         dismiss(animated: true)
-        if let image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
-            let editViewController = EditPhotoViewController()
-            editViewController.setPhoto(image: image, date: .now)
-            self.navigationController?.pushViewController(editViewController, animated: true)
-        }
+        let image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage
+        moveToEditView(image: image, creationDate: .now)
     }
 }
 

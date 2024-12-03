@@ -14,7 +14,7 @@ public struct LocalBookCoverRepository: BookCoverRepository {
             id: bookCover.id,
             order: bookCover.order,
             title: bookCover.title,
-            imageURL: bookCover.imageURL,
+            imageData: bookCover.imageData,
             color: bookCover.color.rawValue,
             category: bookCover.category,
             favorite: bookCover.favorite
@@ -52,7 +52,7 @@ public struct LocalBookCoverRepository: BookCoverRepository {
             id: bookCover.id,
             order: bookCover.order,
             title: bookCover.title,
-            imageURL: bookCover.imageURL,
+            imageData: bookCover.imageData,
             color: bookCover.color.rawValue,
             category: bookCover.category,
             favorite: bookCover.favorite

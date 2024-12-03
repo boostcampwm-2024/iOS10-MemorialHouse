@@ -23,15 +23,13 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     
     private func createInitialViewController() -> UIViewController {
-        if isUserRegistered() {
-            return createHomeViewController()
-        } else {
-            return createRegisterViewController()
-        }
+        isUserRegistered()
+        ? createHomeViewController()
+        : createRegisterViewController()
     }
     
     private func isUserRegistered() -> Bool {
-        return UserDefaults.standard.object(forKey: Constant.houseNameUserDefaultKey) != nil
+        UserDefaults.standard.object(forKey: Constant.houseNameUserDefaultKey) != nil
     }
     
     private func createHomeViewController() -> UIViewController {
@@ -206,6 +204,10 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             object: DefaultFetchAllBookCoverUseCase(repository: bookCoverRepository)
         )
         DIContainer.shared.register(
+            FetchBookCoverUseCase.self,
+            object: DefaultFetchBookCoverUseCase(repository: bookCoverRepository)
+        )
+        DIContainer.shared.register(
             UpdateBookCoverUseCase.self,
             object: DefaultUpdateBookCoverUseCase(repository: bookCoverRepository)
         )
@@ -271,17 +273,37 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             )
         )
         
+        // MARK: - Create BookCover ViewModel
+        let createBookCoverUseCase = try DIContainer.shared.resolve(CreateBookCoverUseCase.self)
+        let createBookUseCase = try DIContainer.shared.resolve(CreateBookUseCase.self)
+        let deleteBookUseCase = try DIContainer.shared.resolve(DeleteBookUseCase.self)
+        DIContainer.shared.register(
+            CreateBookCoverViewModelFactory.self,
+            object: CreateBookCoverViewModelFactory(
+                fetchMemorialHouseNameUseCase: fetchMemorialHouseNameUseCase,
+                createBookCoverUseCase: createBookCoverUseCase,
+                deleteBookCoverUseCase: deleteBookCoverUseCase,
+                createBookUseCase: createBookUseCase,
+                deleteBookUseCase: deleteBookUseCase
+            )
+        )
+        
+        // MARK: - Modify BookCover ViewModel
+        let fetchBookCoverUseCase = try DIContainer.shared.resolve(FetchBookCoverUseCase.self)
+        DIContainer.shared.register(
+            ModifyBookCoverViewModelFactory.self,
+            object: ModifyBookCoverViewModelFactory(
+                fetchMemorialHouseNameUseCase: fetchMemorialHouseNameUseCase,
+                fetchBookCoverUseCase: fetchBookCoverUseCase,
+                updateBookCoverUseCase: updateBookCoverUseCase
+            )
+        )
+        
         // MARK: - Book ViewModel
         let fetchBookUseCase = try DIContainer.shared.resolve(FetchBookUseCase.self)
         DIContainer.shared.register(
             BookViewModelFactory.self,
             object: BookViewModelFactory(fetchBookUseCase: fetchBookUseCase)
-        )
-        
-        // MARK: - Page ViewModel
-        DIContainer.shared.register(
-            ReadPageViewModelFactory.self,
-            object: ReadPageViewModelFactory()
         )
         
         // MARK: - EditBook ViewModel
@@ -300,6 +322,12 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 fetchMediaUseCase: fetchMediaUseCase,
                 deleteMediaUseCase: deleteMediaUseCase
             )
+        )
+        
+        // MARK: - Page ViewModel
+        DIContainer.shared.register(
+            ReadPageViewModelFactory.self,
+            object: ReadPageViewModelFactory(fetchMediaUseCase: fetchMediaUseCase)
         )
     }
 }

@@ -62,7 +62,6 @@ public final class HomeViewController: UIViewController {
         
         setup()
         bind()
-        input.send(.viewDidLoad)
         configureAddSubView()
         configureAction()
         configureConstraints()
@@ -72,6 +71,7 @@ public final class HomeViewController: UIViewController {
         super.viewWillAppear(animated)
         
         navigationController?.navigationBar.isHidden = true
+        input.send(.loadAllBookCovers)
     }
     
     // MARK: - Setup & Configuration
@@ -92,17 +92,19 @@ public final class HomeViewController: UIViewController {
     private func bind() {
         let output = viewModel.transform(input: input.eraseToAnyPublisher())
         
-        output.sink { [weak self] event in
-            guard let self else { return }
-            switch event {
-            case .fetchedMemorialHouseName:
-                self.updateMemorialHouse()
-            case .fetchedAllBookCover, .filteredBooks, .dragAndDropFinished:
-                self.collectionView.reloadData()
-            case .fetchedFailure(let errorMessage):
-                self.handleError(with: errorMessage)
-            }
-        }.store(in: &cancellables)
+        output
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] event in
+                guard let self else { return }
+                switch event {
+                case .fetchedMemorialHouseName:
+                    self.updateMemorialHouse()
+                case .reloadData:
+                    self.collectionView.reloadData()
+                case .fetchedFailure(let errorMessage):
+                    self.handleError(with: errorMessage)
+                }
+            }.store(in: &cancellables)
     }
     
     private func updateMemorialHouse() {
@@ -158,7 +160,7 @@ public final class HomeViewController: UIViewController {
         }, for: .touchUpInside)
         
         makingBookFloatingButton.addAction(UIAction { [weak self] _ in
-            self?.moveMakingBookViewController()
+            self?.moveBookCoverViewController()
         }, for: .touchUpInside)
         
         navigationBar.configureSettingAction(action: UIAction { [weak self] _ in
@@ -169,9 +171,24 @@ public final class HomeViewController: UIViewController {
         })
     }
     
-    private func moveMakingBookViewController() {
-        let bookCreationViewController = CreateBookViewController(viewModel: CreateBookViewModel())
-        navigationController?.pushViewController(bookCreationViewController, animated: true)
+    private func moveBookCoverViewController(bookID: UUID? = nil) {
+        if let bookID {
+            let viewModelFactory = try? DIContainer.shared.resolve(ModifyBookCoverViewModelFactory.self)
+            let modifyBookCoverViewModel = viewModelFactory?.make(bookID: bookID)
+            let modifyBookCoverViewController = BookCoverViewController(
+                modifyViewModel: modifyBookCoverViewModel,
+                mode: .modify
+            )
+            navigationController?.pushViewController(modifyBookCoverViewController, animated: true)
+        } else {
+            let viewModelFactory = try? DIContainer.shared.resolve(CreateBookCoverViewModelFactory.self)
+            let createBookCoverViewModel = viewModelFactory?.make(bookCount: viewModel.currentBookCovers.count)
+            let createBookCoverViewController = BookCoverViewController(
+                createViewModel: createBookCoverViewModel,
+                mode: .create
+            )
+            navigationController?.pushViewController(createBookCoverViewController, animated: true)
+        }
     }
     
     private func configureConstraints() {
@@ -262,14 +279,18 @@ extension HomeViewController: UICollectionViewDataSource {
             withReuseIdentifier: BookCollectionViewCell.identifier,
             for: indexPath
         ) as? BookCollectionViewCell else { return UICollectionViewCell() }
-        // TODO: Image Loader 필요 & 메모리 캐싱 필요
         
+        // TODO: 메모리 캐싱 필요
         let bookCover = viewModel.currentBookCovers[indexPath.item]
+        var targetImage: UIImage?
+        if let imageData = bookCover.imageData {
+            targetImage = UIImage(data: imageData)
+        }
         cell.configureCell(
             id: bookCover.id,
             title: bookCover.title,
             bookCoverImage: bookCover.color.image,
-            targetImage: UIImage(systemName: "person")!,
+            targetImage: targetImage,
             isLike: bookCover.favorite,
             houseName: viewModel.houseName
         )
@@ -281,7 +302,7 @@ extension HomeViewController: UICollectionViewDataSource {
                 self?.input.send(.likeButtonTapped(bookId: bookCover.id))
             },
             dropDownButtonEditAction: { [weak self] in
-                self?.moveMakingBookViewController()
+                self?.moveBookCoverViewController(bookID: bookCover.id)
             },
             dropDownButtonDeleteAction: { [weak self] in
                 self?.input.send(.deleteBookCover(bookId: bookCover.id))

@@ -1,5 +1,4 @@
 import UIKit
-import AVKit
 import MHDomain
 
 protocol MediaAttachmentDataSource: AnyObject {
