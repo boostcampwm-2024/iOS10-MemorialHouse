@@ -211,7 +211,12 @@ extension MHAudioPlayerView: AVAudioPlayerDelegate {
 }
 
 extension MHAudioPlayerView: @preconcurrency MediaAttachable {
-    func configureSource(with mediaDescription: MediaDescription, data: Data) { }
+    func configureSource(with mediaDescription: MediaDescription, data: Data) {
+        audioPlayer = try? AVAudioPlayer(data: data)
+        guard let audioPlayer else { return }
+        audioPlayer.delegate = self
+        self.setTimeLabel(seconds: Int(audioPlayer.duration.rounded()))
+    }
     
     func configureSource(with mediaDescription: MediaDescription, url: URL) {
         audioPlayer = try? AVAudioPlayer(contentsOf: url)
