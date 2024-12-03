@@ -256,7 +256,7 @@ final class EditPageCell: UITableViewCell {
         case .image:
             MHPolaroidPhotoView()
         case .video:
-            MHPolaroidPhotoView()
+            MHVideoView()
         case .audio:
             MHAudioPlayerView()
         default:

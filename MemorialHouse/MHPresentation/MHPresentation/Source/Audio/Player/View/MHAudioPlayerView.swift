@@ -4,16 +4,15 @@ import AVFAudio
 import MHCore
 import MHDomain
 
-
-final public class MHAudioPlayerView: UIView {
+final class MHAudioPlayerView: UIView {
     // MARK: - Property
     // data bind
     private var viewModel: AudioPlayerViewModel?
     private let input = PassthroughSubject<AudioPlayerViewModel.Input, Never>()
     private var cancellables = Set<AnyCancellable>()
     // audio
-    nonisolated(unsafe) var audioPlayer: AVAudioPlayer?
-    var audioPlayState: AudioPlayState = .pause {
+    private nonisolated(unsafe) var audioPlayer: AVAudioPlayer?
+    private var audioPlayState: AudioPlayState = .pause {
         didSet {
             switch audioPlayState {
             case .play:
@@ -23,10 +22,10 @@ final public class MHAudioPlayerView: UIView {
             }
         }
     }
-    var timer: Timer?
+    private var timer: Timer?
     
     // MARK: - ViewComponent
-    let backgroundBorderView: UIView = {
+    private let backgroundBorderView: UIView = {
         let backgroundBorderView = UIView()
         backgroundBorderView.backgroundColor = .baseBackground
         backgroundBorderView.layer.borderWidth = 3
@@ -35,31 +34,29 @@ final public class MHAudioPlayerView: UIView {
         
         return backgroundBorderView
     }()
-    let audioProgressView: UIView = {
+    private let audioProgressView: UIView = {
         let backgroundView = UIView()
         backgroundView.backgroundColor = .mhPink
-//        backgroundView.layer.borderWidth = 4
         backgroundView.layer.cornerRadius = 21
-//        backgroundView.layer.borderColor = UIColor.baseBackground.cgColor
         
         return backgroundView
     }()
-    var progressViewWidthConstraint: NSLayoutConstraint?
-    var progressViewConstraints: [NSLayoutConstraint] = []
-    let audioStateButton: UIButton = {
+    private var progressViewWidthConstraint: NSLayoutConstraint?
+    private var progressViewConstraints: [NSLayoutConstraint] = []
+    private let audioStateButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(systemName: "play.fill"), for: .normal)
         return button
     }()
-    let playImage = UIImage(systemName: "play.fill")
-    let pauseImage = UIImage(systemName: "pause.fill")
-    let audioStateImageView: UIImageView = {
+    private let playImage = UIImage(systemName: "play.fill")
+    private let pauseImage = UIImage(systemName: "pause.fill")
+    private let audioStateImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(named: "audio_play")
         
         return imageView
     }()
-    let audioPlayTimeLabel: UILabel = {
+    private let audioPlayTimeLabel: UILabel = {
         let label = UILabel()
         label.text = "00:00"
         label.font = UIFont.ownglyphBerry(size: 21)
@@ -207,7 +204,7 @@ final public class MHAudioPlayerView: UIView {
 }
 
 extension MHAudioPlayerView: AVAudioPlayerDelegate {
-    nonisolated public func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
+    nonisolated func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
         MHLogger.debug("audio player finished")
         
         Task { @MainActor in
