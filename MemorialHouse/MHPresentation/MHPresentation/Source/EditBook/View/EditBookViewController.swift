@@ -221,7 +221,8 @@ final class EditBookViewController: UIViewController {
             let customAlbumViewController = CustomAlbumViewController(
                 viewModel: albumViewModel,
                 mediaType: .image,
-                mode: .editPage
+                mode: .editPage,
+                videoSelectCompletionHandler: nil
             ) { imageData, creationDate, caption in
                 let attributes: [String: any Sendable] = [
                     Constant.photoCreationDate: creationDate?.toString(),
@@ -241,7 +242,8 @@ final class EditBookViewController: UIViewController {
                 viewModel: albumViewModel,
                 mediaType: .video,
                 videoSelectCompletionHandler: { url in
-                    self?.input.send(.didAddMediaInURL(type: .video, url: url))
+                    MHLogger.debug("video url: \(url)")
+                    self?.input.send(.didAddMediaInURL(type: .video, attributes: nil, url: url))
                 }
             )
             
@@ -298,6 +300,7 @@ extension EditBookViewController: UITableViewDataSource {
         
         let editPageViewModel = viewModel.editPageViewModel(at: indexPath.row)
         cell.configure(viewModel: editPageViewModel)
+        cell.configure(parentViewController: self)
         
         return cell
     }
