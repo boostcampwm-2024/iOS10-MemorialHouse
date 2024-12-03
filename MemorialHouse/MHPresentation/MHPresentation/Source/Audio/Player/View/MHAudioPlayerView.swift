@@ -29,7 +29,7 @@ final public class MHAudioPlayerView: UIView {
     let backgroundBorderView: UIView = {
         let backgroundBorderView = UIView()
         backgroundBorderView.backgroundColor = .baseBackground
-        backgroundBorderView.layer.borderWidth = 4
+        backgroundBorderView.layer.borderWidth = 3
         backgroundBorderView.layer.cornerRadius = 25
         backgroundBorderView.layer.borderColor = UIColor.captionPlaceHolder.cgColor
         
@@ -118,7 +118,7 @@ final public class MHAudioPlayerView: UIView {
         )
         
         audioProgressView.translatesAutoresizingMaskIntoConstraints = false
-        progressViewWidthConstraint = audioProgressView.widthAnchor.constraint(equalToConstant: 0)
+        progressViewWidthConstraint = audioProgressView.widthAnchor.constraint(equalToConstant: 290)
         NSLayoutConstraint.activate([
             audioProgressView.topAnchor.constraint(equalTo: topAnchor, constant: 29),
             audioProgressView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 4),
@@ -185,6 +185,7 @@ final public class MHAudioPlayerView: UIView {
             Task { @MainActor in
                 if audioPlayer.isPlaying {
                     self?.updatePlayAudioProgress()
+                    self?.setTimeLabel(seconds: Int(audioPlayer.currentTime))
                 } else {
                     
                 }
