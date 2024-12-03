@@ -8,6 +8,7 @@ final class ModifyBookCoverViewModel: ViewModelType {
         case loadBookCover
         case changedBookTitle(title: String?)
         case changedBookColor(colorIndex: Int)
+        case changedBookImage(bookImage: Data?)
         case changedBookCategory(category: String?)
         case saveBookCover
         case cancelModifyBookCover
@@ -18,6 +19,7 @@ final class ModifyBookCoverViewModel: ViewModelType {
         case setModifyView(title: String?, category: String?)
         case bookTitle(title: String?)
         case bookColorIndex(previousIndex: Int?, nowIndex: Int, bookColor: BookColor)
+        case bookImage(imageData: Data?)
         case bookCategory(category: String?)
         case moveToHome
         case settingFailure
@@ -33,6 +35,7 @@ final class ModifyBookCoverViewModel: ViewModelType {
     private var bookOrder: Int?
     private var bookTitle: String?
     private var bookColor: BookColor?
+    private var bookImageData: Data?
     private var bookCategory: String?
     
     init(
@@ -59,6 +62,8 @@ final class ModifyBookCoverViewModel: ViewModelType {
                 self?.setBookTitle(title: title)
             case .changedBookColor(let colorIndex):
                 self?.setBookColor(nowIndex: colorIndex)
+            case .changedBookImage(let bookImage):
+                self?.setBookImageData(imageData: bookImage)
             case .changedBookCategory(let category):
                 self?.setBookCategory(category: category)
             case .saveBookCover:
@@ -71,6 +76,11 @@ final class ModifyBookCoverViewModel: ViewModelType {
         return output.eraseToAnyPublisher()
     }
     
+    private func setBookTitle(title: String?) {
+        bookTitle = title
+        output.send(.bookTitle(title: title))
+    }
+    
     private func setBookColor(nowIndex: Int) {
         var previousIndex: Int?
         if let bookColor {
@@ -81,9 +91,9 @@ final class ModifyBookCoverViewModel: ViewModelType {
         output.send(.bookColorIndex(previousIndex: previousIndex, nowIndex: nowIndex, bookColor: bookColor))
     }
     
-    private func setBookTitle(title: String?) {
-        bookTitle = title
-        output.send(.bookTitle(title: title))
+    private func setBookImageData(imageData: Data?) {
+        bookImageData = imageData
+        output.send(.bookImage(imageData: imageData))
     }
     
     private func setBookCategory(category: String?) {
@@ -101,8 +111,10 @@ final class ModifyBookCoverViewModel: ViewModelType {
         bookOrder = bookCover.order
         bookTitle = bookCover.title
         bookColor = bookCover.color
+        bookImageData = bookCover.imageData
         bookCategory = bookCover.category
         output.send(.bookTitle(title: bookTitle))
+        output.send(.bookImage(imageData: bookImageData))
         output.send(.bookCategory(category: bookCategory))
         if let bookColor {
             output.send(.bookColorIndex(previousIndex: nil, nowIndex: bookColor.index, bookColor: bookColor))
@@ -118,7 +130,7 @@ final class ModifyBookCoverViewModel: ViewModelType {
         let newBookCover = BookCover(
             order: bookOrder,
             title: bookTitle,
-            imageData: nil,
+            imageData: bookImageData,
             color: bookColor,
             category: bookCategory
         )

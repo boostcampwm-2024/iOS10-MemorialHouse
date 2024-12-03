@@ -329,11 +329,5 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             ReadPageViewModelFactory.self,
             object: ReadPageViewModelFactory(fetchMediaUseCase: fetchMediaUseCase)
         )
-        
-        // MARK: - EditPhoto ViewModel
-        DIContainer.shared.register(
-            EditPhotoViewModelFactory.self,
-            object: EditPhotoViewModelFactory(createMediaUseCase: createMediaUseCase)
-        )
     }
 }
