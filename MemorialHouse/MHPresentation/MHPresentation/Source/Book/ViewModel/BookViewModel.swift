@@ -4,14 +4,16 @@ import Combine
 
 public final class BookViewModel: ViewModelType {
     enum Input {
-        case viewDidLoad
+        case loadBook
         case loadPreviousPage
         case loadNextPage
+        case editBook
     }
     
     enum Output {
         case setBookTitle(with: String?)
         case loadFirstPage(page: Page?)
+        case moveToEdit(bookID: UUID)
     }
     
     private let fetchBookUseCase: FetchBookUseCase
@@ -32,11 +34,10 @@ public final class BookViewModel: ViewModelType {
         self.identifier = identifier
     }
     
-    @MainActor
     func transform(input: AnyPublisher<Input, Never>) -> AnyPublisher<Output, Never> {
         input.sink { [weak self] event in
             switch event {
-            case .viewDidLoad:
+            case .loadBook:
                 Task { try await self?.fetchBook() }
             case .loadPreviousPage:
                 if self?.nowPageIndex ?? 0 > 0 {
@@ -46,6 +47,9 @@ public final class BookViewModel: ViewModelType {
                 if self?.nowPageIndex ?? 0 < (self?.book?.pages.count ?? 0) - 1 {
                     self?.nowPageIndex += 1
                 }
+            case .editBook:
+                guard let self else { return }
+                self.output.send(.moveToEdit(bookID: self.identifier))
             }
         }
         .store(in: &cancellables)

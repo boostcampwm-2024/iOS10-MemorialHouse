@@ -45,7 +45,6 @@ public final class ReadPageViewModel: ViewModelType {
         return output.eraseToAnyPublisher()
     }
     
-    @MainActor
     private func loadMediaForData(media: MediaDescription) async {
         do {
             let mediaData: Data = try await fetchMediaUseCase.execute(media: media, in: bookID)
