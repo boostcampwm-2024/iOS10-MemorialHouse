@@ -108,14 +108,9 @@ final class CreateAudioViewController: UIViewController {
         
         setup()
         bind()
-        configureAudioSession()
         configureAddSubviews()
         configureConstraints()
         configureAddActions()
-    }
-    
-    override func viewDidDisappear(_ animated: Bool) {
-        self.input.send(.viewDidDisappear)
     }
     
     // MARK: - Setup
@@ -162,13 +157,12 @@ final class CreateAudioViewController: UIViewController {
                 switch event {
                 case let .audioFileURL(url):
                     self?.configureAudioSession(for: url)
-                case .savedAudioFile:
-                    // TODO: - show audio player
-                    MHLogger.debug("saved audio file")
                 case .audioStart:
                     self?.startRecording()
                 case .audioStop:
                     self?.stopRecording()
+                case .recordCompleted:
+                    self?.dismiss(animated: true)
                 }
             }).store(in: &cancellables)
     }
@@ -234,6 +228,31 @@ final class CreateAudioViewController: UIViewController {
             trailing: meteringBackgroundView.trailingAnchor
         )
         timeTextLabel.setWidthAndHeight(width: 60, height: 16)
+    }
+    
+    private func configureAddActions() {
+        addTappedEventToAudioButton()
+        addTappedEventToCancelButton()
+        addTappedEventToSaveButton()
+    }
+    
+    private func addTappedEventToAudioButton() {
+        audioButton.addAction(UIAction { [weak self] _ in
+            self?.input.send(.audioButtonTapped)
+        }, for: .touchUpInside)
+    }
+    private func addTappedEventToCancelButton() {
+        cancelButton.addAction(
+            UIAction { [weak self] _ in
+                self?.input.send(.recordCancelled)
+            },
+            for: .touchUpInside)
+    }
+    private func addTappedEventToSaveButton() {
+        saveButton.addAction(
+            UIAction { [weak self] _ in
+                self?.input.send(.saveButtonTapped)
+        }, for: .touchUpInside)
     }
     
     // MARK: - Helper
@@ -355,38 +374,4 @@ final class CreateAudioViewController: UIViewController {
         timeTextLabel.text = String(format: "%02d:%02d", minutes, seconds)
     }
     
-    private func configureAddActions() {
-        addTappedEventToAudioButton()
-        addTappedEventToCancelButton()
-        addTappedEventToSaveButton()
-    }
-    
-    private func addTappedEventToAudioButton() {
-        audioButton.addAction(UIAction { [weak self] _ in
-            self?.input.send(.audioButtonTapped)
-        }, for: .touchUpInside)
-    }
-    private func addTappedEventToCancelButton() {
-        cancelButton.addAction(
-            UIAction { [weak self] _ in
-                self?.dismiss(animated: true)
-            },
-            for: .touchUpInside)
-    }
-    private func addTappedEventToSaveButton() {
-        saveButton.addAction(
-            UIAction { [weak self] _ in
-                self?.completeAudioCreation(uuid: self?.identifier)
-        }, for: .touchUpInside)
-    }
-    
-    private func completeAudioCreation(uuid: UUID?) {
-        guard let uuid else { return }
-        let documentPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        let filePath = documentPath.appendingPathComponent("\(uuid).m4a")
-        
-        self.input.send(.saveButtonTapped)
-        dismiss(animated: true)
-        audioCreationCompletion?(filePath)
-    }
 }

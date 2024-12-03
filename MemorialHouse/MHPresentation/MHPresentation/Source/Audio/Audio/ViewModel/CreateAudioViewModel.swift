@@ -9,12 +9,13 @@ final class CreateAudioViewModel: ViewModelType {
         case viewDidLoad
         case audioButtonTapped
         case saveButtonTapped
+        case recordCancelled
     }
     enum Output {
         case audioFileURL(url: URL)
         case audioStart
         case audioStop
-        case savedAudioFile
+        case recordCompleted
     }
     
     // MARK: - Property
@@ -23,6 +24,7 @@ final class CreateAudioViewModel: ViewModelType {
     private var audioIsRecoding: Bool = false
     private let completion: (Result<URL, Error>) -> Void
     private let forBookID: UUID
+    private var fileURL: URL?
     
     // MARK: - Initializer
     init(forBookID: UUID, completion: @escaping (Result<URL, Error>) -> Void) {
@@ -39,7 +41,9 @@ final class CreateAudioViewModel: ViewModelType {
             case .audioButtonTapped:
                 self?.audioButtonTapped()
             case .saveButtonTapped:
-                self?.saveAudioFile()
+                self?.completeRecord(withCompletion: true)
+            case .recordCancelled:
+                self?.completeRecord(withCompletion: false)
             }
         }.store(in: &cancellables)
         
@@ -52,9 +56,12 @@ final class CreateAudioViewModel: ViewModelType {
             let url = try await MHFileManager(directoryType: .documentDirectory)
                 .getURL(at: forBookID.uuidString, fileName: "temp.m4a")
                 .get()
+            fileURL = url
             output.send(.audioFileURL(url: url))
         } catch {
             MHLogger.error("Error in getting audio file url: \(error.localizedDescription)")
+            completion(.failure(error))
+            output.send(.recordCompleted)
         }
     }
     private func audioButtonTapped() {
@@ -67,8 +74,13 @@ final class CreateAudioViewModel: ViewModelType {
         audioIsRecoding.toggle()
     }
     
-    private func saveAudioFile() {
-        // TODO: - save audio file in the file system
-        output.send(.savedAudioFile)
+    private func completeRecord(withCompletion: Bool) {
+        if audioIsRecoding {
+            output.send(.audioStop)
+        }
+        output.send(.recordCompleted)
+        if withCompletion, let fileURL {
+            completion(.success(fileURL))
+        }
     }
 }
