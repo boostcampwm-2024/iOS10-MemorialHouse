@@ -118,7 +118,7 @@ final class ModifyBookCoverViewModel: ViewModelType {
         let newBookCover = BookCover(
             order: bookOrder,
             title: bookTitle,
-            imageURL: nil,
+            imageData: nil,
             color: bookColor,
             category: bookCategory
         )
