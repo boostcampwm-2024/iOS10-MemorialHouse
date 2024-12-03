@@ -4,14 +4,12 @@ final class EditVideoViewController: UIViewController {
     // MARK: - Properties
     private let videoURL: URL
     private let completion: (URL) -> Void
-    private let videoView: MHVideoView
+    private let videoView = MHVideoView()
 
     // MARK: - Initializer
     init(videoURL: URL, videoSelectCompletionHandler: @escaping (URL) -> Void) {
         self.videoURL = videoURL
         self.completion = videoSelectCompletionHandler
-        let player = AVPlayer(url: videoURL)
-        self.videoView = MHVideoView(player: player)
         
         super.init(nibName: nil, bundle: nil)
     }
@@ -19,8 +17,6 @@ final class EditVideoViewController: UIViewController {
     required init?(coder: NSCoder) {
         self.videoURL = URL(fileURLWithPath: "")
         self.completion = { _ in }
-        let player = AVPlayer(url: videoURL)
-        self.videoView = MHVideoView(player: player)
         
         super.init(coder: coder)
     }
@@ -28,18 +24,18 @@ final class EditVideoViewController: UIViewController {
     // MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         configureAudioSessionForPlayback()
         setup()
         configureVideoView()
         configureNavigationBar()
-
-        // 부모 컨트롤러에 AVPlayerViewController 연결
-        videoView.attachPlayerViewController(to: self)
     }
     
     // MARK: - Setup & Configuration
     private func setup() {
         view.backgroundColor = .baseBackground
+        let player = AVPlayer(url: videoURL)
+        videoView.configurePlayer(player: player)
     }
     
     private func configureVideoView() {
