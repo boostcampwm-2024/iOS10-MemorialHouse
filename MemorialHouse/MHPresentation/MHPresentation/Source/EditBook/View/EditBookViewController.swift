@@ -242,8 +242,8 @@ final class EditBookViewController: UIViewController {
                     }
                 case .revokeDone:
                     self?.navigationController?.popViewController(animated: true)
-                case .error(message: let message):
-                    MHLogger.error(message) // TODO: - Alert 띄우기
+                case .error(let message):
+                    self?.showErrorAlert(with: message)
                 }
             }
             .store(in: &cancellables)
@@ -275,12 +275,13 @@ final class EditBookViewController: UIViewController {
                 viewModel: albumViewModel,
                 mediaType: .video,
                 videoSelectCompletionHandler: { url in
-                    MHLogger.debug("video url: \(url)")
                     self?.input.send(.didAddMediaInURL(type: .video, attributes: nil, url: url))
                 }
             )
             
-            self?.navigationController?.pushViewController(customAlbumViewController, animated: true)
+            let navigationViewController = UINavigationController(rootViewController: customAlbumViewController)
+            navigationViewController.modalPresentationStyle = .fullScreen
+            self?.present(navigationViewController, animated: true)
         }
         addVideoButton.addAction(addVideoAction, for: .touchUpInside)
         
