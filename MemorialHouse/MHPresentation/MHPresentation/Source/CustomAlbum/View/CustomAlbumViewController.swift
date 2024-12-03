@@ -5,6 +5,10 @@ import Combine
 import PhotosUI
 
 final class CustomAlbumViewController: UIViewController {
+    enum Mode {
+        case bookCover
+        case editPage
+    }
     // MARK: - UI Components
     private lazy var albumCollectionView: UICollectionView = {
         let flowLayout = UICollectionViewFlowLayout()
@@ -25,16 +29,22 @@ final class CustomAlbumViewController: UIViewController {
     private var cancellables = Set<AnyCancellable>()
     private let mediaType: PHAssetMediaType
     private let videoSelectCompletionHandler: ((URL) -> Void)?
+    private let mode: Mode
+    private let completionHandler: (_ imageData: Data, _ creationDate: Date?, _ caption: String?) -> Void
     
     // MARK: - Initializer
     init(
         viewModel: CustomAlbumViewModel,
         mediaType: PHAssetMediaType,
-        videoSelectCompletionHandler: ((URL) -> Void)? = nil
-    ) {
+        mode: Mode = .editPage,
+        videoSelectCompletionHandler: ((URL) -> Void)? = nil,
+        completionHandler: @escaping (_ imageData: Data, _ creationDate: Date?, _ caption: String?) -> Void
+     ) {
         self.viewModel = viewModel
         self.mediaType = mediaType
-        self.videoSelectCompletionHandler = videoSelectCompletionHandler
+        self.mode = mode
+         self.videoSelectCompletionHandler = videoSelectCompletionHandler
+        self.completionHandler = completionHandler
         
         super.init(nibName: nil, bundle: nil)
     }
@@ -42,7 +52,9 @@ final class CustomAlbumViewController: UIViewController {
     required init?(coder: NSCoder) {
         self.viewModel = CustomAlbumViewModel()
         self.mediaType = .image
+        self.mode = .bookCover
         self.videoSelectCompletionHandler = { _ in }
+        self.completionHandler = { _, _, _ in }
         
         super.init(nibName: nil, bundle: nil)
     }
@@ -109,7 +121,7 @@ final class CustomAlbumViewController: UIViewController {
             normal: normalAttributes,
             selected: selectedAttributes
         ) { [weak self] in
-            self?.navigationController?.popViewController(animated: true)
+            self?.dismiss(animated: true)
         }
     }
     
@@ -165,7 +177,7 @@ final class CustomAlbumViewController: UIViewController {
                     if status == .authorized || status == .limited {
                         self.input.send(.viewDidLoad(mediaType: self.mediaType))
                     } else {
-                        self.navigationController?.popViewController(animated: true)
+                        self.dismiss(animated: true)
                     }
                 }
             }
@@ -216,16 +228,26 @@ final class CustomAlbumViewController: UIViewController {
             navigationController?.show(imagePicker, sender: nil)
         }
     }
-    
     private func moveToEditPhotoView(image: UIImage?, creationDate: Date) {
-        guard let viewModelFactory = try? DIContainer.shared.resolve(EditPhotoViewModelFactory.self) else { return }
-        let editPhotoViewModel = viewModelFactory.make(creationDate: creationDate)
-        let editPhotoViewController = EditPhotoViewController(viewModel: editPhotoViewModel)
+        var editPhotoViewController: EditPhotoViewController
+        switch mode {
+        case .bookCover:
+            editPhotoViewController = EditPhotoViewController(
+                mode: .bookCover,
+                completionHandler: completionHandler
+            )
+        case .editPage:
+            editPhotoViewController = EditPhotoViewController(
+                mode: .editPage,
+                completionHandler: completionHandler
+            )
+        }
         editPhotoViewController.setPhoto(image: image)
         self.navigationController?.pushViewController(editPhotoViewController, animated: true)
     }
     
     private func moveToEditVideoView(url: URL) {
+        guard let videoSelectCompletionHandler else { return }
         let editVideoViewController = EditVideoViewController(
             videoURL: url,
             videoSelectCompletionHandler: videoSelectCompletionHandler

@@ -96,9 +96,9 @@ public final class HomeViewModel: ViewModelType {
             id: currentBookCover.id,
             order: currentBookCover.order,
             title: currentBookCover.title,
-            imageURL: currentBookCover.category,
+            imageData: currentBookCover.imageData,
             color: currentBookCover.color,
-            category: currentBookCover.imageURL,
+            category: currentBookCover.category,
             favorite: !currentBookCover.favorite
         )
         

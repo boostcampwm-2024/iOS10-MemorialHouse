@@ -1,7 +1,10 @@
 import UIKit
-import Combine
 
 final class EditPhotoViewController: UIViewController {
+    enum Mode {
+        case bookCover
+        case editPage
+    }
     // MARK: - UI Components
     private let clearView = UIView.dimmedView(opacity: 0)
     private let dimmedView1 = UIView.dimmedView(opacity: 0.5)
@@ -66,26 +69,33 @@ final class EditPhotoViewController: UIViewController {
     private var captionTextFieldBottomConstraint: NSLayoutConstraint?
     
     // MARK: - Properties
-    private let viewModel: EditPhotoViewModel
-    private let input = PassthroughSubject<EditPhotoViewModel.Input, Never>()
-    private var cancellables = Set<AnyCancellable>()
+    private let mode: Mode
+    private var creationDate: Date?
+    private let completionHandler: (_ imageData: Data, _ creationDate: Date?, _ caption: String?) -> Void
     
-    init(viewModel: EditPhotoViewModel) {
-        self.viewModel = viewModel
+    init(
+        mode: Mode,
+        creationDate: Date? = nil,
+        completionHandler: @escaping (_ imageData: Data, _ creationDate: Date?, _ caption: String?) -> Void
+    ) {
+        self.mode = mode
+        self.creationDate = creationDate
+        self.completionHandler = completionHandler
         
         super.init(nibName: nil, bundle: nil)
     }
     
-    // TODO: ViewModel Factory 수정
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        self.mode = .editPage
+        self.completionHandler = { _, _, _ in }
+        
+        super.init(nibName: nil, bundle: nil)
     }
     
     // MARK: - View Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        bind()
         setup()
         configureNavigationBar()
         configureAddSubView()
@@ -97,19 +107,6 @@ final class EditPhotoViewController: UIViewController {
         super.viewWillAppear(animated)
         
         configureNavigationAppearance()
-    }
-    
-    // MARK: - Binding
-    private func bind() {
-        let output = viewModel.transform(input: input.eraseToAnyPublisher())
-        
-        output.sink { event in
-            switch event {
-            case .moveToNextView:
-                // TODO: - 다음 뷰로 이동 로직
-                break
-            }
-        }.store(in: &cancellables)
     }
     
     // MARK: - Setup
@@ -129,6 +126,12 @@ final class EditPhotoViewController: UIViewController {
             name: UIResponder.keyboardWillHideNotification,
             object: nil
         )
+        switch mode {
+        case .bookCover:
+            captionTextField.isHidden = true
+        case .editPage:
+            captionTextField.isHidden = false
+        }
     }
     
     // MARK: - Configure Navigation
@@ -161,7 +164,8 @@ final class EditPhotoViewController: UIViewController {
         ) { [weak self] in
             guard let imageData = self?.cropImage()?.pngData() else { return }
             let caption = self?.captionTextField.text
-            self?.input.send(.doneEditPhoto(imageData: imageData, caption: caption))
+            self?.completionHandler(imageData, self?.creationDate, caption)
+            self?.dismiss(animated: true)
         }
     }
     
@@ -249,7 +253,12 @@ final class EditPhotoViewController: UIViewController {
             bottom: photoScrollView.topAnchor,
             trailing: view.trailingAnchor
         )
-        photoScrollView.setWidthAndHeight(width: view.frame.width, height: view.frame.width * 0.75)
+        switch mode {
+        case .bookCover:
+            photoScrollView.setWidthAndHeight(width: view.frame.width, height: view.frame.width)
+        case .editPage:
+            photoScrollView.setWidthAndHeight(width: view.frame.width, height: view.frame.width * 0.75)
+        }
         photoScrollView.setCenter(view: clearView)
         photoImageView.setWidthAndHeight(width: photoScrollView.widthAnchor, height: photoScrollView.heightAnchor)
         photoImageView.setAnchor(

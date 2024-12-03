@@ -12,9 +12,8 @@ final class MHBookCover: UIButton {
         return label
     }()
     private let targetImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFill
-        imageView.clipsToBounds = true
+        let imageView = UIImageView(image: UIImage(systemName: "person.crop.square"))
+        imageView.contentMode = .scaleAspectFit
         
         imageView.layer.shadowRadius = 4
         imageView.layer.shadowOpacity = 0.4
@@ -42,7 +41,7 @@ final class MHBookCover: UIButton {
     func resetProperties() {
         bookCoverImageView.image = nil
         bookTitleLabel.text = nil
-        targetImageView.image = nil
+        targetImageView.image = UIImage(systemName: "person.crop.square")
     }
     
     // MARK: - Configuration
@@ -59,7 +58,14 @@ final class MHBookCover: UIButton {
             bookCoverImageView.image = bookCoverImage
         }
         if let targetImage {
-            targetImageView.image = targetImage
+            targetImageView.image = targetImage.withAlignmentRectInsets(
+                UIEdgeInsets(
+                    top: -5,
+                    left: -5,
+                    bottom: -5,
+                    right: -5
+                )
+            )
         }
         if let houseName {
             houseLabel.text = houseName
@@ -79,9 +85,15 @@ final class MHBookCover: UIButton {
         bookTitleLabel.setLeading(anchor: leadingAnchor, constant: 25)
         bookTitleLabel.setTrailing(anchor: trailingAnchor, constant: 12)
         targetImageView.setTop(anchor: bookTitleLabel.bottomAnchor, constant: 14)
-        targetImageView.setCenterX(view: self, constant: 8)
-        targetImageView.setWidthAndHeight(width: 100, height: 110)
+        targetImageView.setAnchor(
+            leading: bookTitleLabel.leadingAnchor, constantLeading: 5,
+            trailing: bookTitleLabel.trailingAnchor, constantTrailing: 5
+        )
         houseLabel.setBottom(anchor: bottomAnchor, constant: 12)
         houseLabel.setTrailing(anchor: trailingAnchor, constant: 12)
+        NSLayoutConstraint.activate([
+            targetImageView.centerXAnchor.constraint(equalTo: bookTitleLabel.centerXAnchor, constant: 3),
+            targetImageView.heightAnchor.constraint(equalTo: targetImageView.widthAnchor)
+        ])
     }
 }

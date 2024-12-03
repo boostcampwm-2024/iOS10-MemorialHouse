@@ -167,6 +167,9 @@ final class BookCoverViewController: UIViewController {
                         nowIndex: nowIndex,
                         bookCoverImage: bookColor.image
                     )
+                case .bookImage(let imageData):
+                    guard let imageData else { return }
+                    self?.bookCoverView.configure(targetImage: UIImage(data: imageData))
                 case .bookCategory(let category):
                     self?.setCategorySelectionButton(category: category)
                 case .moveToNext(let bookID):
@@ -198,6 +201,9 @@ final class BookCoverViewController: UIViewController {
                         nowIndex: nowIndex,
                         bookCoverImage: bookColor.image
                     )
+                case .bookImage(let imageData):
+                    guard let imageData else { return }
+                    self?.bookCoverView.configure(targetImage: UIImage(data: imageData))
                 case .bookCategory(let category):
                     self?.setCategorySelectionButton(category: category)
                 case .moveToHome:
@@ -368,8 +374,17 @@ extension BookCoverViewController {
         
         let selectPhotoAction = UIAction { [weak self] _ in
             let albumViewModel = CustomAlbumViewModel()
-            let customAlbumViewController = CustomAlbumViewController(viewModel: albumViewModel, mediaType: .image)
-            self?.navigationController?.pushViewController(customAlbumViewController, animated: true)
+            let customAlbumViewController = CustomAlbumViewController(
+                viewModel: albumViewModel,
+                mediaType: .image,
+                mode: .bookCover
+            ) { imageData, _, _ in
+                self?.createInput.send(.changedBookImage(bookImage: imageData))
+                self?.modifyInput.send(.changedBookImage(bookImage: imageData))
+            }
+            let navigationViewController = UINavigationController(rootViewController: customAlbumViewController)
+            navigationViewController.modalPresentationStyle = .fullScreen
+            self?.present(navigationViewController, animated: true)
         }
         imageSelectionButton.addAction(selectPhotoAction, for: .touchUpInside)
         
