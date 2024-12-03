@@ -7,7 +7,7 @@ import AVFoundation
 // TODO: nil이라면 바로 error를 return하도록 수정
 public struct LocalMediaRepository: MediaRepository, Sendable {
     private let storage: FileStorage
-    private let temporaryPath = "temp" // TODO: - 지워질 것임!
+    private let temporaryPath = "temporary"
     private let snapshotFileName = ".snapshot"
     
     public init(storage: FileStorage) {
@@ -68,9 +68,9 @@ public struct LocalMediaRepository: MediaRepository, Sendable {
         to bookID: UUID
     ) async -> Result<Void, MHDataError> {
         let path = bookID.uuidString
-        let fileName = mediaDescription.id.uuidString
+        let fileName = fileName(of: mediaDescription)
         
-        return await storage.move(at: "temp", fileName: fileName, to: path)
+        return await storage.move(at: temporaryPath, fileName: fileName, to: path)
     }
     
     public func getURL(
@@ -83,6 +83,10 @@ public struct LocalMediaRepository: MediaRepository, Sendable {
         let fileName = fileName(of: mediaDescription)
         
         return await storage.getURL(at: path, fileName: fileName)
+    }
+    
+    public func makeTemporaryDirectory() async -> Result<Void, MHDataError> {
+        return await storage.makeDirectory(through: temporaryPath)
     }
     
     public func moveAllTemporaryMedia(to bookID: UUID) async -> Result<Void, MHDataError> {

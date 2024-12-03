@@ -193,6 +193,22 @@ extension MHFileManager: FileStorage {
         return .success(originDataPath)
     }
     
+    public func makeDirectory(through path: String) async -> Result<Void, MHDataError> {
+        guard let originDirectory = fileManager.urls(
+            for: directoryType,
+            in: .userDomainMask
+        ).first?.appending(path: path)
+        else { return .failure(.directorySettingFailure) }
+        guard (
+            try? fileManager.createDirectory(
+                at: originDirectory,
+                withIntermediateDirectories: true
+            )
+        ) != nil else { return .failure(.directorySettingFailure)}
+        
+        return .success(())
+    }
+    
     public func getFileNames(at path: String) async -> Result<[String], MHDataError> {
         guard let originDirectory = fileManager.urls(
             for: directoryType,

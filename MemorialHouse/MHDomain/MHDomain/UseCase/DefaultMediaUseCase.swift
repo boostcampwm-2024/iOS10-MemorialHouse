@@ -103,6 +103,7 @@ public struct DefaultTemporaryStoreMediaUseCase: TemporaryStoreMediaUseCase {
     
     // MARK: - Method
     public func execute(media: MediaDescription) async throws -> URL {
-        try await repository.getURL(media: media, from: nil).get()
+        try await repository.makeTemporaryDirectory().get()
+        return try await repository.getURL(media: media, from: nil).get()
     }
 }
