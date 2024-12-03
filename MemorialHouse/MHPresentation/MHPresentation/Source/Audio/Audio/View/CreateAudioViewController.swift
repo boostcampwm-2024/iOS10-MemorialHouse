@@ -98,7 +98,8 @@ final class CreateAudioViewController: UIViewController {
     }
     
     required init?(coder: NSCoder) {
-        self.viewModel = CreateAudioViewModel(forBookID: .init(), completion: { _ in })
+        guard let viewModelFactory = try? DIContainer.shared.resolve(CreateAudioViewModelFactory.self) else { return nil }
+        self.viewModel = viewModelFactory.make { _ in }
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -111,6 +112,7 @@ final class CreateAudioViewController: UIViewController {
         configureAddSubviews()
         configureConstraints()
         configureAddActions()
+        input.send(.viewDidLoad)
     }
     
     // MARK: - Setup
@@ -173,6 +175,7 @@ final class CreateAudioViewController: UIViewController {
         
         audioRecorder = try? AVAudioRecorder(url: url, settings: audioRecordersettings)
         audioRecorder?.isMeteringEnabled = true
+        print("URL: \(url)")
     }
     
     private func configureAddSubviews() {
