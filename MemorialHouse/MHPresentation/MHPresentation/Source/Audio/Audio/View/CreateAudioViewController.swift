@@ -98,7 +98,7 @@ final class CreateAudioViewController: UIViewController {
     }
     
     required init?(coder: NSCoder) {
-        self.viewModel = CreateAudioViewModel()
+        self.viewModel = CreateAudioViewModel(forBookID: .init(), completion: { _ in })
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -160,15 +160,11 @@ final class CreateAudioViewController: UIViewController {
         output?.receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] event in
                 switch event {
-                case .updatedAudioFileURL:
-                    // TODO: - update audio file url
-                    MHLogger.debug("updated audio file URL")
+                case let .audioFileURL(url):
+                    self?.configureAudioSession(for: url)
                 case .savedAudioFile:
                     // TODO: - show audio player
                     MHLogger.debug("saved audio file")
-                case .deleteTemporaryAudioFile:
-                    // TODO: - delete temporary audio file
-                    MHLogger.debug("delete temporary audio file")
                 case .audioStart:
                     self?.startRecording()
                 case .audioStop:
@@ -178,14 +174,10 @@ final class CreateAudioViewController: UIViewController {
     }
     
     // MARK: - Configuration
-    private func configureAudioSession() {
-        let fileName = "\(identifier).m4a"
-        let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        let audioFileURL = documentDirectory.appendingPathComponent(fileName)
-        
+    private func configureAudioSession(for url: URL) {
         try? audioSession.setCategory(.record, mode: .default)
         
-        audioRecorder = try? AVAudioRecorder(url: audioFileURL, settings: audioRecordersettings)
+        audioRecorder = try? AVAudioRecorder(url: url, settings: audioRecordersettings)
         audioRecorder?.isMeteringEnabled = true
     }
     

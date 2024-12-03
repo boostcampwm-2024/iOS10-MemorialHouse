@@ -1,44 +1,45 @@
 import Foundation
+import MHData
 import Combine
 import MHCore
 
 final class CreateAudioViewModel: ViewModelType {
     // MARK: - Type
     enum Input {
-        case audioSessionOpened(url: URL?)
+        case viewDidLoad
         case audioButtonTapped
         case saveButtonTapped
-        case viewDidDisappear
     }
     enum Output {
-        case updatedAudioFileURL
+        case audioFileURL(url: URL)
         case audioStart
         case audioStop
         case savedAudioFile
-        case deleteTemporaryAudioFile
     }
     
     // MARK: - Property
     private let output = PassthroughSubject<Output, Never>()
     private var cancellables = Set<AnyCancellable>()
     private var audioIsRecoding: Bool = false
-    private let completion: (URL?) -> Void
+    private let completion: (Result<URL, Error>) -> Void
+    private let forBookID: UUID
     
     // MARK: - Initializer
-    
+    init(forBookID: UUID, completion: @escaping (Result<URL, Error>) -> Void) {
+        self.forBookID = forBookID
+        self.completion = completion
+    }
     
     // MARK: - Method
     func transform(input: AnyPublisher<Input, Never>) -> AnyPublisher<Output, Never> {
         input.sink { [weak self] event in
             switch event {
-            case .audioSessionOpened(let url):
-                self?.updateURL(url: url)
+            case .viewDidLoad:
+                Task { await self?.viewDidLoad() }
             case .audioButtonTapped:
                 self?.audioButtonTapped()
             case .saveButtonTapped:
                 self?.saveAudioFile()
-            case .viewDidDisappear:
-                self?.deleteAudioTemporaryFile()
             }
         }.store(in: &cancellables)
         
@@ -46,13 +47,17 @@ final class CreateAudioViewModel: ViewModelType {
     }
     
     // MARK: - Helper
-    private func updateURL(url: URL?) {
-        self.audioTemporaryFileURL = url
-        output.send(.updatedAudioFileURL)
+    private func viewDidLoad() async {
+        do {
+            let url = try await MHFileManager(directoryType: .documentDirectory)
+                .getURL(at: forBookID.uuidString, fileName: "temp.m4a")
+                .get()
+            output.send(.audioFileURL(url: url))
+        } catch {
+            MHLogger.error("Error in getting audio file url: \(error.localizedDescription)")
+        }
     }
-    
     private func audioButtonTapped() {
-        MHLogger.debug("audio button tapped in view model")
         switch audioIsRecoding {
         case false:
             output.send(.audioStart)
@@ -65,11 +70,5 @@ final class CreateAudioViewModel: ViewModelType {
     private func saveAudioFile() {
         // TODO: - save audio file in the file system
         output.send(.savedAudioFile)
-    }
-    
-    private func deleteAudioTemporaryFile() {
-        guard let audioTemporaryFileURL else { return }
-        try? FileManager.default.removeItem(at: audioTemporaryFileURL)
-        output.send(.deleteTemporaryAudioFile)
     }
 }
