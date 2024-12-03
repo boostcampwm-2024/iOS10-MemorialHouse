@@ -248,8 +248,7 @@ final class CreateAudioViewController: UIViewController {
         cancelButton.addAction(
             UIAction { [weak self] _ in
                 self?.input.send(.recordCancelled)
-            },
-            for: .touchUpInside)
+        }, for: .touchUpInside)
     }
     
     private func addTappedEventToSaveButton() {
