@@ -45,7 +45,7 @@ public final class ReadPageViewModel: ViewModelType {
                 Task { await self?.loadMediaForURL(media: media) }
             }
         }.store(in: &cancellables)
-
+        
         return output.eraseToAnyPublisher()
     }
     

@@ -5,7 +5,7 @@ final class EditVideoViewController: UIViewController {
     private let videoURL: URL
     private let completion: (URL) -> Void
     private let videoView = MHVideoView()
-
+    
     // MARK: - Initializer
     init(videoURL: URL, videoSelectCompletionHandler: @escaping (URL) -> Void) {
         self.videoURL = videoURL

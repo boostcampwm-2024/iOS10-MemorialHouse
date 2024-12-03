@@ -60,18 +60,18 @@ final class ReadPageViewController: UIViewController {
         output
             .receive(on: DispatchQueue.main)
             .sink { [weak self] event in
-            switch event {
-            case .loadPage(let page):
-                guard let page else { return }
-                self?.configurePage(page: page)
-            case .mediaLoadedWithData(let media, let data):
-                self?.mediaLoadedWithData(media: media, data: data)
-            case .mediaLoadedWithURL(let media, let url):
-                self?.mediaLoadedWithURL(media: media, url: url)
-            case .error(let message):
-                self?.showErrorAlert(with: message)
-            }
-        }.store(in: &cancellables)
+                switch event {
+                case .loadPage(let page):
+                    guard let page else { return }
+                    self?.configurePage(page: page)
+                case .mediaLoadedWithData(let media, let data):
+                    self?.mediaLoadedWithData(media: media, data: data)
+                case .mediaLoadedWithURL(let media, let url):
+                    self?.mediaLoadedWithURL(media: media, url: url)
+                case .error(let message):
+                    self?.showErrorAlert(with: message)
+                }
+            }.store(in: &cancellables)
     }
     
     // MARK: - Setup & Configure

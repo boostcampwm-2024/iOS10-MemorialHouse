@@ -75,7 +75,7 @@ final class EditBookViewController: UIViewController {
         return button
     }()
     private var buttonStackViewBottomConstraint: NSLayoutConstraint?
-
+    
     // MARK: - Property
     private let viewModel: EditBookViewModel
     private let input = PassthroughSubject<EditBookViewModel.Input, Never>()
@@ -212,13 +212,13 @@ final class EditBookViewController: UIViewController {
             selector: #selector(keyboardWillAppear),
             name: UIResponder.keyboardWillShowNotification,
             object: nil
-            )
+        )
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(keyboardWillHide),
             name: UIResponder.keyboardWillHideNotification,
             object: nil
-            )
+        )
         // 스크롤이 될 때 키보드 내려가게 설정
         editPageTableView.keyboardDismissMode = .onDrag
     }
