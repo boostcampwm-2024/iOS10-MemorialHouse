@@ -99,7 +99,7 @@ final class EditPageCell: UITableViewCell {
                 case let .mediaLoadedWithURL(media, url):
                     self?.mediaLoadedWithURL(media: media, url: url)
                 case let .error(message):
-                    MHLogger.error(message) // 더 좋은 처리가 필요함
+                    MHLogger.error(message) // TODO: 더 좋은 처리가 필요함
                 }
             }.store(in: &cancellables)
     }
@@ -137,10 +137,16 @@ final class EditPageCell: UITableViewCell {
                     view: MHPolaroidPhotoView(),
                     description: description
                 )
+                input.send(.didRequestMediaDataForData(media: description))
+            case .video:
+                mediaAttachment = MediaAttachment(
+                    view: MHVideoView(),
+                    description: description
+                )
+                input.send(.didRequestMediaDataForURL(media: description))
             default:
                 break
             }
-            input.send(.didRequestMediaDataForData(media: description))
             
             guard let mediaAttachment else { return }
             let range = NSRange(location: location, length: 1)
