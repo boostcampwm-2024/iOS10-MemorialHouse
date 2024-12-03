@@ -78,10 +78,7 @@ final class EditVideoViewController: UIViewController {
             selected: selectedAttributes
         ) { [weak self] in
             self?.completion(self?.videoURL ?? URL(fileURLWithPath: ""))
-            if let navigationController = self?.navigationController {
-                navigationController.popViewController(animated: false)
-                navigationController.popViewController(animated: true)
-            }
+            self?.dismiss(animated: true)
         }
     }
 }
