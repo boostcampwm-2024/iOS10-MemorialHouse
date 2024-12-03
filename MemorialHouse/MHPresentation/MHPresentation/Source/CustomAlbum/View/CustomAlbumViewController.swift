@@ -2,6 +2,7 @@ import MHCore
 import UIKit
 import Photos
 import Combine
+import PhotosUI
 
 final class CustomAlbumViewController: UIViewController {
     // MARK: - UI Components
@@ -23,11 +24,17 @@ final class CustomAlbumViewController: UIViewController {
     private let input = PassthroughSubject<CustomAlbumViewModel.Input, Never>()
     private var cancellables = Set<AnyCancellable>()
     private let mediaType: PHAssetMediaType
+    private let videoSelectCompletionHandler: ((URL) -> Void)?
     
     // MARK: - Initializer
-    init(viewModel: CustomAlbumViewModel, mediaType: PHAssetMediaType) {
+    init(
+        viewModel: CustomAlbumViewModel,
+        mediaType: PHAssetMediaType,
+        videoSelectCompletionHandler: ((URL) -> Void)? = nil
+    ) {
         self.viewModel = viewModel
         self.mediaType = mediaType
+        self.videoSelectCompletionHandler = videoSelectCompletionHandler
         
         super.init(nibName: nil, bundle: nil)
     }
@@ -35,6 +42,7 @@ final class CustomAlbumViewController: UIViewController {
     required init?(coder: NSCoder) {
         self.viewModel = CustomAlbumViewModel()
         self.mediaType = .image
+        self.videoSelectCompletionHandler = { _ in }
         
         super.init(nibName: nil, bundle: nil)
     }
@@ -209,12 +217,20 @@ final class CustomAlbumViewController: UIViewController {
         }
     }
     
-    private func moveToEditView(image: UIImage?, creationDate: Date) {
+    private func moveToEditPhotoView(image: UIImage?, creationDate: Date) {
         guard let viewModelFactory = try? DIContainer.shared.resolve(EditPhotoViewModelFactory.self) else { return }
         let editPhotoViewModel = viewModelFactory.make(creationDate: creationDate)
         let editPhotoViewController = EditPhotoViewController(viewModel: editPhotoViewModel)
         editPhotoViewController.setPhoto(image: image)
         self.navigationController?.pushViewController(editPhotoViewController, animated: true)
+    }
+    
+    private func moveToEditVideoView(url: URL) {
+        let editVideoViewController = EditVideoViewController(
+            videoURL: url,
+            videoSelectCompletionHandler: videoSelectCompletionHandler
+        )
+        self.navigationController?.pushViewController(editVideoViewController, animated: true)
     }
 }
 
@@ -228,15 +244,31 @@ extension CustomAlbumViewController: UICollectionViewDelegate {
             self.checkCameraAuthorization()
         } else {
             guard let asset = viewModel.photoAsset?[indexPath.item - 1] else { return }
-            Task {
-                await LocalPhotoManager.shared.requestThumbnailImage(with: asset) { [weak self] image in
-                    guard let self else { return }
-                    if self.mediaType == .image {
-                        moveToEditView(image: image, creationDate: asset.creationDate ?? .now)
-                    } else {
-                        // TODO: - 동영상 편집 뷰로 이동
-                    }
-                }
+
+            if self.mediaType == .image {
+                handleImageSelection(with: asset)
+            } else {
+                handleVideoSelection(with: asset)
+            }
+        }
+    }
+    
+    private func handleImageSelection(with asset: PHAsset) {
+        Task {
+            await LocalPhotoManager.shared.requestThumbnailImage(with: asset) { [weak self] image in
+                guard let self = self, let image = image else { return }
+                self.moveToEditPhotoView(image: image, creationDate: asset.creationDate ?? .now)
+            }
+        }
+    }
+
+    private func handleVideoSelection(with asset: PHAsset) {
+        Task {
+            if let videoURL = await LocalPhotoManager.shared.requestVideoURL(with: asset) {
+                MHLogger.info("\(#function) 비디오 URL: \(videoURL)")
+                self.moveToEditVideoView(url: videoURL)
+            } else {
+                self.showErrorAlert(with: "비디오 URL을 가져올 수 없습니다.")
             }
         }
     }
@@ -284,7 +316,7 @@ extension CustomAlbumViewController: UIImagePickerControllerDelegate, UINavigati
     ) {
         dismiss(animated: true)
         let image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage
-        moveToEditView(image: image, creationDate: .now)
+        moveToEditPhotoView(image: image, creationDate: .now)
     }
 }
 

@@ -223,7 +223,15 @@ final class EditBookViewController: UIViewController {
         addImageButton.addAction(addImageAction, for: .touchUpInside)
         
         let addVideoAction = UIAction { [weak self] _ in
-            // TODO: - 비디오 추가 로직
+            let albumViewModel = CustomAlbumViewModel()
+            let customAlbumViewController = CustomAlbumViewController(
+                viewModel: albumViewModel,
+                mediaType: .video
+            ) { url in
+                self?.input.send(.didAddMediaInURL(type: .video, url: url))
+            }
+            
+            self?.navigationController?.pushViewController(customAlbumViewController, animated: true)
         }
         addVideoButton.addAction(addVideoAction, for: .touchUpInside)
         
