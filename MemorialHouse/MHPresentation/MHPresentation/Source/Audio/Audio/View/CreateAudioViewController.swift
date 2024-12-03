@@ -3,7 +3,7 @@ import AVFoundation
 import Combine
 import MHCore
 
-final public class CreateAudioViewController: UIViewController {
+final class CreateAudioViewController: UIViewController {
     // MARK: - Property
     // data bind
     private var viewModel: CreateAudioViewModel?
@@ -96,18 +96,18 @@ final public class CreateAudioViewController: UIViewController {
     }()
     
     // MARK: - Initializer
-    public init(viewModel: CreateAudioViewModel) {
+    init(viewModel: CreateAudioViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
     
-    public required init?(coder: NSCoder) {
+    required init?(coder: NSCoder) {
         self.viewModel = CreateAudioViewModel()
         super.init(nibName: nil, bundle: nil)
     }
     
     // MARK: - Life Cycle
-    public override func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
         
         setup()
@@ -118,11 +118,11 @@ final public class CreateAudioViewController: UIViewController {
         configureAddActions()
     }
     
-    public override func viewDidDisappear(_ animated: Bool) {
+    override func viewDidDisappear(_ animated: Bool) {
         self.input.send(.viewDidDisappear)
     }
     
-    // MARK: - setup
+    // MARK: - Setup
     private func setup() {
         view.backgroundColor = .white
         setupBars()
@@ -158,28 +158,6 @@ final public class CreateAudioViewController: UIViewController {
         }
     }
     
-    private func requestMicrophonePermission() {
-        let alert = UIAlertController(
-            title: "마이크 권한 필요",
-            message: "설정에서 마이크 권한을 허용해주세요.",
-            preferredStyle: .alert
-        )
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
-        Task {
-            if #available(iOS 17, *) {
-                if await !AVAudioApplication.requestRecordPermission() {
-                    self.present(alert, animated: true, completion: nil)
-                }
-            } else {
-                AVAudioSession.sharedInstance().requestRecordPermission { @MainActor granted in
-                    if !granted {
-                        self.present(alert, animated: true, completion: nil)
-                    }
-                }
-            }
-        }
-    }
-    
     // MARK: - bind
     private func bind() {
         let output = viewModel?.transform(input: input.eraseToAnyPublisher())
@@ -202,8 +180,7 @@ final public class CreateAudioViewController: UIViewController {
         }).store(in: &cancellables)
     }
     
-    // MARK: - configure
-    
+    // MARK: - Configuration
     private func configureAudioSession() {
         let fileName = "\(identifier).m4a"
         let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
@@ -268,6 +245,29 @@ final public class CreateAudioViewController: UIViewController {
             trailing: meteringBackgroundView.trailingAnchor
         )
         timeTextLabel.setWidthAndHeight(width: 60, height: 16)
+    }
+    
+    // MARK: - Helper
+    private func requestMicrophonePermission() {
+        let alert = UIAlertController(
+            title: "마이크 권한 필요",
+            message: "설정에서 마이크 권한을 허용해주세요.",
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        Task {
+            if #available(iOS 17, *) {
+                if await !AVAudioApplication.requestRecordPermission() {
+                    self.present(alert, animated: true, completion: nil)
+                }
+            } else {
+                AVAudioSession.sharedInstance().requestRecordPermission { @MainActor granted in
+                    if !granted {
+                        self.present(alert, animated: true, completion: nil)
+                    }
+                }
+            }
+        }
     }
     
     private func startRecording() {
