@@ -1,8 +1,18 @@
-//
-//  CreateAudioViewModelFactory.swift
-//  MHPresentation
-//
-//  Created by 임정현 on 12/3/24.
-//
+import MHFoundation
+import MHDomain
 
-import Foundation
+public struct CreateAudioViewModelFactory {
+    private let temporaryStoreMediaUseCase: TemporaryStoreMediaUseCase
+    
+    public init(temporaryStoreMediaUseCase: TemporaryStoreMediaUseCase) {
+        self.temporaryStoreMediaUseCase = temporaryStoreMediaUseCase
+    }
+    
+    public func make(completion: @escaping (MediaDescription?) -> Void) -> CreateAudioViewModel {
+        CreateAudioViewModel(
+            temporaryStoreMediaUsecase: temporaryStoreMediaUseCase,
+            completion: completion
+            )
+    }
+}
+
