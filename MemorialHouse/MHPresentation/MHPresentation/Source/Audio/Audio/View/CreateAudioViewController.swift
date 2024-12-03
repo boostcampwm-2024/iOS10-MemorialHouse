@@ -11,7 +11,6 @@ final class CreateAudioViewController: UIViewController {
     private var cancellables = Set<AnyCancellable>()
     // auido
     private var audioRecorder: AVAudioRecorder?
-    private var isRecording = false
     // auido metering
     private var upBarLayers: [CALayer] = []
     private var downBarLayers: [CALayer] = []
@@ -29,9 +28,6 @@ final class CreateAudioViewController: UIViewController {
         AVNumberOfChannelsKey: 2,
         AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
     ]
-    // UUID
-    private let identifier: UUID = UUID()
-    var audioCreationCompletion: (((URL?) -> Void))?
     
     // MARK: - UI Component
     // title and buttons
@@ -161,23 +157,24 @@ final class CreateAudioViewController: UIViewController {
     // MARK: - bind
     private func bind() {
         let output = viewModel?.transform(input: input.eraseToAnyPublisher())
-        output?.sink(receiveValue: { [weak self] event in
-            switch event {
-            case .updatedAudioFileURL:
-                // TODO: - update audio file url
-                MHLogger.debug("updated audio file URL")
-            case .savedAudioFile:
-                // TODO: - show audio player
-                MHLogger.debug("saved audio file")
-            case .deleteTemporaryAudioFile:
-                // TODO: - delete temporary audio file
-                MHLogger.debug("delete temporary audio file")
-            case .audioStart:
-                self?.startRecording()
-            case .audioStop:
-                self?.stopRecording()
-            }
-        }).store(in: &cancellables)
+        output?.receive(on: DispatchQueue.main)
+            .sink(receiveValue: { [weak self] event in
+                switch event {
+                case .updatedAudioFileURL:
+                    // TODO: - update audio file url
+                    MHLogger.debug("updated audio file URL")
+                case .savedAudioFile:
+                    // TODO: - show audio player
+                    MHLogger.debug("saved audio file")
+                case .deleteTemporaryAudioFile:
+                    // TODO: - delete temporary audio file
+                    MHLogger.debug("delete temporary audio file")
+                case .audioStart:
+                    self?.startRecording()
+                case .audioStop:
+                    self?.stopRecording()
+                }
+            }).store(in: &cancellables)
     }
     
     // MARK: - Configuration
@@ -261,7 +258,7 @@ final class CreateAudioViewController: UIViewController {
                     self.present(alert, animated: true, completion: nil)
                 }
             } else {
-                AVAudioSession.sharedInstance().requestRecordPermission { @MainActor granted in
+                AVAudioSession.sharedInstance().requestRecordPermission { granted in
                     if !granted {
                         self.present(alert, animated: true, completion: nil)
                     }

@@ -2,7 +2,8 @@ import Foundation
 import Combine
 import MHCore
 
-public final class CreateAudioViewModel: ViewModelType {
+final class CreateAudioViewModel: ViewModelType {
+    // MARK: - Type
     enum Input {
         case audioSessionOpened(url: URL?)
         case audioButtonTapped
@@ -17,12 +18,16 @@ public final class CreateAudioViewModel: ViewModelType {
         case deleteTemporaryAudioFile
     }
     
+    // MARK: - Property
     private let output = PassthroughSubject<Output, Never>()
     private var cancellables = Set<AnyCancellable>()
-    private var identifier: UUID?
-    private var audioTemporaryFileURL: URL?
     private var audioIsRecoding: Bool = false
+    private let completion: (URL?) -> Void
     
+    // MARK: - Initializer
+    
+    
+    // MARK: - Method
     func transform(input: AnyPublisher<Input, Never>) -> AnyPublisher<Output, Never> {
         input.sink { [weak self] event in
             switch event {
@@ -40,6 +45,7 @@ public final class CreateAudioViewModel: ViewModelType {
         return output.eraseToAnyPublisher()
     }
     
+    // MARK: - Helper
     private func updateURL(url: URL?) {
         self.audioTemporaryFileURL = url
         output.send(.updatedAudioFileURL)
