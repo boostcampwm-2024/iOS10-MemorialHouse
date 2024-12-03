@@ -251,8 +251,10 @@ final class CreateAudioViewController: UIViewController {
                 }
             } else {
                 AVAudioSession.sharedInstance().requestRecordPermission { granted in
-                    if !granted {
-                        self.present(alert, animated: true, completion: nil)
+                    Task { @MainActor in
+                        if !granted {
+                            self.present(alert, animated: true, completion: nil)
+                        }
                     }
                 }
             }
