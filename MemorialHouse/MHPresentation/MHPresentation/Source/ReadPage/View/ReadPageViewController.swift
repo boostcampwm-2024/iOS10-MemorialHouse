@@ -57,7 +57,9 @@ final class ReadPageViewController: UIViewController {
     private func bind() {
         let output = viewModel.transform(input: input.eraseToAnyPublisher())
         
-        output.sink { [weak self] event in
+        output
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] event in
             switch event {
             case .loadPage(let page):
                 guard let page else { return }
