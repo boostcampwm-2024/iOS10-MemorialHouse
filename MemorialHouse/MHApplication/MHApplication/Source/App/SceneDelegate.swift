@@ -233,6 +233,12 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             DeleteMediaUseCase.self,
             object: DefaultDeleteMediaUseCase(repository: mediaRepository)
         )
+        
+        // MARK: - TemporaryStoreMedia UseCase
+        DIContainer.shared.register(
+            TemporaryStoreMediaUseCase.self,
+            object: DefaultTemporaryStoreMediaUseCase(repository: mediaRepository)
+        )
     }
     
     private func registerViewModelFactoryDependency() throws {
@@ -328,6 +334,15 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         DIContainer.shared.register(
             ReadPageViewModelFactory.self,
             object: ReadPageViewModelFactory(fetchMediaUseCase: fetchMediaUseCase)
+        )
+        
+        // MARK: - CreateMediaViewModel
+        let temporaryStoreMediaUseCase = try DIContainer.shared.resolve(TemporaryStoreMediaUseCase.self)
+        DIContainer.shared.register(
+            CreateAudioViewModelFactory.self,
+            object: CreateAudioViewModelFactory(
+                temporaryStoreMediaUseCase: temporaryStoreMediaUseCase
+            )
         )
     }
 }
