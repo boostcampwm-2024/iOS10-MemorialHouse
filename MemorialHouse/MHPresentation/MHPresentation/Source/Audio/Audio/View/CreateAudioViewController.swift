@@ -175,7 +175,6 @@ final class CreateAudioViewController: UIViewController {
         
         audioRecorder = try? AVAudioRecorder(url: url, settings: audioRecordersettings)
         audioRecorder?.isMeteringEnabled = true
-        print("URL: \(url)")
     }
     
     private func configureAddSubviews() {
@@ -244,6 +243,7 @@ final class CreateAudioViewController: UIViewController {
             self?.input.send(.audioButtonTapped)
         }, for: .touchUpInside)
     }
+    
     private func addTappedEventToCancelButton() {
         cancelButton.addAction(
             UIAction { [weak self] _ in
@@ -251,6 +251,7 @@ final class CreateAudioViewController: UIViewController {
             },
             for: .touchUpInside)
     }
+    
     private func addTappedEventToSaveButton() {
         saveButton.addAction(
             UIAction { [weak self] _ in
@@ -272,7 +273,7 @@ final class CreateAudioViewController: UIViewController {
                     self.present(alert, animated: true, completion: nil)
                 }
             } else {
-                AVAudioSession.sharedInstance().requestRecordPermission { granted in
+                AVAudioSession.sharedInstance().requestRecordPermission { @Sendable granted in
                     Task { @MainActor in
                         if !granted {
                             self.present(alert, animated: true, completion: nil)

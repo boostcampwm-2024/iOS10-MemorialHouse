@@ -150,17 +150,12 @@ final class MHAudioPlayerView: UIView {
     private func updateAudioPlayImage(audioPlayState state: AudioPlayState) {
         switch state {
         case .play:
-            MHLogger.debug("pause")
             audioStateButton.setImage(playImage, for: .normal)
             audioPlayer?.pause()
             audioPlayState = .pause
         case .pause:
             audioStateButton.setImage(pauseImage, for: .normal)
-            if audioPlayer?.play() == false {
-                MHLogger.error("do not play")
-            } else {
-                MHLogger.debug("do play")
-            }
+            audioPlayer?.play()
             audioPlayState = .play
         }
     }
@@ -170,9 +165,7 @@ final class MHAudioPlayerView: UIView {
         let width = ceil(Float(audioPlayer.currentTime) / Float(audioPlayer.duration) * Float(299))
         
         progressViewWidthConstraint?.constant = CGFloat(width)
-        UIView.animate(withDuration: 0) {
-            self.layoutIfNeeded()
-        }
+        self.layoutIfNeeded()
     }
     
     private func startTimer() {
@@ -183,8 +176,6 @@ final class MHAudioPlayerView: UIView {
                 if audioPlayer.isPlaying {
                     self?.updatePlayAudioProgress()
                     self?.setTimeLabel(seconds: Int(audioPlayer.currentTime))
-                } else {
-                    
                 }
             }
         }
@@ -205,8 +196,6 @@ final class MHAudioPlayerView: UIView {
 
 extension MHAudioPlayerView: AVAudioPlayerDelegate {
     nonisolated func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
-        MHLogger.debug("audio player finished")
-        
         Task { @MainActor in
             self.audioPlayState = .pause
             self.audioStateButton.setImage(playImage, for: .normal)
@@ -222,12 +211,9 @@ extension MHAudioPlayerView: AVAudioPlayerDelegate {
 }
 
 extension MHAudioPlayerView: @preconcurrency MediaAttachable {
-    func configureSource(with mediaDescription: MediaDescription, data: Data) {
-        
-    }
+    func configureSource(with mediaDescription: MediaDescription, data: Data) { }
     
     func configureSource(with mediaDescription: MediaDescription, url: URL) {
-        MHLogger.debug("configure source \(url)")
         audioPlayer = try? AVAudioPlayer(contentsOf: url)
         guard let audioPlayer else { return }
         audioPlayer.delegate = self

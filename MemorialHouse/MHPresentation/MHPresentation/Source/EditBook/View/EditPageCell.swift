@@ -250,18 +250,6 @@ final class EditPageCell: UITableViewCell {
                 attachment = mediaAttachment
             }
         return attachment
-    }    
-    private func mediaViewFactory(type: MediaType) -> UIView & MediaAttachable {
-        switch type {
-        case .image:
-            MHPolaroidPhotoView()
-        case .video:
-            MHVideoView()
-        case .audio:
-            MHAudioPlayerView()
-        default:
-            MHPolaroidPhotoView()
-        }
     }
     
     private func appendAttachment(_ attachment: MediaAttachment) {
