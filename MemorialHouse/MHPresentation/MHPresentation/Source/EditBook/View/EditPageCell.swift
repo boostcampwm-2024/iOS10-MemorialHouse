@@ -105,7 +105,9 @@ final class EditPageCell: UITableViewCell {
     }
     
     // MARK: - Method
-    func configure(viewModel: EditPageViewModel) {
+    func configure(
+        viewModel: EditPageViewModel
+    ) {
         self.viewModel = viewModel
         configureBinding()
         input.send(.pageWillAppear)
@@ -167,11 +169,11 @@ final class EditPageCell: UITableViewCell {
                 description: media
             )
         case .video:
-            // TODO: - video 추가 필요
-            attachment = MediaAttachment(
-                view: MHPolaroidPhotoView(),
-                description: media
-            )
+            let view = MHVideoView()
+                attachment = MediaAttachment(
+                    view: view,
+                    description: media
+                )
         case .audio:
             // TODO: - audio 추가 필요
             attachment = MediaAttachment(
@@ -195,11 +197,11 @@ final class EditPageCell: UITableViewCell {
                 description: media
             )
         case .video:
-            // TODO: - video 추가 필요
-            attachment = MediaAttachment(
-                view: MHPolaroidPhotoView(),
-                description: media
-            )
+            let view = MHVideoView()
+                attachment = MediaAttachment(
+                    view: view,
+                    description: media
+                )
         case .audio:
             // TODO: - audio 추가 필요
             attachment = MediaAttachment(
@@ -210,6 +212,7 @@ final class EditPageCell: UITableViewCell {
             break
         }
         guard let attachment else { return }
+        MHLogger.debug("mediaAddedWithURL: \(url)")
         attachment.configure(with: url)
         appendAttachment(attachment)
     }
