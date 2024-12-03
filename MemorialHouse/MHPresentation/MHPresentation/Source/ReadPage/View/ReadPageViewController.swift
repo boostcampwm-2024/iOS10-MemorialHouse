@@ -57,7 +57,9 @@ final class ReadPageViewController: UIViewController {
     private func bind() {
         let output = viewModel.transform(input: input.eraseToAnyPublisher())
         
-        output.sink { [weak self] event in
+        output
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] event in
             switch event {
             case .loadPage(let page):
                 guard let page else { return }
@@ -68,8 +70,7 @@ final class ReadPageViewController: UIViewController {
                 // TODO: Alert 띄우기 ?
                 MHLogger.error(message)
             }
-        }
-        .store(in: &cancellables)
+        }.store(in: &cancellables)
     }
     
     // MARK: - Setup & Configure
