@@ -279,14 +279,18 @@ extension HomeViewController: UICollectionViewDataSource {
             withReuseIdentifier: BookCollectionViewCell.identifier,
             for: indexPath
         ) as? BookCollectionViewCell else { return UICollectionViewCell() }
-        // TODO: Image Loader 필요 & 메모리 캐싱 필요
         
+        // TODO: 메모리 캐싱 필요
         let bookCover = viewModel.currentBookCovers[indexPath.item]
+        var targetImage: UIImage?
+        if let imageData = bookCover.imageData {
+            targetImage = UIImage(data: imageData)
+        }
         cell.configureCell(
             id: bookCover.id,
             title: bookCover.title,
             bookCoverImage: bookCover.color.image,
-            targetImage: UIImage(systemName: "person")!,
+            targetImage: targetImage,
             isLike: bookCover.favorite,
             houseName: viewModel.houseName
         )

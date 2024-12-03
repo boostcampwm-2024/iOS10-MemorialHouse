@@ -43,7 +43,7 @@ final class BookCollectionViewCell: UICollectionViewCell {
         id: UUID,
         title: String,
         bookCoverImage: UIImage,
-        targetImage: UIImage,
+        targetImage: UIImage?,
         isLike: Bool,
         houseName: String
     ) {

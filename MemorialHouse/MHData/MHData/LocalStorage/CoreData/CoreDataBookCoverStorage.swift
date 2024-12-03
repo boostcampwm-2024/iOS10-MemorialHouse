@@ -21,7 +21,7 @@ extension CoreDataBookCoverStorage: BookCoverStorage {
             bookCover.setValue(data.title, forKey: "title")
             bookCover.setValue(data.category, forKey: "category")
             bookCover.setValue(data.color, forKey: "color")
-            bookCover.setValue(data.imageURL, forKey: "imageURL")
+            bookCover.setValue(data.imageData, forKey: "imageData")
             bookCover.setValue(data.favorite, forKey: "favorite")
             
             try context.save()
@@ -45,7 +45,7 @@ extension CoreDataBookCoverStorage: BookCoverStorage {
             newEntity.setValue(data.title, forKey: "title")
             newEntity.setValue(data.category, forKey: "category")
             newEntity.setValue(data.color, forKey: "color")
-            newEntity.setValue(data.imageURL, forKey: "imageURL")
+            newEntity.setValue(data.imageData, forKey: "imageData")
             newEntity.setValue(data.favorite, forKey: "favorite")
             
             try context.save()
@@ -83,7 +83,7 @@ extension CoreDataBookCoverStorage {
             id: id,
             order: Int(bookCover.order),
             title: title,
-            imageURL: bookCover.imageURL,
+            imageData: bookCover.imageData,
             color: color,
             category: bookCover.category,
             favorite: bookCover.favorite
