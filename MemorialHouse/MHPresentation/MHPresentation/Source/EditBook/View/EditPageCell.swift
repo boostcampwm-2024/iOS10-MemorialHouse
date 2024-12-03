@@ -202,9 +202,8 @@ final class EditPageCell: UITableViewCell {
                 description: media
             )
         case .video:
-            let view = MHVideoView()
             attachment = MediaAttachment(
-                view: view,
+                view: MHVideoView(),
                 description: media
             )
         case .audio:
@@ -217,7 +216,6 @@ final class EditPageCell: UITableViewCell {
             break
         }
         guard let attachment else { return }
-        MHLogger.debug("mediaAddedWithURL: \(url)")
         attachment.configure(with: url)
         appendAttachment(attachment)
     }
