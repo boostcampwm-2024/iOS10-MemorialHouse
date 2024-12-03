@@ -69,17 +69,21 @@ final class EditPageViewModel: ViewModelType {
         
         return output.eraseToAnyPublisher()
     }
+    
     private func pageWillAppear() {
         output.send(.page(page: page))
     }
+    
     private func pageWillDisappear() {
         cancellables.forEach { $0.cancel() }
         cancellables = []
     }
+    
     private func didEditPage(text: NSAttributedString) {
         let page = converTextToPage(text: text)
         self.page = page
     }
+    
     private func loadMediaForData(media: MediaDescription) async {
         do {
             let mediaData: Data = try await fetchMediaUseCase.execute(media: media, in: bookID)
@@ -89,6 +93,7 @@ final class EditPageViewModel: ViewModelType {
             MHLogger.error(error.localizedDescription + #function)
         }
     }
+    
     private func loadMediaForURL(media: MediaDescription) async {
         do {
             let mediaURL: URL = try await fetchMediaUseCase.execute(media: media, in: bookID)
@@ -103,9 +108,11 @@ final class EditPageViewModel: ViewModelType {
     func addMedia(media: MediaDescription, data: Data) {
         output.send(.mediaAddedWithData(media: media, data: data))
     }
+    
     func addMedia(media: MediaDescription, url: URL) {
         output.send(.mediaAddedWithURL(media: media, url: url))
     }
+    
     func didBeginEditingPage() {
         delegate?.didBeginEditingPage(self, page: page)
     }
@@ -120,6 +127,7 @@ final class EditPageViewModel: ViewModelType {
         )
         return newPage
     }
+    
     /// NSAttributedString에서 Text와 Attachment 정보를 추출해냅니다.
     private func separateStorageInformation(
         _ text: NSAttributedString

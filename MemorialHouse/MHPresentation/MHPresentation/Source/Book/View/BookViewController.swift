@@ -35,14 +35,20 @@ final class BookViewController: UIViewController {
         setup()
         configureNavigationBar()
         configureConstraints()
-        input.send(.viewDidLoad)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        input.send(.loadBook)
     }
     
     // MARK: - Binding
     private func bind() {
         let output = viewModel.transform(input: input.eraseToAnyPublisher())
         
-        output.receive(on: DispatchQueue.main)
+        output
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] event in
             switch event {
             case .setBookTitle(let bookTitle):
@@ -50,6 +56,8 @@ final class BookViewController: UIViewController {
             case .loadFirstPage(let page):
                 guard let page else { return }
                 self?.configureFirstPageViewController(firstPage: page)
+            case .moveToEdit(let bookID):
+                self?.presentEditBookView(bookID: bookID)
             }
         }
         .store(in: &cancellables)
@@ -94,8 +102,8 @@ final class BookViewController: UIViewController {
             title: "수정",
             normal: normalAttributes,
             selected: selectedAttributes
-        ) {
-            // TODO: - 추후 책 속지 수정 페이지로 넘어가는 로직 필요
+        ) { [weak self] in
+            self?.input.send(.editBook)
         }
     }
     
@@ -118,6 +126,18 @@ final class BookViewController: UIViewController {
         let readPageViewModel = readPageViewModelFactory.make(bookID: viewModel.identifier, page: page)
         
         return ReadPageViewController(viewModel: readPageViewModel)
+    }
+    
+    // MARK: - PresentEditBookView
+    private func presentEditBookView(bookID: UUID) {
+        do {
+            let editBookViewModelFactory = try DIContainer.shared.resolve(EditBookViewModelFactory.self)
+            let editBookViewModel = editBookViewModelFactory.make(bookID: bookID)
+            let editBookViewController = EditBookViewController(viewModel: editBookViewModel, mode: .modify)
+            navigationController?.pushViewController(editBookViewController, animated: true)
+        } catch {
+            MHLogger.error(error)
+        }
     }
 }
 

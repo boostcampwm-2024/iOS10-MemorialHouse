@@ -30,4 +30,20 @@ actor LocalPhotoManager {
                 Task { await completion(image) }
         })
     }
+    
+    func requestVideoURL(
+        with asset: PHAsset
+    ) async -> URL? {
+        await withCheckedContinuation { continuation in
+            let options = PHVideoRequestOptions()
+            options.version = .current
+            imageManager.requestAVAsset(forVideo: asset, options: options) { avAsset, _, _ in
+                if let urlAsset = avAsset as? AVURLAsset {
+                    continuation.resume(returning: urlAsset.url)
+                } else {
+                    continuation.resume(returning: nil)
+                }
+            }
+        }
+    }
 }

@@ -24,7 +24,7 @@ final class EditPhotoViewController: UIViewController {
         return scrollView
     }()
     private let photoImageView: UIImageView = {
-       let imageView = UIImageView()
+        let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
         imageView.backgroundColor = .clear
         imageView.isUserInteractionEnabled = true
@@ -147,9 +147,9 @@ final class EditPhotoViewController: UIViewController {
             .font: UIFont.ownglyphBerry(size: 17)
         ]
         
-        // Left Bar Button: 닫기
+        // Left Bar Button: 취소
         navigationItem.leftBarButtonItem = UIBarButtonItem(
-            title: "닫기",
+            title: "취소",
             normal: normalAttributes,
             selected: selectedAttributes
         ) { [weak self] in
@@ -338,7 +338,7 @@ extension EditPhotoViewController: UIScrollViewDelegate {
             contentOffset.x = (scrollView.contentSize.width - scrollViewSize.width) / 2
             scrollView.setContentOffset(contentOffset, animated: animated)
         }
-
+        
         if photoSize.height < scrollViewSize.height {
             contentOffset.y = (scrollView.contentSize.height - scrollViewSize.height) / 2
             scrollView.setContentOffset(contentOffset, animated: animated)

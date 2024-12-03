@@ -57,19 +57,21 @@ final class ReadPageViewController: UIViewController {
     private func bind() {
         let output = viewModel.transform(input: input.eraseToAnyPublisher())
         
-        output.sink { [weak self] event in
-            switch event {
-            case .loadPage(let page):
-                guard let page else { return }
-                self?.configurePage(page: page)
-            case .mediaLoadedWithData(let media, let data):
-                self?.mediaLoadedWithData(media: media, data: data)
-            case .error(let message):
-                // TODO: Alert 띄우기 ?
-                MHLogger.error(message)
-            }
-        }
-        .store(in: &cancellables)
+        output
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] event in
+                switch event {
+                case .loadPage(let page):
+                    guard let page else { return }
+                    self?.configurePage(page: page)
+                case .mediaLoadedWithData(let media, let data):
+                    self?.mediaLoadedWithData(media: media, data: data)
+                case .mediaLoadedWithURL(let media, let url):
+                    self?.mediaLoadedWithURL(media: media, url: url)
+                case .error(let message):
+                    self?.showErrorAlert(with: message)
+                }
+            }.store(in: &cancellables)
     }
     
     // MARK: - Setup & Configure
@@ -112,10 +114,16 @@ final class ReadPageViewController: UIViewController {
                     view: MHPolaroidPhotoView(),
                     description: description
                 )
+                input.send(.didRequestMediaDataForData(media: description))
+            case .video:
+                mediaAttachment = MediaAttachment(
+                    view: MHVideoView(),
+                    description: description
+                )
+                input.send(.didRequestMediaDataForURL(media: description))
             default:
                 break
             }
-            input.send(.didRequestMediaDataForData(media: description))
             
             guard let mediaAttachment else { return }
             let range = NSRange(location: location, length: 1)

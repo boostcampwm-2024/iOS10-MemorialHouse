@@ -67,21 +67,9 @@ final class BookCategoryViewController: UIViewController {
             case .createdCategory, .updatedCategory, .fetchCategories, .deletedCategory:
                 self?.categoryTableView.reloadData()
             case .failed(let errorMessage):
-                self?.handleError(with: errorMessage)
+                self?.showErrorAlert(with: errorMessage)
             }
         }.store(in: &cancellables)
-    }
-    
-    private func handleError(with errorMessage: String) {
-        let alertController = UIAlertController(
-            title: "에러",
-            message: errorMessage,
-            preferredStyle: .alert
-        )
-        let okAction = UIAlertAction(title: "확인", style: .default)
-        alertController.addAction(okAction)
-        
-        present(alertController, animated: true)
     }
     
     private func configureNavigationBar() {

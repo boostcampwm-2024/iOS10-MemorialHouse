@@ -10,12 +10,16 @@ final class EditBookViewModel: ViewModelType {
         case didAddMediaWithData(type: MediaType, data: Data)
         case didAddMediaInURL(type: MediaType, url: URL)
         case didAddMediaInTemporary(media: MediaDescription)
+        case didAddMediaWithData(type: MediaType, attributes: [String: any Sendable]?, data: Data)
+        case didAddMediaInURL(type: MediaType, attributes: [String: any Sendable]?, url: URL)
         case addPageButtonTapped
         case didSaveButtonTapped
         case didCancelButtonTapped
     }
     enum Output {
         case updateViewController(title: String)
+        case saveDone
+        case revokeDone
         case error(message: String)
     }
     
@@ -64,6 +68,10 @@ final class EditBookViewModel: ViewModelType {
                 Task { await self?.addMedia(type: type, in: url) }
             case let .didAddMediaInTemporary(media):
                 Task { await self?.addMedia(media) }
+            case let .didAddMediaWithData(type, attributes, data):
+                Task { await self?.addMedia(type: type, attributes: attributes, with: data) }
+            case let .didAddMediaInURL(type, attributes, url):
+                Task { await self?.addMedia(type: type, attributes: attributes, in: url) }
             case .addPageButtonTapped:
                 self?.addEmptyPage()
             case .didSaveButtonTapped:
@@ -75,6 +83,7 @@ final class EditBookViewModel: ViewModelType {
         
         return output.eraseToAnyPublisher()
     }
+    
     private func fetchBook() async {
         do {
             let book = try await fetchBookUseCase.execute(id: bookID)
@@ -95,11 +104,9 @@ final class EditBookViewModel: ViewModelType {
             MHLogger.error(error.localizedDescription + #function)
         }
     }
-    private func addMedia(type: MediaType, with data: Data) async {
-        let description = MediaDescription(
-            id: UUID(),
-            type: type
-        )
+    
+    private func addMedia(type: MediaType, attributes: [String: any Sendable]?, with data: Data) async {
+        let description = MediaDescription(type: type, attributes: attributes)
         do {
             try await createMediaUseCase.execute(media: description, data: data, at: bookID)
             editPageViewModels[currentPageIndex].addMedia(media: description, data: data)
@@ -108,11 +115,9 @@ final class EditBookViewModel: ViewModelType {
             MHLogger.error(error.localizedDescription + #function)
         }
     }
-    private func addMedia(type: MediaType, in url: URL) async {
-        let description = MediaDescription(
-            id: UUID(),
-            type: type
-        )
+    
+    private func addMedia(type: MediaType, attributes: [String: any Sendable]?, in url: URL) async {
+        let description = MediaDescription(type: type, attributes: attributes)
         do {
             try await createMediaUseCase.execute(media: description, from: url, at: bookID)
             editPageViewModels[currentPageIndex].addMedia(media: description, url: url)
@@ -132,17 +137,17 @@ final class EditBookViewModel: ViewModelType {
         }
     }
     private func addEmptyPage() {
-        let page = Page(id: UUID(), metadata: [:], text: "")
         let editPageViewModel = EditPageViewModel(
             fetchMediaUseCase: fetchMediaUseCase,
             deleteMediaUseCase: deleteMediaUseCase,
             bookID: bookID,
-            page: page
+            page: Page()
         )
         editPageViewModel.delegate = self
         editPageViewModels.append(editPageViewModel)
         output.send(.updateViewController(title: title))
     }
+    
     private func saveMediaAll() async {
         let pages = editPageViewModels.map { $0.page }
         let book = Book(id: bookID, title: title, pages: pages)
@@ -150,14 +155,17 @@ final class EditBookViewModel: ViewModelType {
         do {
             try await updateBookUseCase.execute(id: bookID, book: book)
             try await storeMediaUseCase.execute(to: bookID, mediaList: mediaList)
+            output.send(.saveDone)
         } catch {
             output.send(.error(message: "책을 저장하는데 실패했습니다."))
             MHLogger.error(error.localizedDescription + #function)
         }
     }
+    
     private func revokeMediaAll() async {
         do {
             try await storeMediaUseCase.execute(to: bookID, mediaList: nil)
+            output.send(.revokeDone)
         } catch {
             output.send(.error(message: "저장 취소하는데 실패했습니다."))
             MHLogger.error(error.localizedDescription + #function)
@@ -168,6 +176,7 @@ final class EditBookViewModel: ViewModelType {
     func numberOfPages() -> Int {
         return editPageViewModels.count
     }
+    
     func editPageViewModel(at index: Int) -> EditPageViewModel {
         let editPageViewModel = editPageViewModels[index]
         

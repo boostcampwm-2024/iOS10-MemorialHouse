@@ -313,6 +313,7 @@ extension BookCoverViewController {
             self?.modifyInput.send(.saveBookCover)
         }
     }
+    
     private func configureAddSubviews() {
         view.addSubview(bookPreviewViewBackground)
         view.addSubview(bookTitleTextFieldBackground)
@@ -320,6 +321,7 @@ extension BookCoverViewController {
         view.addSubview(categorySelectionButtonBackground)
         view.addSubview(imageSelectionButtonBackground)
     }
+    
     private func configureConstraints() {
         bookPreviewViewBackground.setAnchor(
             top: view.safeAreaLayoutGuide.topAnchor,
@@ -352,6 +354,7 @@ extension BookCoverViewController {
             height: 63
         )
     }
+    
     private func configureAction() {
         bookColorButtons.enumerated().forEach { index, button in
             let colorButtonAction = UIAction { [weak self] _ in
@@ -377,7 +380,8 @@ extension BookCoverViewController {
             let customAlbumViewController = CustomAlbumViewController(
                 viewModel: albumViewModel,
                 mediaType: .image,
-                mode: .bookCover
+                mode: .bookCover,
+                videoSelectCompletionHandler: nil
             ) { imageData, _, _ in
                 self?.createInput.send(.changedBookImage(bookImage: imageData))
                 self?.modifyInput.send(.changedBookImage(bookImage: imageData))
@@ -393,6 +397,7 @@ extension BookCoverViewController {
         }
         categorySelectionButton.addAction(selectCategoryAction, for: .touchUpInside)
     }
+    
     private func configuredColorButtons() -> UIView {
         let firstLineColorButtonStackView  = UIStackView()
         firstLineColorButtonStackView.axis = .horizontal
