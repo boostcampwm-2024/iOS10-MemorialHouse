@@ -114,6 +114,12 @@ final class ReadPageViewController: UIViewController {
                     view: MHPolaroidPhotoView(),
                     description: description
                 )
+            case .video:
+                let view = MHVideoView()
+                mediaAttachment = MediaAttachment(
+                    view: view,
+                    description: description
+                )
             default:
                 break
             }
