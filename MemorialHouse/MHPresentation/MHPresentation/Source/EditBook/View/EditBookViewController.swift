@@ -229,15 +229,11 @@ final class EditBookViewController: UIViewController {
         
         let addAudioAction = UIAction { [weak self] _ in
             guard let self else { return }
-            let audioViewModel = CreateAudioViewModel(
-                forBookID: viewModel.bookID) { [weak self] result in
-                    switch result {
-                    case .success(let url):
-                        self?.input.send(.didAddMediaInURL(type: .audio, url: url))
-                    case .failure(let failure):
-                        return
-                    }
-                }
+            guard let audioViewModelFactory = try? DIContainer.shared.resolve(CreateAudioViewModelFactory.self) else { return }
+            let audioViewModel = audioViewModelFactory.make { [weak self] mediaDescription in
+                guard let mediaDescription else { return }
+                self?.input.send(.didAddMediaInTemporary(media: mediaDescription))
+            }
             let audioViewController = CreateAudioViewController(viewModel: audioViewModel)
             
             if let sheet = audioViewController.sheetPresentationController {
