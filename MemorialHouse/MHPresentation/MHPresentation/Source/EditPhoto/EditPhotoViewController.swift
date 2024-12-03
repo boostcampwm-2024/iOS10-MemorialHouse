@@ -147,9 +147,9 @@ final class EditPhotoViewController: UIViewController {
             .font: UIFont.ownglyphBerry(size: 17)
         ]
         
-        // Left Bar Button: 닫기
+        // Left Bar Button: 취소
         navigationItem.leftBarButtonItem = UIBarButtonItem(
-            title: "닫기",
+            title: "취소",
             normal: normalAttributes,
             selected: selectedAttributes
         ) { [weak self] in
