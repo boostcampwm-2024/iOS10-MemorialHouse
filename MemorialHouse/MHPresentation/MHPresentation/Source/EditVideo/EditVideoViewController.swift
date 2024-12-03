@@ -1,17 +1,17 @@
-import UIKit
-import MHCore
 import AVKit
 
 final class EditVideoViewController: UIViewController {
     // MARK: - Properties
     private let videoURL: URL
     private let completion: (URL) -> Void
-    
-    // MARK: Initializer
+    private let videoView: MHVideoView
+
+    // MARK: - Initializer
     init(videoURL: URL, videoSelectCompletionHandler: @escaping (URL) -> Void) {
         self.videoURL = videoURL
         self.completion = videoSelectCompletionHandler
-        MHLogger.info("\(#function) 비디오 URL: \(videoURL)")
+        let player = AVPlayer(url: videoURL)
+        self.videoView = MHVideoView(player: player)
         
         super.init(nibName: nil, bundle: nil)
     }
@@ -19,6 +19,8 @@ final class EditVideoViewController: UIViewController {
     required init?(coder: NSCoder) {
         self.videoURL = URL(fileURLWithPath: "")
         self.completion = { _ in }
+        let player = AVPlayer(url: videoURL)
+        self.videoView = MHVideoView(player: player)
         
         super.init(coder: coder)
     }
@@ -26,11 +28,13 @@ final class EditVideoViewController: UIViewController {
     // MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        configureAudioSessionForPlayback()
         setup()
-        configureAddSubView()
-        configureConstraints()
+        configureVideoView()
         configureNavigationBar()
+
+        // 부모 컨트롤러에 AVPlayerViewController 연결
+        videoView.attachPlayerViewController(to: self)
     }
     
     // MARK: - Setup & Configuration
@@ -38,20 +42,9 @@ final class EditVideoViewController: UIViewController {
         view.backgroundColor = .baseBackground
     }
     
-    private func configureAddSubView() {
-        let player = AVPlayer(url: videoURL)
-        let playerViewController = AVPlayerViewController()
-        playerViewController.player = player
-        playerViewController.view.frame = view.frame
-        playerViewController.showsPlaybackControls = true
-        
-        addChild(playerViewController)
-        view.addSubview(playerViewController.view)
-        playerViewController.didMove(toParent: self)
-    }
-    
-    private func configureConstraints() {
-        
+    private func configureVideoView() {
+        view.addSubview(videoView)
+        videoView.fillSuperview()
     }
     
     private func configureNavigationBar() {
@@ -60,7 +53,7 @@ final class EditVideoViewController: UIViewController {
             .font: UIFont.ownglyphBerry(size: 17),
             .foregroundColor: UIColor.black
         ]
-        navigationItem.title = "동영상 편집"
+        navigationItem.title = "동영상 업로드" // TODO: 동영상 편집 로직 변경 필요
         
         // 공통 스타일 정의
         let normalAttributes: [NSAttributedString.Key: Any] = [
