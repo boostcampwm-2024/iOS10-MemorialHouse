@@ -122,7 +122,14 @@ final class CustomAlbumViewController: UIViewController {
             normal: normalAttributes,
             selected: selectedAttributes
         ) { [weak self] in
-            self?.dismiss(animated: true)
+            switch self?.mode {
+            case .bookCover:
+                self?.dismiss(animated: true)
+            case .editPage:
+                self?.navigationController?.popViewController(animated: true)
+            default:
+                break
+            }
         }
     }
     
