@@ -228,21 +228,24 @@ final class EditBookViewController: UIViewController {
         addVideoButton.addAction(addVideoAction, for: .touchUpInside)
         
         let addAudioAction = UIAction { [weak self] _ in
-            // TODO: - 오디오 추가 로직
-            let audioViewModel = CreateAudioViewModel()
+            guard let self else { return }
+            let audioViewModel = CreateAudioViewModel(
+                forBookID: viewModel.bookID) { [weak self] result in
+                    switch result {
+                    case .success(let url):
+                        self?.input.send(.didAddMediaInURL(type: .audio, url: url))
+                    case .failure(let failure):
+                        return
+                    }
+                }
             let audioViewController = CreateAudioViewController(viewModel: audioViewModel)
             
-            audioViewController.audioCreationCompletion = { url in
-                guard let url else { return }
-                MHLogger.debug(url)
-                self?.input.send(.didAddMediaInURL(type: .audio, url: url))
-            }
             if let sheet = audioViewController.sheetPresentationController {
                 sheet.detents = [.custom { detent in 0.35 * detent.maximumDetentValue }]
                 sheet.prefersGrabberVisible = true
             }
             
-            self?.present(audioViewController, animated: true)
+            present(audioViewController, animated: true)
         }
         addAudioButton.addAction(addAudioAction, for: .touchUpInside)
         

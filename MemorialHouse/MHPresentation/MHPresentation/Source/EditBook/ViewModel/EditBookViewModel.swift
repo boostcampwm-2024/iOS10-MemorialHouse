@@ -27,7 +27,7 @@ final class EditBookViewModel: ViewModelType {
     private let createMediaUseCase: CreateMediaUseCase
     private let fetchMediaUseCase: FetchMediaUseCase
     private let deleteMediaUseCase: DeleteMediaUseCase
-    private let bookID: UUID
+    let bookID: UUID
     private var title: String = ""
     private var editPageViewModels: [EditPageViewModel] = []
     private var currentPageIndex = 0
