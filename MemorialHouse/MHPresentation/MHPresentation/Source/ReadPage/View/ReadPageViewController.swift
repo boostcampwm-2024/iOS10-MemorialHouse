@@ -67,8 +67,7 @@ final class ReadPageViewController: UIViewController {
             case .mediaLoadedWithData(let media, let data):
                 self?.mediaLoadedWithData(media: media, data: data)
             case .error(let message):
-                // TODO: Alert 띄우기 ?
-                MHLogger.error(message)
+                self?.showErrorAlert(with: message)
             }
         }.store(in: &cancellables)
     }
