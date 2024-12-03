@@ -7,8 +7,6 @@ final class EditBookViewModel: ViewModelType {
     // MARK: - Type
     enum Input {
         case viewDidLoad
-        case didAddMediaWithData(type: MediaType, data: Data)
-        case didAddMediaInURL(type: MediaType, url: URL)
         case didAddMediaInTemporary(media: MediaDescription)
         case didAddMediaWithData(type: MediaType, attributes: [String: any Sendable]?, data: Data)
         case didAddMediaInURL(type: MediaType, attributes: [String: any Sendable]?, url: URL)
@@ -62,10 +60,6 @@ final class EditBookViewModel: ViewModelType {
             switch event {
             case .viewDidLoad:
                 Task { await self?.fetchBook() }
-            case let .didAddMediaWithData(type, data):
-                Task { await self?.addMedia(type: type, with: data) }
-            case let .didAddMediaInURL(type, url):
-                Task { await self?.addMedia(type: type, in: url) }
             case let .didAddMediaInTemporary(media):
                 Task { await self?.addMedia(media) }
             case let .didAddMediaWithData(type, attributes, data):
