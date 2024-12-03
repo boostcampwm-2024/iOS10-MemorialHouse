@@ -31,7 +31,7 @@ final public class CreateAudioViewController: UIViewController {
     ]
     // UUID
     private let identifier: UUID = UUID()
-    var audioCreationCompletion: (((UUID?) -> Void))?
+    var audioCreationCompletion: (((URL?) -> Void))?
     
     // MARK: - UI Component
     // title and buttons
@@ -371,20 +371,25 @@ final public class CreateAudioViewController: UIViewController {
     }
     private func addTappedEventToCancelButton() {
         cancelButton.addAction(
-            UIAction { [weak self]_ in
+            UIAction { [weak self] _ in
                 self?.dismiss(animated: true)
             },
             for: .touchUpInside)
     }
     private func addTappedEventToSaveButton() {
-        saveButton.addAction(UIAction { [weak self] _ in
-            self?.completeAudioCreation(uuid: self?.identifier)
+        saveButton.addAction(
+            UIAction { [weak self] _ in
+                self?.completeAudioCreation(uuid: self?.identifier)
         }, for: .touchUpInside)
     }
     
     private func completeAudioCreation(uuid: UUID?) {
+        guard let uuid else { return }
+        let documentPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        let filePath = documentPath.appendingPathComponent("\(uuid).m4a")
+        
         self.input.send(.saveButtonTapped)
         dismiss(animated: true)
-        audioCreationCompletion?(uuid)
+        audioCreationCompletion?(filePath)
     }
 }
