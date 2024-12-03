@@ -159,16 +159,22 @@ final public class CreateAudioViewController: UIViewController {
     }
     
     private func requestMicrophonePermission() {
-        AVAudioSession.sharedInstance().requestRecordPermission { @Sendable granted in
-            if !granted {
-                Task { @MainActor in
-                    let alert = UIAlertController(
-                        title: "마이크 권한 필요",
-                        message: "설정에서 마이크 권한을 허용해주세요.",
-                        preferredStyle: .alert
-                    )
-                    alert.addAction(UIAlertAction(title: "OK", style: .default))
+        let alert = UIAlertController(
+            title: "마이크 권한 필요",
+            message: "설정에서 마이크 권한을 허용해주세요.",
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        Task {
+            if #available(iOS 17, *) {
+                if await !AVAudioApplication.requestRecordPermission() {
                     self.present(alert, animated: true, completion: nil)
+                }
+            } else {
+                AVAudioSession.sharedInstance().requestRecordPermission { @MainActor granted in
+                    if !granted {
+                        self.present(alert, animated: true, completion: nil)
+                    }
                 }
             }
         }
