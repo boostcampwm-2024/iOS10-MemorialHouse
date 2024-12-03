@@ -40,11 +40,11 @@ final class CustomAlbumViewController: UIViewController {
         mode: Mode = .editPage,
         videoSelectCompletionHandler: ((URL) -> Void)? = nil,
         photoSelectCompletionHandler: ((Data, Date?, String?) -> Void)? = nil
-     ) {
+    ) {
         self.viewModel = viewModel
         self.mediaType = mediaType
         self.mode = mode
-         self.videoSelectCompletionHandler = videoSelectCompletionHandler
+        self.videoSelectCompletionHandler = videoSelectCompletionHandler
         self.photoSelectCompletionHandler = photoSelectCompletionHandler
         
         super.init(nibName: nil, bundle: nil)
@@ -169,7 +169,7 @@ final class CustomAlbumViewController: UIViewController {
     // MARK: - Media
     private func checkThumbnailAuthorization() {
         let authorization = PHPhotoLibrary.authorizationStatus()
-
+        
         switch authorization {
         case .notDetermined:
             PHPhotoLibrary.requestAuthorization(for: .readWrite) { @Sendable [weak self] status in
@@ -269,7 +269,7 @@ extension CustomAlbumViewController: UICollectionViewDelegate {
             self.checkCameraAuthorization()
         } else {
             guard let asset = viewModel.photoAsset?[indexPath.item - 1] else { return }
-
+            
             if self.mediaType == .image {
                 handleImageSelection(with: asset)
             } else {
@@ -286,7 +286,7 @@ extension CustomAlbumViewController: UICollectionViewDelegate {
             }
         }
     }
-
+    
     private func handleVideoSelection(with asset: PHAsset) {
         Task {
             if let videoURL = await LocalPhotoManager.shared.requestVideoURL(with: asset) {
