@@ -373,5 +373,4 @@ final class CreateAudioViewController: UIViewController {
         let seconds = recordingSeconds % 60
         timeTextLabel.text = String(format: "%02d:%02d", minutes, seconds)
     }
-    
 }

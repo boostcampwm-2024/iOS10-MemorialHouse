@@ -2,6 +2,7 @@ import Foundation
 import MHData
 import Combine
 import MHCore
+import MHDomain
 
 final class CreateAudioViewModel: ViewModelType {
     // MARK: - Type
@@ -25,6 +26,7 @@ final class CreateAudioViewModel: ViewModelType {
     private let completion: (Result<URL, Error>) -> Void
     private let forBookID: UUID
     private var fileURL: URL?
+    private var temporaryStoreMediaUsecase: TemporaryStoreMediaUseCase?
     
     // MARK: - Initializer
     init(forBookID: UUID, completion: @escaping (Result<URL, Error>) -> Void) {
@@ -56,6 +58,8 @@ final class CreateAudioViewModel: ViewModelType {
             let url = try await MHFileManager(directoryType: .documentDirectory)
                 .getURL(at: forBookID.uuidString, fileName: "temp.m4a")
                 .get()
+            
+            let url = try await temporaryStoreMediaUsecase?.execute(media: <#T##MediaDescription#>).get()
             fileURL = url
             output.send(.audioFileURL(url: url))
         } catch {

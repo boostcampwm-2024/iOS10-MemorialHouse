@@ -190,6 +190,7 @@ final class EditPageCell: UITableViewCell {
         default:
             MHPolaroidPhotoView()
         }
+    }
     private func appendAttachment(_ attachment: MediaAttachment) {
         guard let textStorage else { return }
         let text = NSMutableAttributedString(attachment: attachment)
