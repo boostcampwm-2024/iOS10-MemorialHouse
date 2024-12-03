@@ -4,7 +4,6 @@ import MHDomain
 import MHCore
 import AVFoundation
 
-// TODO: nil이라면 바로 error를 return하도록 수정
 public struct LocalMediaRepository: MediaRepository, Sendable {
     private let storage: FileStorage
     private let temporaryPath = "temp" // TODO: - 지워질 것임!
@@ -26,6 +25,7 @@ public struct LocalMediaRepository: MediaRepository, Sendable {
         
         return await storage.create(at: path, fileName: fileName, data: data)
     }
+    
     public func create(
         media mediaDescription: MediaDescription,
         from: URL,
