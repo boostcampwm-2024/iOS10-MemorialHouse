@@ -70,8 +70,7 @@ final class ReadPageViewController: UIViewController {
                 // TODO: Alert 띄우기 ?
                 MHLogger.error(message)
             }
-        }
-        .store(in: &cancellables)
+        }.store(in: &cancellables)
     }
     
     // MARK: - Setup & Configure

@@ -5,6 +5,10 @@ import Combine
 
 // TODO: - 페이지 없애는 기능 추가
 final class EditBookViewController: UIViewController {
+    enum Mode {
+        case create
+        case modify
+    }
     // MARK: - Constant
     static let buttonBottomConstant: CGFloat = -20
     
@@ -76,16 +80,24 @@ final class EditBookViewController: UIViewController {
     private let viewModel: EditBookViewModel
     private let input = PassthroughSubject<EditBookViewModel.Input, Never>()
     private var cancellables = Set<AnyCancellable>()
+    private let mode: Mode
     
     // MARK: - Initializer
-    init(viewModel: EditBookViewModel) {
+    init(
+        viewModel: EditBookViewModel,
+        mode: Mode = .create
+    ) {
         self.viewModel = viewModel
+        self.mode = mode
         
         super.init(nibName: nil, bundle: nil)
     }
+    
     required init?(coder: NSCoder) {
         guard let viewModel = try? DIContainer.shared.resolve(EditBookViewModelFactory.self) else { return nil }
         self.viewModel = viewModel.make(bookID: .init())
+        self.mode = .create
+        
         super.init(coder: coder)
     }
     
@@ -135,19 +147,28 @@ final class EditBookViewController: UIViewController {
             alert.addAction(UIAlertAction(title: "취소", style: .cancel))
             alert.addAction(UIAlertAction(title: "확인", style: .default) { _ in
                 self?.input.send(.didCancelButtonTapped)
-                self?.navigationController?.popViewController(animated: true)
             })
             self?.present(alert, animated: true)
         }
         
         // 네비게이션 오른쪽 아이템
-        navigationItem.rightBarButtonItem = UIBarButtonItem(
-            title: "기록 마치기",
-            normal: normalAttributes,
-            selected: selectedAttributes
-        ) { [weak self] in
-            self?.input.send(.didSaveButtonTapped)
-            self?.navigationController?.popToRootViewController(animated: true)
+        switch mode {
+        case .create:
+            navigationItem.rightBarButtonItem = UIBarButtonItem(
+                title: "기록 마치기",
+                normal: normalAttributes,
+                selected: selectedAttributes
+            ) { [weak self] in
+                self?.input.send(.didSaveButtonTapped)
+            }
+        case .modify:
+            navigationItem.rightBarButtonItem = UIBarButtonItem(
+                title: "수정 마치기",
+                normal: normalAttributes,
+                selected: selectedAttributes
+            ) { [weak self] in
+                self?.input.send(.didSaveButtonTapped)
+            }
         }
     }
     private func configureAddSubView() {
@@ -203,12 +224,24 @@ final class EditBookViewController: UIViewController {
     }
     private func configureBinding() {
         let output = viewModel.transform(input: input.eraseToAnyPublisher())
-        output.receive(on: DispatchQueue.main)
+        
+        output
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] event in
                 switch event {
-                case let .updateViewController(title):
+                case .updateViewController(let title):
                     self?.navigationItem.title = title
                     self?.editPageTableView.reloadData()
+                case .saveDone:
+                    guard let self else { return }
+                    switch self.mode {
+                    case .create:
+                        self.navigationController?.popToRootViewController(animated: true)
+                    case .modify:
+                        self.navigationController?.popViewController(animated: true)
+                    }
+                case .revokeDone:
+                    self?.navigationController?.popViewController(animated: true)
                 case .error(message: let message):
                     MHLogger.error(message) // TODO: - Alert 띄우기
                 }

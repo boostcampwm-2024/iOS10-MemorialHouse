@@ -15,6 +15,8 @@ final class EditBookViewModel: ViewModelType {
     }
     enum Output {
         case updateViewController(title: String)
+        case saveDone
+        case revokeDone
         case error(message: String)
     }
     
@@ -135,6 +137,7 @@ final class EditBookViewModel: ViewModelType {
         do {
             try await updateBookUseCase.execute(id: bookID, book: book)
             try await storeMediaUseCase.execute(to: bookID, mediaList: mediaList)
+            output.send(.saveDone)
         } catch {
             output.send(.error(message: "책을 저장하는데 실패했습니다."))
             MHLogger.error(error.localizedDescription + #function)
@@ -144,6 +147,7 @@ final class EditBookViewModel: ViewModelType {
     private func revokeMediaAll() async {
         do {
             try await storeMediaUseCase.execute(to: bookID, mediaList: nil)
+            output.send(.revokeDone)
         } catch {
             output.send(.error(message: "저장 취소하는데 실패했습니다."))
             MHLogger.error(error.localizedDescription + #function)
@@ -154,6 +158,7 @@ final class EditBookViewModel: ViewModelType {
     func numberOfPages() -> Int {
         return editPageViewModels.count
     }
+    
     func editPageViewModel(at index: Int) -> EditPageViewModel {
         let editPageViewModel = editPageViewModels[index]
         
