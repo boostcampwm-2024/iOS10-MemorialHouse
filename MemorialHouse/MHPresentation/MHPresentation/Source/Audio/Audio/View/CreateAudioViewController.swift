@@ -239,23 +239,27 @@ final class CreateAudioViewController: UIViewController {
     }
     
     private func addTappedEventToAudioButton() {
-        audioButton.addAction(UIAction { [weak self] _ in
-            self?.input.send(.audioButtonTapped)
-        }, for: .touchUpInside)
+        audioButton.addAction(
+            UIAction { [weak self] _ in
+                self?.input.send(.audioButtonTapped)
+            }, for: .touchUpInside
+        )
     }
     
     private func addTappedEventToCancelButton() {
         cancelButton.addAction(
             UIAction { [weak self] _ in
                 self?.input.send(.recordCancelled)
-        }, for: .touchUpInside)
+            }, for: .touchUpInside
+        )
     }
     
     private func addTappedEventToSaveButton() {
         saveButton.addAction(
             UIAction { [weak self] _ in
                 self?.input.send(.saveButtonTapped)
-        }, for: .touchUpInside)
+            }, for: .touchUpInside
+        )
     }
     
     // MARK: - Helper
