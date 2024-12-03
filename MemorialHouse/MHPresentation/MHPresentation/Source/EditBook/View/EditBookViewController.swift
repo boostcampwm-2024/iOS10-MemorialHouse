@@ -300,7 +300,6 @@ extension EditBookViewController: UITableViewDataSource {
         
         let editPageViewModel = viewModel.editPageViewModel(at: indexPath.row)
         cell.configure(viewModel: editPageViewModel)
-        cell.configure(parentViewController: self)
         
         return cell
     }

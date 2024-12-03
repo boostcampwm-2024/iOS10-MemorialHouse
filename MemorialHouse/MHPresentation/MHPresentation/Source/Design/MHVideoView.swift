@@ -11,12 +11,14 @@ final class MHVideoView: UIView {
         self.playerViewController = AVPlayerViewController()
         
         super.init(frame: .zero)
+        configureConstraint()
     }
 
     required init?(coder: NSCoder) {
         self.playerViewController = AVPlayerViewController()
         
         super.init(coder: coder)
+        configureConstraint()
     }
     
     // MARK: - Configuration
@@ -24,14 +26,10 @@ final class MHVideoView: UIView {
         playerViewController.player = player
         playerViewController.showsPlaybackControls = true
     }
-
-    func attachPlayerViewController(to parentViewController: UIViewController) {
-        parentViewController.addChild(playerViewController)
+    
+    func configureConstraint() {
         addSubview(playerViewController.view)
-        
-        playerViewController.view.frame = bounds
-        playerViewController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        playerViewController.didMove(toParent: parentViewController)
+        playerViewController.view.fillSuperview()
     }
 
     func play() {
