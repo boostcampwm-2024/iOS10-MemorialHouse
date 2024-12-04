@@ -322,10 +322,13 @@ extension CustomAlbumViewController: UICollectionViewDataSource {
             cell.setPhoto(.photo)
         } else {
             guard let asset = viewModel.photoAsset?[indexPath.item - 1] else { return cell }
+            cell.representedAssetIdentifier = asset.localIdentifier
             let cellSize = cell.bounds.size
             Task {
                 await LocalPhotoManager.shared.requestThumbnailImage(with: asset, cellSize: cellSize) { image in
-                    cell.setPhoto(image)
+                    if cell.representedAssetIdentifier == asset.localIdentifier {
+                        cell.setPhoto(image)
+                    }
                 }
             }
         }

@@ -9,6 +9,7 @@ final class CustomAlbumCollectionViewCell: UICollectionViewCell {
         
         return imageView
     }()
+    var representedAssetIdentifier: String?
     
     // MARK: - Initialize
     override init(frame: CGRect) {
