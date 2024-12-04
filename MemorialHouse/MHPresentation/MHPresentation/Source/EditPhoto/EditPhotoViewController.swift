@@ -100,7 +100,7 @@ final class EditPhotoViewController: UIViewController {
         configureNavigationBar()
         configureAddSubView()
         configureConstraints()
-        configureButtonAction()
+        configureAction()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -213,7 +213,7 @@ final class EditPhotoViewController: UIViewController {
         dividedLine2.setBottom(anchor: editButtonStackView.topAnchor, constant: 11)
         captionTextField.setAnchor(
             leading: view.leadingAnchor, constantLeading: 13,
-            trailing: view.trailingAnchor,
+            trailing: view.trailingAnchor, constantTrailing: 13,
             height: 30
         )
         captionTextFieldBottomConstraint = captionTextField.bottomAnchor.constraint(
@@ -269,18 +269,26 @@ final class EditPhotoViewController: UIViewController {
         )
     }
     
-    // MARK: - Add Button Action
-    private func configureButtonAction() {
+    private func configureAction() {
         let rotateButtonAction = UIAction { [weak self] _ in
             guard let self else { return }
             let image = self.photoImageView.image
             self.photoImageView.image = image?.rotate(radians: .pi / 2)
         }
+        rotateButton.addAction(rotateButtonAction, for: .touchUpInside)
+        
         let drawButtonAction = UIAction { _ in
             // TODO: - Draw Action
         }
-        rotateButton.addAction(rotateButtonAction, for: .touchUpInside)
         drawButton.addAction(drawButtonAction, for: .touchUpInside)
+        
+        let textFieldAction = UIAction { [weak self] _ in
+            guard let self else { return }
+            if self.captionTextField.text?.count ?? 0 > 50 {
+                self.captionTextField.text = String(self.captionTextField.text?.prefix(50) ?? "")
+            }
+        }
+        captionTextField.addAction(textFieldAction, for: .editingChanged)
     }
     
     // MARK: - Keyboard Appear & Hide

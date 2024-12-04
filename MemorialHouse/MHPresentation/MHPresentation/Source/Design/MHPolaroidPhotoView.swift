@@ -71,7 +71,8 @@ final class MHPolaroidPhotoView: UIView {
         ])
         
         captionLabel.setAnchor(top: photoImageView.bottomAnchor, constantTop: 12,
-                               leading: photoImageView.leadingAnchor)
+                               leading: photoImageView.leadingAnchor,
+                               trailing: photoImageView.trailingAnchor)
         
         creationDateLabel.setAnchor(bottom: bottomAnchor, constantBottom: 7,
                                     trailing: trailingAnchor, constantTrailing: 12)
