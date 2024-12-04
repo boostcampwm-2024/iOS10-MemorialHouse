@@ -229,6 +229,7 @@ final class CustomAlbumViewController: UIViewController {
             navigationController?.show(imagePicker, sender: nil)
         }
     }
+    
     private func moveToEditPhotoView(image: UIImage?, creationDate: Date) {
         guard let photoSelectCompletionHandler else { return }
         var editPhotoViewController: EditPhotoViewController
