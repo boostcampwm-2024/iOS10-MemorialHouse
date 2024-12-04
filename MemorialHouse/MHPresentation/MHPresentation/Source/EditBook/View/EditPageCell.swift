@@ -320,9 +320,13 @@ extension EditPageCell: UITextViewDelegate {
         temporaryTextView.sizeToFit()
         
         let availableHeight = textViewSize.height - temporaryTextView.contentSize.height
-        input.send(.isMediaAddable(availableHeight: availableHeight))
+        let result = availableHeight >= 0
         
-        return 0 <= availableHeight
+        if result {
+            input.send(.isMediaAddable(availableHeight: availableHeight))
+        }
+        
+        return result
     }
     private func textViewMaxContentSize() -> CGSize {
         let horizontalInset = textView.textContainerInset.left + textView.textContainerInset.right

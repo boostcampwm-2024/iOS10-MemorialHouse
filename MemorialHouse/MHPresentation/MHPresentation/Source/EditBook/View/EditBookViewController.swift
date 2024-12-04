@@ -230,9 +230,11 @@ final class EditBookViewController: UIViewController {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] event in
                 switch event {
-                case .updateViewController(let title):
+                case let .updateViewController(title):
                     self?.navigationItem.title = title
                     self?.editPageTableView.reloadData()
+                case let .pageAdded(at):
+                    self?.insertPage(at: at)
                 case .saveDone:
                     guard let self else { return }
                     switch self.mode {
@@ -317,6 +319,12 @@ final class EditBookViewController: UIViewController {
         addImageButton.isEnabled = mediaTypes.contains(.image)
         addVideoButton.isEnabled = mediaTypes.contains(.video)
         addAudioButton.isEnabled = mediaTypes.contains(.audio)
+    }
+    
+    private func insertPage(at index: Int) {
+        let indexPath = IndexPath(row: index, section: 0)
+        editPageTableView.insertRows(at: [indexPath], with: .automatic)
+        editPageTableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
     }
     
     // MARK: - Keyboard Appear & Hide
