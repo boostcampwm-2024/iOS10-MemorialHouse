@@ -68,7 +68,7 @@ final class BookCategoryViewController: UIViewController {
             switch event {
             case .createdCategory, .updatedCategory, .fetchCategories, .deletedCategory:
                 self?.categoryTableView.reloadData()
-            case .failed(let errorMessage):
+            case .failure(let errorMessage):
                 self?.showErrorAlert(with: errorMessage)
             }
         }.store(in: &cancellables)

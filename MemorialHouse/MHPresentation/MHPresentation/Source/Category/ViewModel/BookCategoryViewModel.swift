@@ -15,7 +15,7 @@ final class BookCategoryViewModel: ViewModelType {
         case fetchCategories
         case updatedCategory
         case deletedCategory
-        case failed(String)
+        case failure(String)
     }
     
     private let createBookCategoryUseCase: CreateBookCategoryUseCase
@@ -69,13 +69,13 @@ final class BookCategoryViewModel: ViewModelType {
     
     private func createCategory(name: String) async {
         do {
-            let category = BookCategory(order: categories.count, name: text)
+            let category = BookCategory(order: categories.count, name: name)
             try await createBookCategoryUseCase.execute(with: category)
             categories.append(category)
             output.send(.createdCategory)
         } catch {
             MHLogger.error("카테고리를 생성하는데 실패했습니다: \(error)")
-            output.send(.failed("카테고리를 생성하는데 실패했습니다"))
+            output.send(.failure("카테고리를 생성하는데 실패했습니다"))
         }
     }
     
@@ -86,14 +86,14 @@ final class BookCategoryViewModel: ViewModelType {
             output.send(.fetchCategories)
         } catch {
             MHLogger.error("카테고리를 불러오는데 실패했습니다: \(error)")
-            output.send(.failed("카테고리를 불러오는데 실패했습니다"))
+            output.send(.failure("카테고리를 불러오는데 실패했습니다"))
         }
     }
     
     private func updateCategory(index: Int, text: String) async {
         guard index >= 0 && index < categories.count else {
             MHLogger.error("유효하지 않은 인덱스: \(index)")
-            output.send(.failed("유효하지 않은 인덱스: \(index)"))
+            output.send(.failure("유효하지 않은 인덱스: \(index)"))
             return
         }
         
@@ -105,14 +105,14 @@ final class BookCategoryViewModel: ViewModelType {
             output.send(.updatedCategory)
         } catch {
             MHLogger.error("카테고리를 업데이트하는데 실패했습니다: \(error)")
-            output.send(.failed("카테고리를 업데이트하는데 실패했습니다"))
+            output.send(.failure("카테고리를 업데이트하는데 실패했습니다"))
         }
     }
     
     private func deleteCategory(index: Int) async {
         guard index >= 0 && index < categories.count else {
             MHLogger.error("유효하지 않은 인덱스: \(index)")
-            output.send(.failed("유효하지 않은 인덱스: \(index)"))
+            output.send(.failure("유효하지 않은 인덱스: \(index)"))
             return
         }
         
@@ -123,7 +123,7 @@ final class BookCategoryViewModel: ViewModelType {
             output.send(.deletedCategory)
         } catch {
             MHLogger.error("카테고리를 삭제하는데 실패했습니다: \(error)")
-            output.send(.failed("카테고리를 삭제하는데 실패했습니다"))
+            output.send(.failure("카테고리를 삭제하는데 실패했습니다"))
         }
     }
 }
