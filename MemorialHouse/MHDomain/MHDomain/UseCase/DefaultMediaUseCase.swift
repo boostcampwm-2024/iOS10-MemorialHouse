@@ -99,3 +99,19 @@ public struct DefaultTemporaryStoreMediaUseCase: TemporaryStoreMediaUseCase {
         return try await repository.getURL(media: media, from: nil).get()
     }
 }
+
+public struct DefaultDeleteTemporaryMediaUseCase: DeleteTemporaryMediaUseCase {
+    // MARK: - Property
+    let repository: MediaRepository
+    
+    // MARK: - Initializer
+    public init(repository: MediaRepository) {
+        self.repository = repository
+    }
+    
+    // MARK: - Method
+    public func execute(media: MediaDescription) async throws {
+        try await repository.delete(media: media, at: nil).get()
+    }
+}
+

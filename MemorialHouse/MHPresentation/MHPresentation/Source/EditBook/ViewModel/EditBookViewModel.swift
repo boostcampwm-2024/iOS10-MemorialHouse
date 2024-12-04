@@ -27,6 +27,7 @@ final class EditBookViewModel: ViewModelType {
     private let fetchBookUseCase: FetchBookUseCase
     private let updateBookUseCase: UpdateBookUseCase
     private let storeMediaUseCase: PersistentlyStoreMediaUseCase
+    private let deleteTemporaryMediaUsecase: DeleteTemporaryMediaUseCase
     private let createMediaUseCase: CreateMediaUseCase
     private let fetchMediaUseCase: FetchMediaUseCase
     private let deleteMediaUseCase: DeleteMediaUseCase
@@ -40,6 +41,7 @@ final class EditBookViewModel: ViewModelType {
         fetchBookUseCase: FetchBookUseCase,
         updateBookUseCase: UpdateBookUseCase,
         storeMediaUseCase: PersistentlyStoreMediaUseCase,
+        deleteTemporaryMediaUsecase: DeleteTemporaryMediaUseCase,
         createMediaUseCase: CreateMediaUseCase,
         fetchMediaUseCase: FetchMediaUseCase,
         deleteMediaUseCase: DeleteMediaUseCase,
@@ -48,6 +50,7 @@ final class EditBookViewModel: ViewModelType {
         self.fetchBookUseCase = fetchBookUseCase
         self.updateBookUseCase = updateBookUseCase
         self.storeMediaUseCase = storeMediaUseCase
+        self.deleteTemporaryMediaUsecase = deleteTemporaryMediaUsecase
         self.createMediaUseCase = createMediaUseCase
         self.fetchMediaUseCase = fetchMediaUseCase
         self.deleteMediaUseCase = deleteMediaUseCase
@@ -114,6 +117,7 @@ final class EditBookViewModel: ViewModelType {
         let description = MediaDescription(type: type, attributes: attributes)
         do {
             try await createMediaUseCase.execute(media: description, from: url, at: bookID)
+            try await deleteTemporaryMediaUsecase.execute(media: description)
             editPageViewModels[currentPageIndex].addMedia(media: description, url: url)
         } catch {
             output.send(.error(message: "미디어를 추가하는데 실패했습니다."))
