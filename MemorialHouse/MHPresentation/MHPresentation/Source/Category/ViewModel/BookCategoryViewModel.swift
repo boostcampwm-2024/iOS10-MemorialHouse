@@ -52,8 +52,8 @@ final class BookCategoryViewModel: ViewModelType {
         input.sink { [weak self] event in
             Task {
                 switch event {
-                case .createCategory(let text):
-                    await self?.createCategory(text: text)
+                case .createCategory(let name):
+                    await self?.createCategory(name: name)
                 case .fetchCategories:
                     await self?.fetchCategories()
                 case .updateCategory(let index, let text):
@@ -67,7 +67,7 @@ final class BookCategoryViewModel: ViewModelType {
         return output.eraseToAnyPublisher()
     }
     
-    private func createCategory(text: String) async {
+    private func createCategory(name: String) async {
         do {
             let category = BookCategory(order: categories.count, name: text)
             try await createBookCategoryUseCase.execute(with: category)
