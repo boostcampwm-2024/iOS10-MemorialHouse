@@ -7,6 +7,7 @@ final class EditBookViewModel: ViewModelType {
     // MARK: - Type
     enum Input {
         case viewDidLoad
+        case didAddMediaInTemporary(media: MediaDescription)
         case didAddMediaWithData(type: MediaType, attributes: [String: any Sendable]?, data: Data)
         case didAddMediaInURL(type: MediaType, attributes: [String: any Sendable]?, url: URL)
         case addPageButtonTapped
@@ -59,6 +60,8 @@ final class EditBookViewModel: ViewModelType {
             switch event {
             case .viewDidLoad:
                 Task { await self?.fetchBook() }
+            case let .didAddMediaInTemporary(media):
+                Task { await self?.addMedia(media) }
             case let .didAddMediaWithData(type, attributes, data):
                 Task { await self?.addMedia(type: type, attributes: attributes, with: data) }
             case let .didAddMediaInURL(type, attributes, url):
@@ -117,7 +120,16 @@ final class EditBookViewModel: ViewModelType {
             MHLogger.error(error.localizedDescription + #function)
         }
     }
-    
+    private func addMedia(_ description: MediaDescription) async {
+        do {
+            try await storeMediaUseCase.excute(media: description, to: bookID)
+            let url: URL = try await fetchMediaUseCase.execute(media: description, in: bookID)
+            editPageViewModels[currentPageIndex].addMedia(media: description, url: url)
+        } catch {
+            output.send(.error(message: "미디어를 추가하는데 실패했습니다."))
+            MHLogger.error(error.localizedDescription + #function)
+        }
+    }
     private func addEmptyPage() {
         let editPageViewModel = EditPageViewModel(
             fetchMediaUseCase: fetchMediaUseCase,

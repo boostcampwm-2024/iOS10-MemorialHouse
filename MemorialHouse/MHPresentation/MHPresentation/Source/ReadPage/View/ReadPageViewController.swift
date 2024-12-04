@@ -105,7 +105,9 @@ final class ReadPageViewController: UIViewController {
         attachmentMetaData: [Int: MediaDescription]
     ) -> NSAttributedString {
         let mutableAttributedString = NSMutableAttributedString(string: text)
-        attachmentMetaData.forEach { location, description in
+        attachmentMetaData.forEach {
+            location,
+            description in
             // TODO: - MediaType 별로 바꿔줘야함
             var mediaAttachment: MediaAttachment?
             switch description.type {
@@ -118,6 +120,12 @@ final class ReadPageViewController: UIViewController {
             case .video:
                 mediaAttachment = MediaAttachment(
                     view: MHVideoView(),
+                    description: description
+                )
+                input.send(.didRequestMediaDataForURL(media: description))
+            case .audio:
+                mediaAttachment = MediaAttachment(
+                    view: MHAudioPlayerView(),
                     description: description
                 )
                 input.send(.didRequestMediaDataForURL(media: description))

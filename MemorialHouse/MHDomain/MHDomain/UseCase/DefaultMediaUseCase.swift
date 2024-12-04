@@ -57,6 +57,7 @@ public struct DefaultDeleteMediaUseCase: DeleteMediaUseCase {
 }
 
 public struct DefaultPersistentlyStoreMediaUseCase: PersistentlyStoreMediaUseCase {
+    
     // MARK: - Property
     let repository: MediaRepository
     
@@ -75,5 +76,26 @@ public struct DefaultPersistentlyStoreMediaUseCase: PersistentlyStoreMediaUseCas
         }
         
         try await repository.deleteMediaBySnapshot(for: bookID).get()
+    }
+    
+    public func excute(media: MediaDescription, to bookID: UUID) async throws {
+        try await repository.moveTemporaryMedia(media, to: bookID).get()
+    }
+    
+}
+
+public struct DefaultTemporaryStoreMediaUseCase: TemporaryStoreMediaUseCase {
+    // MARK: - Property
+    let repository: MediaRepository
+    
+    // MARK: - Initializer
+    public init(repository: MediaRepository) {
+        self.repository = repository
+    }
+    
+    // MARK: - Method
+    public func execute(media: MediaDescription) async throws -> URL {
+        try await repository.makeTemporaryDirectory().get()
+        return try await repository.getURL(media: media, from: nil).get()
     }
 }

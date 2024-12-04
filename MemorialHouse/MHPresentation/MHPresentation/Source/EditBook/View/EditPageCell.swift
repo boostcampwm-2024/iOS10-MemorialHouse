@@ -144,6 +144,12 @@ final class EditPageCell: UITableViewCell {
                     description: description
                 )
                 input.send(.didRequestMediaDataForURL(media: description))
+            case .audio:
+                mediaAttachment = MediaAttachment(
+                    view: MHAudioPlayerView(),
+                    description: description
+                )
+                input.send(.didRequestMediaDataForURL(media: description))
             default:
                 break
             }
@@ -180,9 +186,8 @@ final class EditPageCell: UITableViewCell {
                 description: media
             )
         case .audio:
-            // TODO: - audio 추가 필요
             attachment = MediaAttachment(
-                view: MHPolaroidPhotoView(),
+                view: MHAudioPlayerView(),
                 description: media
             )
         default:
@@ -207,9 +212,8 @@ final class EditPageCell: UITableViewCell {
                 description: media
             )
         case .audio:
-            // TODO: - audio 추가 필요
             attachment = MediaAttachment(
-                view: MHPolaroidPhotoView(),
+                view: MHAudioPlayerView(),
                 description: media
             )
         default:
