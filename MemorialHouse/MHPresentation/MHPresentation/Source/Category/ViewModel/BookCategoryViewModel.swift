@@ -57,7 +57,7 @@ final class BookCategoryViewModel: ViewModelType {
                 case .fetchCategories:
                     await self?.fetchCategories()
                 case .updateCategory(let index, let text):
-                    await self?.updateCategory(index: index, text: text)
+                    await self?.updateCategory(index: index, name: text)
                 case .deleteCategory(let index):
                     await self?.deleteCategory(index: index)
                 }
@@ -99,7 +99,7 @@ final class BookCategoryViewModel: ViewModelType {
         
         do {
             let oldName = categories[index].name
-            let category = BookCategory(order: index, name: text)
+            let category = BookCategory(order: index, name: name)
             try await updateBookCategoryUseCase.execute(oldName: oldName, with: category)
             categories[index] = category
             output.send(.updatedCategory)
