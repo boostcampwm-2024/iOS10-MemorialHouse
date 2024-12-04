@@ -12,23 +12,10 @@
 
 ##
 
-### 🧑‍🧑‍🧒‍🧒 집주인들
-
-<div align="center">
-
-  <img width="500" alt="image" src="https://github.com/user-attachments/assets/3607a9fb-dd84-4877-83ef-ac8e43e1bc27">
-
-  부산 워크샵 단체사진!!
-  
-  <br>
-
-|<img src="https://avatars.githubusercontent.com/u/62226667?v=4" width=150>|<img src="https://avatars.githubusercontent.com/u/129862357?v=4" width=150>|<img src="https://avatars.githubusercontent.com/u/70050038?v=4" width=150>|<img src="https://avatars.githubusercontent.com/u/71179395?v=4" width=150>|
+### 🍎 앱 미리보기
+|메인 홈|글 작성|책 넘기기|글 보기|
 |:-:|:-:|:-:|:-:|
-|🎨 김영현|🥇 박효준|👓 안윤철|😽 임정현|
-|집주인 내 골드핸즈(= 금손) <br> 초고수 디자이너 <br> 영리아나 그란데 <br> 영카소, 영켈란젤로, 영흐|우리팀 리-더 <br> 발표 초-고수<br> 황금막내 <br> 열정보이🔥 <br> 문서화 장인|데(DevOps) 윤철<br>분위기 메이커<br>아이디어 뱅크 <br> 동의, 인정, 공감 장인 <br> 돌리기 장인 (조리돌림)<br>우리팀 MZ|살아있는 네이버 클로바 <br> 루루 집사 <br> 스티브잡스, 스티브워즈니악,<br>스티브 임정현 Let's Go|
-|[@k2645](https://github.com/k2645)|[@kyxxn](https://github.com/kyxxn)|[@yuncheol-AHN](https://github.com/yuncheol-ahn)|[@iceHood](https://github.com/icehood)|
-
-</div>
+|![image](https://github.com/user-attachments/assets/c2bb340a-97a6-4275-9bec-6b4a62c711ee)|![image](https://github.com/user-attachments/assets/21a29c71-13b1-417e-a537-9f011158052e)|![image](https://github.com/user-attachments/assets/e29ddb1d-231a-4187-bf1d-ab333250128e)|![image](https://github.com/user-attachments/assets/89a43389-1a30-401d-b00c-3c160512b96b)|
 
 ##
 
@@ -67,6 +54,40 @@
 - Core Data는 책과 페이지 간의 관계를 유지하기 위해 사용하며, 각 페이지는 멀티미디어 데이터를 포함할 수 있습니다.
 - 멀티미디어를 Core Data에 직접 저장하면, 책을 펼칠 때 모든 데이터를 한꺼번에 불러와 성능 저하가 발생할 수 있습니다. 이를 방지하기 위해 멀티미디어는 FileManager를 통해 디바이스에 저장하고, Core Data에는 해당 멀티미디어의 URL만 문자열로 저장했습니다.
 - 이러한 방식으로 페이지 로드 시 URL만 불러와 메모리 사용을 줄이고, 필요한 멀티미디어는 개별적으로 로드하여 효율성을 높였습니다.
+
+##
+
+### 🔥 우리 팀의 기술적 도전
+
+#### 1. 사진 - [[Phots] 이미지 편집하기](https://kyxxn.notion.site/Photos-9d24b4b1f8d64d809adb946d0543e829?pvs=4)
+
+#### 2. 동영상 - [[AVKit] 내 앨범의 비디오를 업로드하기](https://kyxxn.notion.site/AVKit-1519adb3262680769a14e9dc908400e3?pvs=4)
+
+#### 3. 오디오 - [[AVFAudio] 녹음해서 오디오를 업로드하기](https://kyxxn.notion.site/AVFAudio-1519adb3262680bf84f5dedb7995041d?pvs=4)
+
+#### 4. 멀티 미디어를 담고 있는 TextView 저장하기 - [스냅샷 기반 저장하기](https://kyxxn.notion.site/a8d455af87164a02aa5e4d79e5b3fc92?pvs=4)
+
+
+##
+
+### 🧑‍🧑‍🧒‍🧒 집주인들
+
+<div align="center">
+
+  <img width="500" alt="image" src="https://github.com/user-attachments/assets/3607a9fb-dd84-4877-83ef-ac8e43e1bc27">
+
+  부산 워크샵 단체사진!!
+  
+  <br>
+
+|<img src="https://avatars.githubusercontent.com/u/62226667?v=4" width=150>|<img src="https://avatars.githubusercontent.com/u/129862357?v=4" width=150>|<img src="https://avatars.githubusercontent.com/u/70050038?v=4" width=150>|<img src="https://avatars.githubusercontent.com/u/71179395?v=4" width=150>|
+|:-:|:-:|:-:|:-:|
+|🎨 김영현|🥇 박효준|👓 안윤철|😽 임정현|
+|집주인 내 골드핸즈(= 금손) <br> 초고수 디자이너 <br> 영리아나 그란데 <br> 영카소, 영켈란젤로, 영흐|우리팀 리-더 <br> 발표 초-고수<br> 황금막내 <br> 열정보이🔥 <br> 문서화 장인|데(DevOps) 윤철<br>분위기 메이커<br>아이디어 뱅크 <br> 동의, 인정, 공감 장인 <br> 돌리기 장인 (조리돌림)<br>우리팀 MZ|살아있는 네이버 클로바 <br> 루루 집사 <br> 스티브잡스, 스티브워즈니악,<br>스티브 임정현 Let's Go|
+|[@k2645](https://github.com/k2645)|[@kyxxn](https://github.com/kyxxn)|[@yuncheol-AHN](https://github.com/yuncheol-ahn)|[@iceHood](https://github.com/icehood)|
+
+</div>
+
 
 ##
 
