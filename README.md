@@ -10,6 +10,8 @@
 
 </div>
 
+<br>
+
 ## 🍎 기록소 주요 기능
 ![image](https://github.com/user-attachments/assets/8db2f605-0deb-4627-9ba4-50f029b0cec3)
 
