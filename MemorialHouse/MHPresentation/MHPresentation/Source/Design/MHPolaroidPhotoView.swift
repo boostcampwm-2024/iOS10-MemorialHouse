@@ -64,8 +64,11 @@ final class MHPolaroidPhotoView: UIView {
     
     private func configureConstraints() {
         photoImageView.setAnchor(top: topAnchor, constantTop: 25,
-                                 width: 280, height: 210)
-        photoImageView.setCenterX(view: self)
+                                 leading: leadingAnchor, constantLeading: 17,
+                                 trailing: trailingAnchor, constantTrailing: 17)
+        NSLayoutConstraint.activate([
+            photoImageView.heightAnchor.constraint(equalTo: photoImageView.widthAnchor, multiplier: 0.75)
+        ])
         
         captionLabel.setAnchor(top: photoImageView.bottomAnchor, constantTop: 12,
                                leading: photoImageView.leadingAnchor)
