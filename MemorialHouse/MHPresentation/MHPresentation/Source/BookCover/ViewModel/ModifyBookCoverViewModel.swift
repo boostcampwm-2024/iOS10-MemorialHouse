@@ -128,6 +128,7 @@ final class ModifyBookCoverViewModel: ViewModelType {
             return
         }
         let newBookCover = BookCover(
+            id: bookID,
             order: bookOrder,
             title: bookTitle,
             imageData: bookImageData,
