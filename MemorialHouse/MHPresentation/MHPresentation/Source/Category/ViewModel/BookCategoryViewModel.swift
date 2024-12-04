@@ -68,6 +68,12 @@ final class BookCategoryViewModel: ViewModelType {
     }
     
     private func createCategory(name: String) async {
+        guard validateCategoryName(with: name) else {
+            MHLogger.error("카테고리 이름이 유효하지 않음: \(name)")
+            output.send(.failure("카테고리 이름이 유효하지 않습니다"))
+            return
+        }
+        
         do {
             let category = BookCategory(order: categories.count, name: name)
             try await createBookCategoryUseCase.execute(with: category)
@@ -90,10 +96,11 @@ final class BookCategoryViewModel: ViewModelType {
         }
     }
     
-    private func updateCategory(index: Int, text: String) async {
-        guard index >= 0 && index < categories.count else {
-            MHLogger.error("유효하지 않은 인덱스: \(index)")
-            output.send(.failure("유효하지 않은 인덱스: \(index)"))
+    private func updateCategory(index: Int, name: String) async {
+        guard validateIndex(index),
+              validateCategoryName(with: name) else {
+            MHLogger.error("카테고리 업데이트 실패: \(name)")
+            output.send(.failure("카테고리를 업데이트하는데 실패했습니다"))
             return
         }
         
@@ -110,9 +117,9 @@ final class BookCategoryViewModel: ViewModelType {
     }
     
     private func deleteCategory(index: Int) async {
-        guard index >= 0 && index < categories.count else {
-            MHLogger.error("유효하지 않은 인덱스: \(index)")
-            output.send(.failure("유효하지 않은 인덱스: \(index)"))
+        guard validateIndex(index) else {
+            MHLogger.error("카테고리를 삭제하는데 실패했습니다: \(index)")
+            output.send(.failure("카테고리를 삭제하는데 실패했습니다"))
             return
         }
         
@@ -125,5 +132,52 @@ final class BookCategoryViewModel: ViewModelType {
             MHLogger.error("카테고리를 삭제하는데 실패했습니다: \(error)")
             output.send(.failure("카테고리를 삭제하는데 실패했습니다"))
         }
+    }
+    
+    // MARK: - 카테고리 유효성 검사
+    private func validateCategoryName(with name: String) -> Bool {
+        return validateNonEmptyName(name)
+            && validateUniqueName(name)
+            && validateNameLength(name)
+    }
+    
+    // 인덱스 유효성 검사
+    private func validateIndex(_ index: Int) -> Bool {
+        guard index >= 0 && index < categories.count else {
+            output.send(.failure("유효하지 않은 인덱스: \(index)"))
+            MHLogger.error("유효하지 않은 인덱스: \(index)")
+            return false
+        }
+        return true
+    }
+
+    // 공백 또는 빈 문자열 검사
+    private func validateNonEmptyName(_ name: String) -> Bool {
+        guard !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            output.send(.failure("카테고리 이름은 공백일 수 없습니다."))
+            MHLogger.error("카테고리 이름이 비어있거나 공백만 포함되어 있음: \(name)")
+            return false
+        }
+        return true
+    }
+
+    // 중복 이름 검사
+    private func validateUniqueName(_ name: String) -> Bool {
+        guard !categories.contains(where: { $0.name == name }) else {
+            output.send(.failure("이미 존재하는 카테고리: \(name)"))
+            MHLogger.error("중복된 카테고리 이름: \(name)")
+            return false
+        }
+        return true
+    }
+
+    // 이름 길이 검사
+    private func validateNameLength(_ name: String) -> Bool {
+        guard name.count <= 10 else {
+            output.send(.failure("카테고리 이름은 10자 이하여야 합니다."))
+            MHLogger.error("카테고리 이름이 너무 깁니다: \(name)")
+            return false
+        }
+        return true
     }
 }
