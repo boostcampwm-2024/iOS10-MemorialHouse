@@ -41,7 +41,7 @@ final class BookCategoryViewController: UIViewController {
         
         setup()
         bind()
-        input.send(.viewDidLoad)
+        input.send(.fetchCategories)
         configureNavigationBar()
         configureConstraints()
     }
@@ -62,11 +62,13 @@ final class BookCategoryViewController: UIViewController {
     private func bind() {
         let output = viewModel.transform(input: input.eraseToAnyPublisher())
         
-        output.sink { [weak self] event in
+        output
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] event in
             switch event {
             case .createdCategory, .updatedCategory, .fetchCategories, .deletedCategory:
                 self?.categoryTableView.reloadData()
-            case .failed(let errorMessage):
+            case .failure(let errorMessage):
                 self?.showErrorAlert(with: errorMessage)
             }
         }.store(in: &cancellables)
@@ -112,8 +114,6 @@ final class BookCategoryViewController: UIViewController {
             normal: normalAttributes,
             selected: selectedAttributes
         ) { [weak self] in
-            guard let self else { return }
-            
             let alert = UIAlertController(
                 title: "카테고리 추가",
                 message: "새로운 카테고리를 입력해주세요.",
@@ -121,15 +121,11 @@ final class BookCategoryViewController: UIViewController {
                     textField.placeholder = "카테고리 이름"
                 },
                 confirmHandler: { [weak self] newText in
-                    guard let newText, !newText.isEmpty else {
-                        MHLogger.error("입력한 카테고리 이름이 유효하지 않습니다.")
-                        return
-                    }
-                    self?.input.send(.addCategory(text: newText))
+                    self?.input.send(.createCategory(text: newText ?? ""))
                 }
             )
             
-            self.present(alert, animated: true)
+            self?.present(alert, animated: true)
         }
     }
     
@@ -171,26 +167,20 @@ extension BookCategoryViewController: UITableViewDelegate {
             style: .normal,
             title: "수정"
         ) { [weak self] _, _, completion in
-            guard let self else { return }
             let alert = UIAlertController(
                 title: "카테고리 수정",
                 message: "수정할 카테고리 이름을 입력해주세요.",
                 textFieldConfiguration: { textField in
                     textField.placeholder = "카테고리 이름"
-                    textField.text = self.viewModel.categories[indexPath.row].name
+                    textField.text = self?.viewModel.categories[indexPath.row].name
                 },
                 confirmHandler: { [weak self] newText in
-                    guard let self, let newText = newText, !newText.isEmpty else {
-                        MHLogger.error("수정할 카테고리 이름이 유효하지 않습니다.")
-                        completion(false)
-                        return
-                    }
-                    self.input.send(.updateCategory(index: indexPath.row, text: newText))
+                    self?.input.send(.updateCategory(index: indexPath.row, text: newText ?? ""))
                     completion(true)
                 }
             )
             
-            self.present(alert, animated: true)
+            self?.present(alert, animated: true)
         }
         
         let deleteAction = UIContextualAction(

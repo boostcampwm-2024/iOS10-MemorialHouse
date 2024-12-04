@@ -129,7 +129,7 @@ final class BookCoverViewController: UIViewController {
         configureAddSubviews()
         configureConstraints()
         configureAction()
-        createInput.send(.viewDidAppear)
+        createInput.send(.setBookCover)
         modifyInput.send(.loadBookCover)
     }
     
@@ -233,7 +233,7 @@ final class BookCoverViewController: UIViewController {
             let editBookViewController = EditBookViewController(viewModel: editBookViewModel)
             navigationController?.pushViewController(editBookViewController, animated: true)
         } catch {
-            MHLogger.error(error)
+            MHLogger.error(error.localizedDescription + #function)
         }
     }
 }
@@ -489,7 +489,7 @@ extension BookCoverViewController: BookCategoryViewControllerDelegate {
             
             self.present(navigationController, animated: true)
         } catch {
-            MHLogger.error(error)
+            MHLogger.error(error.localizedDescription + #function)
         }
     }
     

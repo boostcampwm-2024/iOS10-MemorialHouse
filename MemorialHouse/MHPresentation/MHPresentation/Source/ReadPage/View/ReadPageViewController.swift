@@ -51,7 +51,7 @@ final class ReadPageViewController: UIViewController {
         bind()
         setup()
         configureConstraints()
-        input.send(.viewDidLoad)
+        input.send(.loadPage)
     }
     
     private func bind() {

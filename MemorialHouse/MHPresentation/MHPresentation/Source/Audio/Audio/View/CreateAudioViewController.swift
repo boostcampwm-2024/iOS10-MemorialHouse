@@ -122,7 +122,7 @@ final class CreateAudioViewController: UIViewController {
         configureAddSubviews()
         configureConstraints()
         configureAddActions()
-        input.send(.viewDidLoad)
+        input.send(.prepareTemporaryAudio)
     }
     
     // MARK: - Setup
@@ -274,19 +274,11 @@ final class CreateAudioViewController: UIViewController {
     
     // MARK: - Helper
     private func requestMicrophonePermission() {
-        let alert = UIAlertController(
-            title: "마이크 권한 필요",
-            message: "설정에서 마이크 권한을 허용해주세요.",
-            preferredStyle: .alert
-        )
-        alert.addAction(UIAlertAction(title: "OK", style: .default) { [weak self] _ in
-            self?.dismiss(animated: true)
-        })
         Task {
             AVAudioSession.sharedInstance().requestRecordPermission { @Sendable granted in
                 Task { @MainActor in
                     if !granted {
-                        self.present(alert, animated: true, completion: nil)
+                        self.showRedirectSettingAlert(with: .audio)
                     }
                 }
             }

@@ -99,7 +99,7 @@ final class EditPageCell: UITableViewCell {
                 case let .mediaLoadedWithURL(media, url):
                     self?.mediaLoadedWithURL(media: media, url: url)
                 case let .error(message):
-                    MHLogger.error(message) // TODO: 더 좋은 처리가 필요함
+                    MHLogger.error(message + #function) // TODO: 더 좋은 처리가 필요함
                 }
             }.store(in: &cancellables)
     }
