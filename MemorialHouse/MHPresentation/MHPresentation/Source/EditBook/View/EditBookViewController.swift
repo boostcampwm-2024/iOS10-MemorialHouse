@@ -1,4 +1,5 @@
 import MHFoundation
+import MHDomain
 import MHCore
 import UIKit
 import Combine
@@ -242,6 +243,8 @@ final class EditBookViewController: UIViewController {
                     }
                 case .revokeDone:
                     self?.navigationController?.popViewController(animated: true)
+                case let .addableMediaTypes(mediaTypes):
+                    self?.updateAddMediaButtonStates(by: mediaTypes)
                 case .error(let message):
                     self?.showErrorAlert(with: message)
                 }
@@ -307,6 +310,13 @@ final class EditBookViewController: UIViewController {
             self?.input.send(.addPageButtonTapped)
         }
         addPageButton.addAction(addPageAction, for: .touchUpInside)
+    }
+    
+    // MARK: - Helper
+    private func updateAddMediaButtonStates(by mediaTypes: [MediaType]) {
+        addImageButton.isEnabled = mediaTypes.contains(.image)
+        addVideoButton.isEnabled = mediaTypes.contains(.video)
+        addAudioButton.isEnabled = mediaTypes.contains(.audio)
     }
     
     // MARK: - Keyboard Appear & Hide

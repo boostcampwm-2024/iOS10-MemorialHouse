@@ -5,6 +5,7 @@ import MHCore
 
 protocol EditPageViewModelDelegate: AnyObject {
     func didBeginEditingPage(_ editPageViewModel: EditPageViewModel, page: Page)
+    func updateAddableMediaTypes(_ editPageViewModel: EditPageViewModel, mediaTypes: [MediaType])
 }
 
 final class EditPageViewModel: ViewModelType {
@@ -16,6 +17,7 @@ final class EditPageViewModel: ViewModelType {
         case didEditPage(attributedText: NSAttributedString)
         case didRequestMediaDataForData(media: MediaDescription)
         case didRequestMediaDataForURL(media: MediaDescription)
+        case isMediaAddable(availableHeight: Double)
     }
     enum Output {
         case page(page: Page)
@@ -64,6 +66,8 @@ final class EditPageViewModel: ViewModelType {
                 Task { await self?.loadMediaForData(media: media) }
             case .didRequestMediaDataForURL(let media):
                 Task { await self?.loadMediaForURL(media: media) }
+            case let .isMediaAddable(availableHeight):
+                self?.isMediaAddable(forAvailableHeight: availableHeight)
             }
         }.store(in: &cancellables)
         
@@ -102,6 +106,11 @@ final class EditPageViewModel: ViewModelType {
             output.send(.error(message: "미디어 로딩에 실패하였습니다."))
             MHLogger.error(error.localizedDescription + #function)
         }
+    }
+    
+    private func isMediaAddable(forAvailableHeight height: Double) {
+        let availableMediaTypes = MediaType.allCases.filter { $0.height <= height }
+        delegate?.updateAddableMediaTypes(self, mediaTypes: availableMediaTypes)
     }
     
     // MARK: - Method

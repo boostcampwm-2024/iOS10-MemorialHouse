@@ -293,12 +293,14 @@ extension EditPageCell: UITextViewDelegate {
             string: text,
             attributes: defaultAttributes
         )
-        return text.isEmpty
-        || isAcceptableHeight(textStorage, shouldChangeTextIn: range, replacementText: attributedText)
+        return isAcceptableHeight(textStorage, shouldChangeTextIn: range, replacementText: attributedText)
+        || text.isEmpty
     }
     
     func textViewDidBeginEditing(_ textView: UITextView) {
         input.send(.didBeginEditingPage)
+        let availableHeight = textViewMaxContentSize().height - textView.contentSize.height
+        input.send(.isMediaAddable(availableHeight: availableHeight))
     }
     
     /// TextView의 높이가 적절한지 확인합니다.
@@ -308,19 +310,27 @@ extension EditPageCell: UITextViewDelegate {
         replacementText attributedText: NSAttributedString
     ) -> Bool {
         let updatedText = NSMutableAttributedString(attributedString: textStorage)
-        let horizontalInset = textView.textContainerInset.left + textView.textContainerInset.right
-        let verticalInset = textView.textContainerInset.top + textView.textContainerInset.bottom
-        let textViewWidth = textView.bounds.width - horizontalInset
-        let textViewHight = textView.bounds.height - verticalInset
+        let textViewSize = textViewMaxContentSize()
         let temporaryTextView = UITextView(
-            frame: CGRect(x: 0, y: 0, width: textViewWidth, height: .greatestFiniteMagnitude)
+            frame: CGRect(x: 0, y: 0, width: textViewSize.width, height: .greatestFiniteMagnitude)
         )
         
         updatedText.replaceCharacters(in: range, with: attributedText)
         temporaryTextView.attributedText = updatedText
         temporaryTextView.sizeToFit()
         
-        return temporaryTextView.contentSize.height <= textViewHight
+        let availableHeight = textViewSize.height - temporaryTextView.contentSize.height
+        input.send(.isMediaAddable(availableHeight: availableHeight))
+        
+        return 0 <= availableHeight
+    }
+    private func textViewMaxContentSize() -> CGSize {
+        let horizontalInset = textView.textContainerInset.left + textView.textContainerInset.right
+        let verticalInset = textView.textContainerInset.top + textView.textContainerInset.bottom
+        let textViewWidth = textView.bounds.width - horizontalInset
+        let textViewHeight = textView.bounds.height - verticalInset
+        
+        return CGSize(width: textViewWidth, height: textViewHeight)
     }
 }
 

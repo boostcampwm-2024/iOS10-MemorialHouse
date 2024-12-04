@@ -18,6 +18,7 @@ final class EditBookViewModel: ViewModelType {
         case updateViewController(title: String)
         case saveDone
         case revokeDone
+        case addableMediaTypes([MediaType])
         case error(message: String)
     }
     
@@ -124,6 +125,7 @@ final class EditBookViewModel: ViewModelType {
             MHLogger.error(error.localizedDescription + #function)
         }
     }
+    
     private func addMedia(_ description: MediaDescription) async {
         do {
             try await storeMediaUseCase.excute(media: description, to: bookID)
@@ -134,6 +136,7 @@ final class EditBookViewModel: ViewModelType {
             MHLogger.error(error.localizedDescription + #function)
         }
     }
+    
     private func addEmptyPage() {
         let editPageViewModel = EditPageViewModel(
             fetchMediaUseCase: fetchMediaUseCase,
@@ -186,5 +189,10 @@ extension EditBookViewModel: EditPageViewModelDelegate {
     func didBeginEditingPage(_ editPageViewModel: EditPageViewModel, page: Page) {
         let pageID = page.id
         currentPageIndex = editPageViewModels.firstIndex { $0.page.id == pageID } ?? 0
+        
+    }
+    
+    func updateAddableMediaTypes(_ editPageViewModel: EditPageViewModel, mediaTypes: [MediaType]) {
+        output.send(.addableMediaTypes(mediaTypes))
     }
 }
