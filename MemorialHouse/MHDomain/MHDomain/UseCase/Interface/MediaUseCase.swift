@@ -27,3 +27,7 @@ public protocol PersistentlyStoreMediaUseCase: Sendable {
 public protocol TemporaryStoreMediaUseCase: Sendable {
     func execute(media: MediaDescription) async throws -> URL
 }
+
+public protocol DeleteTemporaryMediaUseCase: Sendable {
+    func execute(media: MediaDescription) async throws
+}
