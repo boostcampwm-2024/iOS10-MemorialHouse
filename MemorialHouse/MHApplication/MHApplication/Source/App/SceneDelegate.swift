@@ -222,10 +222,6 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             object: DefaultPersistentlyStoreMediaUseCase(repository: mediaRepository)
         )
         DIContainer.shared.register(
-            DeleteTemporaryMediaUseCase.self,
-            object: DefaultDeleteTemporaryMediaUseCase(repository: mediaRepository)
-        )
-        DIContainer.shared.register(
             CreateMediaUseCase.self,
             object: DefaultCreateMediaUseCase(repository: mediaRepository)
         )
@@ -242,6 +238,10 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         DIContainer.shared.register(
             TemporaryStoreMediaUseCase.self,
             object: DefaultTemporaryStoreMediaUseCase(repository: mediaRepository)
+        )
+        DIContainer.shared.register(
+            DeleteTemporaryMediaUseCase.self,
+            object: DefaultDeleteTemporaryMediaUseCase(repository: mediaRepository)
         )
     }
     

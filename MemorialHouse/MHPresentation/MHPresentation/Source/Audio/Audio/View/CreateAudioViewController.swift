@@ -28,8 +28,6 @@ final class CreateAudioViewController: UIViewController {
         AVNumberOfChannelsKey: 2,
         AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
     ]
-    // value
-    private let saveButtonEnabled: Bool = false
     
     // MARK: - UI Component
     // title and buttons
@@ -108,7 +106,9 @@ final class CreateAudioViewController: UIViewController {
     }
     
     required init?(coder: NSCoder) {
-        guard let viewModelFactory = try? DIContainer.shared.resolve(CreateAudioViewModelFactory.self) else { return nil }
+        guard let viewModelFactory = try? DIContainer.shared.resolve(CreateAudioViewModelFactory.self) else {
+            return nil
+        }
         self.viewModel = viewModelFactory.make { _ in }
         super.init(nibName: nil, bundle: nil)
     }
@@ -321,7 +321,6 @@ final class CreateAudioViewController: UIViewController {
         audioButton.setCenter(view: audioButtonBackground)
         NSLayoutConstraint.activate(audioButton.constraints)
         
-        // save button to disable
         saveButton.isEnabled = false
     }
     
@@ -341,7 +340,6 @@ final class CreateAudioViewController: UIViewController {
         audioButton.setCenter(view: audioButtonBackground)
         NSLayoutConstraint.activate(audioButton.constraints)
         
-        // save button to enable
         saveButton.isEnabled = true
     }
     
