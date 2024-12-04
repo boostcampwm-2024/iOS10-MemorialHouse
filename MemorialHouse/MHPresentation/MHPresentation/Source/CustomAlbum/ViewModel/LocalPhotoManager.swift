@@ -9,6 +9,7 @@ actor LocalPhotoManager {
         let options = PHImageRequestOptions()
         options.isSynchronous = true
         options.isNetworkAccessAllowed = true
+        options.deliveryMode = .highQualityFormat
         
         return options
     }()
