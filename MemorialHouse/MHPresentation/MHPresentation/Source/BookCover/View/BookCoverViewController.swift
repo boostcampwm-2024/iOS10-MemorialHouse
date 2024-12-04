@@ -129,7 +129,7 @@ final class BookCoverViewController: UIViewController {
         configureAddSubviews()
         configureConstraints()
         configureAction()
-        createInput.send(.setBookColor)
+        createInput.send(.setBookCover)
         modifyInput.send(.loadBookCover)
     }
     
