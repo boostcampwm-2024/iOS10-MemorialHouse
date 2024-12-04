@@ -22,7 +22,6 @@ final class EditPageCell: UITableViewCell {
         textView.autocorrectionType = .no
         textView.autocapitalizationType = .none
         textView.spellCheckingType = .no
-        textView.isScrollEnabled = false
         
         return textView
     }()
@@ -282,8 +281,6 @@ extension EditPageCell: @preconcurrency MediaAttachmentDataSource {
 extension EditPageCell: UITextViewDelegate {
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         guard let textStorage else { return false }
-        guard let viewText = textView.text else { return false }
-        let startIndex = textView.text.startIndex
         // Attachment지우기 전에 드래그해서 알려주기
         if text.isEmpty && range.length == 1
             && attachmentAt(range.location) != nil
@@ -291,47 +288,19 @@ extension EditPageCell: UITextViewDelegate {
             textView.selectedRange = NSRange(location: range.location, length: 1)
             return false
         }
-        // 갖은 경우의 수 별로 cachedViewProvider를 nil로 변경합니다.
-        // 왜냐하면, 줄바꿈을 추가했을 때, 캐시된 View가 업데이트 되어야 하기 때문입니다.
-        if range.location > 0
-            && viewText[viewText.index(startIndex, offsetBy: range.location-1)] == "\n"
-            && text.count == 1,
-           let attachment = (attachmentAt(range.location) ?? attachmentAt(min(range.location+1, viewText.count-1))) {
-            attachment.cachedViewProvider = nil
-        }
-        if text == "\n" { // 줄바꿈을 추가할때
-            if let attachment = attachmentAt(range.location) { // Attachment 앞에 줄바꿈을 추가할때
-                attachment.cachedViewProvider = nil
-            }
-            else if let attachment = attachmentAt(range.location+1) { // Attachment 1칸 앞에 줄바꿈을 추가할때
-                attachment.cachedViewProvider = nil
-            }
-        }
-        if text.isEmpty { // 지우기할때
-            if let attachment = attachmentAt(range.location+1) {  // Attachment 1칸 앞에 줄바꿈을 추가할때
-                if range.location < 1 { // 첫째 줄에 도달하기 전에 지우기할때
-                    attachment.cachedViewProvider = nil
-                    return true
-                }
-                textView.selectedRange = NSRange(location: range.location, length: 0)
-                return false
-            }
-            else if let attachment = attachmentAt(range.location+2), // Attachment 2칸 앞에 줄바꿈을 추가할때
-                    textView.text[textView.text.index(textView.text.startIndex, offsetBy: range.location+1)] == "\n" {
-                attachment.cachedViewProvider = nil
-            }
-        }
         
         let attributedText = NSMutableAttributedString(
             string: text,
             attributes: defaultAttributes
         )
-        return text.isEmpty
-        || isAcceptableHeight(textStorage, shouldChangeTextIn: range, replacementText: attributedText)
+        return isAcceptableHeight(textStorage, shouldChangeTextIn: range, replacementText: attributedText)
+        || text.isEmpty
     }
     
     func textViewDidBeginEditing(_ textView: UITextView) {
         input.send(.didBeginEditingPage)
+        let availableHeight = textViewMaxContentSize().height - textView.contentSize.height
+        input.send(.isMediaAddable(availableHeight: availableHeight))
     }
     
     /// TextView의 높이가 적절한지 확인합니다.
@@ -341,19 +310,31 @@ extension EditPageCell: UITextViewDelegate {
         replacementText attributedText: NSAttributedString
     ) -> Bool {
         let updatedText = NSMutableAttributedString(attributedString: textStorage)
-        let horizontalInset = textView.textContainerInset.left + textView.textContainerInset.right
-        let verticalInset = textView.textContainerInset.top + textView.textContainerInset.bottom
-        let textViewWidth = textView.bounds.width - horizontalInset
-        let textViewHight = textView.bounds.height - verticalInset
+        let textViewSize = textViewMaxContentSize()
         let temporaryTextView = UITextView(
-            frame: CGRect(x: 0, y: 0, width: textViewWidth, height: .greatestFiniteMagnitude)
+            frame: CGRect(x: 0, y: 0, width: textViewSize.width, height: .greatestFiniteMagnitude)
         )
         
         updatedText.replaceCharacters(in: range, with: attributedText)
         temporaryTextView.attributedText = updatedText
         temporaryTextView.sizeToFit()
         
-        return temporaryTextView.contentSize.height <= textViewHight
+        let availableHeight = textViewSize.height - temporaryTextView.contentSize.height
+        let result = availableHeight >= 0
+        
+        if result {
+            input.send(.isMediaAddable(availableHeight: availableHeight))
+        }
+        
+        return result
+    }
+    private func textViewMaxContentSize() -> CGSize {
+        let horizontalInset = textView.textContainerInset.left + textView.textContainerInset.right
+        let verticalInset = textView.textContainerInset.top + textView.textContainerInset.bottom
+        let textViewWidth = textView.bounds.width - horizontalInset
+        let textViewHeight = textView.bounds.height - verticalInset
+        
+        return CGSize(width: textViewWidth, height: textViewHeight)
     }
 }
 
@@ -366,7 +347,7 @@ extension EditPageCell: @preconcurrency NSTextStorageDelegate {
         changeInLength delta: Int
     ) {
         // 입력하는 곳 앞에 Attachment가 있을 때, 줄바꿈을 추가합니다.
-        guard delta > 0 else { return }
+        guard delta >= 0 else { return }
         lineBreakForAttachment()
     }
     
@@ -392,13 +373,12 @@ extension EditPageCell: @preconcurrency NSTextStorageDelegate {
         let range = NSRange(location: 0, length: currentString.count)
         let newLine = NSAttributedString(string: "\n", attributes: defaultAttributes)
         textStorage?.enumerateAttribute(.attachment, in: range, using: { value, range, _ in
-            guard let attachment = value as? MediaAttachment else { return }
+            guard value is MediaAttachment else { return }
             let location = range.location
             // Attachment 앞에 줄바꿈이 없을 때, 줄바꿈을 추가합니다.
             if location > 0 {
                 if currentString[currentString.index(startIndex, offsetBy: location-1)] != "\n" {
                     textStorage?.insert(newLine, at: location)
-                    attachment.cachedViewProvider = nil
                 }
             }
             // Attachment 뒤에 줄바꿈이 없을 때, 줄바꿈을 추가합니다.
@@ -406,7 +386,8 @@ extension EditPageCell: @preconcurrency NSTextStorageDelegate {
             if nextLocation < currentString.count
                 && currentString[currentString.index(startIndex, offsetBy: nextLocation)] != "\n" {
                 textStorage?.insert(newLine, at: nextLocation)
-                guard nextLocation+1 < textStorage?.length ?? -1 else { return }
+                guard nextLocation+1 < textStorage?.length ?? -1,
+                      textView.selectedRange.location == nextLocation else { return }
                 textView.selectedRange = NSRange(location: nextLocation+1, length: 0)
             }
         })

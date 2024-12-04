@@ -1,4 +1,5 @@
 import MHFoundation
+import MHDomain
 import MHCore
 import UIKit
 import Combine
@@ -229,9 +230,11 @@ final class EditBookViewController: UIViewController {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] event in
                 switch event {
-                case .updateViewController(let title):
+                case let .updateViewController(title):
                     self?.navigationItem.title = title
                     self?.editPageTableView.reloadData()
+                case let .pageAdded(at):
+                    self?.insertPage(at: at)
                 case .saveDone:
                     guard let self else { return }
                     switch self.mode {
@@ -242,6 +245,8 @@ final class EditBookViewController: UIViewController {
                     }
                 case .revokeDone:
                     self?.navigationController?.popViewController(animated: true)
+                case let .addableMediaTypes(mediaTypes):
+                    self?.updateAddMediaButtonStates(by: mediaTypes)
                 case .error(let message):
                     self?.showErrorAlert(with: message)
                 }
@@ -307,6 +312,19 @@ final class EditBookViewController: UIViewController {
             self?.input.send(.addPageButtonTapped)
         }
         addPageButton.addAction(addPageAction, for: .touchUpInside)
+    }
+    
+    // MARK: - Helper
+    private func updateAddMediaButtonStates(by mediaTypes: [MediaType]) {
+        addImageButton.isEnabled = mediaTypes.contains(.image)
+        addVideoButton.isEnabled = mediaTypes.contains(.video)
+        addAudioButton.isEnabled = mediaTypes.contains(.audio)
+    }
+    
+    private func insertPage(at index: Int) {
+        let indexPath = IndexPath(row: index, section: 0)
+        editPageTableView.insertRows(at: [indexPath], with: .automatic)
+        editPageTableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
     }
     
     // MARK: - Keyboard Appear & Hide

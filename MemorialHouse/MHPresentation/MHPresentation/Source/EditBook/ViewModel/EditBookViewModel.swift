@@ -16,8 +16,10 @@ final class EditBookViewModel: ViewModelType {
     }
     enum Output {
         case updateViewController(title: String)
+        case pageAdded(at: Int)
         case saveDone
         case revokeDone
+        case addableMediaTypes([MediaType])
         case error(message: String)
     }
     
@@ -137,6 +139,7 @@ final class EditBookViewModel: ViewModelType {
             MHLogger.error(error.localizedDescription + #function)
         }
     }
+    
     private func addEmptyPage() {
         let editPageViewModel = EditPageViewModel(
             fetchMediaUseCase: fetchMediaUseCase,
@@ -146,7 +149,7 @@ final class EditBookViewModel: ViewModelType {
         )
         editPageViewModel.delegate = self
         editPageViewModels.append(editPageViewModel)
-        output.send(.updateViewController(title: title))
+        output.send(.pageAdded(at: editPageViewModels.count-1))
     }
     
     private func saveMediaAll() async {
@@ -189,5 +192,12 @@ extension EditBookViewModel: EditPageViewModelDelegate {
     func didBeginEditingPage(_ editPageViewModel: EditPageViewModel, page: Page) {
         let pageID = page.id
         currentPageIndex = editPageViewModels.firstIndex { $0.page.id == pageID } ?? 0
+    }
+    
+    func updateAddableMediaTypes(_ editPageViewModel: EditPageViewModel, mediaTypes: [MediaType]) {
+        let pageID = editPageViewModel.page.id
+        let currentPage = editPageViewModels[currentPageIndex]
+        guard pageID == currentPage.page.id else { return }
+        output.send(.addableMediaTypes(mediaTypes))
     }
 }
