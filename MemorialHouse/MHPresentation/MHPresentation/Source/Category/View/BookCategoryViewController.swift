@@ -41,7 +41,7 @@ final class BookCategoryViewController: UIViewController {
         
         setup()
         bind()
-        input.send(.viewDidLoad)
+        input.send(.fetchCategories)
         configureNavigationBar()
         configureConstraints()
     }
@@ -125,7 +125,7 @@ final class BookCategoryViewController: UIViewController {
                         MHLogger.error("입력한 카테고리 이름이 유효하지 않습니다.")
                         return
                     }
-                    self?.input.send(.addCategory(text: newText))
+                    self?.input.send(.createCategory(text: newText))
                 }
             )
             

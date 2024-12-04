@@ -4,8 +4,8 @@ import MHCore
 
 final class BookCategoryViewModel: ViewModelType {
     enum Input {
-        case viewDidLoad
-        case addCategory(text: String)
+        case createCategory(text: String)
+        case fetchCategories
         case updateCategory(index: Int, text: String)
         case deleteCategory(index: Int)
     }
@@ -52,10 +52,10 @@ final class BookCategoryViewModel: ViewModelType {
         input.sink { [weak self] event in
             Task {
                 switch event {
-                case .viewDidLoad:
-                    await self?.fetchCategories()
-                case .addCategory(let text):
+                case .createCategory(let text):
                     await self?.createCategory(text: text)
+                case .fetchCategories:
+                    await self?.fetchCategories()
                 case .updateCategory(let index, let text):
                     await self?.updateCategory(index: index, text: text)
                 case .deleteCategory(let index):
