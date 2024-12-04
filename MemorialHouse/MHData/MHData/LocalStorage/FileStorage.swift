@@ -70,6 +70,8 @@ public protocol FileStorage: Sendable {
     /// - Returns: 파일 URL을 반환합니다.
     func getURL(at path: String, fileName name: String) async -> Result<URL, MHDataError>
     
+    func makeDirectory(through path: String) async -> Result<Void, MHDataError>
+    
     /// 지정된 경로의 파일 목록을 반환합니다.
     /// Documents폴더를 기준으로 파일 이름 목록을 반환합니다.
     /// path는 디렉토리여야 합니다.

@@ -11,7 +11,6 @@ final class CreateAudioViewController: UIViewController {
     private var cancellables = Set<AnyCancellable>()
     // auido
     private var audioRecorder: AVAudioRecorder?
-    private var isRecording = false
     // auido metering
     private var upBarLayers: [CALayer] = []
     private var downBarLayers: [CALayer] = []
@@ -29,8 +28,6 @@ final class CreateAudioViewController: UIViewController {
         AVNumberOfChannelsKey: 2,
         AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
     ]
-    // UUID
-    private let identifier: UUID = UUID()
     
     // MARK: - UI Component
     // title and buttons
@@ -101,7 +98,8 @@ final class CreateAudioViewController: UIViewController {
     }
     
     required init?(coder: NSCoder) {
-        self.viewModel = CreateAudioViewModel()
+        guard let viewModelFactory = try? DIContainer.shared.resolve(CreateAudioViewModelFactory.self) else { return nil }
+        self.viewModel = viewModelFactory.make { _ in }
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -111,17 +109,13 @@ final class CreateAudioViewController: UIViewController {
         
         setup()
         bind()
-        configureAudioSession()
         configureAddSubviews()
         configureConstraints()
         configureAddActions()
+        input.send(.viewDidLoad)
     }
     
-    override func viewDidDisappear(_ animated: Bool) {
-        self.input.send(.viewDidDisappear)
-    }
-    
-    // MARK: - setup
+    // MARK: - Setup
     private func setup() {
         view.backgroundColor = .white
         setupBars()
@@ -157,54 +151,29 @@ final class CreateAudioViewController: UIViewController {
         }
     }
     
-    private func requestMicrophonePermission() {
-        AVAudioSession.sharedInstance().requestRecordPermission { @Sendable granted in
-            if !granted {
-                Task { @MainActor in
-                    let alert = UIAlertController(
-                        title: "마이크 권한 필요",
-                        message: "설정에서 마이크 권한을 허용해주세요.",
-                        preferredStyle: .alert
-                    )
-                    alert.addAction(UIAlertAction(title: "OK", style: .default))
-                    self.present(alert, animated: true, completion: nil)
-                }
-            }
-        }
-    }
-    
     // MARK: - bind
     private func bind() {
         let output = viewModel?.transform(input: input.eraseToAnyPublisher())
-        output?.sink(receiveValue: { [weak self] event in
-            switch event {
-            case .updatedAudioFileURL:
-                // TODO: - update audio file url
-                MHLogger.debug("updated audio file URL")
-            case .savedAudioFile:
-                // TODO: - show audio player
-                MHLogger.debug("saved audio file")
-            case .deleteTemporaryAudioFile:
-                // TODO: - delete temporary audio file
-                MHLogger.debug("delete temporary audio file")
-            case .audioStart:
-                self?.startRecording()
-            case .audioStop:
-                self?.stopRecording()
-            }
-        }).store(in: &cancellables)
+        output?.receive(on: DispatchQueue.main)
+            .sink(receiveValue: { [weak self] event in
+                switch event {
+                case let .audioFileURL(url):
+                    self?.configureAudioSession(for: url)
+                case .audioStart:
+                    self?.startRecording()
+                case .audioStop:
+                    self?.stopRecording()
+                case .recordCompleted:
+                    self?.dismiss(animated: true)
+                }
+            }).store(in: &cancellables)
     }
     
-    // MARK: - configure
-    
-    private func configureAudioSession() {
-        let fileName = "\(identifier).m4a"
-        let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        let audioFileURL = documentDirectory.appendingPathComponent(fileName)
-        
+    // MARK: - Configuration
+    private func configureAudioSession(for url: URL) {
         try? audioSession.setCategory(.record, mode: .default)
         
-        audioRecorder = try? AVAudioRecorder(url: audioFileURL, settings: audioRecordersettings)
+        audioRecorder = try? AVAudioRecorder(url: url, settings: audioRecordersettings)
         audioRecorder?.isMeteringEnabled = true
     }
     
@@ -261,6 +230,57 @@ final class CreateAudioViewController: UIViewController {
             trailing: meteringBackgroundView.trailingAnchor
         )
         timeTextLabel.setWidthAndHeight(width: 60, height: 16)
+    }
+    
+    private func configureAddActions() {
+        addTappedEventToAudioButton()
+        addTappedEventToCancelButton()
+        addTappedEventToSaveButton()
+    }
+    
+    private func addTappedEventToAudioButton() {
+        audioButton.addAction(
+            UIAction { [weak self] _ in
+                self?.input.send(.audioButtonTapped)
+            }, for: .touchUpInside
+        )
+    }
+    
+    private func addTappedEventToCancelButton() {
+        cancelButton.addAction(
+            UIAction { [weak self] _ in
+                self?.input.send(.recordCancelled)
+            }, for: .touchUpInside
+        )
+    }
+    
+    private func addTappedEventToSaveButton() {
+        saveButton.addAction(
+            UIAction { [weak self] _ in
+                self?.input.send(.saveButtonTapped)
+            }, for: .touchUpInside
+        )
+    }
+    
+    // MARK: - Helper
+    private func requestMicrophonePermission() {
+        let alert = UIAlertController(
+            title: "마이크 권한 필요",
+            message: "설정에서 마이크 권한을 허용해주세요.",
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "OK", style: .default) { [weak self] _ in
+            self?.dismiss(animated: true)
+        })
+        Task {
+            AVAudioSession.sharedInstance().requestRecordPermission { @Sendable granted in
+                Task { @MainActor in
+                    if !granted {
+                        self.present(alert, animated: true, completion: nil)
+                    }
+                }
+            }
+        }
     }
     
     private func startRecording() {
@@ -355,30 +375,5 @@ final class CreateAudioViewController: UIViewController {
         let minutes = recordingSeconds / 60
         let seconds = recordingSeconds % 60
         timeTextLabel.text = String(format: "%02d:%02d", minutes, seconds)
-    }
-    
-    private func configureAddActions() {
-        addTappedEventToAudioButton()
-        addTappedEventToCancelButton()
-        addTappedEventToSaveButton()
-    }
-    
-    private func addTappedEventToAudioButton() {
-        audioButton.addAction(UIAction { [weak self] _ in
-            self?.input.send(.audioButtonTapped)
-        }, for: .touchUpInside)
-    }
-    private func addTappedEventToCancelButton() {
-        cancelButton.addAction(
-            UIAction { [weak self]_ in
-                self?.dismiss(animated: true)
-            },
-            for: .touchUpInside)
-    }
-    private func addTappedEventToSaveButton() {
-        saveButton.addAction(UIAction { _ in
-            self.input.send(.saveButtonTapped)
-            self.dismiss(animated: true)
-        }, for: .touchUpInside)
     }
 }
