@@ -281,23 +281,12 @@ extension EditPageCell: @preconcurrency MediaAttachmentDataSource {
 extension EditPageCell: UITextViewDelegate {
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         guard let textStorage else { return false }
-        guard let viewText = textView.text else { return false }
-        let startIndex = textView.text.startIndex
         // Attachment지우기 전에 드래그해서 알려주기
         if text.isEmpty && range.length == 1
             && attachmentAt(range.location) != nil
             && textView.selectedRange.length == 0 {
             textView.selectedRange = NSRange(location: range.location, length: 1)
             return false
-        }
-        if text.isEmpty { // 지우기할때
-            if let attachment = attachmentAt(range.location+1) {  // Attachment 1칸 앞에 줄바꿈을 추가할때
-                if range.location < 1 { // 첫째 줄에 도달하기 전에 지우기할때
-                    return true
-                }
-                textView.selectedRange = NSRange(location: range.location, length: 0)
-                return false
-            }
         }
         
         let attributedText = NSMutableAttributedString(
@@ -344,7 +333,7 @@ extension EditPageCell: @preconcurrency NSTextStorageDelegate {
         changeInLength delta: Int
     ) {
         // 입력하는 곳 앞에 Attachment가 있을 때, 줄바꿈을 추가합니다.
-        guard delta > 0 else { return }
+        guard delta >= 0 else { return }
         lineBreakForAttachment()
     }
     
@@ -370,7 +359,7 @@ extension EditPageCell: @preconcurrency NSTextStorageDelegate {
         let range = NSRange(location: 0, length: currentString.count)
         let newLine = NSAttributedString(string: "\n", attributes: defaultAttributes)
         textStorage?.enumerateAttribute(.attachment, in: range, using: { value, range, _ in
-            guard let attachment = value as? MediaAttachment else { return }
+            guard value is MediaAttachment else { return }
             let location = range.location
             // Attachment 앞에 줄바꿈이 없을 때, 줄바꿈을 추가합니다.
             if location > 0 {
@@ -383,7 +372,8 @@ extension EditPageCell: @preconcurrency NSTextStorageDelegate {
             if nextLocation < currentString.count
                 && currentString[currentString.index(startIndex, offsetBy: nextLocation)] != "\n" {
                 textStorage?.insert(newLine, at: nextLocation)
-                guard nextLocation+1 < textStorage?.length ?? -1 else { return }
+                guard nextLocation+1 < textStorage?.length ?? -1,
+                      textView.selectedRange.location == nextLocation else { return }
                 textView.selectedRange = NSRange(location: nextLocation+1, length: 0)
             }
         })
