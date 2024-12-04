@@ -30,8 +30,11 @@ extension UIViewController {
                 }
             },
             cancelHandler: { [weak self] in
-                if content == .image {
+                switch content {
+                case .image, .camera:
                     self?.navigationController?.popViewController(animated: true)
+                case .audio:
+                    self?.dismiss(animated: true)
                 }
             }
         )
