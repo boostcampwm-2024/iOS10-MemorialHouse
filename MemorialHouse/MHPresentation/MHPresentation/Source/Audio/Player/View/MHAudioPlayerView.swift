@@ -50,12 +50,6 @@ final class MHAudioPlayerView: UIView {
     }()
     private let playImage = UIImage(systemName: "play.fill")
     private let pauseImage = UIImage(systemName: "pause.fill")
-    private let audioStateImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.image = UIImage(named: "audio_play")
-        
-        return imageView
-    }()
     private let audioPlayTimeLabel: UILabel = {
         let label = UILabel()
         label.text = "00:00"
