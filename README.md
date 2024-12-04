@@ -25,8 +25,12 @@
 
 > ### Clean Architecture + MVVM
 
-<img width="1000" alt="스크린샷 2024-11-28 오후 11 04 05" src="https://github.com/user-attachments/assets/87b86b8b-2b5f-487e-b648-4eeb80610a36">
 
+<div align="center">
+
+<img width="980" alt="스크린샷 2024-11-28 오후 11 04 05" src="https://github.com/user-attachments/assets/87b86b8b-2b5f-487e-b648-4eeb80610a36">
+
+</div>
 
 - View와 비즈니스 로직 분리를 위해 **MVVM 도입**
   
