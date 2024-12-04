@@ -6,7 +6,7 @@ import MHDomain
 public final class CreateAudioViewModel: ViewModelType {
     // MARK: - Type
     enum Input {
-        case viewDidLoad
+        case prepareTemporaryAudio
         case audioButtonTapped
         case saveButtonTapped
         case recordCancelled
@@ -39,8 +39,8 @@ public final class CreateAudioViewModel: ViewModelType {
     func transform(input: AnyPublisher<Input, Never>) -> AnyPublisher<Output, Never> {
         input.sink { [weak self] event in
             switch event {
-            case .viewDidLoad:
-                Task { await self?.viewDidLoad() }
+            case .prepareTemporaryAudio:
+                Task { await self?.prepareTemporaryAudio() }
             case .audioButtonTapped:
                 self?.audioButtonTapped()
             case .saveButtonTapped:
@@ -54,7 +54,7 @@ public final class CreateAudioViewModel: ViewModelType {
     }
     
     // MARK: - Helper
-    private func viewDidLoad() async {
+    private func prepareTemporaryAudio() async {
         let mediaDescription = MediaDescription(type: .audio)
         self.mediaDescription = mediaDescription
         do {

@@ -112,7 +112,7 @@ final class EditBookViewController: UIViewController {
         configureKeyboardNotification()
         configureBinding()
         configureButtonAction()
-        input.send(.viewDidLoad)
+        input.send(.fetchBook)
     }
     
     // MARK: - Setup & Configuration

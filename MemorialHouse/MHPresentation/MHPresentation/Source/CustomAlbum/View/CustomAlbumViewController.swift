@@ -176,14 +176,14 @@ final class CustomAlbumViewController: UIViewController {
                 Task { @MainActor in
                     guard let self = self else { return }
                     if status == .authorized || status == .limited {
-                        self.input.send(.viewDidLoad(mediaType: self.mediaType))
+                        self.input.send(.fetchPhotoAssets(mediaType: self.mediaType))
                     } else {
                         self.dismiss(animated: true)
                     }
                 }
             }
         case .authorized, .limited:
-            input.send(.viewDidLoad(mediaType: mediaType))
+            input.send(.fetchPhotoAssets(mediaType: mediaType))
         case .restricted, .denied:
             showRedirectSettingAlert(with: .image)
             MHLogger.info("앨범 접근 권한 거부로 뷰를 닫았습니다.")

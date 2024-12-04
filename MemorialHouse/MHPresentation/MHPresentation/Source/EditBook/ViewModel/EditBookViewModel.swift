@@ -6,7 +6,7 @@ import MHCore
 final class EditBookViewModel: ViewModelType {
     // MARK: - Type
     enum Input {
-        case viewDidLoad
+        case fetchBook
         case didAddMediaInTemporary(media: MediaDescription)
         case didAddMediaWithData(type: MediaType, attributes: [String: any Sendable]?, data: Data)
         case didAddMediaInURL(type: MediaType, attributes: [String: any Sendable]?, url: URL)
@@ -61,7 +61,7 @@ final class EditBookViewModel: ViewModelType {
     func transform(input: AnyPublisher<Input, Never>) -> AnyPublisher<Output, Never> {
         input.sink { [weak self] event in
             switch event {
-            case .viewDidLoad:
+            case .fetchBook:
                 Task { await self?.fetchBook() }
             case let .didAddMediaInTemporary(media):
                 Task { await self?.addMedia(media) }

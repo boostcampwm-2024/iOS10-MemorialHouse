@@ -122,7 +122,7 @@ final class CreateAudioViewController: UIViewController {
         configureAddSubviews()
         configureConstraints()
         configureAddActions()
-        input.send(.viewDidLoad)
+        input.send(.prepareTemporaryAudio)
     }
     
     // MARK: - Setup
