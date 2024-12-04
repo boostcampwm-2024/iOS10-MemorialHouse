@@ -117,13 +117,16 @@ final class EditBookViewModel: ViewModelType {
         let description = MediaDescription(type: type, attributes: attributes)
         do {
             try await createMediaUseCase.execute(media: description, from: url, at: bookID)
-            try await deleteTemporaryMediaUsecase.execute(media: description)
+            if type == .audio {
+                try await deleteTemporaryMediaUsecase.execute(media: description)
+            }
             editPageViewModels[currentPageIndex].addMedia(media: description, url: url)
         } catch {
             output.send(.error(message: "미디어를 추가하는데 실패했습니다."))
             MHLogger.error(error.localizedDescription + #function)
         }
     }
+    
     private func addMedia(_ description: MediaDescription) async {
         do {
             try await storeMediaUseCase.excute(media: description, to: bookID)
