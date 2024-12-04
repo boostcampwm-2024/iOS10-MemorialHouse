@@ -176,20 +176,20 @@ final class CustomAlbumViewController: UIViewController {
                 Task { @MainActor in
                     guard let self = self else { return }
                     if status == .authorized || status == .limited {
-                        self.input.send(.viewDidLoad(mediaType: self.mediaType))
+                        self.input.send(.fetchPhotoAssets(mediaType: self.mediaType))
                     } else {
                         self.dismiss(animated: true)
                     }
                 }
             }
         case .authorized, .limited:
-            input.send(.viewDidLoad(mediaType: mediaType))
+            input.send(.fetchPhotoAssets(mediaType: mediaType))
         case .restricted, .denied:
             showRedirectSettingAlert(with: .image)
-            MHLogger.info("앨범 접근 권한 거부로 뷰를 닫았습니다.")
+            MHLogger.info("앨범 접근 권한 거부로 뷰를 닫았습니다." + #function)
         default:
             showRedirectSettingAlert(with: .image)
-            MHLogger.error("알 수 없는 권한 상태로 인해 뷰를 닫았습니다.")
+            MHLogger.error("알 수 없는 권한 상태로 인해 뷰를 닫았습니다." + #function)
         }
     }
     
@@ -210,10 +210,10 @@ final class CustomAlbumViewController: UIViewController {
             albumCollectionView.reloadData()
         case .restricted, .denied:
             showRedirectSettingAlert(with: .camera)
-            MHLogger.info("카메라 권한 거부")
+            MHLogger.info("카메라 권한 거부" + #function)
         default:
             showRedirectSettingAlert(with: .camera)
-            MHLogger.error(authorization)
+            MHLogger.error("\(authorization) 권한 상태" + #function)
         }
     }
     

@@ -6,7 +6,7 @@ import MHCore
 final class EditBookViewModel: ViewModelType {
     // MARK: - Type
     enum Input {
-        case viewDidLoad
+        case fetchBook
         case didAddMediaInTemporary(media: MediaDescription)
         case didAddMediaWithData(type: MediaType, attributes: [String: any Sendable]?, data: Data)
         case didAddMediaInURL(type: MediaType, attributes: [String: any Sendable]?, url: URL)
@@ -62,7 +62,7 @@ final class EditBookViewModel: ViewModelType {
     func transform(input: AnyPublisher<Input, Never>) -> AnyPublisher<Output, Never> {
         input.sink { [weak self] event in
             switch event {
-            case .viewDidLoad:
+            case .fetchBook:
                 Task { await self?.fetchBook() }
             case let .didAddMediaInTemporary(media):
                 Task { await self?.addMedia(media) }
@@ -118,7 +118,9 @@ final class EditBookViewModel: ViewModelType {
         let description = MediaDescription(type: type, attributes: attributes)
         do {
             try await createMediaUseCase.execute(media: description, from: url, at: bookID)
-            try await deleteTemporaryMediaUsecase.execute(media: description)
+            if type == .audio {
+                try await deleteTemporaryMediaUsecase.execute(media: description)
+            }
             editPageViewModels[currentPageIndex].addMedia(media: description, url: url)
         } catch {
             output.send(.error(message: "미디어를 추가하는데 실패했습니다."))

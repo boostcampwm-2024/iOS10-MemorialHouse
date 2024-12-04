@@ -110,10 +110,10 @@ final class EditBookViewController: UIViewController {
         configureNavigationBar()
         configureAddSubView()
         configureConstraints()
-        configureKeyboard()
+        configureKeyboardNotification()
         configureBinding()
         configureButtonAction()
-        input.send(.viewDidLoad)
+        input.send(.fetchBook)
     }
     
     // MARK: - Setup & Configuration
@@ -207,7 +207,7 @@ final class EditBookViewController: UIViewController {
             trailing: editPageTableView.trailingAnchor, constantTrailing: 15
         )
     }
-    private func configureKeyboard() {
+    private func configureKeyboardNotification() {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(keyboardWillAppear),
@@ -216,7 +216,7 @@ final class EditBookViewController: UIViewController {
         )
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(keyboardWillHide),
+            selector: #selector(keyboardWillDisappear),
             name: UIResponder.keyboardWillHideNotification,
             object: nil
         )
@@ -320,7 +320,8 @@ final class EditBookViewController: UIViewController {
     }
     
     // MARK: - Keyboard Appear & Hide
-    @objc private func keyboardWillAppear(_ notification: Notification) {
+    @objc
+    private func keyboardWillAppear(_ notification: Notification) {
         guard let keyboardInfo = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey],
               let keyboardSize = keyboardInfo as? CGRect else { return }
         let bottomConstant = -(keyboardSize.height - view.safeAreaInsets.bottom + 10)
@@ -329,7 +330,8 @@ final class EditBookViewController: UIViewController {
             self?.view.layoutIfNeeded()
         }
     }
-    @objc private func keyboardWillHide() {
+    @objc
+    private func keyboardWillDisappear() {
         buttonStackViewBottomConstraint?.constant = Self.buttonBottomConstant
         UIView.animate(withDuration: 0.3) { [weak self] in
             self?.view.layoutIfNeeded()
