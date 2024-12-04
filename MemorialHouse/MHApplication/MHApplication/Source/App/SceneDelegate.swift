@@ -73,11 +73,12 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             try registerUseCaseDependency()
             try registerViewModelFactoryDependency()
         } catch let error as MHCoreError {
-            MHLogger.error("\(error.description)")
+            MHLogger.error(error.description + #function)
         } catch {
-            MHLogger.error("\(error.localizedDescription)")
+            MHLogger.error(error.localizedDescription + #function)
         }
     }
+    
     private func registerStorageDepedency() throws {
         DIContainer.shared.register(CoreDataStorage.self, object: CoreDataStorage())
         
@@ -239,6 +240,10 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             TemporaryStoreMediaUseCase.self,
             object: DefaultTemporaryStoreMediaUseCase(repository: mediaRepository)
         )
+        DIContainer.shared.register(
+            DeleteTemporaryMediaUseCase.self,
+            object: DefaultDeleteTemporaryMediaUseCase(repository: mediaRepository)
+        )
     }
     
     private func registerViewModelFactoryDependency() throws {
@@ -315,6 +320,7 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // MARK: - EditBook ViewModel
         let updateBookUseCase = try DIContainer.shared.resolve(UpdateBookUseCase.self)
         let storeMediaUseCase = try DIContainer.shared.resolve(PersistentlyStoreMediaUseCase.self)
+        let deleteTemporaryMediaUseCase = try DIContainer.shared.resolve(DeleteTemporaryMediaUseCase.self)
         let createMediaUseCase = try DIContainer.shared.resolve(CreateMediaUseCase.self)
         let fetchMediaUseCase = try DIContainer.shared.resolve(FetchMediaUseCase.self)
         let deleteMediaUseCase = try DIContainer.shared.resolve(DeleteMediaUseCase.self)
@@ -324,6 +330,7 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 fetchBookUseCase: fetchBookUseCase,
                 updateBookUseCase: updateBookUseCase,
                 storeMediaUseCase: storeMediaUseCase,
+                deleteTemporaryMediaUseCase: deleteTemporaryMediaUseCase,
                 createMediaUseCase: createMediaUseCase,
                 fetchMediaUseCase: fetchMediaUseCase,
                 deleteMediaUseCase: deleteMediaUseCase

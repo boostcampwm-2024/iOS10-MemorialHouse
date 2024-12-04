@@ -6,7 +6,7 @@ import Photos
 // TODO: - 에러 처리 필요
 final class CreateBookCoverViewModel: ViewModelType {
     enum Input {
-        case viewDidAppear
+        case setBookCover
         case changedBookTitle(title: String?)
         case changedBookColor(colorIndex: Int)
         case changedBookImage(bookImage: Data?)
@@ -60,7 +60,7 @@ final class CreateBookCoverViewModel: ViewModelType {
     func transform(input: AnyPublisher<Input, Never>) -> AnyPublisher<Output, Never> {
         input.sink { [weak self] event in
             switch event {
-            case .viewDidAppear:
+            case .setBookCover:
                 self?.setBookColor(nowIndex: 0)
                 Task { try await self?.fetchMemorialHouseName() }
             case .changedBookTitle(let title):

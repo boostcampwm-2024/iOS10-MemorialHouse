@@ -45,11 +45,14 @@ final class MHAudioPlayerView: UIView {
     private var progressViewConstraints: [NSLayoutConstraint] = []
     private let audioStateButton: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(systemName: "play.fill"), for: .normal)
+        button.setImage(UIImage(systemName: "play.fill")?
+            .withTintColor(.captionPlaceHolder, renderingMode: .alwaysOriginal), for: .normal)
         return button
     }()
-    private let playImage = UIImage(systemName: "play.fill")
-    private let pauseImage = UIImage(systemName: "pause.fill")
+    private let playImage = UIImage(systemName: "play.fill")?
+        .withTintColor(.captionPlaceHolder, renderingMode: .alwaysOriginal)
+    private let pauseImage = UIImage(systemName: "pause.fill")?
+        .withTintColor(.captionPlaceHolder, renderingMode: .alwaysOriginal)
     private let audioPlayTimeLabel: UILabel = {
         let label = UILabel()
         label.text = "00:00"
@@ -59,6 +62,7 @@ final class MHAudioPlayerView: UIView {
         
         return label
     }()
+    private var playerWidth: CGFloat = 0
     
     public override init(frame: CGRect) {
         super.init(frame: frame)
@@ -109,7 +113,7 @@ final class MHAudioPlayerView: UIView {
         )
         
         audioProgressView.translatesAutoresizingMaskIntoConstraints = false
-        progressViewWidthConstraint = audioProgressView.widthAnchor.constraint(equalToConstant: 290)
+        progressViewWidthConstraint = audioProgressView.widthAnchor.constraint(equalToConstant: frame.width - 9)
         NSLayoutConstraint.activate([
             audioProgressView.topAnchor.constraint(equalTo: topAnchor, constant: 29),
             audioProgressView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 4),
@@ -156,20 +160,21 @@ final class MHAudioPlayerView: UIView {
     
     private func updatePlayAudioProgress() {
         guard let audioPlayer else { return }
-        let width = ceil(Float(audioPlayer.currentTime) / Float(audioPlayer.duration) * Float(299))
+        let width = ceil(Float(audioPlayer.currentTime) / Float(audioPlayer.duration) * Float(frame.width))
         
         progressViewWidthConstraint?.constant = CGFloat(width)
         self.layoutIfNeeded()
+        let seconds = ceil(Double(audioPlayer.currentTime))
+        self.setTimeLabel(seconds: Int(seconds))
     }
     
     private func startTimer() {
         timer?.invalidate()
-        timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
+        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
             guard let audioPlayer = self?.audioPlayer else { return }
             Task { @MainActor in
                 if audioPlayer.isPlaying {
                     self?.updatePlayAudioProgress()
-                    self?.setTimeLabel(seconds: Int(audioPlayer.currentTime))
                 }
             }
         }
@@ -196,10 +201,8 @@ extension MHAudioPlayerView: AVAudioPlayerDelegate {
             
             stopTimer()
             
-            progressViewWidthConstraint?.constant = CGFloat(290)
-            UIView.animate(withDuration: 0) {
-                self.layoutIfNeeded()
-            }
+            progressViewWidthConstraint?.constant = CGFloat(frame.width - 9)
+            self.layoutIfNeeded()
         }
     }
 }
@@ -209,13 +212,13 @@ extension MHAudioPlayerView: @preconcurrency MediaAttachable {
         audioPlayer = try? AVAudioPlayer(data: data)
         guard let audioPlayer else { return }
         audioPlayer.delegate = self
-        self.setTimeLabel(seconds: Int(audioPlayer.duration.rounded()))
+        self.setTimeLabel(seconds: Int(ceil(Double(audioPlayer.duration))))
     }
     
     func configureSource(with mediaDescription: MediaDescription, url: URL) {
         audioPlayer = try? AVAudioPlayer(contentsOf: url)
         guard let audioPlayer else { return }
         audioPlayer.delegate = self
-        self.setTimeLabel(seconds: Int(audioPlayer.duration.rounded()))
+        self.setTimeLabel(seconds: Int(ceil(Double(audioPlayer.duration))))
     }
 }

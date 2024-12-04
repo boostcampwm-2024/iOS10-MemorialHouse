@@ -122,7 +122,7 @@ final class EditPhotoViewController: UIViewController {
         )
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(keyboardWillHide),
+            selector: #selector(keyboardWillDisappear),
             name: UIResponder.keyboardWillHideNotification,
             object: nil
         )
@@ -292,7 +292,8 @@ final class EditPhotoViewController: UIViewController {
     }
     
     // MARK: - Keyboard Appear & Hide
-    @objc private func keyboardWillAppear(_ notification: Notification) {
+    @objc
+    private func keyboardWillAppear(_ notification: Notification) {
         guard let keyboardInfo = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey],
               let keyboardSize = keyboardInfo as? CGRect else { return }
         let bottomConstant = editButtonStackView.frame.height + view.safeAreaInsets.bottom
@@ -302,7 +303,8 @@ final class EditPhotoViewController: UIViewController {
         }
     }
     
-    @objc private func keyboardWillHide() {
+    @objc
+    private func keyboardWillDisappear() {
         captionTextFieldBottomConstraint?.constant = -11
         UIView.animate(withDuration: 0.3) { [weak self] in
             self?.view.layoutIfNeeded()
