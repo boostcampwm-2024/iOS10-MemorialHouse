@@ -53,14 +53,22 @@ final class CreateAudioViewController: UIViewController {
         return button
     }()
     private let saveButton: UIButton = {
-        let button = UIButton(
-            frame: CGRect(origin: .zero, size: CGSize(width: 60, height: 21))
-        )
-        var attributedString = AttributedString(stringLiteral: "저장")
-        attributedString.font = UIFont.ownglyphBerry(size: 21)
-        attributedString.foregroundColor = UIColor.black
-        button.setAttributedTitle(NSAttributedString(attributedString), for: .normal)
+        let button = UIButton(frame: CGRect(origin: .zero, size: CGSize(width: 60, height: 21)))
         button.contentHorizontalAlignment = .center
+        button.setAttributedTitle(
+            NSAttributedString(
+                string: "저장",
+                attributes: [.font: UIFont.ownglyphBerry(size: 21), .foregroundColor: UIColor.mhTitle]
+            ),
+            for: .normal
+        )
+        button.setAttributedTitle(
+            NSAttributedString(
+                string: "저장",
+                attributes: [.font: UIFont.ownglyphBerry(size: 21), .foregroundColor: UIColor.systemGray2]
+            ),
+            for: .disabled
+        )
         return button
     }()
     // audio metering
@@ -98,7 +106,9 @@ final class CreateAudioViewController: UIViewController {
     }
     
     required init?(coder: NSCoder) {
-        guard let viewModelFactory = try? DIContainer.shared.resolve(CreateAudioViewModelFactory.self) else { return nil }
+        guard let viewModelFactory = try? DIContainer.shared.resolve(CreateAudioViewModelFactory.self) else {
+            return nil
+        }
         self.viewModel = viewModelFactory.make { _ in }
         super.init(nibName: nil, bundle: nil)
     }
@@ -128,7 +138,7 @@ final class CreateAudioViewController: UIViewController {
         
         for index in 0..<numberOfBars {
             let upMeteringLayer = CALayer()
-            upMeteringLayer.backgroundColor = UIColor.orange.cgColor
+            upMeteringLayer.backgroundColor = UIColor.mhOrange.cgColor
             upMeteringLayer.frame = CGRect(
                 x: index * (width + barSpacing),
                 y: Int(volumeHalfHeight),
@@ -310,6 +320,8 @@ final class CreateAudioViewController: UIViewController {
         audioButton.setWidthAndHeight(width: 32, height: 32)
         audioButton.setCenter(view: audioButtonBackground)
         NSLayoutConstraint.activate(audioButton.constraints)
+        
+        saveButton.isEnabled = false
     }
     
     private func stopRecording() {
@@ -327,6 +339,8 @@ final class CreateAudioViewController: UIViewController {
         audioButton.setWidthAndHeight(width: 48, height: 48)
         audioButton.setCenter(view: audioButtonBackground)
         NSLayoutConstraint.activate(audioButton.constraints)
+        
+        saveButton.isEnabled = true
     }
     
     private func updateAudioMetering() {

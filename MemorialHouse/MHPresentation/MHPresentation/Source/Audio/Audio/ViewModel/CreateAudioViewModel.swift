@@ -81,6 +81,9 @@ public final class CreateAudioViewModel: ViewModelType {
             output.send(.audioStop)
         }
         output.send(.recordCompleted)
-        completion(mediaDescription)
+        
+        if withCompletion {
+            completion(mediaDescription)
+        }
     }
 }
