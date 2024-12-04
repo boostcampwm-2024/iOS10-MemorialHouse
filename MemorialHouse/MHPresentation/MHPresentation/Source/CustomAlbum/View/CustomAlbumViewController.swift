@@ -68,10 +68,10 @@ final class CustomAlbumViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        bind()
         setup()
         configureConstraints()
         configureNavigationBar()
-        bind()
         checkThumbnailAuthorization()
     }
     
@@ -79,6 +79,32 @@ final class CustomAlbumViewController: UIViewController {
         super.viewWillAppear(animated)
         
         configureNavigationAppearance()
+    }
+    
+    // MARK: - Binding
+    private func bind() {
+        let output = viewModel.transform(input: input.eraseToAnyPublisher())
+        
+        output.receive(on: DispatchQueue.main)
+            .sink { [weak self] event in
+                switch event {
+                case .fetchAssets:
+                    self?.albumCollectionView.reloadData()
+                case .changedAssets(let changes):
+                    self?.albumCollectionView.performBatchUpdates {
+                        if let inserted = changes.insertedIndexes, !inserted.isEmpty {
+                            self?.albumCollectionView.insertItems(
+                                at: inserted.map({ IndexPath(item: $0 + 1, section: 0) })
+                            )
+                        }
+                        if let removed = changes.removedIndexes, !removed.isEmpty {
+                            self?.albumCollectionView.deleteItems(
+                                at: removed.map({ IndexPath(item: $0 + 1, section: 0) })
+                            )
+                        }
+                    }
+                }
+            }.store(in: &cancellables)
     }
     
     // MARK: - Setup & Configure
@@ -99,7 +125,6 @@ final class CustomAlbumViewController: UIViewController {
     }
     
     private func configureNavigationBar() {
-        // TODO: - 추후 삭제 필요
         navigationController?.navigationBar.isHidden = false
         if mediaType == .image {
             navigationItem.title = "사진 선택"
@@ -137,33 +162,6 @@ final class CustomAlbumViewController: UIViewController {
         navigationController?.navigationBar.standardAppearance = navigationBarAppearance
         navigationController?.navigationBar.compactAppearance = navigationBarAppearance
         navigationController?.navigationBar.scrollEdgeAppearance = navigationBarAppearance
-    }
-    
-    // MARK: - Binding
-    private func bind() {
-        let output = viewModel.transform(input: input.eraseToAnyPublisher())
-        
-        output.receive(on: DispatchQueue.main)
-            .sink { [weak self] event in
-                switch event {
-                case .fetchAssets:
-                    self?.albumCollectionView.reloadData()
-                case .changedAssets(let changes):
-                    self?.albumCollectionView.performBatchUpdates {
-                        if let inserted = changes.insertedIndexes, !inserted.isEmpty {
-                            self?.albumCollectionView.insertItems(
-                                at: inserted.map({ IndexPath(item: $0 + 1, section: 0) })
-                            )
-                        }
-                        if let removed = changes.removedIndexes, !removed.isEmpty {
-                            self?.albumCollectionView.deleteItems(
-                                at: removed.map({ IndexPath(item: $0 + 1, section: 0) })
-                            )
-                        }
-                    }
-                }
-            }
-            .store(in: &cancellables)
     }
     
     // MARK: - Media
@@ -229,6 +227,7 @@ final class CustomAlbumViewController: UIViewController {
             navigationController?.show(imagePicker, sender: nil)
         }
     }
+    
     private func moveToEditPhotoView(image: UIImage?, creationDate: Date) {
         guard let photoSelectCompletionHandler else { return }
         var editPhotoViewController: EditPhotoViewController
@@ -281,7 +280,8 @@ extension CustomAlbumViewController: UICollectionViewDelegate {
     private func handleImageSelection(with asset: PHAsset) {
         Task {
             await LocalPhotoManager.shared.requestThumbnailImage(with: asset) { [weak self] image in
-                guard let self = self, let image = image else { return }
+                guard let self,
+                      let image else { return }
                 self.moveToEditPhotoView(image: image, creationDate: asset.creationDate ?? .now)
             }
         }
@@ -322,10 +322,13 @@ extension CustomAlbumViewController: UICollectionViewDataSource {
             cell.setPhoto(.photo)
         } else {
             guard let asset = viewModel.photoAsset?[indexPath.item - 1] else { return cell }
+            cell.representedAssetIdentifier = asset.localIdentifier
             let cellSize = cell.bounds.size
             Task {
                 await LocalPhotoManager.shared.requestThumbnailImage(with: asset, cellSize: cellSize) { image in
-                    cell.setPhoto(image)
+                    if cell.representedAssetIdentifier == asset.localIdentifier {
+                        cell.setPhoto(image)
+                    }
                 }
             }
         }
