@@ -78,6 +78,7 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             MHLogger.error(error.localizedDescription + #function)
         }
     }
+    
     private func registerStorageDepedency() throws {
         DIContainer.shared.register(CoreDataStorage.self, object: CoreDataStorage())
         
