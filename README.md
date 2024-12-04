@@ -10,12 +10,11 @@
 
 </div>
 
-##
+<br>
 
-### 🍎 앱 미리보기
-|메인 홈|글 작성|책 넘기기|글 보기|
-|:-:|:-:|:-:|:-:|
-|![image](https://github.com/user-attachments/assets/c2bb340a-97a6-4275-9bec-6b4a62c711ee)|![image](https://github.com/user-attachments/assets/21a29c71-13b1-417e-a537-9f011158052e)|![image](https://github.com/user-attachments/assets/e29ddb1d-231a-4187-bf1d-ab333250128e)|![image](https://github.com/user-attachments/assets/89a43389-1a30-401d-b00c-3c160512b96b)|
+## 🍎 기록소 주요 기능
+![image](https://github.com/user-attachments/assets/8db2f605-0deb-4627-9ba4-50f029b0cec3)
+
 
 ##
 
@@ -76,7 +75,7 @@
 
   <img width="500" alt="image" src="https://github.com/user-attachments/assets/3607a9fb-dd84-4877-83ef-ac8e43e1bc27">
 
-  부산 워크샵 단체사진!!
+  〰️ 부산 워크샵 단체사진 〰️
   
   <br>
 
