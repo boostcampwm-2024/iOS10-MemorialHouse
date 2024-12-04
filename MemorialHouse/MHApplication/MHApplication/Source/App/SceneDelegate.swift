@@ -73,9 +73,9 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             try registerUseCaseDependency()
             try registerViewModelFactoryDependency()
         } catch let error as MHCoreError {
-            MHLogger.error("\(error.description)")
+            MHLogger.error(error.description + #function)
         } catch {
-            MHLogger.error("\(error.localizedDescription)")
+            MHLogger.error(error.localizedDescription + #function)
         }
     }
     private func registerStorageDepedency() throws {

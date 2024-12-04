@@ -61,7 +61,7 @@ public final class CreateAudioViewModel: ViewModelType {
             let url = try await temporaryStoreMediaUsecase.execute(media: mediaDescription)
             output.send(.audioFileURL(url: url))
         } catch {
-            MHLogger.error("Error in store audio file url: \(error.localizedDescription)")
+            MHLogger.error(error.localizedDescription + #function)
             completion(nil)
             output.send(.recordCompleted)
         }

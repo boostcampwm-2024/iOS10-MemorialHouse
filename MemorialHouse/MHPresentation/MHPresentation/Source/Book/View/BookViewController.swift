@@ -136,7 +136,7 @@ final class BookViewController: UIViewController {
             let editBookViewController = EditBookViewController(viewModel: editBookViewModel, mode: .modify)
             navigationController?.pushViewController(editBookViewController, animated: true)
         } catch {
-            MHLogger.error(error)
+            MHLogger.error(error.localizedDescription + #function)
         }
     }
 }
