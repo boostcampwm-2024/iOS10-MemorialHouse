@@ -6,15 +6,19 @@ public struct PageDTO {
     let metadata: [Int: MediaDescriptionDTO]
     let text: String
     
-    public init(id: UUID, metadata: [Int: MediaDescriptionDTO], text: String) {
+    public init(
+        id: UUID,
+        metadata: [Int: MediaDescriptionDTO],
+        text: String
+    ) {
         self.id = id
         self.metadata = metadata
         self.text = text
     }
     
-    func toPage() -> Page {
+    func convertToPage() -> Page {
         let metadata = self.metadata
-            .compactMapValues { $0.toMediaDescription() }
+            .compactMapValues { $0.convertToMediaDescription() }
         
         return Page(
             id: self.id,

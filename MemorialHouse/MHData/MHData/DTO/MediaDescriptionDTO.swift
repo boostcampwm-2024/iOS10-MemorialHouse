@@ -6,15 +6,22 @@ public struct MediaDescriptionDTO {
     let type: String
     let attributes: Data?
     
-    public init(id: UUID, type: String, attributes: Data?) {
+    public init(
+        id: UUID,
+        type: String,
+        attributes: Data?
+    ) {
         self.id = id
         self.type = type
         self.attributes = attributes
     }
     
-    func toMediaDescription() -> MediaDescription? {
+    func convertToMediaDescription() -> MediaDescription? {
         guard let type = MediaType(rawValue: self.type) else { return nil }
-        let attributes = try? JSONSerialization.jsonObject(with: attributes ?? Data(), options: []) as? [String: any Sendable]
+        let attributes = try? JSONSerialization.jsonObject(
+            with: attributes ?? Data(),
+            options: []
+        ) as? [String: any Sendable]
         
         return MediaDescription(
             id: self.id,

@@ -14,7 +14,7 @@ actor LocalPhotoManager {
     
     private init() { }
     
-    func requestImage(
+    func requestThumbnailImage(
         with asset: PHAsset?,
         cellSize: CGSize = .zero,
         completion: @escaping @MainActor (UIImage?) -> Void
@@ -28,6 +28,22 @@ actor LocalPhotoManager {
             options: imageRequestOptions,
             resultHandler: { image, _ in
                 Task { await completion(image) }
-            })
+        })
+    }
+    
+    func requestVideoURL(
+        with asset: PHAsset
+    ) async -> URL? {
+        await withCheckedContinuation { continuation in
+            let options = PHVideoRequestOptions()
+            options.version = .current
+            imageManager.requestAVAsset(forVideo: asset, options: options) { avAsset, _, _ in
+                if let urlAsset = avAsset as? AVURLAsset {
+                    continuation.resume(returning: urlAsset.url)
+                } else {
+                    continuation.resume(returning: nil)
+                }
+            }
+        }
     }
 }

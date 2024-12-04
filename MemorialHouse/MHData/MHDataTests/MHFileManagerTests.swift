@@ -30,6 +30,7 @@ import Testing
             #expect(false, "\(#function) 실패함: \(error)")
         }
     }
+    
     @Test func test파일읽기_성공() async {
         // Arrange
         let path = testDirectory
@@ -46,6 +47,7 @@ import Testing
             #expect(false, "\(#function) 실패함: \(error)")
         }
     }
+    
     @Test func test없는_파일읽기_실패() async {
         // Arrange
         let path = testDirectory
@@ -61,6 +63,7 @@ import Testing
             #expect(error == .fileNotExists)
         }
     }
+    
     @Test func test파일삭제_성공() async {
         // Arrange
         let path = testDirectory
@@ -79,6 +82,7 @@ import Testing
             #expect(false, "\(#function) 실패함: \(error)")
         }
     }
+    
     @Test func test없는_파일삭제_실패() async {
         // Arrange
         let path = testDirectory
@@ -94,6 +98,7 @@ import Testing
             #expect(error == .fileDeletionFailure)
         }
     }
+    
     @Test func test파일이동_성공() async {
         // Arrange
         let path = testDirectory
@@ -114,7 +119,6 @@ import Testing
         }
     }
 
-    
     deinit {
         // 테스트 디렉토리와 관련된 파일 정리
         let directoryURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!

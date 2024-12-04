@@ -1,9 +1,10 @@
 import MHFoundation
+import MHCore
 
-public protocol BookCoverRepository {
-    func fetchAllBookCovers() async -> [BookCover]
-    func fetchBookCover(with id: UUID) async -> BookCover?
-    func deleteBookCover(_ id: UUID) async
-    func create(bookCover: BookCover) async
-    func update(id: UUID, bookCover: BookCover) async
+public protocol BookCoverRepository: Sendable {
+    func createBookCover(with bookCover: BookCover) async -> Result<Void, MHDataError>
+    func fetchAllBookCovers() async -> Result<[BookCover], MHDataError>
+    func fetchBookCover(with id: UUID) async -> Result<BookCover?, MHDataError>
+    func updateBookCover(id: UUID, with bookCover: BookCover) async -> Result<Void, MHDataError>
+    func deleteBookCover(id: UUID) async -> Result<Void, MHDataError>
 }

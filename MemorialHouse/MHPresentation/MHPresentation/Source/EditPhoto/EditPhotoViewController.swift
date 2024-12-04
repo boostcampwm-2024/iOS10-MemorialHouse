@@ -1,6 +1,10 @@
 import UIKit
 
 final class EditPhotoViewController: UIViewController {
+    enum Mode {
+        case bookCover
+        case editPage
+    }
     // MARK: - UI Components
     private let clearView = UIView.dimmedView(opacity: 0)
     private let dimmedView1 = UIView.dimmedView(opacity: 0.5)
@@ -20,7 +24,7 @@ final class EditPhotoViewController: UIViewController {
         return scrollView
     }()
     private let photoImageView: UIImageView = {
-       let imageView = UIImageView()
+        let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
         imageView.backgroundColor = .clear
         imageView.isUserInteractionEnabled = true
@@ -64,6 +68,30 @@ final class EditPhotoViewController: UIViewController {
     }()
     private var captionTextFieldBottomConstraint: NSLayoutConstraint?
     
+    // MARK: - Properties
+    private let mode: Mode
+    private var creationDate: Date?
+    private let completionHandler: (_ imageData: Data, _ creationDate: Date?, _ caption: String?) -> Void
+    
+    init(
+        mode: Mode,
+        creationDate: Date? = nil,
+        completionHandler: @escaping (_ imageData: Data, _ creationDate: Date?, _ caption: String?) -> Void
+    ) {
+        self.mode = mode
+        self.creationDate = creationDate
+        self.completionHandler = completionHandler
+        
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        self.mode = .editPage
+        self.completionHandler = { _, _, _ in }
+        
+        super.init(nibName: nil, bundle: nil)
+    }
+    
     // MARK: - View Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -98,6 +126,12 @@ final class EditPhotoViewController: UIViewController {
             name: UIResponder.keyboardWillHideNotification,
             object: nil
         )
+        switch mode {
+        case .bookCover:
+            captionTextField.isHidden = true
+        case .editPage:
+            captionTextField.isHidden = false
+        }
     }
     
     // MARK: - Configure Navigation
@@ -113,9 +147,9 @@ final class EditPhotoViewController: UIViewController {
             .font: UIFont.ownglyphBerry(size: 17)
         ]
         
-        // Left Bar Button: 닫기
+        // Left Bar Button: 취소
         navigationItem.leftBarButtonItem = UIBarButtonItem(
-            title: "닫기",
+            title: "취소",
             normal: normalAttributes,
             selected: selectedAttributes
         ) { [weak self] in
@@ -127,8 +161,11 @@ final class EditPhotoViewController: UIViewController {
             title: "완료",
             normal: normalAttributes,
             selected: selectedAttributes
-        ) {
-            // TODO: 다음 화면으로 전환 및 cropImage 호출
+        ) { [weak self] in
+            guard let imageData = self?.cropImage()?.pngData() else { return }
+            let caption = self?.captionTextField.text
+            self?.completionHandler(imageData, self?.creationDate, caption)
+            self?.dismiss(animated: true)
         }
     }
     
@@ -216,7 +253,12 @@ final class EditPhotoViewController: UIViewController {
             bottom: photoScrollView.topAnchor,
             trailing: view.trailingAnchor
         )
-        photoScrollView.setWidthAndHeight(width: view.frame.width, height: view.frame.width * 0.75)
+        switch mode {
+        case .bookCover:
+            photoScrollView.setWidthAndHeight(width: view.frame.width, height: view.frame.width)
+        case .editPage:
+            photoScrollView.setWidthAndHeight(width: view.frame.width, height: view.frame.width * 0.75)
+        }
         photoScrollView.setCenter(view: clearView)
         photoImageView.setWidthAndHeight(width: photoScrollView.widthAnchor, height: photoScrollView.heightAnchor)
         photoImageView.setAnchor(
@@ -268,7 +310,7 @@ final class EditPhotoViewController: UIViewController {
     }
     
     // MARK: - Set Photo from Custom Album
-    func setPhoto(image: UIImage?, date: Date?) {
+    func setPhoto(image: UIImage?) {
         photoImageView.image = image
     }
 }
@@ -296,7 +338,7 @@ extension EditPhotoViewController: UIScrollViewDelegate {
             contentOffset.x = (scrollView.contentSize.width - scrollViewSize.width) / 2
             scrollView.setContentOffset(contentOffset, animated: animated)
         }
-
+        
         if photoSize.height < scrollViewSize.height {
             contentOffset.y = (scrollView.contentSize.height - scrollViewSize.height) / 2
             scrollView.setContentOffset(contentOffset, animated: animated)

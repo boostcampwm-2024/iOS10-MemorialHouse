@@ -7,8 +7,8 @@ public struct Page: Identifiable, Sendable {
     
     public init(
         id: UUID = .init(),
-        metadata: [Int: MediaDescription],
-        text: String
+        metadata: [Int: MediaDescription] = [:],
+        text: String = ""
     ) {
         self.id = id
         self.metadata = metadata

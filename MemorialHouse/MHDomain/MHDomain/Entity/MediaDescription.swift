@@ -6,7 +6,7 @@ public struct MediaDescription: Identifiable, Sendable {
     public let attributes: [String: any Sendable]?
 
     public init(
-        id: UUID,
+        id: UUID = .init(),
         type: MediaType,
         attributes: [String: any Sendable]? = nil
     ) {
