@@ -22,7 +22,6 @@ final class EditPageCell: UITableViewCell {
         textView.autocorrectionType = .no
         textView.autocapitalizationType = .none
         textView.spellCheckingType = .no
-        textView.isScrollEnabled = false
         
         return textView
     }()
