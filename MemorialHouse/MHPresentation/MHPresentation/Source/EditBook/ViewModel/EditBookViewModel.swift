@@ -34,7 +34,7 @@ final class EditBookViewModel: ViewModelType {
     private let fetchMediaUseCase: FetchMediaUseCase
     private let deleteMediaUseCase: DeleteMediaUseCase
     private let bookID: UUID
-    private var title: String = ""
+    private let bookTitle: String
     private var editPageViewModels: [EditPageViewModel] = []
     private var currentPageIndex = 0
     
@@ -47,7 +47,8 @@ final class EditBookViewModel: ViewModelType {
         createMediaUseCase: CreateMediaUseCase,
         fetchMediaUseCase: FetchMediaUseCase,
         deleteMediaUseCase: DeleteMediaUseCase,
-        bookID: UUID
+        bookID: UUID,
+        bookTitle: String
     ) {
         self.fetchBookUseCase = fetchBookUseCase
         self.updateBookUseCase = updateBookUseCase
@@ -57,6 +58,7 @@ final class EditBookViewModel: ViewModelType {
         self.fetchMediaUseCase = fetchMediaUseCase
         self.deleteMediaUseCase = deleteMediaUseCase
         self.bookID = bookID
+        self.bookTitle = bookTitle
     }
     
     // MARK: - Binding Method
@@ -86,7 +88,6 @@ final class EditBookViewModel: ViewModelType {
     private func fetchBook() async {
         do {
             let book = try await fetchBookUseCase.execute(id: bookID)
-            title = book.title
             editPageViewModels = book.pages.map { page in
                 let editPageViewModel = EditPageViewModel(
                     fetchMediaUseCase: fetchMediaUseCase,
@@ -97,7 +98,7 @@ final class EditBookViewModel: ViewModelType {
                 editPageViewModel.delegate = self
                 return editPageViewModel
             }
-            output.send(.updateViewController(title: title))
+            output.send(.updateViewController(title: bookTitle))
         } catch {
             output.send(.error(message: "책을 가져오는데 실패했습니다."))
             MHLogger.error(error.localizedDescription + #function)
@@ -154,7 +155,7 @@ final class EditBookViewModel: ViewModelType {
     
     private func saveMediaAll() async {
         let pages = editPageViewModels.map { $0.page }
-        let book = Book(id: bookID, title: title, pages: pages)
+        let book = Book(id: bookID, title: bookTitle, pages: pages)
         let mediaList = pages.flatMap { $0.metadata.values }
         do {
             try await updateBookUseCase.execute(id: bookID, book: book)

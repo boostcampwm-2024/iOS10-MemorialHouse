@@ -228,8 +228,9 @@ final class BookCoverViewController: UIViewController {
     // MARK: - Present EditBookViewController
     private func presentEditBookView(bookID: UUID) {
         do {
+            guard let bookTitle = bookTitleTextField.text else { return }
             let editBookViewModelFactory = try DIContainer.shared.resolve(EditBookViewModelFactory.self)
-            let editBookViewModel = editBookViewModelFactory.make(bookID: bookID)
+            let editBookViewModel = editBookViewModelFactory.make(bookID: bookID, bookTitle: bookTitle)
             let editBookViewController = EditBookViewController(viewModel: editBookViewModel)
             navigationController?.pushViewController(editBookViewController, animated: true)
         } catch {

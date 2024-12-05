@@ -28,7 +28,7 @@ public struct EditBookViewModelFactory {
         self.deleteMediaUseCase = deleteMediaUseCase
     }
     
-    func make(bookID: UUID) -> EditBookViewModel {
+    func make(bookID: UUID, bookTitle: String) -> EditBookViewModel {
         EditBookViewModel(
             fetchBookUseCase: fetchBookUseCase,
             updateBookUseCase: updateBookUseCase,
@@ -37,7 +37,8 @@ public struct EditBookViewModelFactory {
             createMediaUseCase: createMediaUseCase,
             fetchMediaUseCase: fetchMediaUseCase,
             deleteMediaUseCase: deleteMediaUseCase,
-            bookID: bookID
+            bookID: bookID,
+            bookTitle: bookTitle
         )
     }
 }

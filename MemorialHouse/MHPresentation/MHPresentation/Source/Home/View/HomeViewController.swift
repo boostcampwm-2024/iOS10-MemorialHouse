@@ -302,10 +302,11 @@ extension HomeViewController: UICollectionViewDataSource {
     
     private func bookCoverTapped(indexPath: IndexPath) {
         let bookID = viewModel.currentBookCovers[indexPath.row].id
+        let bookTitle = viewModel.currentBookCovers[indexPath.row].title
         guard let bookViewModelFactory = try? DIContainer.shared.resolve(BookViewModelFactory.self) else {
             return
         }
-        let bookViewModel = bookViewModelFactory.make(bookID: bookID)
+        let bookViewModel = bookViewModelFactory.make(bookID: bookID, bookTitle: bookTitle)
         let bookViewController = BookViewController(viewModel: bookViewModel)
         navigationController?.pushViewController(bookViewController, animated: true)
     }
