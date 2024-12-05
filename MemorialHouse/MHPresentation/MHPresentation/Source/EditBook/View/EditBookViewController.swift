@@ -195,8 +195,7 @@ final class EditBookViewController: UIViewController {
             leading: editPageTableView.leadingAnchor, constantLeading: 10,
             height: 40
         )
-        buttonStackViewBottomConstraint
-        = buttonStackView.bottomAnchor.constraint(
+        buttonStackViewBottomConstraint = buttonStackView.bottomAnchor.constraint(
             equalTo: view.safeAreaLayoutGuide.bottomAnchor,
             constant: Self.buttonBottomConstant
         )
@@ -221,7 +220,7 @@ final class EditBookViewController: UIViewController {
             object: nil
         )
         // 스크롤이 될 때 키보드 내려가게 설정
-        editPageTableView.keyboardDismissMode = .onDrag
+        editPageTableView.keyboardDismissMode = .interactive
     }
     private func configureBinding() {
         let output = viewModel.transform(input: input.eraseToAnyPublisher())
