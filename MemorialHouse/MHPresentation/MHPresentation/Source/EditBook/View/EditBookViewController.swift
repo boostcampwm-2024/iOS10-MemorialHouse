@@ -96,7 +96,7 @@ final class EditBookViewController: UIViewController {
     
     required init?(coder: NSCoder) {
         guard let viewModel = try? DIContainer.shared.resolve(EditBookViewModelFactory.self) else { return nil }
-        self.viewModel = viewModel.make(bookID: .init())
+        self.viewModel = viewModel.make(bookID: .init(), bookTitle: "")
         self.mode = .create
         
         super.init(coder: coder)

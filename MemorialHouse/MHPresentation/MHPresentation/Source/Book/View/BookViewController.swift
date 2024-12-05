@@ -35,6 +35,7 @@ final class BookViewController: UIViewController {
         setup()
         configureNavigationBar()
         configureConstraints()
+        input.send(.loadBookTitle)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -56,8 +57,8 @@ final class BookViewController: UIViewController {
             case .loadFirstPage(let page):
                 guard let page else { return }
                 self?.configureFirstPageViewController(firstPage: page)
-            case .moveToEdit(let bookID):
-                self?.presentEditBookView(bookID: bookID)
+            case .moveToEdit(let bookID, let bookTitle):
+                self?.presentEditBookView(bookID: bookID, bookTitle: bookTitle)
             }
         }
         .store(in: &cancellables)
@@ -129,10 +130,10 @@ final class BookViewController: UIViewController {
     }
     
     // MARK: - PresentEditBookView
-    private func presentEditBookView(bookID: UUID) {
+    private func presentEditBookView(bookID: UUID, bookTitle: String) {
         do {
             let editBookViewModelFactory = try DIContainer.shared.resolve(EditBookViewModelFactory.self)
-            let editBookViewModel = editBookViewModelFactory.make(bookID: bookID)
+            let editBookViewModel = editBookViewModelFactory.make(bookID: bookID, bookTitle: bookTitle)
             let editBookViewController = EditBookViewController(viewModel: editBookViewModel, mode: .modify)
             navigationController?.pushViewController(editBookViewController, animated: true)
         } catch {
