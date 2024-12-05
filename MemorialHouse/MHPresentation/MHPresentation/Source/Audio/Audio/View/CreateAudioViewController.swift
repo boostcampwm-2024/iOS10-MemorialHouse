@@ -233,7 +233,6 @@ final class CreateAudioViewController: UIViewController {
         audioButton.layer.cornerRadius = 24
         audioButton.setWidthAndHeight(width: 48, height: 48)
         audioButton.setCenter(view: audioButtonBackground)
-//        NSLayoutConstraint.activate(audioButtonConstraints)
         
         timeTextLabel.setAnchor(
             top: meteringBackgroundView.bottomAnchor, constantTop: 10,
