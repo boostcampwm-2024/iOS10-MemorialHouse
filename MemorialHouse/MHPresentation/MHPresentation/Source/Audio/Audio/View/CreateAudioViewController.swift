@@ -161,6 +161,27 @@ final class CreateAudioViewController: UIViewController {
         }
     }
     
+    private func setupBarsDefault() {
+        let width = 300 / numberOfBars - 5
+        let barSpacing = 5
+        
+        for index in 0..<numberOfBars {
+            upBarLayers[index].frame = CGRect(
+                x: index * (width + barSpacing),
+                y: Int(volumeHalfHeight),
+                width: width,
+                height: -2
+            )
+            
+            downBarLayers[index].frame = CGRect(
+                x: index * (width + barSpacing),
+                y: 0,
+                width: width,
+                height: 2
+            )
+        }
+    }
+    
     // MARK: - bind
     private func bind() {
         let output = viewModel?.transform(input: input.eraseToAnyPublisher())
@@ -285,6 +306,7 @@ final class CreateAudioViewController: UIViewController {
     }
     
     private func startRecording() {
+        setupBarsDefault()
         try? audioSession.setActive(true)
         
         timeTextLabel.text = "00:00"
