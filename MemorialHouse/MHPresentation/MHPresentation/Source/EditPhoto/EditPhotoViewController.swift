@@ -106,6 +106,7 @@ final class EditPhotoViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
+        drawButton.isHidden = true
         configureNavigationAppearance()
     }
     
