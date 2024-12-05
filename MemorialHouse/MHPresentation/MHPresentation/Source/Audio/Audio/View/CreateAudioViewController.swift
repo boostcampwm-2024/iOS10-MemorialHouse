@@ -25,8 +25,8 @@ final class CreateAudioViewController: UIViewController {
     private let audioRecordersettings: [String: Any] = [
         AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
         AVSampleRateKey: 44100,
-        AVNumberOfChannelsKey: 2,
-        AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
+        AVNumberOfChannelsKey: 1,
+        AVEncoderAudioQualityKey: AVAudioQuality.medium.rawValue
     ]
     
     // MARK: - UI Component
@@ -161,6 +161,27 @@ final class CreateAudioViewController: UIViewController {
         }
     }
     
+    private func setupBarsDefault() {
+        let width = 300 / numberOfBars - 5
+        let barSpacing = 5
+        
+        for index in 0..<numberOfBars {
+            upBarLayers[index].frame = CGRect(
+                x: index * (width + barSpacing),
+                y: Int(volumeHalfHeight),
+                width: width,
+                height: -2
+            )
+            
+            downBarLayers[index].frame = CGRect(
+                x: index * (width + barSpacing),
+                y: 0,
+                width: width,
+                height: 2
+            )
+        }
+    }
+    
     // MARK: - bind
     private func bind() {
         let output = viewModel?.transform(input: input.eraseToAnyPublisher())
@@ -233,7 +254,6 @@ final class CreateAudioViewController: UIViewController {
         audioButton.layer.cornerRadius = 24
         audioButton.setWidthAndHeight(width: 48, height: 48)
         audioButton.setCenter(view: audioButtonBackground)
-        NSLayoutConstraint.activate(audioButtonConstraints)
         
         timeTextLabel.setAnchor(
             top: meteringBackgroundView.bottomAnchor, constantTop: 10,
@@ -286,7 +306,10 @@ final class CreateAudioViewController: UIViewController {
     }
     
     private func startRecording() {
+        setupBarsDefault()
         try? audioSession.setActive(true)
+        
+        timeTextLabel.text = "00:00"
         
         audioRecorder?.prepareToRecord()
         audioRecorder?.record()
@@ -294,7 +317,9 @@ final class CreateAudioViewController: UIViewController {
         meteringLevelTimer?.invalidate()
         meteringLevelTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
             Task {
-                await self?.updateAudioMetering()
+                if await (self?.audioRecorder?.isRecording ?? true) {
+                    await self?.updateAudioMetering()
+                }
             }
         }
         // timer about audio record time
@@ -307,6 +332,7 @@ final class CreateAudioViewController: UIViewController {
         }
         
         // audio button to start
+        audioButtonSetStartImage()
         audioButton.layer.cornerRadius = 6
         NSLayoutConstraint.deactivate(audioButton.constraints)
         audioButton.setWidthAndHeight(width: 32, height: 32)
@@ -323,16 +349,33 @@ final class CreateAudioViewController: UIViewController {
         recordTimer?.invalidate()
         
         recordingSeconds = 0
-        timeTextLabel.text = "00:00"
         
         // audio button to stop
-        audioButton.layer.cornerRadius = 24
+        audioButtonSetRotateImage()
         NSLayoutConstraint.deactivate(audioButton.constraints)
         audioButton.setWidthAndHeight(width: 48, height: 48)
         audioButton.setCenter(view: audioButtonBackground)
         NSLayoutConstraint.activate(audioButton.constraints)
         
         saveButton.isEnabled = true
+    }
+    
+    private func audioButtonSetRotateImage() {
+        let image = UIImage(
+            systemName: "arrow.clockwise",
+            withConfiguration: UIImage.SymbolConfiguration(pointSize: 36)
+        )
+        audioButton.setImage(image, for: .normal)
+        audioButton.tintColor = .black
+        
+        audioButton.backgroundColor = .white
+        audioButtonBackground.layer.borderColor = UIColor.white.cgColor
+    }
+    
+    private func audioButtonSetStartImage() {
+        audioButton.setImage(nil, for: .normal)
+        audioButton.backgroundColor = .red
+        audioButtonBackground.layer.borderColor = UIColor.gray.cgColor
     }
     
     private func updateAudioMetering() {
