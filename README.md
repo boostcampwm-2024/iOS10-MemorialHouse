@@ -10,12 +10,14 @@
 
 </div>
 
-##
+<br>
 
-### 🍎 앱 미리보기
-|메인 홈|글 작성|책 넘기기|글 보기|
-|:-:|:-:|:-:|:-:|
-|![image](https://github.com/user-attachments/assets/c2bb340a-97a6-4275-9bec-6b4a62c711ee)|![image](https://github.com/user-attachments/assets/21a29c71-13b1-417e-a537-9f011158052e)|![image](https://github.com/user-attachments/assets/e29ddb1d-231a-4187-bf1d-ab333250128e)|![image](https://github.com/user-attachments/assets/89a43389-1a30-401d-b00c-3c160512b96b)|
+## 🍎 기록소 주요 기능
+
+|![image](https://github.com/user-attachments/assets/afac1905-6e51-469c-b4ba-e7a3ba3afa58)|![image](https://github.com/user-attachments/assets/b0428e36-b261-4858-964b-8e90443a1c77)|![image](https://github.com/user-attachments/assets/8b5ec214-dcc1-480e-bfdf-ddd220a199ba)|
+|:-:|:-:|:-:|
+|![image](https://github.com/user-attachments/assets/3d1b7ab7-ed29-44f2-9cb6-6d7e643755da)|![image](https://github.com/user-attachments/assets/00c424f2-7ac8-48c2-ae3b-f1e136ba01a9)|![image](https://github.com/user-attachments/assets/3995011d-be01-4dbf-9498-4d0270ffa6a6)|
+
 
 ##
 
@@ -23,8 +25,12 @@
 
 > ### Clean Architecture + MVVM
 
-<img width="742" alt="스크린샷 2024-11-28 오후 11 04 05" src="https://github.com/user-attachments/assets/87b86b8b-2b5f-487e-b648-4eeb80610a36">
 
+<div align="center">
+
+<img width="980" alt="스크린샷 2024-11-28 오후 11 04 05" src="https://github.com/user-attachments/assets/87b86b8b-2b5f-487e-b648-4eeb80610a36">
+
+</div>
 
 - View와 비즈니스 로직 분리를 위해 **MVVM 도입**
   
@@ -76,7 +82,7 @@
 
   <img width="500" alt="image" src="https://github.com/user-attachments/assets/3607a9fb-dd84-4877-83ef-ac8e43e1bc27">
 
-  부산 워크샵 단체사진!!
+  〰️ 부산 워크샵 단체사진 〰️
   
   <br>
 
@@ -93,7 +99,7 @@
 
 <div align="center">
   
-|📓 문서|[Wiki](https://github.com/boostcampwm-2024/iOS10-MemorialHouse/wiki)|[팀 노션](https://kyxxn.notion.site/iOS10-12c9adb32626806c900ad008c85e7dcc?pvs=4)|[그라운드 룰](https://kyxxn.notion.site/12c9adb3262680b28a58dfddd1ed2b59?pvs=4)|[컨벤션](https://kyxxn.notion.site/12c9adb3262680b28a58dfddd1ed2b59?pvs=4)|[회의록](https://kyxxn.notion.site/eb52137ca8374353adbd7fb6926e99e8?pvs=4)|[기획/디자인](https://www.figma.com/design/zgxogGGouOUsshAJkPeT86/MemorialHouse?node-id=0-1&node-type=canvas&t=b4rxjLDdHgzyH6p3-0)|
-|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+|📓 문서|[Wiki](https://github.com/boostcampwm-2024/iOS10-MemorialHouse/wiki)|[팀 노션](https://kyxxn.notion.site/iOS10-12c9adb32626806c900ad008c85e7dcc?pvs=4)|[팀 기술 블로그](https://memorial-house.tistory.com/)|[회의록](https://kyxxn.notion.site/eb52137ca8374353adbd7fb6926e99e8?pvs=4)|[기획/디자인](https://www.figma.com/design/zgxogGGouOUsshAJkPeT86/MemorialHouse?node-id=0-1&node-type=canvas&t=b4rxjLDdHgzyH6p3-0)|
+|:-:|:-:|:-:|:-:|:-:|:-:|
 
 </div>

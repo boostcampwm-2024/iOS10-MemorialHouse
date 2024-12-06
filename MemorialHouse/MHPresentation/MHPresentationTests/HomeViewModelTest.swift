@@ -8,9 +8,9 @@ struct HomeViewModelTest {
     private var sut: HomeViewModel!
     private var cancellables = Set<AnyCancellable>()
     private static let bookCovers = [
-        BookCover(id: UUID(), order: 0, title: "title1", imageURL: nil, color: .blue, category: nil, favorite: false),
-        BookCover(id: UUID(), order: 1, title: "title2", imageURL: nil, color: .blue, category: nil, favorite: false),
-        BookCover(id: UUID(), order: 2, title: "title3", imageURL: nil, color: .blue, category: nil, favorite: false)
+        BookCover(id: UUID(), order: 0, title: "title1", imageData: nil, color: .blue, category: nil, favorite: false),
+        BookCover(id: UUID(), order: 1, title: "title2", imageData: nil, color: .blue, category: nil, favorite: false),
+        BookCover(id: UUID(), order: 2, title: "title3", imageData: nil, color: .blue, category: nil, favorite: false)
     ]
 
     @MainActor
@@ -18,11 +18,14 @@ struct HomeViewModelTest {
         // Arrange
         let stubFetchMemorialHouseNameUseCase = StubFetchMemorialHouseNameUseCase(dummyMemorialHouseName: "효준")
         let stubFetchAllBookCoverUseCase = StubFetchAllBookCoverUseCase()
+        let stubUpdateBookCoverUseCase = StubUpdateBookCoverUseCase()
+        let stubDeleteBookCoverUseCase = StubDeleteBookCoverUseCase()
         let stubBookCovers = try await stubFetchAllBookCoverUseCase.execute()
         sut = HomeViewModel(
             fetchMemorialHouseUseCase: stubFetchMemorialHouseNameUseCase,
             fetchAllBookCoverUseCase: stubFetchAllBookCoverUseCase,
-            updateBookCoverUseCase: StubUpdateBookCoverUseCase()
+            updateBookCoverUseCase: stubUpdateBookCoverUseCase,
+            deleteBookCoverUseCase: stubDeleteBookCoverUseCase
         )
 
         let input = PassthroughSubject<HomeViewModel.Input, Never>()
@@ -36,13 +39,13 @@ struct HomeViewModelTest {
 
         // Act
         receivedOutput.removeAll()
-        input.send(.viewDidLoad)
+        input.send(.loadAllBookCovers)
         try await Task.sleep(nanoseconds: 500_000_000)
 
         // Assert
         #expect(receivedOutput.count == 2)
         #expect(receivedOutput.contains(.fetchedMemorialHouseName))
-        #expect(receivedOutput.contains(.fetchedAllBookCover))
+        #expect(receivedOutput.contains(.reloadData))
         #expect(sut.houseName == "효준")
         #expect(sut.bookCovers == stubBookCovers)
     }
@@ -53,7 +56,8 @@ struct HomeViewModelTest {
         sut = HomeViewModel(
             fetchMemorialHouseUseCase: StubFetchMemorialHouseNameUseCase(dummyMemorialHouseName: "효준"),
             fetchAllBookCoverUseCase: StubFetchAllBookCoverUseCase(),
-            updateBookCoverUseCase: StubUpdateBookCoverUseCase()
+            updateBookCoverUseCase: StubUpdateBookCoverUseCase(),
+            deleteBookCoverUseCase: StubDeleteBookCoverUseCase()
         )
         let input = PassthroughSubject<HomeViewModel.Input, Never>()
         var receivedOutput: [HomeViewModel.Output] = []
@@ -64,7 +68,7 @@ struct HomeViewModelTest {
             .store(in: &cancellables)
         
         // Act
-        input.send(.viewDidLoad)
+        input.send(.loadAllBookCovers)
         try await Task.sleep(nanoseconds: 500_000_000)
         receivedOutput.removeAll()
         
@@ -73,7 +77,7 @@ struct HomeViewModelTest {
 
         // Assert
         #expect(receivedOutput.count == 1)
-        #expect(receivedOutput.contains(.filteredBooks))
+        #expect(receivedOutput.contains(.reloadData))
         #expect(sut.currentBookCovers.count == 1)
         #expect(sut.currentBookCovers.first?.title == "title1")
     }

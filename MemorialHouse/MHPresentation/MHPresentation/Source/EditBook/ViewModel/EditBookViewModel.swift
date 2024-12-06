@@ -6,7 +6,7 @@ import MHCore
 final class EditBookViewModel: ViewModelType {
     // MARK: - Type
     enum Input {
-        case viewDidLoad
+        case fetchBook
         case didAddMediaInTemporary(media: MediaDescription)
         case didAddMediaWithData(type: MediaType, attributes: [String: any Sendable]?, data: Data)
         case didAddMediaInURL(type: MediaType, attributes: [String: any Sendable]?, url: URL)
@@ -16,8 +16,10 @@ final class EditBookViewModel: ViewModelType {
     }
     enum Output {
         case updateViewController(title: String)
+        case pageAdded(at: Int)
         case saveDone
         case revokeDone
+        case addableMediaTypes([MediaType])
         case error(message: String)
     }
     
@@ -27,11 +29,12 @@ final class EditBookViewModel: ViewModelType {
     private let fetchBookUseCase: FetchBookUseCase
     private let updateBookUseCase: UpdateBookUseCase
     private let storeMediaUseCase: PersistentlyStoreMediaUseCase
+    private let deleteTemporaryMediaUsecase: DeleteTemporaryMediaUseCase
     private let createMediaUseCase: CreateMediaUseCase
     private let fetchMediaUseCase: FetchMediaUseCase
     private let deleteMediaUseCase: DeleteMediaUseCase
     private let bookID: UUID
-    private var title: String = ""
+    private let bookTitle: String
     private var editPageViewModels: [EditPageViewModel] = []
     private var currentPageIndex = 0
     
@@ -40,25 +43,29 @@ final class EditBookViewModel: ViewModelType {
         fetchBookUseCase: FetchBookUseCase,
         updateBookUseCase: UpdateBookUseCase,
         storeMediaUseCase: PersistentlyStoreMediaUseCase,
+        deleteTemporaryMediaUsecase: DeleteTemporaryMediaUseCase,
         createMediaUseCase: CreateMediaUseCase,
         fetchMediaUseCase: FetchMediaUseCase,
         deleteMediaUseCase: DeleteMediaUseCase,
-        bookID: UUID
+        bookID: UUID,
+        bookTitle: String
     ) {
         self.fetchBookUseCase = fetchBookUseCase
         self.updateBookUseCase = updateBookUseCase
         self.storeMediaUseCase = storeMediaUseCase
+        self.deleteTemporaryMediaUsecase = deleteTemporaryMediaUsecase
         self.createMediaUseCase = createMediaUseCase
         self.fetchMediaUseCase = fetchMediaUseCase
         self.deleteMediaUseCase = deleteMediaUseCase
         self.bookID = bookID
+        self.bookTitle = bookTitle
     }
     
     // MARK: - Binding Method
     func transform(input: AnyPublisher<Input, Never>) -> AnyPublisher<Output, Never> {
         input.sink { [weak self] event in
             switch event {
-            case .viewDidLoad:
+            case .fetchBook:
                 Task { await self?.fetchBook() }
             case let .didAddMediaInTemporary(media):
                 Task { await self?.addMedia(media) }
@@ -81,7 +88,6 @@ final class EditBookViewModel: ViewModelType {
     private func fetchBook() async {
         do {
             let book = try await fetchBookUseCase.execute(id: bookID)
-            title = book.title
             editPageViewModels = book.pages.map { page in
                 let editPageViewModel = EditPageViewModel(
                     fetchMediaUseCase: fetchMediaUseCase,
@@ -92,7 +98,7 @@ final class EditBookViewModel: ViewModelType {
                 editPageViewModel.delegate = self
                 return editPageViewModel
             }
-            output.send(.updateViewController(title: title))
+            output.send(.updateViewController(title: bookTitle))
         } catch {
             output.send(.error(message: "책을 가져오는데 실패했습니다."))
             MHLogger.error(error.localizedDescription + #function)
@@ -114,12 +120,16 @@ final class EditBookViewModel: ViewModelType {
         let description = MediaDescription(type: type, attributes: attributes)
         do {
             try await createMediaUseCase.execute(media: description, from: url, at: bookID)
+            if type == .audio {
+                try await deleteTemporaryMediaUsecase.execute(media: description)
+            }
             editPageViewModels[currentPageIndex].addMedia(media: description, url: url)
         } catch {
             output.send(.error(message: "미디어를 추가하는데 실패했습니다."))
             MHLogger.error(error.localizedDescription + #function)
         }
     }
+    
     private func addMedia(_ description: MediaDescription) async {
         do {
             try await storeMediaUseCase.excute(media: description, to: bookID)
@@ -130,6 +140,7 @@ final class EditBookViewModel: ViewModelType {
             MHLogger.error(error.localizedDescription + #function)
         }
     }
+    
     private func addEmptyPage() {
         let editPageViewModel = EditPageViewModel(
             fetchMediaUseCase: fetchMediaUseCase,
@@ -139,12 +150,12 @@ final class EditBookViewModel: ViewModelType {
         )
         editPageViewModel.delegate = self
         editPageViewModels.append(editPageViewModel)
-        output.send(.updateViewController(title: title))
+        output.send(.pageAdded(at: editPageViewModels.count-1))
     }
     
     private func saveMediaAll() async {
         let pages = editPageViewModels.map { $0.page }
-        let book = Book(id: bookID, title: title, pages: pages)
+        let book = Book(id: bookID, title: bookTitle, pages: pages)
         let mediaList = pages.flatMap { $0.metadata.values }
         do {
             try await updateBookUseCase.execute(id: bookID, book: book)
@@ -182,5 +193,12 @@ extension EditBookViewModel: EditPageViewModelDelegate {
     func didBeginEditingPage(_ editPageViewModel: EditPageViewModel, page: Page) {
         let pageID = page.id
         currentPageIndex = editPageViewModels.firstIndex { $0.page.id == pageID } ?? 0
+    }
+    
+    func updateAddableMediaTypes(_ editPageViewModel: EditPageViewModel, mediaTypes: [MediaType]) {
+        let pageID = editPageViewModel.page.id
+        let currentPage = editPageViewModels[currentPageIndex]
+        guard pageID == currentPage.page.id else { return }
+        output.send(.addableMediaTypes(mediaTypes))
     }
 }

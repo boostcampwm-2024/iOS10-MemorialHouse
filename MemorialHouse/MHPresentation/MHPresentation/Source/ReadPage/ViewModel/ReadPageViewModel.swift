@@ -5,7 +5,7 @@ import Combine
 
 public final class ReadPageViewModel: ViewModelType {
     enum Input {
-        case viewDidLoad
+        case loadPage
         case didRequestMediaDataForData(media: MediaDescription)
         case didRequestMediaDataForURL(media: MediaDescription)
     }
@@ -37,7 +37,7 @@ public final class ReadPageViewModel: ViewModelType {
     func transform(input: AnyPublisher<Input, Never>) -> AnyPublisher<Output, Never> {
         input.sink { [weak self] event in
             switch event {
-            case .viewDidLoad:
+            case .loadPage:
                 self?.output.send(.loadPage(page: self?.page))
             case .didRequestMediaDataForData(let media):
                 Task { await self?.loadMediaForData(media: media) }

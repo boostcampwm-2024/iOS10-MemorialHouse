@@ -1,4 +1,5 @@
 import MHFoundation
+import MHDomain
 import MHCore
 import UIKit
 import Combine
@@ -95,7 +96,7 @@ final class EditBookViewController: UIViewController {
     
     required init?(coder: NSCoder) {
         guard let viewModel = try? DIContainer.shared.resolve(EditBookViewModelFactory.self) else { return nil }
-        self.viewModel = viewModel.make(bookID: .init())
+        self.viewModel = viewModel.make(bookID: .init(), bookTitle: "")
         self.mode = .create
         
         super.init(coder: coder)
@@ -109,10 +110,10 @@ final class EditBookViewController: UIViewController {
         configureNavigationBar()
         configureAddSubView()
         configureConstraints()
-        configureKeyboard()
+        configureKeyboardNotification()
         configureBinding()
         configureButtonAction()
-        input.send(.viewDidLoad)
+        input.send(.fetchBook)
     }
     
     // MARK: - Setup & Configuration
@@ -194,8 +195,7 @@ final class EditBookViewController: UIViewController {
             leading: editPageTableView.leadingAnchor, constantLeading: 10,
             height: 40
         )
-        buttonStackViewBottomConstraint
-        = buttonStackView.bottomAnchor.constraint(
+        buttonStackViewBottomConstraint = buttonStackView.bottomAnchor.constraint(
             equalTo: view.safeAreaLayoutGuide.bottomAnchor,
             constant: Self.buttonBottomConstant
         )
@@ -206,7 +206,7 @@ final class EditBookViewController: UIViewController {
             trailing: editPageTableView.trailingAnchor, constantTrailing: 15
         )
     }
-    private func configureKeyboard() {
+    private func configureKeyboardNotification() {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(keyboardWillAppear),
@@ -215,12 +215,12 @@ final class EditBookViewController: UIViewController {
         )
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(keyboardWillHide),
+            selector: #selector(keyboardWillDisappear),
             name: UIResponder.keyboardWillHideNotification,
             object: nil
         )
         // 스크롤이 될 때 키보드 내려가게 설정
-        editPageTableView.keyboardDismissMode = .onDrag
+        editPageTableView.keyboardDismissMode = .interactive
     }
     private func configureBinding() {
         let output = viewModel.transform(input: input.eraseToAnyPublisher())
@@ -229,9 +229,11 @@ final class EditBookViewController: UIViewController {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] event in
                 switch event {
-                case .updateViewController(let title):
+                case let .updateViewController(title):
                     self?.navigationItem.title = title
                     self?.editPageTableView.reloadData()
+                case let .pageAdded(at):
+                    self?.insertPage(at: at)
                 case .saveDone:
                     guard let self else { return }
                     switch self.mode {
@@ -242,6 +244,8 @@ final class EditBookViewController: UIViewController {
                     }
                 case .revokeDone:
                     self?.navigationController?.popViewController(animated: true)
+                case let .addableMediaTypes(mediaTypes):
+                    self?.updateAddMediaButtonStates(by: mediaTypes)
                 case .error(let message):
                     self?.showErrorAlert(with: message)
                 }
@@ -309,8 +313,22 @@ final class EditBookViewController: UIViewController {
         addPageButton.addAction(addPageAction, for: .touchUpInside)
     }
     
+    // MARK: - Helper
+    private func updateAddMediaButtonStates(by mediaTypes: [MediaType]) {
+        addImageButton.isEnabled = mediaTypes.contains(.image)
+        addVideoButton.isEnabled = mediaTypes.contains(.video)
+        addAudioButton.isEnabled = mediaTypes.contains(.audio)
+    }
+    
+    private func insertPage(at index: Int) {
+        let indexPath = IndexPath(row: index, section: 0)
+        editPageTableView.insertRows(at: [indexPath], with: .automatic)
+        editPageTableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
+    }
+    
     // MARK: - Keyboard Appear & Hide
-    @objc private func keyboardWillAppear(_ notification: Notification) {
+    @objc
+    private func keyboardWillAppear(_ notification: Notification) {
         guard let keyboardInfo = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey],
               let keyboardSize = keyboardInfo as? CGRect else { return }
         let bottomConstant = -(keyboardSize.height - view.safeAreaInsets.bottom + 10)
@@ -319,7 +337,8 @@ final class EditBookViewController: UIViewController {
             self?.view.layoutIfNeeded()
         }
     }
-    @objc private func keyboardWillHide() {
+    @objc
+    private func keyboardWillDisappear() {
         buttonStackViewBottomConstraint?.constant = Self.buttonBottomConstant
         UIView.animate(withDuration: 0.3) { [weak self] in
             self?.view.layoutIfNeeded()

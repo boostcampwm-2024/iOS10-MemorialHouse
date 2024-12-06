@@ -4,10 +4,12 @@ import Photos
 actor LocalPhotoManager {
     static let shared = LocalPhotoManager()
     
-    private let imageManager = PHImageManager()
+    private let imageManager = PHCachingImageManager()
     private let imageRequestOptions: PHImageRequestOptions = {
         let options = PHImageRequestOptions()
         options.isSynchronous = true
+        options.isNetworkAccessAllowed = true
+        options.deliveryMode = .highQualityFormat
         
         return options
     }()
@@ -29,6 +31,13 @@ actor LocalPhotoManager {
             resultHandler: { image, _ in
                 Task { await completion(image) }
         })
+        
+        imageManager.startCachingImages(
+            for: [asset],
+            targetSize: cellSize,
+            contentMode: .aspectFill,
+            options: nil
+        )
     }
     
     func requestVideoURL(

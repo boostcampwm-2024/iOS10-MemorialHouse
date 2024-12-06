@@ -5,18 +5,7 @@ final class MediaAttachmentViewProvider: NSTextAttachmentViewProvider {
     // MARK: - Property
     var type: MediaType?
     private var height: CGFloat {
-        switch type { // TODO: - 조정 필요
-        case .image:
-            300
-        case .video:
-            400
-        case .audio:
-            100
-        case nil:
-            10
-        default:
-            100
-        }
+        type?.height ?? 100
     }
     
     override func attachmentBounds(

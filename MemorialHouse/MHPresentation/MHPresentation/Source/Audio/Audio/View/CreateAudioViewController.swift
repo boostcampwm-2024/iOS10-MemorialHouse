@@ -25,8 +25,8 @@ final class CreateAudioViewController: UIViewController {
     private let audioRecordersettings: [String: Any] = [
         AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
         AVSampleRateKey: 44100,
-        AVNumberOfChannelsKey: 2,
-        AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
+        AVNumberOfChannelsKey: 1,
+        AVEncoderAudioQualityKey: AVAudioQuality.medium.rawValue
     ]
     
     // MARK: - UI Component
@@ -53,14 +53,22 @@ final class CreateAudioViewController: UIViewController {
         return button
     }()
     private let saveButton: UIButton = {
-        let button = UIButton(
-            frame: CGRect(origin: .zero, size: CGSize(width: 60, height: 21))
-        )
-        var attributedString = AttributedString(stringLiteral: "저장")
-        attributedString.font = UIFont.ownglyphBerry(size: 21)
-        attributedString.foregroundColor = UIColor.black
-        button.setAttributedTitle(NSAttributedString(attributedString), for: .normal)
+        let button = UIButton(frame: CGRect(origin: .zero, size: CGSize(width: 60, height: 21)))
         button.contentHorizontalAlignment = .center
+        button.setAttributedTitle(
+            NSAttributedString(
+                string: "저장",
+                attributes: [.font: UIFont.ownglyphBerry(size: 21), .foregroundColor: UIColor.mhTitle]
+            ),
+            for: .normal
+        )
+        button.setAttributedTitle(
+            NSAttributedString(
+                string: "저장",
+                attributes: [.font: UIFont.ownglyphBerry(size: 21), .foregroundColor: UIColor.systemGray2]
+            ),
+            for: .disabled
+        )
         return button
     }()
     // audio metering
@@ -98,7 +106,9 @@ final class CreateAudioViewController: UIViewController {
     }
     
     required init?(coder: NSCoder) {
-        guard let viewModelFactory = try? DIContainer.shared.resolve(CreateAudioViewModelFactory.self) else { return nil }
+        guard let viewModelFactory = try? DIContainer.shared.resolve(CreateAudioViewModelFactory.self) else {
+            return nil
+        }
         self.viewModel = viewModelFactory.make { _ in }
         super.init(nibName: nil, bundle: nil)
     }
@@ -112,7 +122,7 @@ final class CreateAudioViewController: UIViewController {
         configureAddSubviews()
         configureConstraints()
         configureAddActions()
-        input.send(.viewDidLoad)
+        input.send(.prepareTemporaryAudio)
     }
     
     // MARK: - Setup
@@ -128,7 +138,7 @@ final class CreateAudioViewController: UIViewController {
         
         for index in 0..<numberOfBars {
             let upMeteringLayer = CALayer()
-            upMeteringLayer.backgroundColor = UIColor.orange.cgColor
+            upMeteringLayer.backgroundColor = UIColor.mhOrange.cgColor
             upMeteringLayer.frame = CGRect(
                 x: index * (width + barSpacing),
                 y: Int(volumeHalfHeight),
@@ -148,6 +158,27 @@ final class CreateAudioViewController: UIViewController {
             )
             downMeteringView.layer.addSublayer(downMeteringLayer)
             downBarLayers.append(downMeteringLayer)
+        }
+    }
+    
+    private func setupBarsDefault() {
+        let width = 300 / numberOfBars - 5
+        let barSpacing = 5
+        
+        for index in 0..<numberOfBars {
+            upBarLayers[index].frame = CGRect(
+                x: index * (width + barSpacing),
+                y: Int(volumeHalfHeight),
+                width: width,
+                height: -2
+            )
+            
+            downBarLayers[index].frame = CGRect(
+                x: index * (width + barSpacing),
+                y: 0,
+                width: width,
+                height: 2
+            )
         }
     }
     
@@ -223,7 +254,6 @@ final class CreateAudioViewController: UIViewController {
         audioButton.layer.cornerRadius = 24
         audioButton.setWidthAndHeight(width: 48, height: 48)
         audioButton.setCenter(view: audioButtonBackground)
-        NSLayoutConstraint.activate(audioButtonConstraints)
         
         timeTextLabel.setAnchor(
             top: meteringBackgroundView.bottomAnchor, constantTop: 10,
@@ -264,19 +294,11 @@ final class CreateAudioViewController: UIViewController {
     
     // MARK: - Helper
     private func requestMicrophonePermission() {
-        let alert = UIAlertController(
-            title: "마이크 권한 필요",
-            message: "설정에서 마이크 권한을 허용해주세요.",
-            preferredStyle: .alert
-        )
-        alert.addAction(UIAlertAction(title: "OK", style: .default) { [weak self] _ in
-            self?.dismiss(animated: true)
-        })
         Task {
             AVAudioSession.sharedInstance().requestRecordPermission { @Sendable granted in
                 Task { @MainActor in
                     if !granted {
-                        self.present(alert, animated: true, completion: nil)
+                        self.showRedirectSettingAlert(with: .audio)
                     }
                 }
             }
@@ -284,7 +306,10 @@ final class CreateAudioViewController: UIViewController {
     }
     
     private func startRecording() {
+        setupBarsDefault()
         try? audioSession.setActive(true)
+        
+        timeTextLabel.text = "00:00"
         
         audioRecorder?.prepareToRecord()
         audioRecorder?.record()
@@ -292,7 +317,9 @@ final class CreateAudioViewController: UIViewController {
         meteringLevelTimer?.invalidate()
         meteringLevelTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
             Task {
-                await self?.updateAudioMetering()
+                if await (self?.audioRecorder?.isRecording ?? true) {
+                    await self?.updateAudioMetering()
+                }
             }
         }
         // timer about audio record time
@@ -305,11 +332,14 @@ final class CreateAudioViewController: UIViewController {
         }
         
         // audio button to start
+        audioButtonSetStartImage()
         audioButton.layer.cornerRadius = 6
         NSLayoutConstraint.deactivate(audioButton.constraints)
         audioButton.setWidthAndHeight(width: 32, height: 32)
         audioButton.setCenter(view: audioButtonBackground)
         NSLayoutConstraint.activate(audioButton.constraints)
+        
+        saveButton.isEnabled = false
     }
     
     private func stopRecording() {
@@ -319,14 +349,33 @@ final class CreateAudioViewController: UIViewController {
         recordTimer?.invalidate()
         
         recordingSeconds = 0
-        timeTextLabel.text = "00:00"
         
         // audio button to stop
-        audioButton.layer.cornerRadius = 24
+        audioButtonSetRotateImage()
         NSLayoutConstraint.deactivate(audioButton.constraints)
         audioButton.setWidthAndHeight(width: 48, height: 48)
         audioButton.setCenter(view: audioButtonBackground)
         NSLayoutConstraint.activate(audioButton.constraints)
+        
+        saveButton.isEnabled = true
+    }
+    
+    private func audioButtonSetRotateImage() {
+        let image = UIImage(
+            systemName: "arrow.clockwise",
+            withConfiguration: UIImage.SymbolConfiguration(pointSize: 36)
+        )
+        audioButton.setImage(image, for: .normal)
+        audioButton.tintColor = .black
+        
+        audioButton.backgroundColor = .white
+        audioButtonBackground.layer.borderColor = UIColor.white.cgColor
+    }
+    
+    private func audioButtonSetStartImage() {
+        audioButton.setImage(nil, for: .normal)
+        audioButton.backgroundColor = .red
+        audioButtonBackground.layer.borderColor = UIColor.gray.cgColor
     }
     
     private func updateAudioMetering() {

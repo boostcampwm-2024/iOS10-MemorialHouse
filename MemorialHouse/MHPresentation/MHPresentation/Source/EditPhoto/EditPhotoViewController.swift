@@ -100,12 +100,13 @@ final class EditPhotoViewController: UIViewController {
         configureNavigationBar()
         configureAddSubView()
         configureConstraints()
-        configureButtonAction()
+        configureAction()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
+        drawButton.isHidden = true
         configureNavigationAppearance()
     }
     
@@ -122,7 +123,7 @@ final class EditPhotoViewController: UIViewController {
         )
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(keyboardWillHide),
+            selector: #selector(keyboardWillDisappear),
             name: UIResponder.keyboardWillHideNotification,
             object: nil
         )
@@ -213,7 +214,7 @@ final class EditPhotoViewController: UIViewController {
         dividedLine2.setBottom(anchor: editButtonStackView.topAnchor, constant: 11)
         captionTextField.setAnchor(
             leading: view.leadingAnchor, constantLeading: 13,
-            trailing: view.trailingAnchor,
+            trailing: view.trailingAnchor, constantTrailing: 13,
             height: 30
         )
         captionTextFieldBottomConstraint = captionTextField.bottomAnchor.constraint(
@@ -269,22 +270,31 @@ final class EditPhotoViewController: UIViewController {
         )
     }
     
-    // MARK: - Add Button Action
-    private func configureButtonAction() {
+    private func configureAction() {
         let rotateButtonAction = UIAction { [weak self] _ in
             guard let self else { return }
             let image = self.photoImageView.image
             self.photoImageView.image = image?.rotate(radians: .pi / 2)
         }
+        rotateButton.addAction(rotateButtonAction, for: .touchUpInside)
+        
         let drawButtonAction = UIAction { _ in
             // TODO: - Draw Action
         }
-        rotateButton.addAction(rotateButtonAction, for: .touchUpInside)
         drawButton.addAction(drawButtonAction, for: .touchUpInside)
+        
+        let textFieldAction = UIAction { [weak self] _ in
+            guard let self else { return }
+            if self.captionTextField.text?.count ?? 0 > 50 {
+                self.captionTextField.text = String(self.captionTextField.text?.prefix(50) ?? "")
+            }
+        }
+        captionTextField.addAction(textFieldAction, for: .editingChanged)
     }
     
     // MARK: - Keyboard Appear & Hide
-    @objc private func keyboardWillAppear(_ notification: Notification) {
+    @objc
+    private func keyboardWillAppear(_ notification: Notification) {
         guard let keyboardInfo = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey],
               let keyboardSize = keyboardInfo as? CGRect else { return }
         let bottomConstant = editButtonStackView.frame.height + view.safeAreaInsets.bottom
@@ -294,7 +304,8 @@ final class EditPhotoViewController: UIViewController {
         }
     }
     
-    @objc private func keyboardWillHide() {
+    @objc
+    private func keyboardWillDisappear() {
         captionTextFieldBottomConstraint?.constant = -11
         UIView.animate(withDuration: 0.3) { [weak self] in
             self?.view.layoutIfNeeded()

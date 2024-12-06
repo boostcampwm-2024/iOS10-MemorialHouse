@@ -75,6 +75,7 @@ public final class RegisterViewController: UIViewController {
         
         setup()
         bind()
+        configureKeyboardNotification()
         configureAddSubview()
         configureConstraints()
     }
@@ -119,6 +120,21 @@ public final class RegisterViewController: UIViewController {
             MHLogger.error(error.localizedDescription)
             showErrorAlert(with: "홈 화면으로 이동 중에 오류가 발생했습니다.")
         }
+    }
+    
+    private func configureKeyboardNotification() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillShow(_:)),
+            name: UIResponder.keyboardWillShowNotification,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillHide(_:)),
+            name: UIResponder.keyboardWillHideNotification,
+            object: nil
+        )
     }
     
     private func configureAddSubview() {
@@ -179,8 +195,21 @@ public final class RegisterViewController: UIViewController {
 }
 
 extension RegisterViewController: UITextFieldDelegate {
-    public func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+    public func textFieldShouldReturn(
+        _ textField: UITextField
+    ) -> Bool {
         textField.resignFirstResponder()
         return true
+    }
+    
+    public func textField(
+        _ textField: UITextField,
+        shouldChangeCharactersIn range: NSRange,
+        replacementString string: String
+    ) -> Bool {
+        guard let currentText = textField.text as NSString? else { return false }
+        let newLength = currentText.length + string.count - range.length
+        
+        return newLength <= 10
     }
 }
