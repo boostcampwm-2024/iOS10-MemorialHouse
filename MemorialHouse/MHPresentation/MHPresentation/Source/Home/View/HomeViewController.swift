@@ -79,6 +79,8 @@ public final class HomeViewController: UIViewController {
         view.backgroundColor = .baseBackground
         collectionView.delegate = self
         collectionView.dataSource = self
+        collectionView.dragDelegate = self
+        collectionView.dropDelegate = self
         collectionView.register(
             BookCollectionViewCell.self,
             forCellWithReuseIdentifier: BookCollectionViewCell.identifier
