@@ -158,6 +158,7 @@ final class EditPageCell: UITableViewCell {
             let attachmentString = NSAttributedString(attachment: mediaAttachment)
             // Placeholder(공백) 교체
             mutableAttributedString.replaceCharacters(in: range, with: attachmentString)
+            mediaAttachment.dataSource = self
         }
         
         mutableAttributedString.addAttributes(
@@ -264,6 +265,7 @@ final class EditPageCell: UITableViewCell {
             shouldChangeTextIn: NSRange(location: textStorage.length, length: 0),
             replacementText: text
         ) else { return }
+        attachment.dataSource = self
         textStorage.beginEditing()
         textStorage.append(text)
         textStorage.endEditing()
