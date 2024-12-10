@@ -52,7 +52,6 @@ final class EditPageCell: UITableViewCell {
         super.prepareForReuse()
         
         input.send(.pageWillDisappear)
-        cancellables.forEach { $0.cancel() }
         cancellables = []
         viewModel = nil
         textView.text = ""
@@ -158,6 +157,7 @@ final class EditPageCell: UITableViewCell {
             let attachmentString = NSAttributedString(attachment: mediaAttachment)
             // Placeholder(공백) 교체
             mutableAttributedString.replaceCharacters(in: range, with: attachmentString)
+            mediaAttachment.dataSource = self
         }
         
         mutableAttributedString.addAttributes(
@@ -264,9 +264,8 @@ final class EditPageCell: UITableViewCell {
             shouldChangeTextIn: NSRange(location: textStorage.length, length: 0),
             replacementText: text
         ) else { return }
-        textStorage.beginEditing()
+        attachment.dataSource = self
         textStorage.append(text)
-        textStorage.endEditing()
     }
 }
 
