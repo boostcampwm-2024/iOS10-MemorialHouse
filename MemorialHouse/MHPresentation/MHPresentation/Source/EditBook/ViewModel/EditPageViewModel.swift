@@ -79,7 +79,6 @@ final class EditPageViewModel: ViewModelType {
     }
     
     private func pageWillDisappear() {
-        cancellables.forEach { $0.cancel() }
         cancellables = []
     }
     

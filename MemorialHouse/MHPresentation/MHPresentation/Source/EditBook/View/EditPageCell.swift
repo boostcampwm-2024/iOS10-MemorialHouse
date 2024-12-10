@@ -52,7 +52,6 @@ final class EditPageCell: UITableViewCell {
         super.prepareForReuse()
         
         input.send(.pageWillDisappear)
-        cancellables.forEach { $0.cancel() }
         cancellables = []
         viewModel = nil
         textView.text = ""
@@ -266,9 +265,7 @@ final class EditPageCell: UITableViewCell {
             replacementText: text
         ) else { return }
         attachment.dataSource = self
-        textStorage.beginEditing()
         textStorage.append(text)
-        textStorage.endEditing()
     }
 }
 
