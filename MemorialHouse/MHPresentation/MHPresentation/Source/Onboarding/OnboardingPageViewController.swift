@@ -15,7 +15,7 @@ final class OnboardingPageViewController: UIViewController {
         super.init(coder: coder)
         
         imageView.image = .onboardingOne
-        imageView.contentMode = .scaleAspectFill
+        imageView.contentMode = .scaleAspectFit
     }
     
     // MARK: - View Life Cycle
