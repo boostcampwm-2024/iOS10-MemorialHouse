@@ -28,12 +28,11 @@ public final class OnboardingViewController: UIViewController {
         let button = UIButton(type: .system)
         var attributedTitle = AttributedString(stringLiteral: "다음")
         attributedTitle.font = UIFont.ownglyphBerry(size: 30)
-        attributedTitle.foregroundColor = .black
         
         button.setAttributedTitle(NSAttributedString(attributedTitle), for: .normal)
-        button.setTitleColor(.white, for: .normal)
-        button.backgroundColor = .mhPink
-        button.layer.cornerRadius = 12
+        button.setTitleColor(.mhTitle, for: .normal)
+        button.backgroundColor = .accent
+        button.layer.cornerRadius = 20
         
         return button
     }()
@@ -95,8 +94,8 @@ public final class OnboardingViewController: UIViewController {
         pageControl.setCenterX(view: view)
         pageControl.setBottom(anchor: nextButton.topAnchor, constant: 16)
         
-        nextButton.setLeading(anchor: view.leadingAnchor, constant: 16)
-        nextButton.setTrailing(anchor: view.trailingAnchor, constant: 16)
+        nextButton.setLeading(anchor: view.leadingAnchor, constant: 32)
+        nextButton.setTrailing(anchor: view.trailingAnchor, constant: 32)
         nextButton.setBottom(anchor: view.safeAreaLayoutGuide.bottomAnchor, constant: 16)
         nextButton.setHeight(56)
     }
@@ -127,11 +126,13 @@ public final class OnboardingViewController: UIViewController {
     
     private func updateNextButtonTitle() {
         let title = currentPageIndex == pages.count - 1 ? "완료" : "다음"
-        var attributedTitle = AttributedString(stringLiteral: title)
-        attributedTitle.font = UIFont.ownglyphBerry(size: 30)
-        attributedTitle.foregroundColor = .black
-        
-        nextButton.setAttributedTitle(NSAttributedString(attributedTitle), for: .normal)
+        if nextButton.currentAttributedTitle?.string != title {
+            var attributedTitle = AttributedString(stringLiteral: title)
+            attributedTitle.font = UIFont.ownglyphBerry(size: 30)
+            attributedTitle.foregroundColor = .black
+            
+            nextButton.setAttributedTitle(NSAttributedString(attributedTitle), for: .normal)
+        }
     }
     
     private func moveToRegister() {
