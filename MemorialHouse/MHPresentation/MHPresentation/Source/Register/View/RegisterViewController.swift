@@ -114,8 +114,7 @@ public final class RegisterViewController: UIViewController {
             let homeViewModelFactory = try DIContainer.shared.resolve(HomeViewModelFactory.self)
             let homeViewModel = homeViewModelFactory.make()
             let homeViewController = HomeViewController(viewModel: homeViewModel)
-            navigationController?.pushViewController(homeViewController, animated: false)
-            navigationController?.viewControllers.removeFirst()
+            navigationController?.setViewControllers([homeViewController], animated: true)
         } catch {
             MHLogger.error(error.localizedDescription)
             showErrorAlert(with: "홈 화면으로 이동 중에 오류가 발생했습니다.")
