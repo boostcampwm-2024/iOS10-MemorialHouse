@@ -18,14 +18,16 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         registerDependency()
         
         let initialViewController = createInitialViewController()
-        window?.rootViewController = UINavigationController(rootViewController: initialViewController)
+        let navigationController = UINavigationController(rootViewController: initialViewController)
+        window?.rootViewController = navigationController
         window?.makeKeyAndVisible()
     }
     
+    // MARK: - 시작화면 설정
     private func createInitialViewController() -> UIViewController {
-        isUserRegistered()
+        return isUserRegistered()
         ? createHomeViewController()
-        : createRegisterViewController()
+        : OnboardingViewController()
     }
     
     private func isUserRegistered() -> Bool {
@@ -39,33 +41,11 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             return HomeViewController(viewModel: homeViewModel)
         } catch {
             MHLogger.error("HomeViewModelFactory 해제 실패: \(error.localizedDescription)")
-            return createErrorViewController()
+            return OnboardingViewController()
         }
     }
     
-    private func createRegisterViewController() -> UIViewController {
-        do {
-            let registerViewModelFactory = try DIContainer.shared.resolve(RegisterViewModelFactory.self)
-            let registerViewModel = registerViewModelFactory.make()
-            return RegisterViewController(viewModel: registerViewModel)
-        } catch {
-            MHLogger.error("CreateMemorialHouseNameUseCase 해제 실패: \(error.localizedDescription)")
-            return createErrorViewController()
-        }
-    }
-    
-    private func createErrorViewController() -> UIViewController {
-        let errorViewController = UIViewController()
-        errorViewController.view.backgroundColor = .systemRed
-        let label = UILabel()
-        label.text = "오류가 발생했습니다."
-        label.textColor = .white
-        label.textAlignment = .center
-        label.frame = errorViewController.view.bounds
-        errorViewController.view.addSubview(label)
-        return errorViewController
-    }
-    
+    // MARK: - DIContainer Dependency Injection
     private func registerDependency() {
         do {
             try registerStorageDepedency()

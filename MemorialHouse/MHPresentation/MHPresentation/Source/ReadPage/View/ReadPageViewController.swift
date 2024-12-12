@@ -105,10 +105,7 @@ final class ReadPageViewController: UIViewController {
         attachmentMetaData: [Int: MediaDescription]
     ) -> NSAttributedString {
         let mutableAttributedString = NSMutableAttributedString(string: text)
-        attachmentMetaData.forEach {
-            location,
-            description in
-            // TODO: - MediaType 별로 바꿔줘야함
+        attachmentMetaData.forEach { location, description in
             var mediaAttachment: MediaAttachment?
             switch description.type {
             case .image:
