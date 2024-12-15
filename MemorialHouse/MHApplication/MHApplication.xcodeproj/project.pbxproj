@@ -232,9 +232,9 @@
 				INFOPLIST_FILE = MHApplication/Resource/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "기록소";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
-				INFOPLIST_KEY_NSCameraUsageDescription = "기록소는 카메라 권한을 필요로 합니다. 허용 안 함 시 일부 기능이 동작하지 않을 수 있습니다.";
-				INFOPLIST_KEY_NSMicrophoneUsageDescription = "기록소는 오디오 권한을 필요로 합니다. 허용 안 함 시 일부 기능이 동작하지 않을 수 있습니다.";
-				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "기록소는 사진 권한을 필요로 합니다. 허용 안 함 시 일부 기능이 동작하지 않을 수 있습니다.";
+				INFOPLIST_KEY_NSCameraUsageDescription = "기록소에 카메라를 이용하여 사진을 추가하기 위해 카메라 접근 권한이 필요합니다.\n촬영하신 사진은 사용자의 로컬 디바이스에 보관됩니다.\n허용 안 함 시 여전히 앱을 사용할 수 있지만, 카메라를 이용하여 미디어를 추가할 수 없습니다.\U0003\U0003";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "기록소에 음성 기록을 추가하기 위해 마이크 접근 권한이 필요합니다.\n녹음된 음성데이터는 사용자의 로컬 디바이스에 보관됩니다.\n허용 안 함 시 여전히 앱을 사용할 수 있지만, 음성 기록을 추가할 수 없습니다.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "기록소에 사진 및 동영상을 추가하기 위해 앨범 접근 권한이 필요합니다.\n추가하신 사진 및 동영상은 사용자의 로컬 디바이스에 보관됩니다.\n허용 안 함 시 여전히 앱을 사용할 수 있지만, 사용자 앨범에 접근하여 사진 및 동영상을 추가할 수 없습니다.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
@@ -275,9 +275,9 @@
 				INFOPLIST_FILE = MHApplication/Resource/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "기록소";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
-				INFOPLIST_KEY_NSCameraUsageDescription = "기록소는 카메라 권한을 필요로 합니다. 허용 안 함 시 일부 기능이 동작하지 않을 수 있습니다.";
-				INFOPLIST_KEY_NSMicrophoneUsageDescription = "기록소는 오디오 권한을 필요로 합니다. 허용 안 함 시 일부 기능이 동작하지 않을 수 있습니다.";
-				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "기록소는 사진 권한을 필요로 합니다. 허용 안 함 시 일부 기능이 동작하지 않을 수 있습니다.";
+				INFOPLIST_KEY_NSCameraUsageDescription = "기록소에 카메라를 이용하여 사진을 추가하기 위해 카메라 접근 권한이 필요합니다.\n촬영하신 사진은 사용자의 로컬 디바이스에 보관됩니다.\n허용 안 함 시 여전히 앱을 사용할 수 있지만, 카메라를 이용하여 미디어를 추가할 수 없습니다.\U0003\U0003";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "기록소에 음성 기록을 추가하기 위해 마이크 접근 권한이 필요합니다.\n녹음된 음성데이터는 사용자의 로컬 디바이스에 보관됩니다.\n허용 안 함 시 여전히 앱을 사용할 수 있지만, 음성 기록을 추가할 수 없습니다.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "기록소에 사진 및 동영상을 추가하기 위해 앨범 접근 권한이 필요합니다.\n추가하신 사진 및 동영상은 사용자의 로컬 디바이스에 보관됩니다.\n허용 안 함 시 여전히 앱을 사용할 수 있지만, 사용자 앨범에 접근하여 사진 및 동영상을 추가할 수 없습니다.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
