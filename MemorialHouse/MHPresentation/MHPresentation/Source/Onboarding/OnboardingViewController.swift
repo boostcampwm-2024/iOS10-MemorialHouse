@@ -62,7 +62,7 @@ public final class OnboardingViewController: UIViewController {
     
     // MARK: - Setup & Configuration
     private func setup() {
-        navigationController?.isNavigationBarHidden = true
+        navigationController?.navigationBar.isHidden = true
         view.backgroundColor = .white
         pageViewController.delegate = self
         pageViewController.dataSource = self
