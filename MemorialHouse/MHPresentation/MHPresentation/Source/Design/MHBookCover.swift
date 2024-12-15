@@ -13,6 +13,7 @@ final class MHBookCover: UIButton {
     }()
     private let targetImageView: UIImageView = {
         let imageView = UIImageView(image: UIImage(systemName: "person.crop.square"))
+        imageView.tintColor = .white
         imageView.contentMode = .scaleAspectFit
         
         imageView.layer.shadowRadius = 4
