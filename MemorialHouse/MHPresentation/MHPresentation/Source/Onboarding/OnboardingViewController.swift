@@ -26,7 +26,7 @@ public final class OnboardingViewController: UIViewController {
     }()
     private let nextButton: UIButton = {
         let button = UIButton(type: .system)
-        var attributedTitle = AttributedString(stringLiteral: "다음")
+        var attributedTitle = AttributedString(stringLiteral: "다음".localized())
         attributedTitle.font = UIFont.ownglyphBerry(size: 30)
         
         button.setAttributedTitle(NSAttributedString(attributedTitle), for: .normal)
@@ -125,7 +125,7 @@ public final class OnboardingViewController: UIViewController {
     }
     
     private func updateNextButtonTitle() {
-        let title = currentPageIndex == pages.count - 1 ? "완료" : "다음"
+        let title = currentPageIndex == pages.count - 1 ? "완료".localized() : "다음".localized()
         if nextButton.currentAttributedTitle?.string != title {
             var attributedTitle = AttributedString(stringLiteral: title)
             attributedTitle.font = UIFont.ownglyphBerry(size: 30)

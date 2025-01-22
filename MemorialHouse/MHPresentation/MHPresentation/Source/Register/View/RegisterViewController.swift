@@ -17,31 +17,38 @@ public final class RegisterViewController: UIViewController {
         
         return backgroundImageView
     }()
-    private let registerTextLabel: UILabel = {
-        let registerFont = UIFont.ownglyphBerry(size: 24)
+    private let titleVerticalStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.alignment = .center
+        stackView.spacing = 8
         
-        let textLabel = UILabel()
-        textLabel.text = """
-                        추억을 간직할
-                        기록소 이름을 작성해주세요
-                        """
-        textLabel.textAlignment = .center
-        textLabel.font = registerFont
-        textLabel.numberOfLines = 2
-        textLabel.adjustsFontSizeToFitWidth = true
+        return stackView
+    }()
+    private let titleFirstLabel: UILabel = {
+        let titleLabel = UILabel()
+        titleLabel.text = "추억을 간직할".localized()
+        titleLabel.font = UIFont.ownglyphBerry(size: 24)
         
-        return textLabel
+        return titleLabel
+    }()
+    private let titleSecondLabel: UILabel = {
+        let titleLabel = UILabel()
+        titleLabel.text = "기록소 이름을 작성해주세요".localized()
+        titleLabel.font = UIFont.ownglyphBerry(size: 23)
+        
+        return titleLabel
     }()
     private let mhRegisterView = MHRegisterView()
     private let registerButton: UIButton = {
         let registerButton = UIButton(type: .custom)
         
-        var attributedString = AttributedString(stringLiteral: "다음")
+        var attributedString = AttributedString(stringLiteral: "다음".localized())
         attributedString.font = UIFont.ownglyphBerry(size: 16)
         attributedString.foregroundColor = UIColor.black
         registerButton.setAttributedTitle(NSAttributedString(attributedString), for: .normal)
         
-        var disabledAttributedString = AttributedString(stringLiteral: "다음")
+        var disabledAttributedString = AttributedString(stringLiteral: "다음".localized())
         disabledAttributedString.font = UIFont.ownglyphBerry(size: 16)
         disabledAttributedString.foregroundColor = UIColor.gray
         registerButton.setAttributedTitle(NSAttributedString(disabledAttributedString), for: .disabled)
@@ -138,7 +145,9 @@ public final class RegisterViewController: UIViewController {
     
     private func configureAddSubview() {
         view.addSubview(coverImageView)
-        view.addSubview(registerTextLabel)
+        view.addSubview(titleVerticalStackView)
+        titleVerticalStackView.addArrangedSubview(titleFirstLabel)
+        titleVerticalStackView.addArrangedSubview(titleSecondLabel)
         view.addSubview(mhRegisterView)
         view.addSubview(registerButton)
     }
@@ -148,7 +157,7 @@ public final class RegisterViewController: UIViewController {
         coverImageView.setWidth(view.frame.width - 60)
         coverImageView.setHeight(250)
         
-        registerTextLabel.setAnchor(
+        titleVerticalStackView.setAnchor(
             top: coverImageView.topAnchor, constantTop: 38,
             leading: coverImageView.leadingAnchor, constantLeading: 72,
             trailing: coverImageView.trailingAnchor, constantTrailing: 40
@@ -157,7 +166,7 @@ public final class RegisterViewController: UIViewController {
         let registerTextFieldBackground = mhRegisterView.embededInDefaultBackground()
         coverImageView.addSubview(registerTextFieldBackground)
         registerTextFieldBackground.setAnchor(
-            top: registerTextLabel.bottomAnchor, constantTop: 24,
+            top: titleVerticalStackView.bottomAnchor, constantTop: 24,
             leading: coverImageView.leadingAnchor, constantLeading: 60,
             trailing: coverImageView.trailingAnchor, constantTrailing: 28,
             height: 60
