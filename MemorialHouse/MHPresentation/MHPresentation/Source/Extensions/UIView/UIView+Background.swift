@@ -51,7 +51,7 @@ extension UIView {
         wrappedView.spacing = 5
         
         if let leftTitle {
-            let leftLabel = UILabel(style: .header2)
+            let leftLabel = UILabel(style: .body1)
             leftLabel.text = leftTitle
             leftLabel.setContentHuggingPriority(UILayoutPriority(751), for: .horizontal)
             leftLabel.setContentCompressionResistancePriority(UILayoutPriority(751), for: .horizontal)
@@ -59,7 +59,7 @@ extension UIView {
             wrappedView.insertArrangedSubview(leftLabel, at: 0)
         }
         if let rightTitle {
-            let rightLabel = UILabel(style: .header2)
+            let rightLabel = UILabel(style: .body2)
             rightLabel.text = rightTitle
             rightLabel.setContentHuggingPriority(UILayoutPriority(752), for: .horizontal)
             rightLabel.setContentCompressionResistancePriority(UILayoutPriority(752), for: .horizontal)
