@@ -17,6 +17,9 @@
       location = "group:MHData/MHData.xcodeproj">
    </FileRef>
    <FileRef
+      location = "group:MHData/MHData.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "container:MHDomain/MHDomain.xcodeproj">
    </FileRef>
 </Workspace>
