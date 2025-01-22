@@ -19,8 +19,8 @@ final class BookCoverViewController: UIViewController {
         textField.autocapitalizationType = .none
         textField.spellCheckingType = .no
         
-        var attributedText = AttributedString(stringLiteral: "책 제목을 입력하세요")
-        attributedText.font = UIFont.ownglyphBerry(size: 25)
+        var attributedText = AttributedString(stringLiteral: "책 제목을 입력하세요".localized())
+        attributedText.font = UIFont.ownglyphBerry(size: 22)
         textField.attributedPlaceholder = NSAttributedString(attributedText)
         
         return textField
@@ -30,8 +30,8 @@ final class BookCoverViewController: UIViewController {
         [.mhPink, .mhGreen, .mhBlue, .mhOrange, .mhBeige, .clear]
     ).map { (title: String, color: UIColor) in
         let button = UIButton(frame: CGRect(origin: .zero, size: .init(width: 66, height: 30)))
-        var attributedTitle = AttributedString(stringLiteral: title)
-        attributedTitle.font = UIFont.ownglyphBerry(size: 20)
+        var attributedTitle = AttributedString(stringLiteral: title.localized())
+        attributedTitle.font = UIFont.ownglyphBerry(size: 16)
         
         button.setAttributedTitle(NSAttributedString(attributedTitle), for: .normal)
         button.backgroundColor = color
@@ -45,9 +45,12 @@ final class BookCoverViewController: UIViewController {
     }
     private let categorySelectionButton: UIButton = {
         let button = UIButton()
-        button.setTitleColor(.systemGray3, for: .normal) // TODO: - 우측에 > 이미지 추가
+        button.setTitleColor(.systemGray3, for: .normal)
         button.setAttributedTitle(
-            NSAttributedString(string: "카테고리를 선택해주세요", attributes: [.font: UIFont.ownglyphBerry(size: 25)]),
+            NSAttributedString(
+                string: "카테고리를 선택해주세요".localized(),
+                attributes: [.font: UIFont.ownglyphBerry(size: 22)]
+            ),
             for: .normal
         )
         button.contentHorizontalAlignment = .left
@@ -56,8 +59,8 @@ final class BookCoverViewController: UIViewController {
     }()
     private let imageSelectionButton: UIButton = {
         let button = UIButton()
-        var attributedTitle = AttributedString(stringLiteral: "사진 선택")
-        attributedTitle.font = UIFont.ownglyphBerry(size: 25)
+        var attributedTitle = AttributedString(stringLiteral: "사진 선택".localized())
+        attributedTitle.font = UIFont.ownglyphBerry(size: 22)
         
         button.setAttributedTitle(NSAttributedString(attributedTitle), for: .normal)
         button.setTitleColor(.mhTitle, for: .normal)
@@ -82,11 +85,11 @@ final class BookCoverViewController: UIViewController {
         with: UIEdgeInsets(top: 50, left: 80, bottom: 50, right: 80)
     )
     private lazy var bookTitleTextFieldBackground = bookTitleTextField
-        .titledContentView(leftTitle: "책 제목 | ")
+        .titledContentView(leftTitle: "책 제목 | ".localized())
         .embededInDefaultBackground()
     private lazy var bookColorSelectionBackground = configuredColorButtons()
     private lazy var categorySelectionButtonBackground = categorySelectionButton
-        .titledContentView(leftTitle: "카테고리 | ")
+        .titledContentView(leftTitle: "카테고리 | ".localized())
         .embededInDefaultBackground()
     private lazy var imageSelectionButtonBackground = imageSelectionButton
         .embededInDefaultBackground()
@@ -216,11 +219,11 @@ final class BookCoverViewController: UIViewController {
     
     private func showFailureAlert() {
         let alert = UIAlertController(
-            title: "책 표지 생성 실패",
-            message: "책 제목을 입력해주세요",
+            title: "책 표지 생성 실패".localized(),
+            message: "책 제목을 입력해주세요".localized(),
             preferredStyle: .alert
         )
-        alert.addAction(UIAlertAction(title: "확인", style: .default))
+        alert.addAction(UIAlertAction(title: "확인".localized(), style: .default))
         
         present(alert, animated: true)
     }
@@ -228,7 +231,7 @@ final class BookCoverViewController: UIViewController {
     // MARK: - Present EditBookViewController
     private func presentEditBookView(bookID: UUID) {
         do {
-            guard let bookTitle = bookTitleTextField.text else { return }
+            guard let bookTitle = bookTitleTextField.text?.localized() else { return }
             let editBookViewModelFactory = try DIContainer.shared.resolve(EditBookViewModelFactory.self)
             let editBookViewModel = editBookViewModelFactory.make(bookID: bookID, bookTitle: bookTitle)
             let editBookViewController = EditBookViewController(viewModel: editBookViewModel)
@@ -248,8 +251,8 @@ extension BookCoverViewController {
     }
     
     private func setBookCoverView(title: String?, category: String?) {
-        bookTitleTextField.text = title
-        setCategorySelectionButton(category: category)
+        bookTitleTextField.text = title?.localized()
+        setCategorySelectionButton(category: category?.localized())
     }
     
     private func configureNavigationBar() {
@@ -276,16 +279,16 @@ extension BookCoverViewController {
         normalAttributes: [NSAttributedString.Key: Any],
         selectedAttributes: [NSAttributedString.Key: Any]
     ) {
-        title = "책 표지 만들기"
+        title = "책 표지 만들기".localized()
         navigationItem.leftBarButtonItem = UIBarButtonItem(
-            title: "닫기",
+            title: "닫기".localized(),
             normal: normalAttributes,
             selected: selectedAttributes
         ) { [weak self] in
             self?.createInput.send(.deleteBookCover)
         }
         navigationItem.rightBarButtonItem = UIBarButtonItem(
-            title: "책 속지 만들기",
+            title: "책 속지 만들기".localized(),
             normal: normalAttributes,
             selected: selectedAttributes
         ) { [weak self] in
@@ -297,9 +300,9 @@ extension BookCoverViewController {
         normalAttributes: [NSAttributedString.Key: Any],
         selectedAttributes: [NSAttributedString.Key: Any]
     ) {
-        title = "책 표지 수정"
+        title = "책 표지 수정".localized()
         navigationItem.leftBarButtonItem = UIBarButtonItem(
-            title: "닫기",
+            title: "닫기".localized(),
             normal: normalAttributes,
             selected: selectedAttributes
         ) { [weak self] in
@@ -307,7 +310,7 @@ extension BookCoverViewController {
             self?.modifyInput.send(.cancelModifyBookCover)
         }
         navigationItem.rightBarButtonItem = UIBarButtonItem(
-            title: "완료",
+            title: "완료".localized(),
             normal: normalAttributes,
             selected: selectedAttributes
         ) { [weak self] in
@@ -422,7 +425,7 @@ extension BookCoverViewController {
         colorButtonStackView.alignment = .fill
         
         let bookColorSelectionBackground = colorButtonStackView
-            .titledContentView(leftTitle: "책 색상 | ")
+            .titledContentView(leftTitle: "책 색상 | ".localized())
             .embededInDefaultBackground()
         
         return bookColorSelectionBackground
@@ -504,7 +507,7 @@ extension BookCoverViewController: BookCategoryViewControllerDelegate {
         } else {
             categorySelectionButton.setTitleColor(.systemGray3, for: .normal)
             categorySelectionButton.setAttributedTitle(
-                NSAttributedString(string: "카테고리를 선택해주세요", attributes: [.font: UIFont.ownglyphBerry(size: 25)]),
+                NSAttributedString(string: "카테고리를 선택해주세요".localized(), attributes: [.font: UIFont.ownglyphBerry(size: 22)]),
                 for: .normal
             )
         }

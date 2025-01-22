@@ -91,7 +91,7 @@ final class BookViewController: UIViewController {
         
         // 왼쪽 닫기 버튼
         navigationItem.leftBarButtonItem = UIBarButtonItem(
-            title: "닫기",
+            title: "닫기".localized(),
             normal: normalAttributes,
             selected: selectedAttributes
         ) { [weak self] in
@@ -100,7 +100,7 @@ final class BookViewController: UIViewController {
         
         // 오른쪽 책 속지 수정 버튼
         navigationItem.rightBarButtonItem = UIBarButtonItem(
-            title: "수정",
+            title: "수정".localized(),
             normal: normalAttributes,
             selected: selectedAttributes
         ) { [weak self] in

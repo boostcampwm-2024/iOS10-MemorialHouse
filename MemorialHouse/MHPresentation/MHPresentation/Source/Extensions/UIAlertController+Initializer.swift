@@ -28,14 +28,14 @@ extension UIAlertController {
         }
         
         // 확인 액션 추가
-        let confirmAction = UIAlertAction(title: confirmTitle, style: .default) { [weak self] _ in
+        let confirmAction = UIAlertAction(title: confirmTitle.localized(), style: .default) { [weak self] _ in
             let text = self?.textFields?.first?.text?.trimmingCharacters(in: .whitespacesAndNewlines)
             confirmHandler?(textFieldConfiguration != nil ? text : nil)
         }
         self.addAction(confirmAction)
         
         // 취소 액션 추가
-        let cancelAction = UIAlertAction(title: cancelTitle, style: .cancel) { _ in
+        let cancelAction = UIAlertAction(title: cancelTitle.localized(), style: .cancel) { _ in
             cancelHandler?()
         }
         self.addAction(cancelAction)

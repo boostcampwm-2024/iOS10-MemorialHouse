@@ -80,7 +80,7 @@ final class BookCategoryViewController: UIViewController {
             .font: UIFont.ownglyphBerry(size: 17),
             .foregroundColor: UIColor.black
         ]
-        navigationItem.title = "카테고리"
+        navigationItem.title = "카테고리".localized()
         
         // 공통 스타일 정의
         let normalAttributes: [NSAttributedString.Key: Any] = [
@@ -94,7 +94,7 @@ final class BookCategoryViewController: UIViewController {
         
         // 좌측 편집 버튼
         let editButton = UIBarButtonItem(
-            title: "편집",
+            title: "편집".localized(),
             normal: normalAttributes,
             selected: selectedAttributes
         ) { [weak self] in
@@ -103,22 +103,22 @@ final class BookCategoryViewController: UIViewController {
             self.categoryTableView.setEditing(!isEditing, animated: true)
             
             // 버튼 타이틀 업데이트
-            let newTitle = isEditing ? "편집" : "완료"
+            let newTitle = isEditing ? "편집".localized() : "완료".localized()
             self.navigationItem.leftBarButtonItem?.title = newTitle
         }
         navigationItem.leftBarButtonItem = editButton
         
         // 우측 추가 버튼
         navigationItem.rightBarButtonItem = UIBarButtonItem(
-            title: "추가",
+            title: "추가".localized(),
             normal: normalAttributes,
             selected: selectedAttributes
         ) { [weak self] in
             let alert = UIAlertController(
-                title: "카테고리 추가",
-                message: "새로운 카테고리를 입력해주세요.",
+                title: "카테고리 추가".localized(),
+                message: "새로운 카테고리를 입력해주세요.".localized(),
                 textFieldConfiguration: { textField in
-                    textField.placeholder = "카테고리 이름"
+                    textField.placeholder = "카테고리 이름".localized()
                 },
                 confirmHandler: { [weak self] newText in
                     self?.input.send(.createCategory(text: newText ?? ""))
@@ -165,13 +165,13 @@ extension BookCategoryViewController: UITableViewDelegate {
     ) -> UISwipeActionsConfiguration? {
         let editAction = UIContextualAction(
             style: .normal,
-            title: "수정"
+            title: "수정".localized()
         ) { [weak self] _, _, completion in
             let alert = UIAlertController(
-                title: "카테고리 수정",
-                message: "수정할 카테고리 이름을 입력해주세요.",
+                title: "카테고리 수정".localized(),
+                message: "수정할 카테고리 이름을 입력해주세요.".localized(),
                 textFieldConfiguration: { textField in
-                    textField.placeholder = "카테고리 이름"
+                    textField.placeholder = "카테고리 이름".localized()
                     textField.text = self?.viewModel.categories[indexPath.row].name
                 },
                 confirmHandler: { [weak self] newText in
@@ -185,15 +185,21 @@ extension BookCategoryViewController: UITableViewDelegate {
         
         let deleteAction = UIContextualAction(
             style: .destructive,
-            title: "삭제"
+            title: "삭제".localized()
         ) { [weak self] _, _, completion in
             guard let self = self else { return }
             
+            let localizedMessageTemplate = String(localized: "UserCategory 삭제")
+            let message = String.localizedStringWithFormat(
+                localizedMessageTemplate,
+                self.viewModel.categories[indexPath.row].name
+            )
+            
             let alert = UIAlertController(
-                title: "카테고리 삭제",
-                message: "\"\(self.viewModel.categories[indexPath.row].name)\"을(를) 삭제하시겠습니까?",
-                confirmTitle: "삭제",
-                cancelTitle: "취소",
+                title: "카테고리 삭제".localized(),
+                message: message,
+                confirmTitle: "삭제".localized(),
+                cancelTitle: "취소".localized(),
                 confirmHandler: { [weak self] _ in
                     guard let self else { return }
                     self.input.send(.deleteCategory(index: indexPath.row))
@@ -231,7 +237,10 @@ extension BookCategoryViewController: UITableViewDataSource {
         ) as? BookCategoryTableViewCell else { return UITableViewCell() }
         
         let isSelected = viewModel.categories[indexPath.row].name == viewModel.currentCategoryName
-        cell.configure(category: viewModel.categories[indexPath.row].name, isSelected: isSelected)
+        cell.configure(
+            category: viewModel.categories[indexPath.row].name.localized(),
+            isSelected: isSelected
+        )
         cell.backgroundColor = .baseBackground
         
         return cell

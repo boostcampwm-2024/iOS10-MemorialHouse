@@ -84,12 +84,12 @@ final class BookCollectionViewCell: UICollectionViewCell {
             title: "",
             children: [
                 UIAction(
-                    title: "책 커버 수정",
+                    title: "책 커버 수정".localized(),
                     image: UIImage(systemName: "pencil"),
                     handler: { _ in dropDownButtonEditAction() }
                 ),
                 UIAction(
-                    title: "책 커버 삭제",
+                    title: "책 삭제".localized(),
                     image: UIImage(systemName: "trash"),
                     attributes: .destructive,
                     handler: { _ in dropDownButtonDeleteAction() }

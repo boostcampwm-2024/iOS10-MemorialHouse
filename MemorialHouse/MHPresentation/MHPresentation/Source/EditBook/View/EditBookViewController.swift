@@ -64,7 +64,7 @@ final class EditBookViewController: UIViewController {
     private let addPageButton: UIButton = {
         let button = UIButton()
         let title = NSAttributedString(
-            string: "페이지 추가",
+            string: "페이지 추가".localized(),
             attributes: [
                 .font: UIFont.ownglyphBerry(size: 20),
                 .foregroundColor: UIColor.mhTitle
@@ -136,17 +136,17 @@ final class EditBookViewController: UIViewController {
         
         // 네비게이션 왼쪽 아이템
         navigationItem.leftBarButtonItem = UIBarButtonItem(
-            title: "뒤로가기",
+            title: "뒤로".localized(),
             normal: normalAttributes,
             selected: selectedAttributes
         ) { [weak self] in
             let alert = UIAlertController(
-                title: "작성을 취소하시겠습니까?",
-                message: "작성 중인 내용은 저장되지 않습니다.",
+                title: "작성을 취소하시겠습니까?".localized(),
+                message: "작성 중인 내용은 저장되지 않습니다.".localized(),
                 preferredStyle: .alert
             )
-            alert.addAction(UIAlertAction(title: "취소", style: .cancel))
-            alert.addAction(UIAlertAction(title: "확인", style: .default) { _ in
+            alert.addAction(UIAlertAction(title: "취소".localized(), style: .cancel))
+            alert.addAction(UIAlertAction(title: "확인".localized(), style: .default) { _ in
                 self?.input.send(.didCancelButtonTapped)
             })
             self?.present(alert, animated: true)
@@ -156,7 +156,7 @@ final class EditBookViewController: UIViewController {
         switch mode {
         case .create:
             navigationItem.rightBarButtonItem = UIBarButtonItem(
-                title: "기록 마치기",
+                title: "기록 마치기".localized(),
                 normal: normalAttributes,
                 selected: selectedAttributes
             ) { [weak self] in
@@ -164,7 +164,7 @@ final class EditBookViewController: UIViewController {
             }
         case .modify:
             navigationItem.rightBarButtonItem = UIBarButtonItem(
-                title: "수정 마치기",
+                title: "수정 마치기".localized(),
                 normal: normalAttributes,
                 selected: selectedAttributes
             ) { [weak self] in
