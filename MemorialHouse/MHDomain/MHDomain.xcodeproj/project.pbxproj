@@ -171,11 +171,12 @@
 				};
 			};
 			buildConfigurationList = CE9AEB482CD7B31300F8471D /* Build configuration list for PBXProject "MHDomain" */;
-			developmentRegion = en;
+			developmentRegion = ko;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 				Base,
+				ko,
 			);
 			mainGroup = CE9AEB442CD7B31300F8471D;
 			minimizedProjectReferenceProxies = 1;

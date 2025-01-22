@@ -111,11 +111,12 @@
 				};
 			};
 			buildConfigurationList = DB3CB96F2CD9B08A008186F4 /* Build configuration list for PBXProject "MHFoundation" */;
-			developmentRegion = en;
+			developmentRegion = ko;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 				Base,
+				ko,
 			);
 			mainGroup = DB3CB96B2CD9B08A008186F4;
 			minimizedProjectReferenceProxies = 1;
