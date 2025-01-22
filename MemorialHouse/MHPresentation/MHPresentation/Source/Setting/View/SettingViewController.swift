@@ -56,7 +56,7 @@ final class SettingViewController: UIViewController {
         
         // 네비게이션 왼쪽 아이템
         navigationItem.leftBarButtonItem = UIBarButtonItem(
-            title: "뒤로",
+            title: "뒤로".localized(),
             normal: normalAttributes,
             selected: selectedAttributes
         ) { [weak self] in
@@ -68,7 +68,7 @@ final class SettingViewController: UIViewController {
             .font: UIFont.ownglyphBerry(size: 17),
             .foregroundColor: UIColor.mhTitle
         ]
-        navigationItem.title = "설정"
+        navigationItem.title = "설정".localized()
     }
     
     private func configureConstraints() {
@@ -133,7 +133,7 @@ extension SettingViewController: UITableViewDataSource {
         var content = cell.defaultContentConfiguration()
         let cellInformation = viewModel.tableViewDataSource[indexPath.row]
         content.attributedText = NSAttributedString(
-            string: cellInformation,
+            string: cellInformation.localized(),
             attributes: [.font: UIFont.ownglyphBerry(size: 17),
                          .foregroundColor: UIColor.mhTitle]
         )
