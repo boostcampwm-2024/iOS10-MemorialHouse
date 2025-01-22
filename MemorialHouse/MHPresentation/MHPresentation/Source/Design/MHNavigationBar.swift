@@ -51,6 +51,7 @@ final class MHNavigationBar: UIView {
     }
     
     func configureTitle(with title: String) {
-        titleLabel.text = "\(title) 기록소"
+        let localizedKey = "UserName 기록소"
+        titleLabel.text = String.localizedStringWithFormat(localizedKey.localized(), title)
     }
 }

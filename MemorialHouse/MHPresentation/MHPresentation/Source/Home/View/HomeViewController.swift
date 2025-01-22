@@ -38,7 +38,7 @@ public final class HomeViewController: UIViewController {
     private var cancellables = Set<AnyCancellable>()
     private var floatingButtonBottomConstraint: NSLayoutConstraint?
     private var isFloatingButtonHidden = false
-    private var currentCategory = "전체" {
+    private var currentCategory = "전체".localized() {
         didSet {
             currentCategoryLabel.text = currentCategory
         }
@@ -122,7 +122,6 @@ public final class HomeViewController: UIViewController {
     
     private func configureAction() {
         // MARK: 카테고리 화면으로 전환 버튼
-        // FIXME: Custom Sheet로 변경 필요
         categorySelectButton.addAction(UIAction { [weak self] _ in
             do {
                 guard let self else { return }

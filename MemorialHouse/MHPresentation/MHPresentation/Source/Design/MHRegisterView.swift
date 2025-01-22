@@ -8,7 +8,7 @@ final class MHRegisterView: UIView {
         let textField = UITextField()
         textField.font = registerFont
         
-        var attributedText = AttributedString(stringLiteral: "ex) 영현")
+        var attributedText = AttributedString(stringLiteral: "ex) 영현".localized())
         attributedText.font = registerFont
         textField.textAlignment = .right
         textField.attributedPlaceholder = NSAttributedString(attributedText)
@@ -44,7 +44,7 @@ final class MHRegisterView: UIView {
     // MARK: - Setup & Configuration
     private func setup() {
         backgroundColor = .baseBackground
-        registerLabel.text = "기록소"
+        registerLabel.text = "기록소".localized()
     }
     
     private func configureAddSubview() {
