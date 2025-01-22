@@ -50,7 +50,7 @@ final class EditVideoViewController: UIViewController {
             .font: UIFont.ownglyphBerry(size: 17),
             .foregroundColor: UIColor.black
         ]
-        navigationItem.title = "동영상 업로드" // TODO: 동영상 편집 로직 변경 필요
+        navigationItem.title = "동영상 업로드".localized()
         
         // 공통 스타일 정의
         let normalAttributes: [NSAttributedString.Key: Any] = [
@@ -64,7 +64,7 @@ final class EditVideoViewController: UIViewController {
         
         // 좌측 편집 버튼
         let editButton = UIBarButtonItem(
-            title: "취소",
+            title: "취소".localized(),
             normal: normalAttributes,
             selected: selectedAttributes
         ) { [weak self] in
@@ -74,7 +74,7 @@ final class EditVideoViewController: UIViewController {
         
         // 우측 추가 버튼
         navigationItem.rightBarButtonItem = UIBarButtonItem(
-            title: "추가",
+            title: "추가".localized(),
             normal: normalAttributes,
             selected: selectedAttributes
         ) { [weak self] in

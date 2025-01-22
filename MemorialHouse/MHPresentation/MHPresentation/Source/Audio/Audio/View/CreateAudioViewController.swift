@@ -36,7 +36,7 @@ final class CreateAudioViewController: UIViewController {
         let textField = UITextField(
             frame: CGRect(origin: .zero, size: CGSize(width: 120, height: 28))
         )
-        textField.text = "소리 기록"
+        textField.text = "소리 기록".localized()
         textField.font = UIFont.ownglyphBerry(size: 28)
         textField.textAlignment = .center
         textField.textColor = .black
@@ -46,7 +46,7 @@ final class CreateAudioViewController: UIViewController {
         let button = UIButton(
             frame: CGRect(origin: .zero, size: CGSize(width: 60, height: 21))
         )
-        var attributedString = AttributedString(stringLiteral: "취소")
+        var attributedString = AttributedString(stringLiteral: "취소".localized())
         attributedString.font = UIFont.ownglyphBerry(size: 21)
         attributedString.foregroundColor = UIColor.black
         button.setAttributedTitle(NSAttributedString(attributedString), for: .normal)
@@ -57,14 +57,14 @@ final class CreateAudioViewController: UIViewController {
         button.contentHorizontalAlignment = .center
         button.setAttributedTitle(
             NSAttributedString(
-                string: "저장",
+                string: "저장".localized(),
                 attributes: [.font: UIFont.ownglyphBerry(size: 21), .foregroundColor: UIColor.mhTitle]
             ),
             for: .normal
         )
         button.setAttributedTitle(
             NSAttributedString(
-                string: "저장",
+                string: "저장".localized(),
                 attributes: [.font: UIFont.ownglyphBerry(size: 21), .foregroundColor: UIColor.systemGray2]
             ),
             for: .disabled

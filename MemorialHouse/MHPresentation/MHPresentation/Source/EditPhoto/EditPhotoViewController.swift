@@ -34,7 +34,7 @@ final class EditPhotoViewController: UIViewController {
     private let captionTextField: UITextField = {
         let textField = UITextField()
         textField.attributedPlaceholder = NSAttributedString(
-            string: "캡션을 입력해주세요.",
+            string: "캡션을 입력해주세요.".localized(),
             attributes: [.foregroundColor: UIColor.captionPlaceHolder]
         )
         textField.font = UIFont.ownglyphBerry(size: 17)
@@ -137,7 +137,7 @@ final class EditPhotoViewController: UIViewController {
     
     // MARK: - Configure Navigation
     private func configureNavigationBar() {
-        navigationItem.title = "사진 편집"
+        navigationItem.title = "사진 편집".localized()
         
         // 공통 스타일 설정
         let normalAttributes: [NSAttributedString.Key: Any] = [
@@ -150,7 +150,7 @@ final class EditPhotoViewController: UIViewController {
         
         // Left Bar Button: 취소
         navigationItem.leftBarButtonItem = UIBarButtonItem(
-            title: "취소",
+            title: "취소".localized(),
             normal: normalAttributes,
             selected: selectedAttributes
         ) { [weak self] in
@@ -159,7 +159,7 @@ final class EditPhotoViewController: UIViewController {
         
         // Right Bar Button: 완료
         navigationItem.rightBarButtonItem = UIBarButtonItem(
-            title: "완료",
+            title: "완료".localized(),
             normal: normalAttributes,
             selected: selectedAttributes
         ) { [weak self] in

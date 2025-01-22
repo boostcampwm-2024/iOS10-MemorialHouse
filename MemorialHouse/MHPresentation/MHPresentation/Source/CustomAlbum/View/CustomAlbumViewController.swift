@@ -127,9 +127,9 @@ final class CustomAlbumViewController: UIViewController {
     private func configureNavigationBar() {
         navigationController?.navigationBar.isHidden = false
         if mediaType == .image {
-            navigationItem.title = "사진 선택"
+            navigationItem.title = "사진 선택".localized()
         } else {
-            navigationItem.title = "동영상 선택"
+            navigationItem.title = "동영상 선택".localized()
         }
         
         // 공통 스타일 정의
@@ -143,7 +143,7 @@ final class CustomAlbumViewController: UIViewController {
         
         // Left Bar Button
         navigationItem.leftBarButtonItem = UIBarButtonItem(
-            title: "닫기",
+            title: "닫기".localized(),
             normal: normalAttributes,
             selected: selectedAttributes
         ) { [weak self] in
