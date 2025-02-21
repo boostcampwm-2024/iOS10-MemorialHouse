@@ -1,6 +1,6 @@
 import MHDomain
 
-public struct BookCategoryViewModelFactory {
+public struct BookCategoryViewModelFactory: Sendable {
     let createBookCategoryUseCase: CreateBookCategoryUseCase
     let fetchBookCategoriesUseCase: FetchBookCategoriesUseCase
     let updateBookCategoryUseCase: UpdateBookCategoryUseCase

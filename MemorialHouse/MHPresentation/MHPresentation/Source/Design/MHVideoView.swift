@@ -29,7 +29,7 @@ final class MHVideoView: UIView {
     }
 }
 
-extension MHVideoView: @preconcurrency MediaAttachable {
+extension MHVideoView: MediaAttachable {
     func configureSource(with mediaDescription: MediaDescription, data: Data) {
         let player = AVPlayer()
         configurePlayer(player: player)

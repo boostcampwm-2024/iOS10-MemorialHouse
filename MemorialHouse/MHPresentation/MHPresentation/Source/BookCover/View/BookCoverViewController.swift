@@ -176,7 +176,7 @@ final class BookCoverViewController: UIViewController {
                 case .bookCategory(let category):
                     self?.setCategorySelectionButton(category: category)
                 case .moveToNext(let bookID):
-                    self?.presentEditBookView(bookID: bookID)
+                    Task { await self?.presentEditBookView(bookID: bookID) }
                 case .moveToHome:
                     self?.navigationController?.popViewController(animated: true)
                 case .settingFailure:
@@ -229,10 +229,10 @@ final class BookCoverViewController: UIViewController {
     }
     
     // MARK: - Present EditBookViewController
-    private func presentEditBookView(bookID: UUID) {
+    private func presentEditBookView(bookID: UUID) async {
         do {
             guard let bookTitle = bookTitleTextField.text?.localized() else { return }
-            let editBookViewModelFactory = try DIContainer.shared.resolve(EditBookViewModelFactory.self)
+            let editBookViewModelFactory = try await DIContainer.shared.resolve(EditBookViewModelFactory.self)
             let editBookViewModel = editBookViewModelFactory.make(bookID: bookID, bookTitle: bookTitle)
             let editBookViewController = EditBookViewController(viewModel: editBookViewModel)
             navigationController?.pushViewController(editBookViewController, animated: true)
@@ -397,7 +397,7 @@ extension BookCoverViewController {
         imageSelectionButton.addAction(selectPhotoAction, for: .touchUpInside)
         
         let selectCategoryAction = UIAction { [weak self] _ in
-            self?.presentCategorySelectionView()
+            Task { await self?.presentCategorySelectionView() }
         }
         categorySelectionButton.addAction(selectCategoryAction, for: .touchUpInside)
     }
@@ -479,9 +479,9 @@ extension BookCoverViewController: UITextFieldDelegate {
 
 // MARK: - Category Bottom Sheet
 extension BookCoverViewController: BookCategoryViewControllerDelegate {
-    private func presentCategorySelectionView() {
+    private func presentCategorySelectionView() async {
         do {
-            let categoryViewModelFactory = try DIContainer.shared.resolve(BookCategoryViewModelFactory.self)
+            let categoryViewModelFactory = try await DIContainer.shared.resolve(BookCategoryViewModelFactory.self)
             let categoryViewModel = categoryViewModelFactory.makeForCreateBook()
             let categoryViewController = BookCategoryViewController(viewModel: categoryViewModel)
             let navigationController = UINavigationController(rootViewController: categoryViewController)

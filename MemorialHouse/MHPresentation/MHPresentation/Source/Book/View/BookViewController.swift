@@ -14,6 +14,8 @@ final class BookViewController: UIViewController {
     private let viewModel: BookViewModel
     private let input = PassthroughSubject<BookViewModel.Input, Never>()
     private var cancellables = Set<AnyCancellable>()
+    private var nextPageViewController: ReadPageViewController?
+    private var previousPageViewController: ReadPageViewController?
     
     // MARK: - Initialize
     init(viewModel: BookViewModel) {
@@ -21,10 +23,9 @@ final class BookViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
     }
     
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
-        guard let viewModel = try? DIContainer.shared.resolve(BookViewModel.self) else { return nil }
-        self.viewModel = viewModel
-        super.init(nibName: nil, bundle: nil)
+        fatalError("init(coder:) has not been implemented")
     }
     
     // MARK: - View Life Cycle
@@ -56,9 +57,9 @@ final class BookViewController: UIViewController {
                 self?.title = bookTitle
             case .loadFirstPage(let page):
                 guard let page else { return }
-                self?.configureFirstPageViewController(firstPage: page)
+                Task { await self?.configureFirstPageViewController(firstPage: page) }
             case .moveToEdit(let bookID, let bookTitle):
-                self?.presentEditBookView(bookID: bookID, bookTitle: bookTitle)
+                Task { await self?.presentEditBookView(bookID: bookID, bookTitle: bookTitle) }
             }
         }
         .store(in: &cancellables)
@@ -114,14 +115,25 @@ final class BookViewController: UIViewController {
     }
     
     // MARK: - Set PageviewController
-    private func configureFirstPageViewController(firstPage: Page) {
-        guard let startViewController = makeNewPageViewController(page: firstPage) else { return }
+    private func configureFirstPageViewController(firstPage: Page) async {
+        guard let startViewController = await makeNewPageViewController(page: firstPage) else { return }
         let viewControllers = [startViewController]
         pageViewController.setViewControllers(viewControllers, direction: .forward, animated: true, completion: nil)
     }
     
-    private func makeNewPageViewController(page: Page) -> ReadPageViewController? {
-        guard let readPageViewModelFactory = try? DIContainer.shared.resolve(ReadPageViewModelFactory.self) else {
+    private func prepareAdjacentViewControllers() {
+        Task {
+            if let nextPage = viewModel.nextPage {
+                nextPageViewController = await makeNewPageViewController(page: nextPage)
+            }
+            if let previousPage = viewModel.previousPage {
+                previousPageViewController = await makeNewPageViewController(page: previousPage)
+            }
+        }
+    }
+    
+    private func makeNewPageViewController(page: Page) async -> ReadPageViewController? {
+        guard let readPageViewModelFactory = try? await DIContainer.shared.resolve(ReadPageViewModelFactory.self) else {
             return nil
         }
         let readPageViewModel = readPageViewModelFactory.make(bookID: viewModel.identifier, page: page)
@@ -130,9 +142,9 @@ final class BookViewController: UIViewController {
     }
     
     // MARK: - PresentEditBookView
-    private func presentEditBookView(bookID: UUID, bookTitle: String) {
+    private func presentEditBookView(bookID: UUID, bookTitle: String) async {
         do {
-            let editBookViewModelFactory = try DIContainer.shared.resolve(EditBookViewModelFactory.self)
+            let editBookViewModelFactory = try await DIContainer.shared.resolve(EditBookViewModelFactory.self)
             let editBookViewModel = editBookViewModelFactory.make(bookID: bookID, bookTitle: bookTitle)
             let editBookViewController = EditBookViewController(viewModel: editBookViewModel, mode: .modify)
             navigationController?.pushViewController(editBookViewController, animated: true)
@@ -144,7 +156,16 @@ final class BookViewController: UIViewController {
 
 // MARK: - UIPageViewControllerDelegate
 extension BookViewController: UIPageViewControllerDelegate {
-    // TODO: - Page transition 감지
+    func pageViewController(
+        _ pageViewController: UIPageViewController,
+        didFinishAnimating finished: Bool,
+        previousViewControllers: [UIViewController],
+        transitionCompleted completed: Bool
+    ) {
+        if completed {
+            prepareAdjacentViewControllers()
+        }
+    }
 }
 
 // MARK: - UIPageViewControllerDataSource
@@ -156,7 +177,9 @@ extension BookViewController: UIPageViewControllerDataSource {
         guard let previousPage = viewModel.previousPage else { return nil }
         input.send(.loadPreviousPage)
         
-        return makeNewPageViewController(page: previousPage)
+        let vc = previousPageViewController
+        previousPageViewController = nil
+        return vc
     }
     
     func pageViewController(
@@ -166,6 +189,8 @@ extension BookViewController: UIPageViewControllerDataSource {
         guard let nextPage = viewModel.nextPage else { return nil }
         input.send(.loadNextPage)
         
-        return makeNewPageViewController(page: nextPage)
+        let vc = nextPageViewController
+        nextPageViewController = nil
+        return vc
     }
 }

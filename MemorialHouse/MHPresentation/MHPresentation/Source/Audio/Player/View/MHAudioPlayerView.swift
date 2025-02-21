@@ -11,7 +11,7 @@ final class MHAudioPlayerView: UIView {
     private let input = PassthroughSubject<AudioPlayerViewModel.Input, Never>()
     private var cancellables = Set<AnyCancellable>()
     // audio
-    private nonisolated(unsafe) var audioPlayer: AVAudioPlayer?
+    private var audioPlayer: AVAudioPlayer?
     private var audioPlayState: AudioPlayState = .pause {
         didSet {
             switch audioPlayState {
@@ -171,8 +171,8 @@ final class MHAudioPlayerView: UIView {
     private func startTimer() {
         timer?.invalidate()
         timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
-            guard let audioPlayer = self?.audioPlayer else { return }
             Task { @MainActor in
+                guard let audioPlayer = self?.audioPlayer else { return }
                 if audioPlayer.isPlaying {
                     self?.updatePlayAudioProgress()
                 }
@@ -207,7 +207,7 @@ extension MHAudioPlayerView: AVAudioPlayerDelegate {
     }
 }
 
-extension MHAudioPlayerView: @preconcurrency MediaAttachable {
+extension MHAudioPlayerView: MediaAttachable {
     func configureSource(with mediaDescription: MediaDescription, data: Data) {
         audioPlayer = try? AVAudioPlayer(data: data)
         guard let audioPlayer else { return }

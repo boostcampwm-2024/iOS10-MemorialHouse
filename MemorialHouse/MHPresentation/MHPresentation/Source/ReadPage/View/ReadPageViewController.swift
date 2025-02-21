@@ -37,11 +37,9 @@ final class ReadPageViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
     }
     
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
-        guard let viewModelFactory = try? DIContainer.shared.resolve(ReadPageViewModelFactory.self) else { return nil }
-        self.viewModel = viewModelFactory.make(bookID: UUID(), page: Page(metadata: [:], text: ""))
-        
-        super.init(nibName: nil, bundle: nil)
+        fatalError("init(coder:) has not been implemented")
     }
     
     // MARK: - View Life Cycle

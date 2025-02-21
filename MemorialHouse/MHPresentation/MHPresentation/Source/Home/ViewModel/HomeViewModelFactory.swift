@@ -1,6 +1,6 @@
 import MHDomain
 
-public struct HomeViewModelFactory {
+public struct HomeViewModelFactory: Sendable {
     let fetchMemorialHouseNameUseCase: FetchMemorialHouseNameUseCase
     let fetchAllBookCoverUseCase: FetchAllBookCoverUseCase
     let updateBookCoverUseCase: UpdateBookCoverUseCase

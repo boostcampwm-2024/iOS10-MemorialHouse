@@ -27,12 +27,9 @@ final class BookCategoryViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
     }
     
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
-        guard let viewModelFactory = try? DIContainer.shared.resolve(BookCategoryViewModelFactory.self) else {
-            return nil
-        }
-        self.viewModel = viewModelFactory.makeForHome()
-        super.init(coder: coder)
+        fatalError("init(coder:) has not been implemented")
     }
     
     // MARK: - View Life Cycle

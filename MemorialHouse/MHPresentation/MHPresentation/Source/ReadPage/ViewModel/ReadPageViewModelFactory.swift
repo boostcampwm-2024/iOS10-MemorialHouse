@@ -1,7 +1,7 @@
 import MHFoundation
 import MHDomain
 
-public struct ReadPageViewModelFactory {
+public struct ReadPageViewModelFactory: Sendable {
     private let fetchMediaUseCase: FetchMediaUseCase
     
     public init(fetchMediaUseCase: FetchMediaUseCase) {

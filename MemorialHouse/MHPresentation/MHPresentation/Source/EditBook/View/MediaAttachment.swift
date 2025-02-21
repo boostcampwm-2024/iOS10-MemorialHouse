@@ -49,9 +49,12 @@ final class MediaAttachment: NSTextAttachment {
     }
     
     // MARK: - Method
+    @MainActor
     func configure(with data: Data) {
         view.configureSource(with: mediaDescription, data: data)
     }
+    
+    @MainActor
     func configure(with url: URL) {
         view.configureSource(with: mediaDescription, url: url)
     }

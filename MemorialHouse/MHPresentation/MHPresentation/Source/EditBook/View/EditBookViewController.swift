@@ -94,12 +94,9 @@ final class EditBookViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
     }
     
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
-        guard let viewModel = try? DIContainer.shared.resolve(EditBookViewModelFactory.self) else { return nil }
-        self.viewModel = viewModel.make(bookID: .init(), bookTitle: "")
-        self.mode = .create
-        
-        super.init(coder: coder)
+        fatalError("init(coder:) has not been implemented")
     }
     
     // MARK: - LifeCycle
@@ -252,65 +249,77 @@ final class EditBookViewController: UIViewController {
             }
             .store(in: &cancellables)
     }
+    
     private func configureButtonAction() {
-        let addImageAction = UIAction { [weak self] _ in
-            let albumViewModel = CustomAlbumViewModel()
-            let customAlbumViewController = CustomAlbumViewController(
-                viewModel: albumViewModel,
-                mediaType: .image,
-                mode: .editPage,
-                videoSelectCompletionHandler: nil
-            ) { imageData, creationDate, caption in
-                let attributes: [String: any Sendable] = [
-                    Constant.photoCreationDate: creationDate?.toString(),
-                    Constant.photoCaption: caption
-                ]
-                self?.input.send(.didAddMediaWithData(type: .image, attributes: attributes, data: imageData))
-            }
-            let navigationViewController = UINavigationController(rootViewController: customAlbumViewController)
-            navigationViewController.modalPresentationStyle = .fullScreen
-            self?.present(navigationViewController, animated: true)
-        }
-        addImageButton.addAction(addImageAction, for: .touchUpInside)
+        addImageButton.addAction(UIAction { [weak self] _ in
+            self?.handleAddImageTapped()
+        }, for: .touchUpInside)
         
-        let addVideoAction = UIAction { [weak self] _ in
-            let albumViewModel = CustomAlbumViewModel()
-            let customAlbumViewController = CustomAlbumViewController(
-                viewModel: albumViewModel,
-                mediaType: .video,
-                videoSelectCompletionHandler: { url in
-                    self?.input.send(.didAddMediaInURL(type: .video, attributes: nil, url: url))
-                }
-            )
-            
-            let navigationViewController = UINavigationController(rootViewController: customAlbumViewController)
-            navigationViewController.modalPresentationStyle = .fullScreen
-            self?.present(navigationViewController, animated: true)
-        }
-        addVideoButton.addAction(addVideoAction, for: .touchUpInside)
+        addVideoButton.addAction(UIAction { [weak self] _ in
+            self?.handleAddVideoTapped()
+        }, for: .touchUpInside)
         
-        let addAudioAction = UIAction { [weak self] _ in
-            guard let self else { return }
-            guard let audioViewModelFactory = try? DIContainer.shared.resolve(CreateAudioViewModelFactory.self) else { return }
-            let audioViewModel = audioViewModelFactory.make { [weak self] mediaDescription in
-                guard let mediaDescription else { return }
-                self?.input.send(.didAddMediaInTemporary(media: mediaDescription))
-            }
-            let audioViewController = CreateAudioViewController(viewModel: audioViewModel)
-            
-            if let sheet = audioViewController.sheetPresentationController {
-                sheet.detents = [.custom { detent in 0.35 * detent.maximumDetentValue }]
-                sheet.prefersGrabberVisible = true
-            }
-            
-            present(audioViewController, animated: true)
-        }
-        addAudioButton.addAction(addAudioAction, for: .touchUpInside)
+        addAudioButton.addAction(UIAction { [weak self] _ in
+            Task { await self?.handleAddAudioTapped() }
+        }, for: .touchUpInside)
         
-        let addPageAction = UIAction { [weak self] _ in
-            self?.input.send(.addPageButtonTapped)
+        addPageButton.addAction(UIAction { [weak self] _ in
+            self?.handleAddPageTapped()
+        }, for: .touchUpInside)
+    }
+
+    private func handleAddImageTapped() {
+        let albumViewModel = CustomAlbumViewModel()
+        let customAlbumViewController = CustomAlbumViewController(
+            viewModel: albumViewModel,
+            mediaType: .image,
+            mode: .editPage,
+            videoSelectCompletionHandler: nil
+        ) { [weak self] imageData, creationDate, caption in
+            let attributes: [String: any Sendable] = [
+                Constant.photoCreationDate: creationDate?.toString(),
+                Constant.photoCaption: caption
+            ]
+            self?.input.send(.didAddMediaWithData(type: .image, attributes: attributes, data: imageData))
         }
-        addPageButton.addAction(addPageAction, for: .touchUpInside)
+        let navigationViewController = UINavigationController(rootViewController: customAlbumViewController)
+        navigationViewController.modalPresentationStyle = .fullScreen
+        present(navigationViewController, animated: true)
+    }
+
+    private func handleAddVideoTapped() {
+        let albumViewModel = CustomAlbumViewModel()
+        let customAlbumViewController = CustomAlbumViewController(
+            viewModel: albumViewModel,
+            mediaType: .video,
+            videoSelectCompletionHandler: { [weak self] url in
+                self?.input.send(.didAddMediaInURL(type: .video, attributes: nil, url: url))
+            }
+        )
+        
+        let navigationViewController = UINavigationController(rootViewController: customAlbumViewController)
+        navigationViewController.modalPresentationStyle = .fullScreen
+        present(navigationViewController, animated: true)
+    }
+
+    private func handleAddAudioTapped() async {
+        guard let audioViewModelFactory = try? await DIContainer.shared.resolve(CreateAudioViewModelFactory.self) else { return }
+        let audioViewModel = audioViewModelFactory.make { [weak self] mediaDescription in
+            guard let mediaDescription else { return }
+            self?.input.send(.didAddMediaInTemporary(media: mediaDescription))
+        }
+        let audioViewController = CreateAudioViewController(viewModel: audioViewModel)
+        
+        if let sheet = audioViewController.sheetPresentationController {
+            sheet.detents = [.custom { detent in 0.35 * detent.maximumDetentValue }]
+            sheet.prefersGrabberVisible = true
+        }
+        
+        present(audioViewController, animated: true)
+    }
+
+    private func handleAddPageTapped() {
+        input.send(.addPageButtonTapped)
     }
     
     // MARK: - Helper

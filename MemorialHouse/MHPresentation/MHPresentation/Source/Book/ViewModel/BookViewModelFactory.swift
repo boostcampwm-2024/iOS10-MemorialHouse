@@ -1,7 +1,7 @@
 import MHFoundation
 import MHDomain
 
-public struct BookViewModelFactory {
+public struct BookViewModelFactory: Sendable {
     private let fetchBookUseCase: FetchBookUseCase
     
     public init(

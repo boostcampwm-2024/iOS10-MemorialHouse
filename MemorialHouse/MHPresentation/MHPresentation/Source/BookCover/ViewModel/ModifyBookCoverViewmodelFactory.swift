@@ -1,7 +1,7 @@
 import MHFoundation
 import MHDomain
 
-public struct ModifyBookCoverViewModelFactory {
+public struct ModifyBookCoverViewModelFactory: Sendable {
     private let fetchMemorialHouseNameUseCase: FetchMemorialHouseNameUseCase
     private let fetchBookCoverUseCase: FetchBookCoverUseCase
     private let updateBookCoverUseCase: UpdateBookCoverUseCase

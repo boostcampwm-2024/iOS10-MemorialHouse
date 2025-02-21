@@ -278,23 +278,21 @@ extension CustomAlbumViewController: UICollectionViewDelegate {
     }
     
     private func handleImageSelection(with asset: PHAsset) {
-        Task {
-            await LocalPhotoManager.shared.requestThumbnailImage(with: asset) { [weak self] image in
-                guard let self,
-                      let image else { return }
-                self.moveToEditPhotoView(image: image, creationDate: asset.creationDate ?? .now)
-            }
+        LocalPhotoManager().requestThumbnailImage(with: asset) { [weak self] image in
+            guard let self,
+                  let image else { return }
+            self.moveToEditPhotoView(image: image, creationDate: asset.creationDate ?? .now)
         }
     }
     
     private func handleVideoSelection(with asset: PHAsset) {
-        Task {
-            if let videoURL = await LocalPhotoManager.shared.requestVideoURL(with: asset) {
-                MHLogger.info("\(#function) 비디오 URL: \(videoURL)")
-                self.moveToEditVideoView(url: videoURL)
-            } else {
+        LocalPhotoManager().requestVideoURL(with: asset) { videoURL in
+            guard let videoURL else {
                 self.showErrorAlert(with: "비디오 URL을 가져올 수 없습니다.")
+                return
             }
+            MHLogger.info("\(#function) 비디오 URL: \(videoURL)")
+            self.moveToEditVideoView(url: videoURL)
         }
     }
 }
@@ -324,11 +322,9 @@ extension CustomAlbumViewController: UICollectionViewDataSource {
             guard let asset = viewModel.photoAsset?[indexPath.item - 1] else { return cell }
             cell.representedAssetIdentifier = asset.localIdentifier
             let cellSize = cell.bounds.size
-            Task {
-                await LocalPhotoManager.shared.requestThumbnailImage(with: asset, cellSize: cellSize) { image in
-                    if cell.representedAssetIdentifier == asset.localIdentifier {
-                        cell.setPhoto(image)
-                    }
+            LocalPhotoManager().requestThumbnailImage(with: asset, cellSize: cellSize) { image in
+                if cell.representedAssetIdentifier == asset.localIdentifier {
+                    cell.setPhoto(image)
                 }
             }
         }
