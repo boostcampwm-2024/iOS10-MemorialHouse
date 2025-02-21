@@ -1,7 +1,7 @@
 import MHFoundation
 import MHDomain
 
-public struct EditBookViewModelFactory {
+public struct EditBookViewModelFactory: Sendable {
     private let fetchBookUseCase: FetchBookUseCase
     private let updateBookUseCase: UpdateBookUseCase
     private let storeMediaUseCase: PersistentlyStoreMediaUseCase

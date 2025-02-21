@@ -1,6 +1,6 @@
 import MHDomain
 
-public struct RegisterViewModelFactory {
+public struct RegisterViewModelFactory: Sendable {
     private let createMemorialHouseNameUseCase: CreateMemorialHouseNameUseCase
     
     public init(

@@ -105,12 +105,9 @@ final class CreateAudioViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
     }
     
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
-        guard let viewModelFactory = try? DIContainer.shared.resolve(CreateAudioViewModelFactory.self) else {
-            return nil
-        }
-        self.viewModel = viewModelFactory.make { _ in }
-        super.init(nibName: nil, bundle: nil)
+        fatalError("init(coder:) has not been implemented")
     }
     
     // MARK: - Life Cycle

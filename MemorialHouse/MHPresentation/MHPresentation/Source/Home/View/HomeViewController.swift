@@ -50,10 +50,9 @@ public final class HomeViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
     }
     
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
-        guard let viewModelFactory = try? DIContainer.shared.resolve(HomeViewModelFactory.self) else { return nil }
-        self.viewModel = viewModelFactory.make()
-        super.init(coder: coder)
+        fatalError("init(coder:) has not been implemented")
     }
     
     // MARK: - View LifeCycle
@@ -123,29 +122,11 @@ public final class HomeViewController: UIViewController {
     private func configureAction() {
         // MARK: 카테고리 화면으로 전환 버튼
         categorySelectButton.addAction(UIAction { [weak self] _ in
-            do {
-                guard let self else { return }
-                let categoryViewModelFactory = try DIContainer.shared.resolve(BookCategoryViewModelFactory.self)
-                let categoryViewModel = categoryViewModelFactory.makeForHome()
-                categoryViewModel.setup(currentCategory: self.currentCategory)
-                let categoryViewController = BookCategoryViewController(viewModel: categoryViewModel)
-                categoryViewController.delegate = self
-                let navigationController = UINavigationController(rootViewController: categoryViewController)
-                
-                if let sheet = navigationController.sheetPresentationController {
-                    sheet.detents = [.medium(), .large()]
-                }
-                
-                self.present(navigationController, animated: true)
-            } catch let error as MHCoreError {
-                MHLogger.error(error.description)
-            } catch {
-                MHLogger.error(error.localizedDescription)
-            }
+            Task { await self?.presentCategorySheet() }
         }, for: .touchUpInside)
         
         makingBookFloatingButton.addAction(UIAction { [weak self] _ in
-            self?.moveBookCoverViewController()
+            Task { await self?.moveBookCoverViewController() }
         }, for: .touchUpInside)
         
         navigationBar.configureSettingAction(action: UIAction { [weak self] _ in
@@ -156,9 +137,9 @@ public final class HomeViewController: UIViewController {
         })
     }
     
-    private func moveBookCoverViewController(bookID: UUID? = nil) {
+    private func moveBookCoverViewController(bookID: UUID? = nil) async {
         if let bookID {
-            let viewModelFactory = try? DIContainer.shared.resolve(ModifyBookCoverViewModelFactory.self)
+            let viewModelFactory = try? await DIContainer.shared.resolve(ModifyBookCoverViewModelFactory.self)
             let modifyBookCoverViewModel = viewModelFactory?.make(bookID: bookID)
             let modifyBookCoverViewController = BookCoverViewController(
                 modifyViewModel: modifyBookCoverViewModel,
@@ -166,7 +147,7 @@ public final class HomeViewController: UIViewController {
             )
             navigationController?.pushViewController(modifyBookCoverViewController, animated: true)
         } else {
-            let viewModelFactory = try? DIContainer.shared.resolve(CreateBookCoverViewModelFactory.self)
+            let viewModelFactory = try? await DIContainer.shared.resolve(CreateBookCoverViewModelFactory.self)
             let createBookCoverViewModel = viewModelFactory?.make(bookCount: viewModel.currentBookCovers.count)
             let createBookCoverViewController = BookCoverViewController(
                 createViewModel: createBookCoverViewModel,
@@ -205,6 +186,27 @@ public final class HomeViewController: UIViewController {
         categorySelectButton.setLeading(anchor: currentCategoryLabel.trailingAnchor, constant: 8)
         categorySelectButton.setCenterY(view: currentCategoryLabel)
         categorySelectButton.setWidth(20)
+    }
+    
+    private func presentCategorySheet() async {
+        do {
+            let categoryViewModelFactory = try await DIContainer.shared.resolve(BookCategoryViewModelFactory.self)
+            let categoryViewModel = categoryViewModelFactory.makeForHome()
+            categoryViewModel.setup(currentCategory: currentCategory)
+            let categoryViewController = BookCategoryViewController(viewModel: categoryViewModel)
+            categoryViewController.delegate = self
+            let navigationController = UINavigationController(rootViewController: categoryViewController)
+            
+            if let sheet = navigationController.sheetPresentationController {
+                sheet.detents = [.medium(), .large()]
+            }
+            
+            present(navigationController, animated: true)
+        } catch let error as MHCoreError {
+            MHLogger.error(error.description)
+        } catch {
+            MHLogger.error(error.localizedDescription)
+        }
     }
 }
 
@@ -281,13 +283,13 @@ extension HomeViewController: UICollectionViewDataSource {
         )
         cell.configureButtonAction(
             bookCoverAction: { [weak self] in
-                self?.bookCoverTapped(indexPath: indexPath)
+                Task { await self?.bookCoverTapped(indexPath: indexPath) }
             },
             likeButtonAction: { [weak self] in
                 self?.input.send(.likeButtonTapped(bookId: bookCover.id))
             },
             dropDownButtonEditAction: { [weak self] in
-                self?.moveBookCoverViewController(bookID: bookCover.id)
+                Task { await self?.moveBookCoverViewController(bookID: bookCover.id) }
             },
             dropDownButtonDeleteAction: { [weak self] in
                 self?.input.send(.deleteBookCover(bookId: bookCover.id))
@@ -297,15 +299,19 @@ extension HomeViewController: UICollectionViewDataSource {
         return cell
     }
     
-    private func bookCoverTapped(indexPath: IndexPath) {
-        let bookID = viewModel.currentBookCovers[indexPath.row].id
-        let bookTitle = viewModel.currentBookCovers[indexPath.row].title
-        guard let bookViewModelFactory = try? DIContainer.shared.resolve(BookViewModelFactory.self) else {
-            return
+    private func bookCoverTapped(indexPath: IndexPath) async {
+        do {
+            let bookID = viewModel.currentBookCovers[indexPath.row].id
+            let bookTitle = viewModel.currentBookCovers[indexPath.row].title
+            let bookViewModelFactory = try await DIContainer.shared.resolve(BookViewModelFactory.self)
+            let bookViewModel = bookViewModelFactory.make(bookID: bookID, bookTitle: bookTitle)
+            let bookViewController = BookViewController(viewModel: bookViewModel)
+            navigationController?.pushViewController(bookViewController, animated: true)
+        } catch let error as MHCoreError {
+            MHLogger.error(error.description)
+        } catch {
+            MHLogger.error(error.localizedDescription)
         }
-        let bookViewModel = bookViewModelFactory.make(bookID: bookID, bookTitle: bookTitle)
-        let bookViewController = BookViewController(viewModel: bookViewModel)
-        navigationController?.pushViewController(bookViewController, animated: true)
     }
 }
 

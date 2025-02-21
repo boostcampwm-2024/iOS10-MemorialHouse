@@ -102,17 +102,17 @@ public final class OnboardingViewController: UIViewController {
     
     private func configureAddActions() {
         skipButton.addAction(UIAction { [weak self] _ in
-            self?.moveToRegister()
+            Task { await self?.moveToRegister() }
         }, for: .touchUpInside)
         
         nextButton.addAction(UIAction { [weak self] _ in
-            self?.handleNextButtonTap()
+            Task { await self?.handleNextButtonTap() }
         }, for: .touchUpInside)
     }
 
-    private func handleNextButtonTap() {
+    private func handleNextButtonTap() async {
         if currentPageIndex == pages.count - 1 {
-            moveToRegister()
+            await moveToRegister()
         } else {
             currentPageIndex += 1
             pageViewController.setViewControllers(
@@ -135,9 +135,9 @@ public final class OnboardingViewController: UIViewController {
         }
     }
     
-    private func moveToRegister() {
+    private func moveToRegister() async {
         do {
-            let viewModelFactory = try DIContainer.shared.resolve(RegisterViewModelFactory.self)
+            let viewModelFactory = try await DIContainer.shared.resolve(RegisterViewModelFactory.self)
             let viewModel = viewModelFactory.make()
             let registerViewController = RegisterViewController(viewModel: viewModel)
             navigationController?.pushViewController(registerViewController, animated: true)
@@ -160,6 +160,7 @@ extension OnboardingViewController: UIPageViewControllerDelegate {
               let index = pages.firstIndex(of: visibleViewController) else { return }
         
         currentPageIndex = index
+        skipButton.isHidden = currentPageIndex == pages.count - 1
     }
 }
 

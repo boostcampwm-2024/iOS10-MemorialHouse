@@ -15,17 +15,19 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     ) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         window = UIWindow(windowScene: windowScene)
-        registerDependency()
-        
-        let initialViewController = createInitialViewController()
-        let navigationController = UINavigationController(rootViewController: initialViewController)
-        window?.rootViewController = navigationController
-        window?.makeKeyAndVisible()
+        Task {
+            await registerDependency()
+            
+            let initialViewController = await createInitialViewController()
+            let navigationController = UINavigationController(rootViewController: initialViewController)
+            window?.rootViewController = navigationController
+            window?.makeKeyAndVisible()
+        }
     }
     
     // MARK: - 시작화면 설정
-    private func createInitialViewController() -> UIViewController {
-        return isUserRegistered()
+    private func createInitialViewController() async -> UIViewController {
+        return await isUserRegistered()
         ? createHomeViewController()
         : OnboardingViewController()
     }
@@ -34,9 +36,9 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         UserDefaults.standard.object(forKey: Constant.houseNameUserDefaultKey) != nil
     }
     
-    private func createHomeViewController() -> UIViewController {
+    private func createHomeViewController() async -> UIViewController {
         do {
-            let homeViewModelFactory = try DIContainer.shared.resolve(HomeViewModelFactory.self)
+            let homeViewModelFactory = try await DIContainer.shared.resolve(HomeViewModelFactory.self)
             let homeViewModel = homeViewModelFactory.make()
             return HomeViewController(viewModel: homeViewModel)
         } catch {
@@ -46,12 +48,12 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     
     // MARK: - DIContainer Dependency Injection
-    private func registerDependency() {
+    private func registerDependency() async {
         do {
-            try registerStorageDepedency()
-            try registerRepositoryDependency()
-            try registerUseCaseDependency()
-            try registerViewModelFactoryDependency()
+            try await registerStorageDepedency()
+            try await registerRepositoryDependency()
+            try await registerUseCaseDependency()
+            try await registerViewModelFactoryDependency()
         } catch let error as MHCoreError {
             MHLogger.error(error.description + #function)
         } catch {
@@ -59,187 +61,187 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
     }
     
-    private func registerStorageDepedency() throws {
-        DIContainer.shared.register(CoreDataStorage.self, object: CoreDataStorage())
+    private func registerStorageDepedency() async throws {
+        await DIContainer.shared.register(CoreDataStorage.self, object: CoreDataStorage())
         
-        let coreDataStorage = try DIContainer.shared.resolve(CoreDataStorage.self)
-        DIContainer.shared.register(
+        let coreDataStorage = try await DIContainer.shared.resolve(CoreDataStorage.self)
+        await DIContainer.shared.register(
             CoreDataBookCoverStorage.self,
             object: CoreDataBookCoverStorage(coreDataStorage: coreDataStorage)
         )
-        DIContainer.shared.register(
+        await DIContainer.shared.register(
             CoreDataBookStorage.self,
             object: CoreDataBookStorage(coreDataStorage: coreDataStorage)
         )
-        DIContainer.shared.register(
+        await DIContainer.shared.register(
             BookCategoryStorage.self,
             object: CoreDataBookCategoryStorage(coreDataStorage: coreDataStorage)
         )
-        DIContainer.shared.register(
+        await DIContainer.shared.register(
             BookCoverStorage.self,
             object: CoreDataBookCoverStorage(coreDataStorage: coreDataStorage)
         )
-        DIContainer.shared.register(
+        await DIContainer.shared.register(
             BookStorage.self,
             object: CoreDataBookStorage(coreDataStorage: coreDataStorage)
         )
-        DIContainer.shared.register(
+        await DIContainer.shared.register(
             MemorialHouseNameStorage.self,
             object: UserDefaultsMemorialHouseNameStorage()
         )
-        DIContainer.shared.register(
+        await DIContainer.shared.register(
             MHFileManager.self,
             object: MHFileManager(directoryType: .documentDirectory)
         )
     }
     
-    private func registerRepositoryDependency() throws {
-        let memorialHouseNameStorage = try DIContainer.shared.resolve(MemorialHouseNameStorage.self)
-        DIContainer.shared.register(
+    private func registerRepositoryDependency() async throws {
+        let memorialHouseNameStorage = try await DIContainer.shared.resolve(MemorialHouseNameStorage.self)
+        await DIContainer.shared.register(
             MemorialHouseNameRepository.self,
             object: LocalMemorialHouseNameRepository(storage: memorialHouseNameStorage)
         )
         
-        let bookCategoryStorage = try DIContainer.shared.resolve(BookCategoryStorage.self)
-        DIContainer.shared.register(
+        let bookCategoryStorage = try await DIContainer.shared.resolve(BookCategoryStorage.self)
+        await DIContainer.shared.register(
             BookCategoryRepository.self,
             object: LocalBookCategoryRepository(storage: bookCategoryStorage)
         )
-        let bookCoverStorage = try DIContainer.shared.resolve(BookCoverStorage.self)
-        DIContainer.shared.register(
+        let bookCoverStorage = try await DIContainer.shared.resolve(BookCoverStorage.self)
+        await DIContainer.shared.register(
             BookCoverRepository.self,
             object: LocalBookCoverRepository(storage: bookCoverStorage)
         )
-        let bookStorage = try DIContainer.shared.resolve(BookStorage.self)
-        DIContainer.shared.register(
+        let bookStorage = try await DIContainer.shared.resolve(BookStorage.self)
+        await DIContainer.shared.register(
             BookRepository.self,
             object: LocalBookRepository(storage: bookStorage)
         )
-        let fileManager = try DIContainer.shared.resolve(MHFileManager.self)
-        DIContainer.shared.register(
+        let fileManager = try await DIContainer.shared.resolve(MHFileManager.self)
+        await DIContainer.shared.register(
             MediaRepository.self,
             object: LocalMediaRepository(storage: fileManager)
         )
     }
     
-    private func registerUseCaseDependency() throws {
+    private func registerUseCaseDependency() async throws {
         // MARK: MemorialHouse UseCase
-        let memorialHouseNameRepository = try DIContainer.shared.resolve(MemorialHouseNameRepository.self)
-        DIContainer.shared.register(
+        let memorialHouseNameRepository = try await DIContainer.shared.resolve(MemorialHouseNameRepository.self)
+        await DIContainer.shared.register(
             CreateMemorialHouseNameUseCase.self,
             object: DefaultCreateMemorialHouseNameUseCase(repository: memorialHouseNameRepository)
         )
-        DIContainer.shared.register(
+        await DIContainer.shared.register(
             FetchMemorialHouseNameUseCase.self,
             object: DefaultFetchMemorialHouseNameUseCase(repository: memorialHouseNameRepository)
         )
         
         // MARK: Category UseCase
-        let bookCategoryRepository = try DIContainer.shared.resolve(BookCategoryRepository.self)
-        DIContainer.shared.register(
+        let bookCategoryRepository = try await DIContainer.shared.resolve(BookCategoryRepository.self)
+        await DIContainer.shared.register(
             CreateBookCategoryUseCase.self,
             object: DefaultCreateBookCategoryUseCase(repository: bookCategoryRepository)
         )
-        DIContainer.shared.register(
+        await DIContainer.shared.register(
             FetchBookCategoriesUseCase.self,
             object: DefaultFetchBookCategoriesUseCase(repository: bookCategoryRepository)
         )
-        DIContainer.shared.register(
+        await DIContainer.shared.register(
             UpdateBookCategoryUseCase.self,
             object: DefaultUpdateBookCategoryUseCase(repository: bookCategoryRepository)
         )
-        DIContainer.shared.register(
+        await DIContainer.shared.register(
             DeleteBookCategoryUseCase.self,
             object: DefaultDeleteBookCategoryUseCase(repository: bookCategoryRepository)
         )
         
         // MARK: - Book UseCase
-        let bookRepository = try DIContainer.shared.resolve(BookRepository.self)
-        let mediaRepository = try DIContainer.shared.resolve(MediaRepository.self)
-        DIContainer.shared.register(
+        let bookRepository = try await DIContainer.shared.resolve(BookRepository.self)
+        let mediaRepository = try await DIContainer.shared.resolve(MediaRepository.self)
+        await DIContainer.shared.register(
             CreateBookUseCase.self,
             object: DefaultCreateBookUseCase(repository: bookRepository,
                                              mediaRepository: mediaRepository)
         )
-        DIContainer.shared.register(
+        await DIContainer.shared.register(
             FetchBookUseCase.self,
             object: DefaultFetchBookUseCase(repository: bookRepository)
         )
-        DIContainer.shared.register(
+        await DIContainer.shared.register(
             UpdateBookUseCase.self,
             object: DefaultUpdateBookUseCase(repository: bookRepository)
         )
-        DIContainer.shared.register(
+        await DIContainer.shared.register(
             DeleteBookUseCase.self,
             object: DefaultDeleteBookUseCase(repository: bookRepository)
         )
         
         // MARK: - BookCover UseCase
-        let bookCoverRepository = try DIContainer.shared.resolve(BookCoverRepository.self)
-        DIContainer.shared.register(
+        let bookCoverRepository = try await DIContainer.shared.resolve(BookCoverRepository.self)
+        await DIContainer.shared.register(
             CreateBookCoverUseCase.self,
             object: DefaultCreateBookCoverUseCase(repository: bookCoverRepository)
         )
-        DIContainer.shared.register(
+        await DIContainer.shared.register(
             FetchAllBookCoverUseCase.self,
             object: DefaultFetchAllBookCoverUseCase(repository: bookCoverRepository)
         )
-        DIContainer.shared.register(
+        await DIContainer.shared.register(
             FetchBookCoverUseCase.self,
             object: DefaultFetchBookCoverUseCase(repository: bookCoverRepository)
         )
-        DIContainer.shared.register(
+        await DIContainer.shared.register(
             UpdateBookCoverUseCase.self,
             object: DefaultUpdateBookCoverUseCase(repository: bookCoverRepository)
         )
-        DIContainer.shared.register(
+        await DIContainer.shared.register(
             DeleteBookCoverUseCase.self,
             object: DefaultDeleteBookCoverUseCase(repository: bookCoverRepository)
         )
         
         // MARK: - EditBook UseCase
-        DIContainer.shared.register(
+        await DIContainer.shared.register(
             PersistentlyStoreMediaUseCase.self,
             object: DefaultPersistentlyStoreMediaUseCase(repository: mediaRepository)
         )
-        DIContainer.shared.register(
+        await DIContainer.shared.register(
             CreateMediaUseCase.self,
             object: DefaultCreateMediaUseCase(repository: mediaRepository)
         )
-        DIContainer.shared.register(
+        await DIContainer.shared.register(
             FetchMediaUseCase.self,
             object: DefaultFetchMediaUseCase(repository: mediaRepository)
         )
-        DIContainer.shared.register(
+        await DIContainer.shared.register(
             DeleteMediaUseCase.self,
             object: DefaultDeleteMediaUseCase(repository: mediaRepository)
         )
         
         // MARK: - TemporaryStoreMedia UseCase
-        DIContainer.shared.register(
+        await DIContainer.shared.register(
             TemporaryStoreMediaUseCase.self,
             object: DefaultTemporaryStoreMediaUseCase(repository: mediaRepository)
         )
-        DIContainer.shared.register(
+        await DIContainer.shared.register(
             DeleteTemporaryMediaUseCase.self,
             object: DefaultDeleteTemporaryMediaUseCase(repository: mediaRepository)
         )
     }
     
-    private func registerViewModelFactoryDependency() throws {
+    private func registerViewModelFactoryDependency() async throws {
         // MARK: Register ViewModel
-        let createMemorialHouseNameUseCase = try DIContainer.shared.resolve(CreateMemorialHouseNameUseCase.self)
-        DIContainer.shared.register(
+        let createMemorialHouseNameUseCase = try await DIContainer.shared.resolve(CreateMemorialHouseNameUseCase.self)
+        await DIContainer.shared.register(
             RegisterViewModelFactory.self,
             object: RegisterViewModelFactory(createMemorialHouseNameUseCase: createMemorialHouseNameUseCase)
         )
         
         // MARK: Home ViewModel
-        let fetchMemorialHouseNameUseCase = try DIContainer.shared.resolve(FetchMemorialHouseNameUseCase.self)
-        let fetchAllBookCoverUseCase = try DIContainer.shared.resolve(FetchAllBookCoverUseCase.self)
-        let updateBookCoverUseCase = try DIContainer.shared.resolve(UpdateBookCoverUseCase.self)
-        let deleteBookCoverUseCase = try DIContainer.shared.resolve(DeleteBookCoverUseCase.self)
-        DIContainer.shared.register(
+        let fetchMemorialHouseNameUseCase = try await DIContainer.shared.resolve(FetchMemorialHouseNameUseCase.self)
+        let fetchAllBookCoverUseCase = try await DIContainer.shared.resolve(FetchAllBookCoverUseCase.self)
+        let updateBookCoverUseCase = try await DIContainer.shared.resolve(UpdateBookCoverUseCase.self)
+        let deleteBookCoverUseCase = try await DIContainer.shared.resolve(DeleteBookCoverUseCase.self)
+        await DIContainer.shared.register(
             HomeViewModelFactory.self,
             object: HomeViewModelFactory(
                 fetchMemorialHouseNameUseCase: fetchMemorialHouseNameUseCase,
@@ -250,11 +252,11 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         )
         
         // MARK: Category ViewModel
-        let createBookCategoryUseCase = try DIContainer.shared.resolve(CreateBookCategoryUseCase.self)
-        let fetchBookCategoriesUseCase = try DIContainer.shared.resolve(FetchBookCategoriesUseCase.self)
-        let updateBookCategoryUseCase = try DIContainer.shared.resolve(UpdateBookCategoryUseCase.self)
-        let deleteBookCategoryUseCase = try DIContainer.shared.resolve(DeleteBookCategoryUseCase.self)
-        DIContainer.shared.register(
+        let createBookCategoryUseCase = try await DIContainer.shared.resolve(CreateBookCategoryUseCase.self)
+        let fetchBookCategoriesUseCase = try await DIContainer.shared.resolve(FetchBookCategoriesUseCase.self)
+        let updateBookCategoryUseCase = try await DIContainer.shared.resolve(UpdateBookCategoryUseCase.self)
+        let deleteBookCategoryUseCase = try await DIContainer.shared.resolve(DeleteBookCategoryUseCase.self)
+        await DIContainer.shared.register(
             BookCategoryViewModelFactory.self,
             object: BookCategoryViewModelFactory(
                 createBookCategoryUseCase: createBookCategoryUseCase,
@@ -265,10 +267,10 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         )
         
         // MARK: - Create BookCover ViewModel
-        let createBookCoverUseCase = try DIContainer.shared.resolve(CreateBookCoverUseCase.self)
-        let createBookUseCase = try DIContainer.shared.resolve(CreateBookUseCase.self)
-        let deleteBookUseCase = try DIContainer.shared.resolve(DeleteBookUseCase.self)
-        DIContainer.shared.register(
+        let createBookCoverUseCase = try await DIContainer.shared.resolve(CreateBookCoverUseCase.self)
+        let createBookUseCase = try await DIContainer.shared.resolve(CreateBookUseCase.self)
+        let deleteBookUseCase = try await DIContainer.shared.resolve(DeleteBookUseCase.self)
+        await DIContainer.shared.register(
             CreateBookCoverViewModelFactory.self,
             object: CreateBookCoverViewModelFactory(
                 fetchMemorialHouseNameUseCase: fetchMemorialHouseNameUseCase,
@@ -280,8 +282,8 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         )
         
         // MARK: - Modify BookCover ViewModel
-        let fetchBookCoverUseCase = try DIContainer.shared.resolve(FetchBookCoverUseCase.self)
-        DIContainer.shared.register(
+        let fetchBookCoverUseCase = try await DIContainer.shared.resolve(FetchBookCoverUseCase.self)
+        await DIContainer.shared.register(
             ModifyBookCoverViewModelFactory.self,
             object: ModifyBookCoverViewModelFactory(
                 fetchMemorialHouseNameUseCase: fetchMemorialHouseNameUseCase,
@@ -291,20 +293,20 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         )
         
         // MARK: - Book ViewModel
-        let fetchBookUseCase = try DIContainer.shared.resolve(FetchBookUseCase.self)
-        DIContainer.shared.register(
+        let fetchBookUseCase = try await DIContainer.shared.resolve(FetchBookUseCase.self)
+        await DIContainer.shared.register(
             BookViewModelFactory.self,
             object: BookViewModelFactory(fetchBookUseCase: fetchBookUseCase)
         )
         
         // MARK: - EditBook ViewModel
-        let updateBookUseCase = try DIContainer.shared.resolve(UpdateBookUseCase.self)
-        let storeMediaUseCase = try DIContainer.shared.resolve(PersistentlyStoreMediaUseCase.self)
-        let deleteTemporaryMediaUseCase = try DIContainer.shared.resolve(DeleteTemporaryMediaUseCase.self)
-        let createMediaUseCase = try DIContainer.shared.resolve(CreateMediaUseCase.self)
-        let fetchMediaUseCase = try DIContainer.shared.resolve(FetchMediaUseCase.self)
-        let deleteMediaUseCase = try DIContainer.shared.resolve(DeleteMediaUseCase.self)
-        DIContainer.shared.register(
+        let updateBookUseCase = try await DIContainer.shared.resolve(UpdateBookUseCase.self)
+        let storeMediaUseCase = try await DIContainer.shared.resolve(PersistentlyStoreMediaUseCase.self)
+        let deleteTemporaryMediaUseCase = try await DIContainer.shared.resolve(DeleteTemporaryMediaUseCase.self)
+        let createMediaUseCase = try await DIContainer.shared.resolve(CreateMediaUseCase.self)
+        let fetchMediaUseCase = try await DIContainer.shared.resolve(FetchMediaUseCase.self)
+        let deleteMediaUseCase = try await DIContainer.shared.resolve(DeleteMediaUseCase.self)
+        await DIContainer.shared.register(
             EditBookViewModelFactory.self,
             object: EditBookViewModelFactory(
                 fetchBookUseCase: fetchBookUseCase,
@@ -318,14 +320,14 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         )
         
         // MARK: - Page ViewModel
-        DIContainer.shared.register(
+        await DIContainer.shared.register(
             ReadPageViewModelFactory.self,
             object: ReadPageViewModelFactory(fetchMediaUseCase: fetchMediaUseCase)
         )
         
         // MARK: - CreateMediaViewModel
-        let temporaryStoreMediaUseCase = try DIContainer.shared.resolve(TemporaryStoreMediaUseCase.self)
-        DIContainer.shared.register(
+        let temporaryStoreMediaUseCase = try await DIContainer.shared.resolve(TemporaryStoreMediaUseCase.self)
+        await DIContainer.shared.register(
             CreateAudioViewModelFactory.self,
             object: CreateAudioViewModelFactory(
                 temporaryStoreMediaUseCase: temporaryStoreMediaUseCase

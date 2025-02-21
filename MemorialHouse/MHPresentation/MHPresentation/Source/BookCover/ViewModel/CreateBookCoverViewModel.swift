@@ -58,7 +58,16 @@ final class CreateBookCoverViewModel: ViewModelType {
     }
     
     func transform(input: AnyPublisher<Input, Never>) -> AnyPublisher<Output, Never> {
-        input.sink { [weak self] event in
+        let shared = input.share()
+        
+        shared
+            .filter { event in
+                if case .saveBookCover = event {
+                    return false
+                }
+                return true
+            }
+            .sink { [weak self] event in
             switch event {
             case .setBookCover:
                 self?.setBookColor(nowIndex: 0)
@@ -71,15 +80,27 @@ final class CreateBookCoverViewModel: ViewModelType {
                 self?.setBookImageData(imageData: bookImage)
             case .changedBookCategory(let category):
                 self?.setBookCategory(category: category)
-            case .saveBookCover:
-                Task { try await self?.saveBookCover() }
             case .deleteBookCover:
                 Task {
                     try await self?.deleteBookCover()
                     self?.output.send(.moveToHome)
                 }
+            default:
+                break
             }
         }.store(in: &cancellables)
+        
+        shared
+            .filter { event in
+                if case .saveBookCover = event {
+                    return true
+                }
+                return false
+            }
+            .sink { [weak self] _ in
+                Task { try await self?.saveBookCover() }
+            }
+            .store(in: &cancellables)
         
         return output.eraseToAnyPublisher()
     }

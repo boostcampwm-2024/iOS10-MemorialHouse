@@ -67,13 +67,9 @@ public final class RegisterViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
     }
     
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
-        guard let createMHNameUseCase = try? DIContainer.shared.resolve(CreateMemorialHouseNameUseCase.self) else {
-            MHLogger.error("CreateMemorialHouseNameUseCase resolve 실패")
-            return nil
-        }
-        self.viewModel = RegisterViewModel(createMemorialHouseNameUseCase: createMHNameUseCase)
-        super.init(coder: coder)
+        fatalError("init(coder:) has not been implemented")
     }
     
     // MARK: - Lifecycle
@@ -109,16 +105,16 @@ public final class RegisterViewController: UIViewController {
             case .registerButtonEnabled(let isEnabled):
                 self?.registerButton.isEnabled = isEnabled
             case .moveToHome:
-                self?.moveHome()
+                Task { await self?.moveHome() }
             case .createFailure(let errorMessage):
                 self?.showErrorAlert(with: errorMessage)
             }
         }.store(in: &cancellables)
     }
     
-    private func moveHome() {
+    private func moveHome() async {
         do {
-            let homeViewModelFactory = try DIContainer.shared.resolve(HomeViewModelFactory.self)
+            let homeViewModelFactory = try await DIContainer.shared.resolve(HomeViewModelFactory.self)
             let homeViewModel = homeViewModelFactory.make()
             let homeViewController = HomeViewController(viewModel: homeViewModel)
             navigationController?.setViewControllers([homeViewController], animated: true)
