@@ -1,9 +1,7 @@
 import UIKit
 import Photos
 
-actor LocalPhotoManager {
-    static let shared = LocalPhotoManager()
-    
+struct LocalPhotoManager {
     private let imageManager = PHCachingImageManager()
     private let imageRequestOptions: PHImageRequestOptions = {
         let options = PHImageRequestOptions()
@@ -13,8 +11,6 @@ actor LocalPhotoManager {
         
         return options
     }()
-    
-    private init() { }
     
     func requestThumbnailImage(
         with asset: PHAsset?,
@@ -41,18 +37,14 @@ actor LocalPhotoManager {
     }
     
     func requestVideoURL(
-        with asset: PHAsset
-    ) async -> URL? {
-        await withCheckedContinuation { continuation in
-            let options = PHVideoRequestOptions()
-            options.version = .current
-            imageManager.requestAVAsset(forVideo: asset, options: options) { avAsset, _, _ in
-                if let urlAsset = avAsset as? AVURLAsset {
-                    continuation.resume(returning: urlAsset.url)
-                } else {
-                    continuation.resume(returning: nil)
-                }
-            }
+        with asset: PHAsset,
+        completion: @escaping @MainActor (URL?) -> Void
+    ) {
+        let options = PHVideoRequestOptions()
+        options.version = .current
+        imageManager.requestAVAsset(forVideo: asset, options: options) { avAsset, _, _ in
+            let url = (avAsset as? AVURLAsset)?.url
+            Task { await completion(url) }
         }
     }
 }
