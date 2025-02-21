@@ -85,8 +85,7 @@ final class MHPolaroidPhotoView: UIView {
     }
 }
 
-// TODO: - PreConcurrency 제거..?
-extension MHPolaroidPhotoView: @preconcurrency MediaAttachable {
+extension MHPolaroidPhotoView: MediaAttachable {
     func configureSource(with mediaDescription: MediaDescription, data: Data) {
         var caption: String?
         if let captionString = mediaDescription.attributes?[Constant.photoCaption] as? String {

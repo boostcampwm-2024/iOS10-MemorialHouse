@@ -207,7 +207,7 @@ extension MHAudioPlayerView: AVAudioPlayerDelegate {
     }
 }
 
-extension MHAudioPlayerView: @preconcurrency MediaAttachable {
+extension MHAudioPlayerView: MediaAttachable {
     func configureSource(with mediaDescription: MediaDescription, data: Data) {
         audioPlayer = try? AVAudioPlayer(data: data)
         guard let audioPlayer else { return }
