@@ -291,12 +291,10 @@ final class CreateAudioViewController: UIViewController {
     
     // MARK: - Helper
     private func requestMicrophonePermission() {
-        Task {
-            AVAudioSession.sharedInstance().requestRecordPermission { @Sendable granted in
-                Task { @MainActor in
-                    if !granted {
-                        self.showRedirectSettingAlert(with: .audio)
-                    }
+        AVAudioSession.sharedInstance().requestRecordPermission { @Sendable granted in
+            Task { @MainActor in
+                if !granted {
+                    self.showRedirectSettingAlert(with: .audio)
                 }
             }
         }
