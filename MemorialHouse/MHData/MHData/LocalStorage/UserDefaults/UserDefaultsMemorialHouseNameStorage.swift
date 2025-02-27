@@ -1,5 +1,5 @@
 import MHCore
-import MHFoundation
+import Foundation
 
 public struct UserDefaultsMemorialHouseNameStorage: MemorialHouseNameStorage {
     private nonisolated(unsafe) let userDefaults: UserDefaults

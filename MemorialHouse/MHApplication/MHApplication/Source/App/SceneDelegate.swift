@@ -2,7 +2,7 @@ import UIKit
 import MHCore
 import MHData
 import MHDomain
-import MHFoundation
+import Foundation
 import MHPresentation
 
 final class SceneDelegate: UIResponder, UIWindowSceneDelegate {

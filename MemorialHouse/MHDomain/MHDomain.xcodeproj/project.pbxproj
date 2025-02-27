@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		0E931E4A2CF36949009B8645 /* MHDomain.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9AEB4E2CD7B31300F8471D /* MHDomain.framework */; platformFilter = ios; };
 		CE9AEBED2CD7BA0C00F8471D /* MHCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9AEBEC2CD7BA0C00F8471D /* MHCore.framework */; };
-		DB382CCD2CD9B257000D7689 /* MHFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB382CCC2CD9B257000D7689 /* MHFoundation.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -55,7 +54,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DB382CCD2CD9B257000D7689 /* MHFoundation.framework in Frameworks */,
 				CE9AEBED2CD7BA0C00F8471D /* MHCore.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

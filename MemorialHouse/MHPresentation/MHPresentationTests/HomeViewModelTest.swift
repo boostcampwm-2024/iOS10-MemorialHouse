@@ -1,6 +1,6 @@
 import Combine
 import Testing
-import MHFoundation
+import Foundation
 @testable import MHPresentation
 @testable import MHDomain
 

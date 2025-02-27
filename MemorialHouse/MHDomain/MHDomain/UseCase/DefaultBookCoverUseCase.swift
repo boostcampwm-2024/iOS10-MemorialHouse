@@ -1,4 +1,4 @@
-import MHFoundation
+import Foundation
 
 public struct DefaultCreateBookCoverUseCase: CreateBookCoverUseCase {
     private let repository: BookCoverRepository

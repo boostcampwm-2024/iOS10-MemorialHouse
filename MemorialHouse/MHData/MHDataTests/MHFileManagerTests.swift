@@ -1,6 +1,6 @@
 import Testing
 @testable import MHData
-@testable import MHFoundation
+@testable import Foundation
 
 @Suite("FileManager 순차적으로 테스트", .serialized) final class MHFileManagerTests {
     private var fileManager: MHFileManager!

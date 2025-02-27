@@ -2,7 +2,7 @@ import Combine
 import UIKit
 import MHCore
 import MHDomain
-import MHFoundation
+import Foundation
 
 public final class RegisterViewController: UIViewController {
     // MARK: - Property

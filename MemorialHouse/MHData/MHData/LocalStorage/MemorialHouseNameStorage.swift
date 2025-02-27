@@ -1,4 +1,4 @@
-import MHFoundation
+import Foundation
 import MHCore
 
 // TODO: 기록소 이름 변경
