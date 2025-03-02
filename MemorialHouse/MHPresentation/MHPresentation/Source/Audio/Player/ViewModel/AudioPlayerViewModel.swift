@@ -1,4 +1,4 @@
-import MHFoundation
+import Foundation
 import Combine
 
 final public class AudioPlayerViewModel: ViewModelType {

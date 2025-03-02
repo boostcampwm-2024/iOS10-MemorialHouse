@@ -1,5 +1,5 @@
 import UIKit
-import MHFoundation
+import Foundation
 import MHDomain
 
 final class MHBookCover: UIButton {

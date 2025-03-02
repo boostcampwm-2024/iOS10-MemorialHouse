@@ -2,7 +2,7 @@ import Testing
 @testable import MHCore
 @testable import MHData
 @testable import MHDomain
-@testable import MHFoundation
+import Foundation
 
 struct CoreDataBookCategoryStorageTests {
     // MARK: - Properties

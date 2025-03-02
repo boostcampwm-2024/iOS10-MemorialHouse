@@ -1,4 +1,4 @@
-import MHFoundation
+import Foundation
 import MHCore
 
 public protocol BookCoverStorage: Sendable {

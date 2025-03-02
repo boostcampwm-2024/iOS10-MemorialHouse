@@ -1,4 +1,4 @@
-import MHFoundation
+import Foundation
 
 public protocol CreateMediaUseCase: Sendable {
     func execute(media: MediaDescription, data: Data, at bookID: UUID?) async throws

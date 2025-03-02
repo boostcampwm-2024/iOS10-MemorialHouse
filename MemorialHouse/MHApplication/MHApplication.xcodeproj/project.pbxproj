@@ -15,8 +15,6 @@
 		CE9AEBB02CD7B52D00F8471D /* MHPresentation.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = CE9AEBAE2CD7B52D00F8471D /* MHPresentation.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		CE9AEBCA2CD7B60200F8471D /* MHCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9AEBC92CD7B60200F8471D /* MHCore.framework */; };
 		CE9AEBCB2CD7B60200F8471D /* MHCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = CE9AEBC92CD7B60200F8471D /* MHCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		DB382CBD2CD9B1C1000D7689 /* MHFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB382CBC2CD9B1C1000D7689 /* MHFoundation.framework */; };
-		DB382CBE2CD9B1C1000D7689 /* MHFoundation.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = DB382CBC2CD9B1C1000D7689 /* MHFoundation.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -28,7 +26,6 @@
 			files = (
 				CE9AEB6B2CD7B3DA00F8471D /* MHDomain.framework in Embed Frameworks */,
 				CE9AEBB02CD7B52D00F8471D /* MHPresentation.framework in Embed Frameworks */,
-				DB382CBE2CD9B1C1000D7689 /* MHFoundation.framework in Embed Frameworks */,
 				CE9AEBCB2CD7B60200F8471D /* MHCore.framework in Embed Frameworks */,
 				CE9AEB8B2CD7B4A800F8471D /* MHData.framework in Embed Frameworks */,
 			);
@@ -74,7 +71,6 @@
 			files = (
 				CE9AEB6A2CD7B3DA00F8471D /* MHDomain.framework in Frameworks */,
 				CE9AEBAF2CD7B52D00F8471D /* MHPresentation.framework in Frameworks */,
-				DB382CBD2CD9B1C1000D7689 /* MHFoundation.framework in Frameworks */,
 				CE9AEBCA2CD7B60200F8471D /* MHCore.framework in Frameworks */,
 				CE9AEB8A2CD7B4A800F8471D /* MHData.framework in Frameworks */,
 			);

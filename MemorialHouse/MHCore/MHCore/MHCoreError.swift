@@ -1,4 +1,4 @@
-import MHFoundation
+import Foundation
 
 public enum MHCoreError: Error, CustomStringConvertible, Equatable {
     case DIContainerResolveFailure(key: String)

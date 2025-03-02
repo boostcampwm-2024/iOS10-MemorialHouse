@@ -1,7 +1,7 @@
 import Combine
 import MHCore
 import MHDomain
-import MHFoundation
+import Foundation
 
 public final class HomeViewModel: ViewModelType {
     public enum Input {

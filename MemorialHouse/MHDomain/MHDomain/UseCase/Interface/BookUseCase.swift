@@ -1,4 +1,4 @@
-import MHFoundation
+import Foundation
 
 public protocol CreateBookUseCase: Sendable {
     func execute(book: Book) async throws

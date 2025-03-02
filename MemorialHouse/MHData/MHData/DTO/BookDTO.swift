@@ -1,4 +1,4 @@
-import MHFoundation
+import Foundation
 import MHDomain
 
 public struct BookDTO {

@@ -1,6 +1,6 @@
 import Combine
 import MHCore
-import MHFoundation
+import Foundation
 import UIKit
 
 @MainActor

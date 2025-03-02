@@ -10,7 +10,6 @@
 		A8BCE31D2CF38F6A00A9F32F /* MHData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9AEB772CD7B46700F8471D /* MHData.framework */; platformFilter = ios; };
 		CE9AEB862CD7B49C00F8471D /* MHDomain.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9AEB852CD7B49C00F8471D /* MHDomain.framework */; };
 		CE9AEBF42CD7BA1800F8471D /* MHCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9AEBF32CD7BA1800F8471D /* MHCore.framework */; };
-		DB382CC92CD9B24F000D7689 /* MHFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB382CC82CD9B24F000D7689 /* MHFoundation.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -59,7 +58,6 @@
 			files = (
 				CE9AEBF42CD7BA1800F8471D /* MHCore.framework in Frameworks */,
 				CE9AEB862CD7B49C00F8471D /* MHDomain.framework in Frameworks */,
-				DB382CC92CD9B24F000D7689 /* MHFoundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

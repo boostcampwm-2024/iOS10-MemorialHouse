@@ -1,7 +1,7 @@
 import Testing
 @testable import MHData
 @testable import MHCore
-@testable import MHFoundation
+import Foundation
 
 struct UserDefaultsMemorialHouseNameStorageTest {
     @Test func test저장소에_기록소_이름을_저장한다() async throws {

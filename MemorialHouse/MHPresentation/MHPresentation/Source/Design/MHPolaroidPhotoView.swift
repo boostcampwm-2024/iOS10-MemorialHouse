@@ -1,4 +1,5 @@
-import MHFoundation
+import Foundation
+import MHCore
 import MHDomain
 import UIKit
 

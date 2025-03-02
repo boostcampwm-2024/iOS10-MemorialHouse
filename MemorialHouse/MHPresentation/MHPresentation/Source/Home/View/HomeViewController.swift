@@ -1,7 +1,7 @@
 import Combine
 import UIKit
 import MHCore
-import MHFoundation
+import Foundation
 
 public final class HomeViewController: UIViewController {
     // MARK: - UI Components

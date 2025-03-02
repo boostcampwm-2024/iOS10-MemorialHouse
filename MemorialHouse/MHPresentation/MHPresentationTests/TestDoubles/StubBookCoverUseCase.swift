@@ -1,5 +1,5 @@
 import MHDomain
-import MHFoundation
+import Foundation
 
 struct StubFetchAllBookCoverUseCase: FetchAllBookCoverUseCase {
     func execute() async throws -> [BookCover] {

@@ -8,13 +8,7 @@
       location = "group:MHCore/MHCore.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:MHFoundation/MHFoundation.xcodeproj">
-   </FileRef>
-   <FileRef
       location = "group:MHPresentation/MHPresentation.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:MHData/MHData.xcodeproj">
    </FileRef>
    <FileRef
       location = "group:MHData/MHData.xcodeproj">

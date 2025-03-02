@@ -6,10 +6,6 @@
 	objectVersion = 77;
 	objects = {
 
-/* Begin PBXBuildFile section */
-		DB382CB92CD9B1A6000D7689 /* MHFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB382CB82CD9B1A6000D7689 /* MHFoundation.framework */; };
-/* End PBXBuildFile section */
-
 /* Begin PBXFileReference section */
 		CE9AEBBB2CD7B5EF00F8471D /* MHCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = MHCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DB382CB82CD9B1A6000D7689 /* MHFoundation.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = MHFoundation.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -28,7 +24,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DB382CB92CD9B1A6000D7689 /* MHFoundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

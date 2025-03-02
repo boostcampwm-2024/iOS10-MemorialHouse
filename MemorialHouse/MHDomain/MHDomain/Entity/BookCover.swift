@@ -1,4 +1,4 @@
-import MHFoundation
+import Foundation
 
 public struct BookCover: Identifiable, Equatable, Sendable {
     public let id: UUID

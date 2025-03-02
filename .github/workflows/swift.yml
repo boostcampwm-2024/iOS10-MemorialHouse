@@ -42,7 +42,7 @@ jobs:
 
       - name: 🔨 set up xcode version
         run: |
-          sudo xcode-select -s /Applications/Xcode_16.1.app
+          sudo xcode-select -s /Applications/Xcode_16.2.app
 
       - name: ✅ check xcode version
         run: |

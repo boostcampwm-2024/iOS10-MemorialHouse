@@ -1,6 +1,5 @@
-import MHFoundation
+import Foundation
 
-// TODO: 두 글자인 경우 띄어쓰기 처리
 public protocol CreateBookCoverUseCase: Sendable {
     func execute(with bookCover: BookCover) async throws
 }

@@ -1,4 +1,4 @@
-import MHFoundation
+import Foundation
 
 public enum MHDataError: Error, CustomStringConvertible, Equatable {
     case noSuchEntity(key: String)
