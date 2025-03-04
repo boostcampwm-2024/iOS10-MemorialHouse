@@ -27,6 +27,15 @@ final class MHVideoView: UIView {
         addSubview(playerViewController.view)
         playerViewController.view.fillSuperview()
     }
+    
+    // MARK: - LifeCycle
+    override func didMoveToWindow() {
+        super.didMoveToSuperview()
+        
+        if window == nil {
+            playerViewController.player?.pause()
+        }
+    }
 }
 
 extension MHVideoView: MediaAttachable {
