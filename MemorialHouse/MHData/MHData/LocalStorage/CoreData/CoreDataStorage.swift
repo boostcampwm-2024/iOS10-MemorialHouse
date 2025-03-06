@@ -41,9 +41,9 @@ public class CoreDataStorage: @unchecked Sendable {
     func performDatabaseTask<T>(
         _ task: @escaping (NSManagedObjectContext) throws -> T
     ) async -> Result<T, MHDataError> {
-        let context = persistentContainer.viewContext
         do {
-            return try await context.perform {
+            return try await persistentContainer.performBackgroundTask { [weak self] context in
+                guard let self else { return .failure(.generalFailure) }
                 do {
                     return .success(try task(context))
                 } catch let error as MHDataError {

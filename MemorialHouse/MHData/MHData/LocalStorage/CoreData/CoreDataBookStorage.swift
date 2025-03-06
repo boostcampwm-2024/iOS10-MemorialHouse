@@ -64,9 +64,7 @@ extension CoreDataBookStorage: BookStorage {
     
     private func getEntityByIdentifier(in context: NSManagedObjectContext, with id: UUID) throws -> BookEntity? {
         let request = BookEntity.fetchRequest()
-        request.predicate = NSPredicate(
-            format: "id == %@", id as CVarArg
-        )
+        request.predicate = NSPredicate(format: "id == %@", id as CVarArg)
         
         return try context.fetch(request).first
     }
