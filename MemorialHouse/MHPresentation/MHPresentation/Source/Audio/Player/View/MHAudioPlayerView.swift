@@ -84,6 +84,7 @@ final class MHAudioPlayerView: UIView {
         let audioSession = AVAudioSession.sharedInstance()
         try? audioSession.setCategory(.playback, mode: .default, options: [])
         try? audioSession.setActive(true)
+        NotificationCenter.default.addObserver(self, selector: #selector(stopAudio), name: .mediaPlaybackStarted, object: nil)
     }
     
     // MARK: - bind
@@ -155,6 +156,7 @@ final class MHAudioPlayerView: UIView {
             audioStateButton.setImage(pauseImage, for: .normal)
             audioPlayer?.play()
             audioPlayState = .play
+            NotificationCenter.default.post(name: .mediaPlaybackStarted, object: self)
         }
     }
     
@@ -183,6 +185,12 @@ final class MHAudioPlayerView: UIView {
     private func stopTimer() {
         timer?.invalidate()
         timer = nil
+    }
+    
+    @objc
+    private func stopAudio(_ notification: NSNotification) {
+        guard notification.object as? MHAudioPlayerView !== self else { return }
+        updateAudioPlayImage(audioPlayState: .play)
     }
     
     private func setTimeLabel(seconds recordingSeconds: Int?) {

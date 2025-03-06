@@ -119,6 +119,7 @@ final class BookViewController: UIViewController {
         guard let startViewController = await makeNewPageViewController(page: firstPage) else { return }
         let viewControllers = [startViewController]
         pageViewController.setViewControllers(viewControllers, direction: .forward, animated: true, completion: nil)
+        prepareAdjacentViewControllers()
     }
     
     private func prepareAdjacentViewControllers() {
