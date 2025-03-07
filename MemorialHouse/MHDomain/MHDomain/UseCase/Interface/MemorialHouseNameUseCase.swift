@@ -1,7 +1,7 @@
 public protocol CreateMemorialHouseNameUseCase: Sendable {
-    func execute(with name: String)
+    func execute(with name: String) async
 }
 
 public protocol FetchMemorialHouseNameUseCase: Sendable {
-    func execute() throws -> String
+    func execute() async throws -> String
 }

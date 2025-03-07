@@ -1,6 +1,6 @@
 import MHCore
 
 public protocol MemorialHouseNameRepository: Sendable {
-    func createMemorialHouseName(with name: String)
-    func fetchMemorialHouseName() throws -> String
+    func createMemorialHouseName(with name: String) async
+    func fetchMemorialHouseName() async throws -> String
 }

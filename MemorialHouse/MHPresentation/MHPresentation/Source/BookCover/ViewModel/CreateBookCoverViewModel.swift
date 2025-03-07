@@ -71,7 +71,7 @@ final class CreateBookCoverViewModel: ViewModelType {
             switch event {
             case .setBookCover:
                 self?.setBookColor(nowIndex: 0)
-                Task { try self?.fetchMemorialHouseName() }
+                Task { try await self?.fetchMemorialHouseName() }
             case .changedBookTitle(let title):
                 self?.setBookTitle(title: title)
             case .changedBookColor(let colorIndex):
@@ -130,8 +130,8 @@ final class CreateBookCoverViewModel: ViewModelType {
         output.send(.bookCategory(category: category))
     }
     
-    private func fetchMemorialHouseName() throws {
-        let memorialHouseName = try fetchMemorialHouseNameUseCase.execute()
+    private func fetchMemorialHouseName() async throws {
+        let memorialHouseName = try await fetchMemorialHouseNameUseCase.execute()
         self.output.send(.memorialHouseName(name: memorialHouseName))
     }
     

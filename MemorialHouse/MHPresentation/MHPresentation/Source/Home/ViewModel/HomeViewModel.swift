@@ -44,10 +44,8 @@ public final class HomeViewModel: ViewModelType {
         input.sink { [weak self] event in
             switch event {
             case .loadAllBookCovers:
-                Task {
-                    self?.fetchMemorialHouse()
-                    await self?.fetchAllBookCover()
-                }
+                Task { await self?.fetchMemorialHouse() }
+                Task { await self?.fetchAllBookCover() }
             case .selectedCategory(let category):
                 self?.filterBooks(by: category)
             case .dragAndDropBookCover(let currentIndex, let destinationIndex):
@@ -62,9 +60,9 @@ public final class HomeViewModel: ViewModelType {
         return output.eraseToAnyPublisher()
     }
     
-    private func fetchMemorialHouse() {
+    private func fetchMemorialHouse() async {
         do {
-            let memorialHouseName = try fetchMemorialHouseNameUseCase.execute()
+            let memorialHouseName = try await fetchMemorialHouseNameUseCase.execute()
             houseName = memorialHouseName
             output.send(.fetchedMemorialHouseName)
         } catch {

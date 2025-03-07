@@ -29,7 +29,7 @@ public final class RegisterViewModel: ViewModelType {
             case .registerTextFieldEdited(let text):
                 self?.validateTextField(text: text)
             case .registerButtonTapped(let memorialHouseName):
-                Task { self?.registerButtonTapped(with: memorialHouseName) }
+                Task { await self?.registerButtonTapped(with: memorialHouseName) }
             }
         }.store(in: &cancellables)
         
@@ -44,8 +44,8 @@ public final class RegisterViewModel: ViewModelType {
         output.send(.registerButtonEnabled(isEnabled: !text.isEmpty && text.count < 11))
     }
     
-    private func registerButtonTapped(with memorialHouseName: String) {
-        createMemorialHouseNameUseCase.execute(with: memorialHouseName)
+    private func registerButtonTapped(with memorialHouseName: String) async {
+        await createMemorialHouseNameUseCase.execute(with: memorialHouseName)
         self.output.send(.moveToHome)
     }
 }
