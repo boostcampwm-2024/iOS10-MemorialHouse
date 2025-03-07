@@ -44,7 +44,7 @@ public final class BookViewModel: ViewModelType {
             case .loadBookTitle:
                 self?.output.send(.setBookTitle(with: self?.bookTitle))
             case .loadBook:
-                Task { try await self?.fetchBook() }
+                Task { try self?.fetchBook() }
             case .loadPreviousPage:
                 if self?.nowPageIndex ?? 0 > 0 {
                     self?.nowPageIndex -= 1
@@ -63,7 +63,7 @@ public final class BookViewModel: ViewModelType {
         return output.eraseToAnyPublisher()
     }
     
-    private func fetchBook() async throws {
+    private func fetchBook() throws {
         book = try fetchBookUseCase.execute(id: identifier)
         output.send(.loadFirstPage(page: book?.pages[nowPageIndex]))
     }

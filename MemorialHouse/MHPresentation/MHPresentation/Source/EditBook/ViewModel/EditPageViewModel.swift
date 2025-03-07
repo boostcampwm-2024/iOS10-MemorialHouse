@@ -63,9 +63,9 @@ final class EditPageViewModel: ViewModelType {
             case .didEditPage(let attributedText):
                 self?.didEditPage(text: attributedText)
             case .didRequestMediaDataForData(let media):
-                Task { await self?.loadMediaForData(media: media) }
+                Task { self?.loadMediaForData(media: media) }
             case .didRequestMediaDataForURL(let media):
-                Task { await self?.loadMediaForURL(media: media) }
+                Task { self?.loadMediaForURL(media: media) }
             case let .isMediaAddable(availableHeight):
                 self?.isMediaAddable(forAvailableHeight: availableHeight)
             }
@@ -87,9 +87,9 @@ final class EditPageViewModel: ViewModelType {
         self.page = page
     }
     
-    private func loadMediaForData(media: MediaDescription) async {
+    private func loadMediaForData(media: MediaDescription) {
         do {
-            let mediaData: Data = try await fetchMediaUseCase.execute(media: media, in: bookID)
+            let mediaData: Data = try fetchMediaUseCase.execute(media: media, in: bookID)
             output.send(.mediaLoadedWithData(media: media, data: mediaData))
         } catch {
             output.send(.error(message: "미디어 로딩에 실패하였습니다."))
@@ -97,9 +97,9 @@ final class EditPageViewModel: ViewModelType {
         }
     }
     
-    private func loadMediaForURL(media: MediaDescription) async {
+    private func loadMediaForURL(media: MediaDescription) {
         do {
-            let mediaURL: URL = try await fetchMediaUseCase.execute(media: media, in: bookID)
+            let mediaURL: URL = try fetchMediaUseCase.execute(media: media, in: bookID)
             output.send(.mediaLoadedWithURL(media: media, url: mediaURL))
         } catch {
             output.send(.error(message: "미디어 로딩에 실패하였습니다."))

@@ -55,8 +55,8 @@ final class ModifyBookCoverViewModel: ViewModelType {
             switch event {
             case .loadBookCover:
                 Task {
-                    try await self?.fetchMemorialHouseName()
-                    try await self?.fetchBookCover()
+                    try self?.fetchMemorialHouseName()
+                    try self?.fetchBookCover()
                 }
             case .changedBookTitle(let title):
                 self?.setBookTitle(title: title)
@@ -67,7 +67,7 @@ final class ModifyBookCoverViewModel: ViewModelType {
             case .changedBookCategory(let category):
                 self?.setBookCategory(category: category)
             case .saveBookCover:
-                Task { try await self?.saveBookCover() }
+                Task { try self?.saveBookCover() }
             case .cancelModifyBookCover:
                 self?.output.send(.moveToHome)
             }
@@ -101,13 +101,13 @@ final class ModifyBookCoverViewModel: ViewModelType {
         output.send(.bookCategory(category: category))
     }
     
-    private func fetchMemorialHouseName() async throws {
-        let memorialHouseName = try await fetchMemorialHouseNameUseCase.execute()
+    private func fetchMemorialHouseName() throws {
+        let memorialHouseName = try fetchMemorialHouseNameUseCase.execute()
         self.output.send(.memorialHouseName(name: memorialHouseName))
     }
     
-    private func fetchBookCover() async throws {
-        guard let bookCover = try await fetchBookCoverUseCase.execute(id: bookID) else { return }
+    private func fetchBookCover() throws {
+        guard let bookCover = try fetchBookCoverUseCase.execute(id: bookID) else { return }
         bookOrder = bookCover.order
         bookTitle = bookCover.title
         bookColor = bookCover.color
@@ -122,7 +122,7 @@ final class ModifyBookCoverViewModel: ViewModelType {
         output.send(.setModifyView(title: bookTitle, category: bookCategory))
     }
     
-    private func saveBookCover() async throws {
+    private func saveBookCover() throws {
         guard let bookTitle, !bookTitle.isEmpty, let bookOrder, let bookColor else {
             output.send(.settingFailure)
             return
@@ -135,7 +135,7 @@ final class ModifyBookCoverViewModel: ViewModelType {
             color: bookColor,
             category: bookCategory
         )
-        try await updateBookCoverUseCase.execute(id: bookID, with: newBookCover)
+        try updateBookCoverUseCase.execute(id: bookID, with: newBookCover)
         output.send(.moveToHome)
     }
 }

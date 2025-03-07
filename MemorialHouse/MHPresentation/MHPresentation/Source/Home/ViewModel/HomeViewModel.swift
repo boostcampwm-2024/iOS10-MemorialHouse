@@ -45,26 +45,26 @@ public final class HomeViewModel: ViewModelType {
             switch event {
             case .loadAllBookCovers:
                 Task {
-                    await self?.fetchMemorialHouse()
-                    await self?.fetchAllBookCover()
+                    self?.fetchMemorialHouse()
+                    self?.fetchAllBookCover()
                 }
             case .selectedCategory(let category):
                 self?.filterBooks(by: category)
             case .dragAndDropBookCover(let currentIndex, let destinationIndex):
                 self?.dragAndDropBookCover(from: currentIndex, to: destinationIndex)
             case .likeButtonTapped(let bookId):
-                Task { await self?.likeButtonTapped(bookId: bookId) }
+                Task { self?.likeButtonTapped(bookId: bookId) }
             case .deleteBookCover(let bookId):
-                Task { await self?.deleteBookCover(bookId: bookId) }
+                Task { self?.deleteBookCover(bookId: bookId) }
             }
         }.store(in: &cancellables)
         
         return output.eraseToAnyPublisher()
     }
     
-    private func fetchMemorialHouse() async {
+    private func fetchMemorialHouse() {
         do {
-            let memorialHouseName = try await fetchMemorialHouseNameUseCase.execute()
+            let memorialHouseName = try fetchMemorialHouseNameUseCase.execute()
             houseName = memorialHouseName
             output.send(.fetchedMemorialHouseName)
         } catch {
@@ -73,9 +73,9 @@ public final class HomeViewModel: ViewModelType {
         }
     }
     
-    private func fetchAllBookCover() async {
+    private func fetchAllBookCover() {
         do {
-            let bookCovers = try await fetchAllBookCoverUseCase.execute()
+            let bookCovers = try fetchAllBookCoverUseCase.execute()
             self.bookCovers = bookCovers
             self.currentBookCovers = bookCovers
             output.send(.reloadData)
@@ -85,7 +85,7 @@ public final class HomeViewModel: ViewModelType {
         }
     }
     
-    private func likeButtonTapped(bookId: UUID) async {
+    private func likeButtonTapped(bookId: UUID) {
         guard
             let bookCoverIndex = bookCovers.firstIndex(where: { $0.id == bookId }),
             let currentBookCoverindex = currentBookCovers.firstIndex(where: { $0.id == bookId })
@@ -103,7 +103,7 @@ public final class HomeViewModel: ViewModelType {
         )
         
         do {
-            try await updateBookCoverUseCase.execute(id: bookId, with: bookCover)
+            try updateBookCoverUseCase.execute(id: bookId, with: bookCover)
             bookCovers[bookCoverIndex] = bookCover
             currentBookCovers[currentBookCoverindex] = bookCover
         } catch {
@@ -112,9 +112,9 @@ public final class HomeViewModel: ViewModelType {
         }
     }
     
-    private func deleteBookCover(bookId: UUID) async {
+    private func deleteBookCover(bookId: UUID) {
         do {
-            try await deleteBookCoverUseCase.execute(id: bookId)
+            try deleteBookCoverUseCase.execute(id: bookId)
             guard
                 let bookCoverIndex = bookCovers.firstIndex(where: { $0.id == bookId }),
                 let currentBookCoverIndex = currentBookCovers.firstIndex(where: { $0.id == bookId })

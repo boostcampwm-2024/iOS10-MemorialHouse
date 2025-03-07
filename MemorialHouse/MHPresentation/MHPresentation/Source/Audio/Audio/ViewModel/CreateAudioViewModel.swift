@@ -40,7 +40,7 @@ public final class CreateAudioViewModel: ViewModelType {
         input.sink { [weak self] event in
             switch event {
             case .prepareTemporaryAudio:
-                Task { await self?.prepareTemporaryAudio() }
+                Task { self?.prepareTemporaryAudio() }
             case .audioButtonTapped:
                 self?.audioButtonTapped()
             case .saveButtonTapped:

@@ -71,7 +71,7 @@ final class CreateBookCoverViewModel: ViewModelType {
             switch event {
             case .setBookCover:
                 self?.setBookColor(nowIndex: 0)
-                Task { try await self?.fetchMemorialHouseName() }
+                Task { try self?.fetchMemorialHouseName() }
             case .changedBookTitle(let title):
                 self?.setBookTitle(title: title)
             case .changedBookColor(let colorIndex):
@@ -82,7 +82,7 @@ final class CreateBookCoverViewModel: ViewModelType {
                 self?.setBookCategory(category: category)
             case .deleteBookCover:
                 Task {
-                    try await self?.deleteBookCover()
+                    try self?.deleteBookCover()
                     self?.output.send(.moveToHome)
                 }
             default:
@@ -98,7 +98,7 @@ final class CreateBookCoverViewModel: ViewModelType {
                 return false
             }
             .sink { [weak self] _ in
-                Task { try await self?.saveBookCover() }
+                Task { try self?.saveBookCover() }
             }
             .store(in: &cancellables)
         
@@ -130,12 +130,12 @@ final class CreateBookCoverViewModel: ViewModelType {
         output.send(.bookCategory(category: category))
     }
     
-    private func fetchMemorialHouseName() async throws {
-        let memorialHouseName = try await fetchMemorialHouseNameUseCase.execute()
+    private func fetchMemorialHouseName() throws {
+        let memorialHouseName = try fetchMemorialHouseNameUseCase.execute()
         self.output.send(.memorialHouseName(name: memorialHouseName))
     }
     
-    private func saveBookCover() async throws {
+    private func saveBookCover() throws {
         guard let bookTitle, !bookTitle.isEmpty, let bookColor else {
             output.send(.settingFailure)
             return
@@ -147,25 +147,25 @@ final class CreateBookCoverViewModel: ViewModelType {
             color: bookColor,
             category: bookCategory
         )
-        try await createBookCoverUseCase.execute(with: newBookCover)
-        try await createBook(bookID: newBookCover.id)
+        try createBookCoverUseCase.execute(with: newBookCover)
+        try createBook(bookID: newBookCover.id)
         bookID = newBookCover.id
         output.send(.moveToNext(bookID: newBookCover.id))
     }
     
-    private func createBook(bookID: UUID) async throws {
+    private func createBook(bookID: UUID) throws {
         guard let bookTitle else { return }
         let newBook = Book(
             id: bookID,
             title: bookTitle,
             pages: [Page()]
         )
-        try await createBookUseCase.execute(book: newBook)
+        try createBookUseCase.execute(book: newBook)
     }
     
-    private func deleteBookCover() async throws {
+    private func deleteBookCover() throws {
         guard let bookID else { return }
-        try await deleteBookUseCase.execute(id: bookID)
-        try await deleteBookCoverUseCase.execute(id: bookID)
+        try deleteBookUseCase.execute(id: bookID)
+        try deleteBookCoverUseCase.execute(id: bookID)
     }
 }
