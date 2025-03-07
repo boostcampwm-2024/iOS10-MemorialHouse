@@ -64,7 +64,7 @@ public final class BookViewModel: ViewModelType {
     }
     
     private func fetchBook() async throws {
-        book = try await fetchBookUseCase.execute(id: identifier)
+        book = try fetchBookUseCase.execute(id: identifier)
         output.send(.loadFirstPage(page: book?.pages[nowPageIndex]))
     }
 }
