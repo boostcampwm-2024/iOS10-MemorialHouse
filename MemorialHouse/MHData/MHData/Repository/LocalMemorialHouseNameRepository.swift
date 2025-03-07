@@ -8,11 +8,11 @@ public struct LocalMemorialHouseNameRepository: MemorialHouseNameRepository {
         self.storage = storage
     }
     
-    public func createMemorialHouseName(with name: String) async -> Result<Void, MHDataError> {
-        return await storage.create(with: name)
+    public func createMemorialHouseName(with name: String) async {
+        await storage.create(with: name)
     }
     
-    public func fetchMemorialHouseName() async -> Result<String, MHDataError> {
-        return await storage.fetch()
+    public func fetchMemorialHouseName() async throws -> String {
+        return try await storage.fetch()
     }
 }

@@ -7,8 +7,8 @@ public struct DefaultCreateMemorialHouseNameUseCase: CreateMemorialHouseNameUseC
         self.repository = repository
     }
     
-    public func execute(with name: String) async throws {
-        return try await repository.createMemorialHouseName(with: name).get()
+    public func execute(with name: String) async {
+        await repository.createMemorialHouseName(with: name)
     }
 }
 
@@ -20,19 +20,13 @@ public struct DefaultFetchMemorialHouseNameUseCase: FetchMemorialHouseNameUseCas
     }
     
     public func execute() async throws -> String {
-        let fetchMemorialHouseResult = await repository.fetchMemorialHouseName()
-        switch fetchMemorialHouseResult {
-        case .success(let memorialHouseName):
-            let transformedName = transformHouseName(with: memorialHouseName)
-            MHLogger.info("저장된 기록소 이름: \(transformedName)")
-            
-            return transformedName
-        case .failure(let failure):
-            throw failure
-        }
+        let memorialHouseName = try await repository.fetchMemorialHouseName()
+        let transformedName = transformHouseName(with: memorialHouseName)
+        MHLogger.info("저장된 기록소 이름: \(transformedName)")
+        
+        return transformedName
     }
     
-    // TODO: 기록소가 아닌, 책 제목으로 변경
     /// 집 이름이 2글자인 경우, 각 글자 사이에 공백을 추가하여 변환합니다.
     ///
     /// - Parameter name: 원본 이름 문자열.

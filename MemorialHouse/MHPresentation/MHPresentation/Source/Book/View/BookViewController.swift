@@ -175,23 +175,23 @@ extension BookViewController: UIPageViewControllerDataSource {
         _ pageViewController: UIPageViewController,
         viewControllerBefore viewController: UIViewController
     ) -> UIViewController? {
-        guard let previousPage = viewModel.previousPage else { return nil }
+        guard viewModel.previousPage != nil else { return nil }
         input.send(.loadPreviousPage)
         
-        let vc = previousPageViewController
+        let previousViewController = previousPageViewController
         previousPageViewController = nil
-        return vc
+        return previousViewController
     }
     
     func pageViewController(
         _ pageViewController: UIPageViewController,
         viewControllerAfter viewController: UIViewController
     ) -> UIViewController? {
-        guard let nextPage = viewModel.nextPage else { return nil }
+        guard viewModel.nextPage != nil else { return nil }
         input.send(.loadNextPage)
         
-        let vc = nextPageViewController
+        let nextViewController = nextPageViewController
         nextPageViewController = nil
-        return vc
+        return nextViewController
     }
 }

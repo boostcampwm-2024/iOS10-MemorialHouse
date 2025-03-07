@@ -10,7 +10,7 @@ public protocol FileStorage: Sendable {
     ///   - name: Documents/{path}/{name} 이런식으로 저장됩니다. (확장자 명시 필요)
     ///   - data: 실제 저장될 데이터
     /// - Returns: 성공여부를 반환합니다.
-    func create(at path: String, fileName name: String, data: Data) async -> Result<Void, MHDataError>
+    func create(at path: String, fileName name: String, data: Data) async throws
     
     /// 지정된 경로의 파일을 읽어옵니다.
     /// Documents폴더에서 파일을 읽어옵니다
@@ -18,7 +18,7 @@ public protocol FileStorage: Sendable {
     ///   - path: Documents/{path} 이런식으로 들어갑니다.
     ///   - name: Documents/{path}/{name} 이런식으로 읽어옵니다. (확장자 명시 필요)
     /// - Returns: 파일 데이터를 반환합니다.
-    func read(at path: String, fileName name: String) async -> Result<Data, MHDataError>
+    func read(at path: String, fileName name: String) async throws -> Data
     
     /// 지정된 경로의 파일을 삭제합니다.
     /// Documents폴더에서 파일을 삭제합니다.
@@ -26,7 +26,7 @@ public protocol FileStorage: Sendable {
     ///   - path: Documents/{path} 이런식으로 들어갑니다.
     ///   - name: Documents/{path}/{name} 이런식으로 삭제합니다. (확장자 명시 필요)
     /// - Returns: 성공여부를 반환합니다.
-    func delete(at path: String, fileName name: String) async -> Result<Void, MHDataError>
+    func delete(at path: String, fileName name: String) async throws
     
     /// 지정된 경로의 파일을 새로운 파일 이름으로 복사합니다.
     /// 지정된 경로 -> Documents폴더로 파일을 복사합니다.
@@ -35,7 +35,7 @@ public protocol FileStorage: Sendable {
     ///   - newPath: Documents/{newPath} 이런식으로 들어갑니다.
     ///   - name: Documents/{newPath}/{name} 이런식으로 저장됩니다. (확장자 명시 필요)
     /// - Returns: 성공여부를 반환합니다.
-    func copy(at url: URL, to newPath: String, newFileName name: String) async -> Result<Void, MHDataError>
+    func copy(at url: URL, to newPath: String, newFileName name: String) async throws
     
     /// 지정된 경로의 파일을 복사합니다.
     /// Documents폴더 -> Documents폴더로 파일을 복사합니다.
@@ -45,7 +45,7 @@ public protocol FileStorage: Sendable {
     ///   - name: Documents/{path}/{name} 이 파일을 복사합니다. (확장자 명시 필요)
     ///   - newPath: Documents/{newPath}/{name} 으로  저장합니다.
     /// - Returns: 성공여부를 반환합니다.
-    func copy(at path: String, fileName name: String, to newPath: String) async -> Result<Void, MHDataError>
+    func copy(at path: String, fileName name: String, to newPath: String) async throws
     
     /// 지정된 경로의 파일을 이동합니다.
     /// - Parameters:
@@ -53,14 +53,14 @@ public protocol FileStorage: Sendable {
     ///   - name: Documents/{path}/{name} 이 파일을 이동합니다. (확장자 명시 필요)
     ///   - newPath: Documents/{newPath}/{name} 으로  이동합니다.
     /// - Returns: 성공여부를 반환합니다.
-    func move(at path: String, fileName name: String, to newPath: String) async -> Result<Void, MHDataError>
+    func move(at path: String, fileName name: String, to newPath: String) async throws
     
     /// 지정된 경로의 모든 파일을 이동합니다.
     /// - Parameters:
     ///   - path: Documents/{path} 이런식으로 들어갑니다
     ///   - newPath: Documents/{newPath} 으로  이동합니다.
     /// - Returns: 성공여부를 반환합니다.
-    func moveAll(in path: String, to newPath: String) async -> Result<Void, MHDataError>
+    func moveAll(in path: String, to newPath: String) async throws
     
     /// 지정된 경로의 로컬 파일 URL을 반환합니다.
     /// Documents폴더기준으로 파일 URL을 반환합니다.
@@ -68,9 +68,9 @@ public protocol FileStorage: Sendable {
     ///   - path: Documents/{path} 이런식으로 들어갑니다
     ///   - name: Documents/{path}/{name} 이 파일 URL을 반환합니다. (확장자 명시 필요)
     /// - Returns: 파일 URL을 반환합니다.
-    func getURL(at path: String, fileName name: String) async -> Result<URL, MHDataError>
+    func getURL(at path: String, fileName name: String) async throws -> URL
     
-    func makeDirectory(through path: String) async -> Result<Void, MHDataError>
+    func makeDirectory(through path: String) async throws
     
     /// 지정된 경로의 파일 목록을 반환합니다.
     /// Documents폴더를 기준으로 파일 이름 목록을 반환합니다.
@@ -78,5 +78,5 @@ public protocol FileStorage: Sendable {
     /// - Parameters:
     ///   - path: Documents/{path} 이런식으로 들어갑니다
     /// - Returns: 파일 이름 목록을 반환합니다
-    func getFileNames(at path: String) async -> Result<[String], MHDataError>
+    func getFileNames(at path: String) async throws -> [String]
 }

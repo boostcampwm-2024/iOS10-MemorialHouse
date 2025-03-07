@@ -11,8 +11,9 @@ public final class CoreDataBookStorage {
 }
 
 extension CoreDataBookStorage: BookStorage {
-    public func create(data: BookDTO) async -> Result<Void, MHDataError> {
-        return await coreDataStorage.performDatabaseTask { [weak self] context in
+    public func create(data: BookDTO) async throws {
+        let context = coreDataStorage.createBackgroundContext()
+        try await context.perform { [weak self] in
             guard let entity = NSEntityDescription.entity(forEntityName: "BookEntity", in: context) else {
                 throw MHDataError.noSuchEntity(key: "BookEntity")
             }
@@ -25,21 +26,22 @@ extension CoreDataBookStorage: BookStorage {
         }
     }
     
-    public func fetch(with id: UUID) async -> Result<BookDTO, MHDataError> {
-        return await coreDataStorage.performDatabaseTask { [weak self] context in
+    public func fetch(with id: UUID) async throws -> BookDTO {
+        let context = coreDataStorage.createBackgroundContext()
+        return try await context.perform { [weak self] in
             guard let bookEntity = try self?.getEntityByIdentifier(in: context, with: id) else {
                 throw MHDataError.findEntityFailure
             }
             guard let bookDTO = self?.coreBookToDTO(bookEntity) else {
                 throw MHDataError.convertDTOFailure
             }
-            
             return bookDTO
         }
     }
     
-    public func update(with id: UUID, data: BookDTO) async -> Result<Void, MHDataError> {
-        return await coreDataStorage.performDatabaseTask { [weak self] context in
+    public func update(with id: UUID, data: BookDTO) async throws {
+        let context = coreDataStorage.createBackgroundContext()
+        try await context.perform { [weak self] in
             guard let newEntity = try self?.getEntityByIdentifier(in: context, with: id) else {
                 throw MHDataError.findEntityFailure
             }
@@ -51,8 +53,9 @@ extension CoreDataBookStorage: BookStorage {
         }
     }
     
-    public func delete(with id: UUID) async -> Result<Void, MHDataError> {
-        return await coreDataStorage.performDatabaseTask { [weak self] context in
+    public func delete(with id: UUID) async throws {
+        let context = coreDataStorage.createBackgroundContext()
+        try await context.perform { [weak self] in
             guard let entity = try self?.getEntityByIdentifier(in: context, with: id) else {
                 throw MHDataError.findEntityFailure
             }
@@ -64,9 +67,7 @@ extension CoreDataBookStorage: BookStorage {
     
     private func getEntityByIdentifier(in context: NSManagedObjectContext, with id: UUID) throws -> BookEntity? {
         let request = BookEntity.fetchRequest()
-        request.predicate = NSPredicate(
-            format: "id == %@", id as CVarArg
-        )
+        request.predicate = NSPredicate(format: "id == %@", id as CVarArg)
         
         return try context.fetch(request).first
     }

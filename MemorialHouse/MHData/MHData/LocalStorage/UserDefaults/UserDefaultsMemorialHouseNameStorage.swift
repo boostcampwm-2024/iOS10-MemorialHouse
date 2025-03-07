@@ -8,21 +8,15 @@ public struct UserDefaultsMemorialHouseNameStorage: MemorialHouseNameStorage {
         self.userDefaults = userDefaults
     }
     
-    public func create(with memorialHouseName: String) async -> Result<Void, MHDataError> {
+    public func create(with memorialHouseName: String) async {
         userDefaults.set(memorialHouseName, forKey: Constant.houseNameUserDefaultKey)
-        
-        if userDefaults.string(forKey: Constant.houseNameUserDefaultKey) == memorialHouseName {
-            return .success(())
-        } else {
-            return .failure(.setUserDefaultFailure)
-        }
     }
     
-    public func fetch() async -> Result<String, MHDataError> {
+    public func fetch() async throws -> String {
         guard let memorialHouseName = userDefaults.string(forKey: Constant.houseNameUserDefaultKey) else {
             MHLogger.error("MemorialHouseName을 찾을 수 없습니다: \(Constant.houseNameUserDefaultKey)")
-            return .failure(.noSuchEntity(key: Constant.houseNameUserDefaultKey))
+            throw MHDataError.noSuchEntity(key: Constant.houseNameUserDefaultKey)
         }
-        return .success(memorialHouseName)
+        return memorialHouseName
     }
 }

@@ -54,10 +54,8 @@ final class ModifyBookCoverViewModel: ViewModelType {
         input.sink { [weak self] event in
             switch event {
             case .loadBookCover:
-                Task {
-                    try await self?.fetchMemorialHouseName()
-                    try await self?.fetchBookCover()
-                }
+                Task { try await self?.fetchMemorialHouseName() }
+                Task { try await self?.fetchBookCover() }
             case .changedBookTitle(let title):
                 self?.setBookTitle(title: title)
             case .changedBookColor(let colorIndex):

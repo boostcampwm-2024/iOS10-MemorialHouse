@@ -1,4 +1,5 @@
 import Foundation
+import MHCore
 import MHDomain
 import Combine
 
@@ -44,7 +45,7 @@ public final class BookViewModel: ViewModelType {
             case .loadBookTitle:
                 self?.output.send(.setBookTitle(with: self?.bookTitle))
             case .loadBook:
-                Task { try await self?.fetchBook() }
+                Task { await self?.fetchBook() }
             case .loadPreviousPage:
                 if self?.nowPageIndex ?? 0 > 0 {
                     self?.nowPageIndex -= 1
@@ -63,8 +64,12 @@ public final class BookViewModel: ViewModelType {
         return output.eraseToAnyPublisher()
     }
     
-    private func fetchBook() async throws {
-        book = try await fetchBookUseCase.execute(id: identifier)
-        output.send(.loadFirstPage(page: book?.pages[nowPageIndex]))
+    private func fetchBook() async {
+        do {
+            book = try await fetchBookUseCase.execute(id: identifier)
+            output.send(.loadFirstPage(page: book?.pages[nowPageIndex]))
+        } catch {
+            MHLogger.error("책을 불러오는 중에 에러 발생: \(error.localizedDescription)")
+        }
     }
 }

@@ -100,7 +100,9 @@ public final class RegisterViewController: UIViewController {
     private func bind() {
         let output = viewModel.transform(input: input.eraseToAnyPublisher())
         
-        output.sink { [weak self] event in
+        output
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] event in
             switch event {
             case .registerButtonEnabled(let isEnabled):
                 self?.registerButton.isEnabled = isEnabled

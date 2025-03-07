@@ -11,8 +11,9 @@ public final class CoreDataBookCoverStorage {
 }
 
 extension CoreDataBookCoverStorage: BookCoverStorage {
-    public func create(data: BookCoverDTO) async -> Result<Void, MHDataError> {
-        return await coreDataStorage.performDatabaseTask { context in
+    public func create(data: BookCoverDTO) async throws {
+        let context = coreDataStorage.createBackgroundContext()
+        try await context.perform {
             guard let entity = NSEntityDescription.entity(forEntityName: "BookCoverEntity", in: context) else {
                 throw MHDataError.noSuchEntity(key: "BookCoverEntity")
             }
@@ -28,16 +29,18 @@ extension CoreDataBookCoverStorage: BookCoverStorage {
         }
     }
     
-    public func fetch() async -> Result<[BookCoverDTO], MHDataError> {
-        return await coreDataStorage.performDatabaseTask { [weak self] context in
+    public func fetch() async throws -> [BookCoverDTO] {
+        let context = coreDataStorage.createBackgroundContext()
+        let bookCoverEntities = try await context.perform {
             let request = BookCoverEntity.fetchRequest()
-            let bookCoverEntities = try context.fetch(request)
-            return bookCoverEntities.compactMap { self?.coreBookCoverToDTO($0) }
+            return try context.fetch(request)
         }
+        return bookCoverEntities.compactMap { coreBookCoverToDTO($0) }
     }
     
-    public func update(with id: UUID, data: BookCoverDTO) async -> Result<Void, MHDataError> {
-        return await coreDataStorage.performDatabaseTask { [weak self] context in
+    public func update(with id: UUID, data: BookCoverDTO) async throws {
+        let context = coreDataStorage.createBackgroundContext()
+        try await context.perform { [weak self] in
             guard let newEntity = try self?.getEntityByIdentifier(in: context, with: id) else {
                 throw MHDataError.findEntityFailure
             }
@@ -53,8 +56,9 @@ extension CoreDataBookCoverStorage: BookCoverStorage {
     }
     
     // TODO: 책 커버 삭제 시, 책 내용 모두 삭제되게끔 수정 필요
-    public func delete(with id: UUID) async -> Result<Void, MHDataError> {
-        return await coreDataStorage.performDatabaseTask { [weak self] context in
+    public func delete(with id: UUID) async throws {
+        let context = coreDataStorage.createBackgroundContext()
+        try await context.perform { [weak self] in
             guard let entity = try self?.getEntityByIdentifier(in: context, with: id) else {
                 throw MHDataError.findEntityFailure
             }

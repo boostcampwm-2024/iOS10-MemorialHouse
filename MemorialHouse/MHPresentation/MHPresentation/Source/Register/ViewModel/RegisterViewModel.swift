@@ -17,7 +17,6 @@ public final class RegisterViewModel: ViewModelType {
     private let createMemorialHouseNameUseCase: CreateMemorialHouseNameUseCase
     private let output = PassthroughSubject<Output, Never>()
     private var cancellables = Set<AnyCancellable>()
-    
     public init(
         createMemorialHouseNameUseCase: CreateMemorialHouseNameUseCase
     ) {
@@ -45,13 +44,8 @@ public final class RegisterViewModel: ViewModelType {
         output.send(.registerButtonEnabled(isEnabled: !text.isEmpty && text.count < 11))
     }
     
-    @MainActor
     private func registerButtonTapped(with memorialHouseName: String) async {
-        do {
-            try await createMemorialHouseNameUseCase.execute(with: memorialHouseName)
-            self.output.send(.moveToHome)
-        } catch {
-            self.output.send(.createFailure(errorMessage: error.localizedDescription))
-        }
+        await createMemorialHouseNameUseCase.execute(with: memorialHouseName)
+        self.output.send(.moveToHome)
     }
 }

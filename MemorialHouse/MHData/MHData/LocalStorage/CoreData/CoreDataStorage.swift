@@ -38,26 +38,7 @@ public class CoreDataStorage: @unchecked Sendable {
         self.persistentContainer = container
     }
     
-    func performDatabaseTask<T>(
-        _ task: @escaping (NSManagedObjectContext) throws -> T
-    ) async -> Result<T, MHDataError> {
-        let context = persistentContainer.viewContext
-        do {
-            return try await context.perform {
-                do {
-                    return .success(try task(context))
-                } catch let error as MHDataError {
-                    MHLogger.debug("Core Data 에러: \(error.description)")
-                    throw error
-                } catch {
-                    MHLogger.debug("알 수 없는 Core Data 에러: \(error.localizedDescription)")
-                    throw error
-                }
-            }
-        } catch let error as MHDataError {
-            return .failure(error)
-        } catch {
-            return .failure(MHDataError.generalFailure)
-        }
+    func createBackgroundContext() -> NSManagedObjectContext {
+        return persistentContainer.newBackgroundContext()
     }
 }

@@ -8,7 +8,7 @@ public struct DefaultCreateBookCoverUseCase: CreateBookCoverUseCase {
     }
     
     public func execute(with bookCover: BookCover) async throws {
-        try await repository.createBookCover(with: bookCover).get()
+        try await repository.createBookCover(with: bookCover)
     }
 }
 
@@ -20,7 +20,7 @@ public struct DefaultFetchBookCoverUseCase: FetchBookCoverUseCase {
     }
     
     public func execute(id: UUID) async throws -> BookCover? {
-        try await repository.fetchBookCover(with: id).get()
+        try await repository.fetchBookCover(with: id)
     }
 }
 
@@ -32,7 +32,7 @@ public struct DefaultFetchAllBookCoverUseCase: FetchAllBookCoverUseCase {
     }
     
     public func execute() async throws -> [BookCover] {
-        try await repository.fetchAllBookCovers().get()
+        try await repository.fetchAllBookCovers()
     }
 }
 
@@ -44,7 +44,7 @@ public struct DefaultUpdateBookCoverUseCase: UpdateBookCoverUseCase {
     }
     
     public func execute(id: UUID, with bookCover: BookCover) async throws {
-        try await repository.updateBookCover(id: id, with: bookCover).get()
+        try await repository.updateBookCover(id: id, with: bookCover)
     }
 }
 
@@ -56,6 +56,6 @@ public struct DefaultDeleteBookCoverUseCase: DeleteBookCoverUseCase {
     }
     
     public func execute(id: UUID) async throws {
-        try await repository.deleteBookCover(id: id).get()
+        try await repository.deleteBookCover(id: id)
     }
 }

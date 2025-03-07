@@ -10,8 +10,8 @@ public struct DefaultCreateBookUseCase: CreateBookUseCase {
     }
     
     public func execute(book: Book) async throws {
-        try await repository.create(book: book).get()
-        try await mediaRepository.createSnapshot(for: [], in: book.id).get()
+        try await repository.create(book: book)
+        try await mediaRepository.createSnapshot(for: [], in: book.id)
     }
 }
 
@@ -23,7 +23,7 @@ public struct DefaultFetchBookUseCase: FetchBookUseCase {
     }
     
     public func execute(id: UUID) async throws -> Book {
-        try await repository.fetch(bookID: id).get()
+        try await repository.fetch(bookID: id)
     }
 }
 
@@ -35,7 +35,7 @@ public struct DefaultUpdateBookUseCase: UpdateBookUseCase {
     }
     
     public func execute(id: UUID, book: Book) async throws {
-        try await repository.update(bookID: id, to: book).get()
+        try await repository.update(bookID: id, to: book)
     }
 }
 
@@ -47,6 +47,6 @@ public struct DefaultDeleteBookUseCase: DeleteBookUseCase {
     }
     
     public func execute(id: UUID) async throws {
-        try await repository.delete(bookID: id).get()
+        try await repository.delete(bookID: id)
     }
 }
