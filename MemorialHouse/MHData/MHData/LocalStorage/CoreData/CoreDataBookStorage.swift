@@ -13,52 +13,59 @@ public final class CoreDataBookStorage {
 extension CoreDataBookStorage: BookStorage {
     public func create(data: BookDTO) async throws {
         let context = coreDataStorage.createBackgroundContext()
-        guard let entity = NSEntityDescription.entity(forEntityName: "BookEntity", in: context) else {
-            throw MHDataError.noSuchEntity(key: "BookEntity")
+        try await context.perform { [weak self] in
+            guard let entity = NSEntityDescription.entity(forEntityName: "BookEntity", in: context) else {
+                throw MHDataError.noSuchEntity(key: "BookEntity")
+            }
+            let book = NSManagedObject(entity: entity, insertInto: context)
+            book.setValue(data.id, forKey: "id")
+            book.setValue(data.title, forKey: "title")
+            book.setValue(self?.dtoPagesToCore(data.pages, in: context), forKey: "pages")
+            
+            try context.save()
         }
-        let book = NSManagedObject(entity: entity, insertInto: context)
-        book.setValue(data.id, forKey: "id")
-        book.setValue(data.title, forKey: "title")
-        book.setValue(dtoPagesToCore(data.pages, in: context), forKey: "pages")
-        
-        try context.save()
     }
     
     public func fetch(with id: UUID) async throws -> BookDTO {
         let context = coreDataStorage.createBackgroundContext()
-        guard let bookEntity = try await getEntityByIdentifier(in: context, with: id) else {
-            throw MHDataError.findEntityFailure
+        return try await context.perform { [weak self] in
+            guard let bookEntity = try self?.getEntityByIdentifier(in: context, with: id) else {
+                throw MHDataError.findEntityFailure
+            }
+            guard let bookDTO = self?.coreBookToDTO(bookEntity) else {
+                throw MHDataError.convertDTOFailure
+            }
+            return bookDTO
         }
-        guard let bookDTO = coreBookToDTO(bookEntity) else {
-            throw MHDataError.convertDTOFailure
-        }
-        
-        return bookDTO
     }
     
     public func update(with id: UUID, data: BookDTO) async throws {
         let context = coreDataStorage.createBackgroundContext()
-        guard let newEntity = try await getEntityByIdentifier(in: context, with: id) else {
-            throw MHDataError.findEntityFailure
+        try await context.perform { [weak self] in
+            guard let newEntity = try self?.getEntityByIdentifier(in: context, with: id) else {
+                throw MHDataError.findEntityFailure
+            }
+            newEntity.setValue(data.id, forKey: "id")
+            newEntity.setValue(data.title, forKey: "title")
+            newEntity.setValue(self?.dtoPagesToCore(data.pages, in: context), forKey: "pages")
+            
+            try context.save()
         }
-        newEntity.setValue(data.id, forKey: "id")
-        newEntity.setValue(data.title, forKey: "title")
-        newEntity.setValue(dtoPagesToCore(data.pages, in: context), forKey: "pages")
-        
-        try context.save()
     }
     
     public func delete(with id: UUID) async throws {
         let context = coreDataStorage.createBackgroundContext()
-        guard let entity = try await getEntityByIdentifier(in: context, with: id) else {
-            throw MHDataError.findEntityFailure
+        try await context.perform { [weak self] in
+            guard let entity = try self?.getEntityByIdentifier(in: context, with: id) else {
+                throw MHDataError.findEntityFailure
+            }
+            context.delete(entity)
+            
+            try context.save()
         }
-        context.delete(entity)
-        
-        try context.save()
     }
     
-    private func getEntityByIdentifier(in context: NSManagedObjectContext, with id: UUID) async throws -> BookEntity? {
+    private func getEntityByIdentifier(in context: NSManagedObjectContext, with id: UUID) throws -> BookEntity? {
         let request = BookEntity.fetchRequest()
         request.predicate = NSPredicate(format: "id == %@", id as CVarArg)
         

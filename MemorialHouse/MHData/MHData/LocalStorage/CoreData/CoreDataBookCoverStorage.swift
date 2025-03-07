@@ -13,55 +13,62 @@ public final class CoreDataBookCoverStorage {
 extension CoreDataBookCoverStorage: BookCoverStorage {
     public func create(data: BookCoverDTO) async throws {
         let context = coreDataStorage.createBackgroundContext()
-        guard let entity = NSEntityDescription.entity(forEntityName: "BookCoverEntity", in: context) else {
-            throw MHDataError.noSuchEntity(key: "BookCoverEntity")
+        try await context.perform {
+            guard let entity = NSEntityDescription.entity(forEntityName: "BookCoverEntity", in: context) else {
+                throw MHDataError.noSuchEntity(key: "BookCoverEntity")
+            }
+            let bookCover = NSManagedObject(entity: entity, insertInto: context)
+            bookCover.setValue(data.id, forKey: "id")
+            bookCover.setValue(data.title, forKey: "title")
+            bookCover.setValue(data.category, forKey: "category")
+            bookCover.setValue(data.color, forKey: "color")
+            bookCover.setValue(data.imageData, forKey: "imageData")
+            bookCover.setValue(data.favorite, forKey: "favorite")
+            
+            try context.save()
         }
-        let bookCover = NSManagedObject(entity: entity, insertInto: context)
-        bookCover.setValue(data.id, forKey: "id")
-        bookCover.setValue(data.title, forKey: "title")
-        bookCover.setValue(data.category, forKey: "category")
-        bookCover.setValue(data.color, forKey: "color")
-        bookCover.setValue(data.imageData, forKey: "imageData")
-        bookCover.setValue(data.favorite, forKey: "favorite")
-        
-        try context.save()
     }
     
     public func fetch() async throws -> [BookCoverDTO] {
         let context = coreDataStorage.createBackgroundContext()
-        let request = BookCoverEntity.fetchRequest()
-        let bookCoverEntities = try context.fetch(request)
-        
+        let bookCoverEntities = try await context.perform {
+            let request = BookCoverEntity.fetchRequest()
+            return try context.fetch(request)
+        }
         return bookCoverEntities.compactMap { coreBookCoverToDTO($0) }
     }
     
     public func update(with id: UUID, data: BookCoverDTO) async throws {
         let context = coreDataStorage.createBackgroundContext()
-        guard let newEntity = try await getEntityByIdentifier(in: context, with: id) else {
-            throw MHDataError.findEntityFailure
+        try await context.perform { [weak self] in
+            guard let newEntity = try self?.getEntityByIdentifier(in: context, with: id) else {
+                throw MHDataError.findEntityFailure
+            }
+            newEntity.setValue(data.id, forKey: "id")
+            newEntity.setValue(data.title, forKey: "title")
+            newEntity.setValue(data.category, forKey: "category")
+            newEntity.setValue(data.color, forKey: "color")
+            newEntity.setValue(data.imageData, forKey: "imageData")
+            newEntity.setValue(data.favorite, forKey: "favorite")
+            
+            try context.save()
         }
-        newEntity.setValue(data.id, forKey: "id")
-        newEntity.setValue(data.title, forKey: "title")
-        newEntity.setValue(data.category, forKey: "category")
-        newEntity.setValue(data.color, forKey: "color")
-        newEntity.setValue(data.imageData, forKey: "imageData")
-        newEntity.setValue(data.favorite, forKey: "favorite")
-        
-        try context.save()
     }
     
     // TODO: 책 커버 삭제 시, 책 내용 모두 삭제되게끔 수정 필요
     public func delete(with id: UUID) async throws {
         let context = coreDataStorage.createBackgroundContext()
-        guard let entity = try await getEntityByIdentifier(in: context, with: id) else {
-            throw MHDataError.findEntityFailure
+        try await context.perform { [weak self] in
+            guard let entity = try self?.getEntityByIdentifier(in: context, with: id) else {
+                throw MHDataError.findEntityFailure
+            }
+            context.delete(entity)
+            
+            try context.save()
         }
-        context.delete(entity)
-        
-        try context.save()
     }
     
-    private func getEntityByIdentifier(in context: NSManagedObjectContext, with id: UUID) async throws -> BookCoverEntity? {
+    private func getEntityByIdentifier(in context: NSManagedObjectContext, with id: UUID) throws -> BookCoverEntity? {
         let request = BookCoverEntity.fetchRequest()
         
         return try context.fetch(request).first(where: { $0.id == id })
