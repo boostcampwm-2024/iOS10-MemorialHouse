@@ -44,6 +44,7 @@ public final class RegisterViewModel: ViewModelType {
         output.send(.registerButtonEnabled(isEnabled: !text.isEmpty && text.count < 11))
     }
     
+    @MainActor
     private func registerButtonTapped(with memorialHouseName: String) {
         createMemorialHouseNameUseCase.execute(with: memorialHouseName)
         self.output.send(.moveToHome)
