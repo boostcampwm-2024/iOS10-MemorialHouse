@@ -11,7 +11,7 @@ public final class CoreDataBookCategoryStorage {
 }
 
 extension CoreDataBookCategoryStorage: BookCategoryStorage {
-    public func create(with category: BookCategoryDTO) throws {
+    public func create(with category: BookCategoryDTO) async throws {
         let context = coreDataStorage.createBackgroundContext()
         
         guard let entity = NSEntityDescription.entity(forEntityName: "BookCategoryEntity", in: context) else {
@@ -24,7 +24,7 @@ extension CoreDataBookCategoryStorage: BookCategoryStorage {
         try context.save()
     }
     
-    public func fetch() throws -> [BookCategoryDTO] {
+    public func fetch() async throws -> [BookCategoryDTO] {
         let context = coreDataStorage.createBackgroundContext()
         let request = BookCategoryEntity.fetchRequest()
         let bookCategoryEntities = try context.fetch(request)
@@ -32,7 +32,7 @@ extension CoreDataBookCategoryStorage: BookCategoryStorage {
         return bookCategoryEntities.compactMap { coreBookCategoryToDTO($0) }
     }
     
-    public func update(oldName: String, with category: BookCategoryDTO) throws {
+    public func update(oldName: String, with category: BookCategoryDTO) async throws {
         let context = coreDataStorage.createBackgroundContext()
         let request = BookCategoryEntity.fetchRequest()
         if let entity = try context.fetch(request).first(where: { $0.name == oldName }) {
@@ -42,7 +42,7 @@ extension CoreDataBookCategoryStorage: BookCategoryStorage {
         }
     }
     
-    public func delete(with categoryName: String) throws {
+    public func delete(with categoryName: String) async throws {
         let context = coreDataStorage.createBackgroundContext()
         let request = BookCategoryEntity.fetchRequest()
         if let entity = try context.fetch(request).first(where: { $0.name == categoryName }) {

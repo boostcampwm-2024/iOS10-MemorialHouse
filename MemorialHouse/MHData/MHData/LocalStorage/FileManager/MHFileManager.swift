@@ -11,7 +11,7 @@ public struct MHFileManager: Sendable {
 }
 
 extension MHFileManager: FileStorage {
-    public func create(at path: String, fileName name: String, data: Data) throws {
+    public func create(at path: String, fileName name: String, data: Data) async throws {
         guard let directory = fileManager.urls(
             for: directoryType,
             in: .userDomainMask
@@ -23,7 +23,7 @@ extension MHFileManager: FileStorage {
         try data.write(to: dataPath, options: .atomic)
     }
     
-    public func read(at path: String, fileName name: String) throws -> Data {
+    public func read(at path: String, fileName name: String) async throws -> Data {
         guard let directory = fileManager.urls(
             for: directoryType,
             in: .userDomainMask
@@ -36,7 +36,7 @@ extension MHFileManager: FileStorage {
         return try Data(contentsOf: dataPath)
     }
     
-    public func delete(at path: String, fileName name: String) throws {
+    public func delete(at path: String, fileName name: String) async throws {
         guard let directory = fileManager.urls(
             for: directoryType,
             in: .userDomainMask
@@ -47,7 +47,7 @@ extension MHFileManager: FileStorage {
         try fileManager.removeItem(at: dataPath)
     }
     
-    public func copy(at url: URL, to newPath: String, newFileName name: String) throws {
+    public func copy(at url: URL, to newPath: String, newFileName name: String) async throws {
         let originDataPath = url
         
         guard fileManager.fileExists(atPath: originDataPath.path) else { throw MHDataError.fileNotExists }
@@ -65,7 +65,7 @@ extension MHFileManager: FileStorage {
         try fileManager.copyItem(at: originDataPath, to: newDataPath)
     }
     
-    public func copy(at path: String, fileName name: String, to newPath: String) throws {
+    public func copy(at path: String, fileName name: String, to newPath: String) async throws {
         guard let originDirectory = fileManager.urls(
             for: directoryType,
             in: .userDomainMask
@@ -87,7 +87,7 @@ extension MHFileManager: FileStorage {
         try fileManager.copyItem(at: originDataPath, to: newDataPath)
     }
     
-    public func move(at path: String, fileName name: String, to newPath: String) throws {
+    public func move(at path: String, fileName name: String, to newPath: String) async throws {
         guard let originDirectory = fileManager.urls(
             for: directoryType,
             in: .userDomainMask
@@ -109,7 +109,7 @@ extension MHFileManager: FileStorage {
         try fileManager.moveItem(at: originDataPath, to: newDataPath)
     }
     
-    public func moveAll(in path: String, to newPath: String) throws {
+    public func moveAll(in path: String, to newPath: String) async throws {
         guard let originDirectory = fileManager.urls(
             for: directoryType,
             in: .userDomainMask
@@ -132,7 +132,7 @@ extension MHFileManager: FileStorage {
         }
     }
     
-    public func getURL(at path: String, fileName name: String) throws -> URL {
+    public func getURL(at path: String, fileName name: String) async throws -> URL {
         guard let originDirectory = fileManager.urls(
             for: directoryType,
             in: .userDomainMask
@@ -142,7 +142,7 @@ extension MHFileManager: FileStorage {
         return originDirectory.appendingPathComponent(name)
     }
     
-    public func makeDirectory(through path: String) throws {
+    public func makeDirectory(through path: String) async throws {
         guard let originDirectory = fileManager.urls(
             for: directoryType,
             in: .userDomainMask
@@ -156,7 +156,7 @@ extension MHFileManager: FileStorage {
         ) != nil else { throw MHDataError.directorySettingFailure }
     }
     
-    public func getFileNames(at path: String) throws -> [String] {
+    public func getFileNames(at path: String) async throws -> [String] {
         guard let originDirectory = fileManager.urls(
             for: directoryType,
             in: .userDomainMask

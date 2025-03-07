@@ -82,7 +82,7 @@ final class CreateBookCoverViewModel: ViewModelType {
                 self?.setBookCategory(category: category)
             case .deleteBookCover:
                 Task {
-                    try self?.deleteBookCover()
+                    try await self?.deleteBookCover()
                     self?.output.send(.moveToHome)
                 }
             default:
@@ -98,7 +98,7 @@ final class CreateBookCoverViewModel: ViewModelType {
                 return false
             }
             .sink { [weak self] _ in
-                Task { try self?.saveBookCover() }
+                Task { try await self?.saveBookCover() }
             }
             .store(in: &cancellables)
         
@@ -135,7 +135,7 @@ final class CreateBookCoverViewModel: ViewModelType {
         self.output.send(.memorialHouseName(name: memorialHouseName))
     }
     
-    private func saveBookCover() throws {
+    private func saveBookCover() async throws {
         guard let bookTitle, !bookTitle.isEmpty, let bookColor else {
             output.send(.settingFailure)
             return
@@ -147,25 +147,25 @@ final class CreateBookCoverViewModel: ViewModelType {
             color: bookColor,
             category: bookCategory
         )
-        try createBookCoverUseCase.execute(with: newBookCover)
-        try createBook(bookID: newBookCover.id)
+        try await createBookCoverUseCase.execute(with: newBookCover)
+        try await createBook(bookID: newBookCover.id)
         bookID = newBookCover.id
         output.send(.moveToNext(bookID: newBookCover.id))
     }
     
-    private func createBook(bookID: UUID) throws {
+    private func createBook(bookID: UUID) async throws {
         guard let bookTitle else { return }
         let newBook = Book(
             id: bookID,
             title: bookTitle,
             pages: [Page()]
         )
-        try createBookUseCase.execute(book: newBook)
+        try await createBookUseCase.execute(book: newBook)
     }
     
-    private func deleteBookCover() throws {
+    private func deleteBookCover() async throws {
         guard let bookID else { return }
-        try deleteBookUseCase.execute(id: bookID)
-        try deleteBookCoverUseCase.execute(id: bookID)
+        try await deleteBookUseCase.execute(id: bookID)
+        try await deleteBookCoverUseCase.execute(id: bookID)
     }
 }

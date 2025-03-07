@@ -53,13 +53,13 @@ final class BookCategoryViewModel: ViewModelType {
             Task {
                 switch event {
                 case .createCategory(let name):
-                    self?.createCategory(name: name)
+                    await self?.createCategory(name: name)
                 case .fetchCategories:
-                    self?.fetchCategories()
+                    await self?.fetchCategories()
                 case .updateCategory(let index, let text):
-                    self?.updateCategory(index: index, name: text)
+                    await self?.updateCategory(index: index, name: text)
                 case .deleteCategory(let index):
-                    self?.deleteCategory(index: index)
+                    await self?.deleteCategory(index: index)
                 }
             }
         }.store(in: &cancellables)
@@ -67,7 +67,7 @@ final class BookCategoryViewModel: ViewModelType {
         return output.eraseToAnyPublisher()
     }
     
-    private func createCategory(name: String) {
+    private func createCategory(name: String) async {
         guard validateCategoryName(with: name) else {
             MHLogger.error("카테고리 생성 유효성 검증 실패: \(name)" + #function)
             output.send(.failure("카테고리 생성 유효성 검증 실패"))
@@ -76,7 +76,7 @@ final class BookCategoryViewModel: ViewModelType {
         
         do {
             let category = BookCategory(order: categories.count, name: name)
-            try createBookCategoryUseCase.execute(with: category)
+            try await createBookCategoryUseCase.execute(with: category)
             categories.append(category)
             output.send(.createdCategory)
         } catch {
@@ -85,9 +85,9 @@ final class BookCategoryViewModel: ViewModelType {
         }
     }
     
-    private func fetchCategories() {
+    private func fetchCategories() async {
         do {
-            let fetchedCategories = try fetchBookCategoriesUseCase.execute()
+            let fetchedCategories = try await fetchBookCategoriesUseCase.execute()
             categories.append(contentsOf: fetchedCategories)
             output.send(.fetchCategories)
         } catch {
@@ -96,7 +96,7 @@ final class BookCategoryViewModel: ViewModelType {
         }
     }
     
-    private func updateCategory(index: Int, name: String) {
+    private func updateCategory(index: Int, name: String) async {
         guard validateIndex(index),
               validateCategoryName(with: name) else {
             MHLogger.error("카테고리 업데이트 유효성 검증 실패: \(name)" + #function)
@@ -107,7 +107,7 @@ final class BookCategoryViewModel: ViewModelType {
         do {
             let oldName = categories[index].name
             let category = BookCategory(order: index, name: name)
-            try updateBookCategoryUseCase.execute(oldName: oldName, with: category)
+            try await updateBookCategoryUseCase.execute(oldName: oldName, with: category)
             categories[index] = category
             output.send(.updatedCategory)
         } catch {
@@ -116,7 +116,7 @@ final class BookCategoryViewModel: ViewModelType {
         }
     }
     
-    private func deleteCategory(index: Int) {
+    private func deleteCategory(index: Int) async {
         guard validateIndex(index) else {
             MHLogger.error("카테고리 삭제 유효성 검증 실패: \(index)" + #function)
             output.send(.failure("카테고리를 삭제하는데 실패했습니다"))
@@ -125,7 +125,7 @@ final class BookCategoryViewModel: ViewModelType {
         
         do {
             let categoryName = categories[index].name
-            try deleteBookCategoryUseCase.execute(with: categoryName)
+            try await deleteBookCategoryUseCase.execute(with: categoryName)
             categories.remove(at: index)
             output.send(.deletedCategory)
         } catch {

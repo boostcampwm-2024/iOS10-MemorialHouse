@@ -40,7 +40,7 @@ public final class CreateAudioViewModel: ViewModelType {
         input.sink { [weak self] event in
             switch event {
             case .prepareTemporaryAudio:
-                Task { self?.prepareTemporaryAudio() }
+                Task { await self?.prepareTemporaryAudio() }
             case .audioButtonTapped:
                 self?.audioButtonTapped()
             case .saveButtonTapped:
@@ -54,11 +54,11 @@ public final class CreateAudioViewModel: ViewModelType {
     }
     
     // MARK: - Helper
-    private func prepareTemporaryAudio() {
+    private func prepareTemporaryAudio() async {
         let mediaDescription = MediaDescription(type: .audio)
         self.mediaDescription = mediaDescription
         do {
-            let url = try temporaryStoreMediaUsecase.execute(media: mediaDescription)
+            let url = try await temporaryStoreMediaUsecase.execute(media: mediaDescription)
             output.send(.audioFileURL(url: url))
         } catch {
             MHLogger.error(error.localizedDescription + #function)

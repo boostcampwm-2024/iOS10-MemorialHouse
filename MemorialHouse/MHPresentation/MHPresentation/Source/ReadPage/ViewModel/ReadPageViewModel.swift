@@ -40,18 +40,18 @@ public final class ReadPageViewModel: ViewModelType {
             case .loadPage:
                 self?.output.send(.loadPage(page: self?.page))
             case .didRequestMediaDataForData(let media):
-                Task { self?.loadMediaForData(media: media) }
+                Task { await self?.loadMediaForData(media: media) }
             case .didRequestMediaDataForURL(let media):
-                Task { self?.loadMediaForURL(media: media) }
+                Task { await self?.loadMediaForURL(media: media) }
             }
         }.store(in: &cancellables)
         
         return output.eraseToAnyPublisher()
     }
     
-    private func loadMediaForData(media: MediaDescription) {
+    private func loadMediaForData(media: MediaDescription) async {
         do {
-            let mediaData: Data = try fetchMediaUseCase.execute(media: media, in: bookID)
+            let mediaData: Data = try await fetchMediaUseCase.execute(media: media, in: bookID)
             output.send(.mediaLoadedWithData(media: media, data: mediaData))
         } catch {
             MHLogger.error(error.localizedDescription + #function)
@@ -59,9 +59,9 @@ public final class ReadPageViewModel: ViewModelType {
         }
     }
     
-    private func loadMediaForURL(media: MediaDescription) {
+    private func loadMediaForURL(media: MediaDescription) async {
         do {
-            let mediaURL: URL = try fetchMediaUseCase.execute(media: media, in: bookID)
+            let mediaURL: URL = try await fetchMediaUseCase.execute(media: media, in: bookID)
             output.send(.mediaLoadedWithURL(media: media, url: mediaURL))
         } catch {
             output.send(.error(message: "미디어 로딩에 실패하였습니다."))

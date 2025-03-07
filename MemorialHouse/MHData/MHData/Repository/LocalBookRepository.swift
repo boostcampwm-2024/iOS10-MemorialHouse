@@ -9,23 +9,23 @@ public struct LocalBookRepository: BookRepository {
         self.storage = storage
     }
     
-    public func create(book: Book) throws {
+    public func create(book: Book) async throws {
         let bookDTO = mappingBookToDTO(book)
-        try storage.create(data: bookDTO)
+        try await storage.create(data: bookDTO)
     }
     
-    public func fetch(bookID id: UUID) throws -> Book {
-        let bookEntity = try storage.fetch(with: id)
+    public func fetch(bookID id: UUID) async throws -> Book {
+        let bookEntity = try await storage.fetch(with: id)
         return bookEntity.convertToBook()
     }
     
-    public func update(bookID id: UUID, to book: Book) throws {
+    public func update(bookID id: UUID, to book: Book) async throws {
         let bookDTO = mappingBookToDTO(book)
-        try storage.update(with: id, data: bookDTO)
+        try await storage.update(with: id, data: bookDTO)
     }
     
-    public func delete(bookID id: UUID) throws {
-        try storage.delete(with: id)
+    public func delete(bookID id: UUID) async throws {
+        try await storage.delete(with: id)
     }
     
     // MARK: - Mapping

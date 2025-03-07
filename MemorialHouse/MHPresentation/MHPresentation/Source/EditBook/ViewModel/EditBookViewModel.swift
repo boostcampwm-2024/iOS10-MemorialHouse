@@ -66,28 +66,28 @@ final class EditBookViewModel: ViewModelType {
         input.sink { [weak self] event in
             switch event {
             case .fetchBook:
-                Task { self?.fetchBook() }
+                Task { await self?.fetchBook() }
             case let .didAddMediaInTemporary(media):
-                Task { self?.addMedia(media) }
+                Task { await self?.addMedia(media) }
             case let .didAddMediaWithData(type, attributes, data):
-                Task { self?.addMedia(type: type, attributes: attributes, with: data) }
+                Task { await self?.addMedia(type: type, attributes: attributes, with: data) }
             case let .didAddMediaInURL(type, attributes, url):
-                Task { self?.addMedia(type: type, attributes: attributes, in: url) }
+                Task { await self?.addMedia(type: type, attributes: attributes, in: url) }
             case .addPageButtonTapped:
                 self?.addEmptyPage()
             case .didSaveButtonTapped:
-                Task { self?.saveMediaAll() }
+                Task { await self?.saveMediaAll() }
             case .didCancelButtonTapped:
-                Task { self?.revokeMediaAll() }
+                Task { await self?.revokeMediaAll() }
             }
         }.store(in: &cancellables)
         
         return output.eraseToAnyPublisher()
     }
     
-    private func fetchBook() {
+    private func fetchBook() async {
         do {
-            let book = try fetchBookUseCase.execute(id: bookID)
+            let book = try await fetchBookUseCase.execute(id: bookID)
             editPageViewModels = book.pages.map { page in
                 let editPageViewModel = EditPageViewModel(
                     fetchMediaUseCase: fetchMediaUseCase,
@@ -105,10 +105,10 @@ final class EditBookViewModel: ViewModelType {
         }
     }
     
-    private func addMedia(type: MediaType, attributes: [String: any Sendable]?, with data: Data) {
+    private func addMedia(type: MediaType, attributes: [String: any Sendable]?, with data: Data) async {
         let description = MediaDescription(type: type, attributes: attributes)
         do {
-            try createMediaUseCase.execute(media: description, data: data, at: bookID)
+            try await createMediaUseCase.execute(media: description, data: data, at: bookID)
             editPageViewModels[currentPageIndex].addMedia(media: description, data: data)
         } catch {
             output.send(.error(message: "미디어를 추가하는데 실패했습니다."))
@@ -116,12 +116,12 @@ final class EditBookViewModel: ViewModelType {
         }
     }
     
-    private func addMedia(type: MediaType, attributes: [String: any Sendable]?, in url: URL) {
+    private func addMedia(type: MediaType, attributes: [String: any Sendable]?, in url: URL) async {
         let description = MediaDescription(type: type, attributes: attributes)
         do {
-            try createMediaUseCase.execute(media: description, from: url, at: bookID)
+            try await createMediaUseCase.execute(media: description, from: url, at: bookID)
             if type == .audio {
-                try deleteTemporaryMediaUsecase.execute(media: description)
+                try await deleteTemporaryMediaUsecase.execute(media: description)
             }
             editPageViewModels[currentPageIndex].addMedia(media: description, url: url)
         } catch {
@@ -130,10 +130,10 @@ final class EditBookViewModel: ViewModelType {
         }
     }
     
-    private func addMedia(_ description: MediaDescription) {
+    private func addMedia(_ description: MediaDescription) async {
         do {
-            try storeMediaUseCase.excute(media: description, to: bookID)
-            let url: URL = try fetchMediaUseCase.execute(media: description, in: bookID)
+            try await storeMediaUseCase.excute(media: description, to: bookID)
+            let url: URL = try await fetchMediaUseCase.execute(media: description, in: bookID)
             editPageViewModels[currentPageIndex].addMedia(media: description, url: url)
         } catch {
             output.send(.error(message: "미디어를 추가하는데 실패했습니다."))
@@ -153,13 +153,13 @@ final class EditBookViewModel: ViewModelType {
         output.send(.pageAdded(at: editPageViewModels.count-1))
     }
     
-    private func saveMediaAll() {
+    private func saveMediaAll() async {
         let pages = editPageViewModels.map { $0.page }
         let book = Book(id: bookID, title: bookTitle, pages: pages)
         let mediaList = pages.flatMap { $0.metadata.values }
         do {
-            try updateBookUseCase.execute(id: bookID, book: book)
-            try storeMediaUseCase.execute(to: bookID, mediaList: mediaList)
+            try await updateBookUseCase.execute(id: bookID, book: book)
+            try await storeMediaUseCase.execute(to: bookID, mediaList: mediaList)
             output.send(.saveDone)
         } catch {
             output.send(.error(message: "책을 저장하는데 실패했습니다."))
@@ -167,9 +167,9 @@ final class EditBookViewModel: ViewModelType {
         }
     }
     
-    private func revokeMediaAll() {
+    private func revokeMediaAll() async {
         do {
-            try storeMediaUseCase.execute(to: bookID, mediaList: nil)
+            try await storeMediaUseCase.execute(to: bookID, mediaList: nil)
             output.send(.revokeDone)
         } catch {
             output.send(.error(message: "저장 취소하는데 실패했습니다."))

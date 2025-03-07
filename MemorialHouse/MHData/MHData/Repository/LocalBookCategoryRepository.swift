@@ -8,23 +8,23 @@ public struct LocalBookCategoryRepository: BookCategoryRepository {
         self.storage = storage
     }
     
-    public func createBookCategory(with category: BookCategory) throws {
-        try storage.create(with: BookCategoryDTO(order: category.order, name: category.name))
+    public func createBookCategory(with category: BookCategory) async throws {
+        try await storage.create(with: BookCategoryDTO(order: category.order, name: category.name))
     }
     
-    public func fetchBookCategories() throws -> [BookCategory] {
-        let bookCategoryEntities = try storage.fetch()
+    public func fetchBookCategories() async throws -> [BookCategory] {
+        let bookCategoryEntities = try await storage.fetch()
         return bookCategoryEntities.compactMap { $0.convertToBookCategory() }
     }
     
-    public func updateBookCategory(oldName: String, with category: BookCategory) throws {
-        try storage.update(
+    public func updateBookCategory(oldName: String, with category: BookCategory) async throws {
+        try await storage.update(
             oldName: oldName,
             with: BookCategoryDTO(order: category.order, name: category.name)
         )
     }
     
-    public func deleteBookCategory(with categoryName: String) throws {
-        try storage.delete(with: categoryName)
+    public func deleteBookCategory(with categoryName: String) async throws {
+        try await storage.delete(with: categoryName)
     }
 }

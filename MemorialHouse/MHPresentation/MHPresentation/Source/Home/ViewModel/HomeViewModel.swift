@@ -46,16 +46,16 @@ public final class HomeViewModel: ViewModelType {
             case .loadAllBookCovers:
                 Task {
                     self?.fetchMemorialHouse()
-                    self?.fetchAllBookCover()
+                    await self?.fetchAllBookCover()
                 }
             case .selectedCategory(let category):
                 self?.filterBooks(by: category)
             case .dragAndDropBookCover(let currentIndex, let destinationIndex):
                 self?.dragAndDropBookCover(from: currentIndex, to: destinationIndex)
             case .likeButtonTapped(let bookId):
-                Task { self?.likeButtonTapped(bookId: bookId) }
+                Task { await self?.likeButtonTapped(bookId: bookId) }
             case .deleteBookCover(let bookId):
-                Task { self?.deleteBookCover(bookId: bookId) }
+                Task { await self?.deleteBookCover(bookId: bookId) }
             }
         }.store(in: &cancellables)
         
@@ -73,9 +73,9 @@ public final class HomeViewModel: ViewModelType {
         }
     }
     
-    private func fetchAllBookCover() {
+    private func fetchAllBookCover() async {
         do {
-            let bookCovers = try fetchAllBookCoverUseCase.execute()
+            let bookCovers = try await fetchAllBookCoverUseCase.execute()
             self.bookCovers = bookCovers
             self.currentBookCovers = bookCovers
             output.send(.reloadData)
@@ -85,7 +85,7 @@ public final class HomeViewModel: ViewModelType {
         }
     }
     
-    private func likeButtonTapped(bookId: UUID) {
+    private func likeButtonTapped(bookId: UUID) async {
         guard
             let bookCoverIndex = bookCovers.firstIndex(where: { $0.id == bookId }),
             let currentBookCoverindex = currentBookCovers.firstIndex(where: { $0.id == bookId })
@@ -103,7 +103,7 @@ public final class HomeViewModel: ViewModelType {
         )
         
         do {
-            try updateBookCoverUseCase.execute(id: bookId, with: bookCover)
+            try await updateBookCoverUseCase.execute(id: bookId, with: bookCover)
             bookCovers[bookCoverIndex] = bookCover
             currentBookCovers[currentBookCoverindex] = bookCover
         } catch {
@@ -112,9 +112,9 @@ public final class HomeViewModel: ViewModelType {
         }
     }
     
-    private func deleteBookCover(bookId: UUID) {
+    private func deleteBookCover(bookId: UUID) async {
         do {
-            try deleteBookCoverUseCase.execute(id: bookId)
+            try await deleteBookCoverUseCase.execute(id: bookId)
             guard
                 let bookCoverIndex = bookCovers.firstIndex(where: { $0.id == bookId }),
                 let currentBookCoverIndex = currentBookCovers.firstIndex(where: { $0.id == bookId })

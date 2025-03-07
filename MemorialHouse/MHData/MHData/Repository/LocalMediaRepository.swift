@@ -13,87 +13,87 @@ public struct LocalMediaRepository: MediaRepository, Sendable {
         self.storage = storage
     }
     
-    public func create(media mediaDescription: MediaDescription, data: Data, to bookID: UUID?) throws {
+    public func create(media mediaDescription: MediaDescription, data: Data, to bookID: UUID?) async throws {
         let path = bookID == nil
         ? temporaryPath
         : bookID!.uuidString
         let fileName = fileName(of: mediaDescription)
         
-        try storage.create(at: path, fileName: fileName, data: data)
+        try await storage.create(at: path, fileName: fileName, data: data)
     }
     
-    public func create(media mediaDescription: MediaDescription, from: URL, to bookID: UUID?) throws {
+    public func create(media mediaDescription: MediaDescription, from: URL, to bookID: UUID?) async throws {
         let path = bookID == nil
         ? temporaryPath
         : bookID!.uuidString
         let fileName = fileName(of: mediaDescription)
         
-        try storage.copy(at: from, to: path, newFileName: fileName)
+        try await storage.copy(at: from, to: path, newFileName: fileName)
     }
     
-    public func fetch(media mediaDescription: MediaDescription, from bookID: UUID?) throws -> Data {
+    public func fetch(media mediaDescription: MediaDescription, from bookID: UUID?) async throws -> Data {
         let path = bookID == nil
         ? temporaryPath
         : bookID!.uuidString
         let fileName = fileName(of: mediaDescription)
         
-        return try storage.read(at: path, fileName: fileName)
+        return try await storage.read(at: path, fileName: fileName)
     }
     
-    public func delete(media mediaDescription: MediaDescription, at bookID: UUID?) throws {
+    public func delete(media mediaDescription: MediaDescription, at bookID: UUID?) async throws {
         let path = bookID == nil
         ? temporaryPath
         : bookID!.uuidString
         let fileName = fileName(of: mediaDescription)
         
-        try storage.delete(at: path, fileName: fileName)
+        try await storage.delete(at: path, fileName: fileName)
     }
     
-    public func moveTemporaryMedia(_ mediaDescription: MediaDescription, to bookID: UUID) throws {
+    public func moveTemporaryMedia(_ mediaDescription: MediaDescription, to bookID: UUID) async throws {
         let path = bookID.uuidString
         let fileName = fileName(of: mediaDescription)
         
-        try storage.move(at: temporaryPath, fileName: fileName, to: path)
+        try await storage.move(at: temporaryPath, fileName: fileName, to: path)
     }
     
-    public func getURL(media mediaDescription: MediaDescription, from bookID: UUID?) throws -> URL {
+    public func getURL(media mediaDescription: MediaDescription, from bookID: UUID?) async throws -> URL {
         let path = bookID == nil
         ? temporaryPath
         : bookID!.uuidString
         let fileName = fileName(of: mediaDescription)
         
-        return try storage.getURL(at: path, fileName: fileName)
+        return try await storage.getURL(at: path, fileName: fileName)
     }
     
-    public func makeTemporaryDirectory() throws {
-        try storage.makeDirectory(through: temporaryPath)
+    public func makeTemporaryDirectory() async throws {
+        try await storage.makeDirectory(through: temporaryPath)
     }
     
-    public func moveAllTemporaryMedia(to bookID: UUID) throws {
+    public func moveAllTemporaryMedia(to bookID: UUID) async throws {
         let path = bookID.uuidString
         
-        try storage.moveAll(in: temporaryPath, to: path)
+        try await storage.moveAll(in: temporaryPath, to: path)
     }
     
     // MARK: - Snpashot
-    public func createSnapshot(for media: [MediaDescription], in bookID: UUID) throws {
+    public func createSnapshot(for media: [MediaDescription], in bookID: UUID) async throws {
         let path = bookID.uuidString
         let mediaList = media.map { fileName(of: $0) }
         guard let snapshot = try? JSONEncoder().encode(mediaList)
         else { throw MHDataError.snapshotEncodingFailure }
         
-        try storage.create(at: path, fileName: snapshotFileName, data: snapshot)
+        try await storage.create(at: path, fileName: snapshotFileName, data: snapshot)
     }
     
-    public func deleteMediaBySnapshot(for bookID: UUID) throws {
+    public func deleteMediaBySnapshot(for bookID: UUID) async throws {
         let path = bookID.uuidString
-        let snapshotData = try storage.read(at: path, fileName: snapshotFileName)
+        let snapshotData = try await storage.read(at: path, fileName: snapshotFileName)
         let mediaSet = Set<String>(try JSONDecoder().decode([String].self, from: snapshotData))
         // snapshot 파일은 제외
-        let currentFiles = Set<String>(try storage.getFileNames(at: path)).subtracting([snapshotFileName])
+        let currentFiles = Set<String>(try await storage.getFileNames(at: path)).subtracting([snapshotFileName])
         let shouldDelete = currentFiles.subtracting(mediaSet)
         for fileName in shouldDelete {
-            _ = try storage.delete(at: path, fileName: fileName)
+            _ = try await storage.delete(at: path, fileName: fileName)
         }
     }
     

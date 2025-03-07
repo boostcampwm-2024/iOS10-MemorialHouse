@@ -11,7 +11,7 @@ public final class CoreDataBookStorage {
 }
 
 extension CoreDataBookStorage: BookStorage {
-    public func create(data: BookDTO) throws {
+    public func create(data: BookDTO) async throws {
         let context = coreDataStorage.createBackgroundContext()
         guard let entity = NSEntityDescription.entity(forEntityName: "BookEntity", in: context) else {
             throw MHDataError.noSuchEntity(key: "BookEntity")
@@ -24,9 +24,9 @@ extension CoreDataBookStorage: BookStorage {
         try context.save()
     }
     
-    public func fetch(with id: UUID) throws -> BookDTO {
+    public func fetch(with id: UUID) async throws -> BookDTO {
         let context = coreDataStorage.createBackgroundContext()
-        guard let bookEntity = try getEntityByIdentifier(in: context, with: id) else {
+        guard let bookEntity = try await getEntityByIdentifier(in: context, with: id) else {
             throw MHDataError.findEntityFailure
         }
         guard let bookDTO = coreBookToDTO(bookEntity) else {
@@ -36,9 +36,9 @@ extension CoreDataBookStorage: BookStorage {
         return bookDTO
     }
     
-    public func update(with id: UUID, data: BookDTO) throws {
+    public func update(with id: UUID, data: BookDTO) async throws {
         let context = coreDataStorage.createBackgroundContext()
-        guard let newEntity = try getEntityByIdentifier(in: context, with: id) else {
+        guard let newEntity = try await getEntityByIdentifier(in: context, with: id) else {
             throw MHDataError.findEntityFailure
         }
         newEntity.setValue(data.id, forKey: "id")
@@ -48,9 +48,9 @@ extension CoreDataBookStorage: BookStorage {
         try context.save()
     }
     
-    public func delete(with id: UUID) throws {
+    public func delete(with id: UUID) async throws {
         let context = coreDataStorage.createBackgroundContext()
-        guard let entity = try getEntityByIdentifier(in: context, with: id) else {
+        guard let entity = try await getEntityByIdentifier(in: context, with: id) else {
             throw MHDataError.findEntityFailure
         }
         context.delete(entity)
@@ -58,7 +58,7 @@ extension CoreDataBookStorage: BookStorage {
         try context.save()
     }
     
-    private func getEntityByIdentifier(in context: NSManagedObjectContext, with id: UUID) throws -> BookEntity? {
+    private func getEntityByIdentifier(in context: NSManagedObjectContext, with id: UUID) async throws -> BookEntity? {
         let request = BookEntity.fetchRequest()
         request.predicate = NSPredicate(format: "id == %@", id as CVarArg)
         

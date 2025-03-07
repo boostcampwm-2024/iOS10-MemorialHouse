@@ -9,7 +9,7 @@ public struct LocalBookCoverRepository: BookCoverRepository {
         self.storage = storage
     }
     
-    public func createBookCover(with bookCover: BookCover) throws {
+    public func createBookCover(with bookCover: BookCover) async throws {
         let bookCoverDTO = BookCoverDTO(
             id: bookCover.id,
             order: bookCover.order,
@@ -19,21 +19,21 @@ public struct LocalBookCoverRepository: BookCoverRepository {
             category: bookCover.category,
             favorite: bookCover.favorite
         )
-        try storage.create(data: bookCoverDTO)
+        try await storage.create(data: bookCoverDTO)
     }
     
-    public func fetchBookCover(with id: UUID) throws -> BookCover? {
-        let bookCoverEntities = try storage.fetch()
+    public func fetchBookCover(with id: UUID) async throws -> BookCover? {
+        let bookCoverEntities = try await storage.fetch()
         let bookCoverEntity = bookCoverEntities.filter({ $0.id == id }).first
         return bookCoverEntity?.convertToBookCover()
     }
     
-    public func fetchAllBookCovers() throws -> [BookCover] {
-        let bookCoverEntities = try storage.fetch()
+    public func fetchAllBookCovers() async throws -> [BookCover] {
+        let bookCoverEntities = try await storage.fetch()
         return bookCoverEntities.compactMap { $0.convertToBookCover() }
     }
     
-    public func updateBookCover(id: UUID, with bookCover: BookCover) throws {
+    public func updateBookCover(id: UUID, with bookCover: BookCover) async throws {
         let bookCoverDTO = BookCoverDTO(
             id: bookCover.id,
             order: bookCover.order,
@@ -43,10 +43,10 @@ public struct LocalBookCoverRepository: BookCoverRepository {
             category: bookCover.category,
             favorite: bookCover.favorite
         )
-        try storage.update(with: id, data: bookCoverDTO)
+        try await storage.update(with: id, data: bookCoverDTO)
     }
     
-    public func deleteBookCover(id: UUID) throws {
-        try storage.delete(with: id)
+    public func deleteBookCover(id: UUID) async throws {
+        try await storage.delete(with: id)
     }
 }

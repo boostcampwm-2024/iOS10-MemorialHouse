@@ -56,7 +56,7 @@ final class ModifyBookCoverViewModel: ViewModelType {
             case .loadBookCover:
                 Task {
                     try self?.fetchMemorialHouseName()
-                    try self?.fetchBookCover()
+                    try await self?.fetchBookCover()
                 }
             case .changedBookTitle(let title):
                 self?.setBookTitle(title: title)
@@ -67,7 +67,7 @@ final class ModifyBookCoverViewModel: ViewModelType {
             case .changedBookCategory(let category):
                 self?.setBookCategory(category: category)
             case .saveBookCover:
-                Task { try self?.saveBookCover() }
+                Task { try await self?.saveBookCover() }
             case .cancelModifyBookCover:
                 self?.output.send(.moveToHome)
             }
@@ -106,8 +106,8 @@ final class ModifyBookCoverViewModel: ViewModelType {
         self.output.send(.memorialHouseName(name: memorialHouseName))
     }
     
-    private func fetchBookCover() throws {
-        guard let bookCover = try fetchBookCoverUseCase.execute(id: bookID) else { return }
+    private func fetchBookCover() async throws {
+        guard let bookCover = try await fetchBookCoverUseCase.execute(id: bookID) else { return }
         bookOrder = bookCover.order
         bookTitle = bookCover.title
         bookColor = bookCover.color
@@ -122,7 +122,7 @@ final class ModifyBookCoverViewModel: ViewModelType {
         output.send(.setModifyView(title: bookTitle, category: bookCategory))
     }
     
-    private func saveBookCover() throws {
+    private func saveBookCover() async throws {
         guard let bookTitle, !bookTitle.isEmpty, let bookOrder, let bookColor else {
             output.send(.settingFailure)
             return
@@ -135,7 +135,7 @@ final class ModifyBookCoverViewModel: ViewModelType {
             color: bookColor,
             category: bookCategory
         )
-        try updateBookCoverUseCase.execute(id: bookID, with: newBookCover)
+        try await updateBookCoverUseCase.execute(id: bookID, with: newBookCover)
         output.send(.moveToHome)
     }
 }
