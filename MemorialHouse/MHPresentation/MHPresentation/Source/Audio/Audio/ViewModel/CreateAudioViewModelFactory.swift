@@ -9,9 +9,6 @@ public struct CreateAudioViewModelFactory: Sendable {
     }
     
     public func make(completion: @escaping (MediaDescription?) -> Void) -> CreateAudioViewModel {
-        CreateAudioViewModel(
-            temporaryStoreMediaUsecase: temporaryStoreMediaUseCase,
-            completion: completion
-            )
+        CreateAudioViewModel(temporaryStoreMediaUsecase: temporaryStoreMediaUseCase, completion: completion)
     }
 }

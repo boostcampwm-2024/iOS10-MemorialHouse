@@ -54,11 +54,11 @@ public final class CreateAudioViewModel: ViewModelType {
     }
     
     // MARK: - Helper
-    private func prepareTemporaryAudio() async {
+    private func prepareTemporaryAudio() {
         let mediaDescription = MediaDescription(type: .audio)
         self.mediaDescription = mediaDescription
         do {
-            let url = try await temporaryStoreMediaUsecase.execute(media: mediaDescription)
+            let url = try temporaryStoreMediaUsecase.execute(media: mediaDescription)
             output.send(.audioFileURL(url: url))
         } catch {
             MHLogger.error(error.localizedDescription + #function)
