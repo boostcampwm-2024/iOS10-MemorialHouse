@@ -2,8 +2,8 @@ import Foundation
 import MHCore
 
 public protocol BookCoverStorage: Sendable {
-    func create(data: BookCoverDTO) async -> Result<Void, MHDataError>
-    func fetch() async -> Result<[BookCoverDTO], MHDataError>
-    func update(with id: UUID, data: BookCoverDTO) async -> Result<Void, MHDataError>
-    func delete(with id: UUID) async -> Result<Void, MHDataError>
+    func create(data: BookCoverDTO) throws
+    func fetch() throws -> [BookCoverDTO]
+    func update(with id: UUID, data: BookCoverDTO) throws
+    func delete(with id: UUID) throws
 }

@@ -5,9 +5,8 @@ public struct DefaultCreateBookCategoryUseCase: CreateBookCategoryUseCase {
         self.repository = repository
     }
     
-    public func execute(with category: BookCategory) async throws {
-        let result = await repository.createBookCategory(with: category)
-        try result.get()
+    public func execute(with category: BookCategory) throws {
+        try repository.createBookCategory(with: category)
     }
 }
 
@@ -18,9 +17,8 @@ public struct DefaultFetchBookCategoriesUseCase: FetchBookCategoriesUseCase {
         self.repository = repository
     }
     
-    public func execute() async throws -> [BookCategory] {
-        let result = await repository.fetchBookCategories()
-        return try result.get()
+    public func execute() throws -> [BookCategory] {
+        try repository.fetchBookCategories()
     }
 }
 
@@ -31,9 +29,8 @@ public struct DefaultUpdateBookCategoryUseCase: UpdateBookCategoryUseCase {
         self.repository = repository
     }
     
-    public func execute(oldName: String, with category: BookCategory) async throws {
-        let result = await repository.updateBookCategory(oldName: oldName, with: category)
-        try result.get()
+    public func execute(oldName: String, with category: BookCategory) throws {
+        try repository.updateBookCategory(oldName: oldName, with: category)
     }
 }
 
@@ -44,8 +41,7 @@ public struct DefaultDeleteBookCategoryUseCase: DeleteBookCategoryUseCase {
         self.repository = repository
     }
     
-    public func execute(with categoryName: String) async throws {
-        let result = await repository.deleteBookCategory(with: categoryName)
-        try result.get()
+    public func execute(with categoryName: String) throws {
+        try repository.deleteBookCategory(with: categoryName)
     }
 }

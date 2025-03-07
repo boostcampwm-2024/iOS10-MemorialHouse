@@ -38,16 +38,7 @@ public class CoreDataStorage: @unchecked Sendable {
         self.persistentContainer = container
     }
     
-    func performDatabaseTask<T>(
-        _ task: @escaping (NSManagedObjectContext) throws -> T
-    ) async -> Result<T, MHDataError> {
-        do {
-            let newContext = persistentContainer.newBackgroundContext()
-            return .success(try task(newContext))
-        } catch let error as MHDataError {
-            return .failure(error)
-        } catch {
-            return .failure(MHDataError.generalFailure)
-        }
+    func createBackgroundContext() -> NSManagedObjectContext {
+        return persistentContainer.newBackgroundContext()
     }
 }

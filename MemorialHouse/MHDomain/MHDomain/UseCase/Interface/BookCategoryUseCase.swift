@@ -1,15 +1,15 @@
 public protocol CreateBookCategoryUseCase: Sendable {
-    func execute(with category: BookCategory) async throws
+    func execute(with category: BookCategory) throws
 }
 
 public protocol FetchBookCategoriesUseCase: Sendable {
-    func execute() async throws -> [BookCategory]
+    func execute() throws -> [BookCategory]
 }
 
 public protocol UpdateBookCategoryUseCase: Sendable {
-    func execute(oldName: String, with category: BookCategory) async throws
+    func execute(oldName: String, with category: BookCategory) throws
 }
 
 public protocol DeleteBookCategoryUseCase: Sendable {
-    func execute(with categoryName: String) async throws
+    func execute(with categoryName: String) throws
 }

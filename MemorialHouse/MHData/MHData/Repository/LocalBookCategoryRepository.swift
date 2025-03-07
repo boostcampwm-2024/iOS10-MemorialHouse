@@ -8,30 +8,23 @@ public struct LocalBookCategoryRepository: BookCategoryRepository {
         self.storage = storage
     }
     
-    public func createBookCategory(with category: BookCategory) async -> Result<Void, MHDataError> {
-        return await storage.create(with: BookCategoryDTO(order: category.order, name: category.name))
+    public func createBookCategory(with category: BookCategory) throws {
+        try storage.create(with: BookCategoryDTO(order: category.order, name: category.name))
     }
     
-    public func fetchBookCategories() async -> Result<[BookCategory], MHDataError> {
-        let result = await storage.fetch()
-        
-        switch result {
-        case .success(let bookCategoryDTOs):
-            return .success(bookCategoryDTOs.compactMap { $0.convertToBookCategory() })
-        case .failure(let failure):
-            MHLogger.debug("\(failure.description)")
-            return .failure(failure)
-        }
+    public func fetchBookCategories() throws -> [BookCategory] {
+        let bookCategoryEntities = try storage.fetch()
+        return bookCategoryEntities.compactMap { $0.convertToBookCategory() }
     }
     
-    public func updateBookCategory(oldName: String, with category: BookCategory) async -> Result<Void, MHDataError> {
-        return await storage.update(
+    public func updateBookCategory(oldName: String, with category: BookCategory) throws {
+        try storage.update(
             oldName: oldName,
             with: BookCategoryDTO(order: category.order, name: category.name)
         )
     }
     
-    public func deleteBookCategory(with categoryName: String) async -> Result<Void, MHDataError> {
-        return await storage.delete(with: categoryName)
+    public func deleteBookCategory(with categoryName: String) throws {
+        try storage.delete(with: categoryName)
     }
 }

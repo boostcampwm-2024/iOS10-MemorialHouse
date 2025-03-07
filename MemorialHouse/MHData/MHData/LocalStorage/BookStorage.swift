@@ -2,8 +2,8 @@ import Foundation
 import MHCore
 
 public protocol BookStorage: Sendable {
-    func create(data: BookDTO) async -> Result<Void, MHDataError>
-    func fetch(with id: UUID) async -> Result<BookDTO, MHDataError>
-    func update(with id: UUID, data: BookDTO) async -> Result<Void, MHDataError>
-    func delete(with id: UUID) async -> Result<Void, MHDataError>
+    func create(data: BookDTO) throws
+    func fetch(with id: UUID) throws -> BookDTO
+    func update(with id: UUID, data: BookDTO) throws
+    func delete(with id: UUID) throws
 }

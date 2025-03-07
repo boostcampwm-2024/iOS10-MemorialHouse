@@ -9,7 +9,7 @@ public struct LocalBookCoverRepository: BookCoverRepository {
         self.storage = storage
     }
     
-    public func createBookCover(with bookCover: BookCover) async -> Result<Void, MHDataError> {
+    public func createBookCover(with bookCover: BookCover) throws {
         let bookCoverDTO = BookCoverDTO(
             id: bookCover.id,
             order: bookCover.order,
@@ -19,35 +19,21 @@ public struct LocalBookCoverRepository: BookCoverRepository {
             category: bookCover.category,
             favorite: bookCover.favorite
         )
-        return await storage.create(data: bookCoverDTO)
+        try storage.create(data: bookCoverDTO)
     }
     
-    public func fetchBookCover(with id: UUID) async -> Result<BookCover?, MHDataError> {
-        let result = await storage.fetch()
-        
-        switch result {
-        case .success(let bookCoverDTOs):
-            let bookCoverDTO = bookCoverDTOs.filter({ $0.id == id }).first
-            return .success(bookCoverDTO?.convertToBookCover())
-        case .failure(let failure):
-            MHLogger.debug("\(failure.description)")
-            return .failure(failure)
-        }
+    public func fetchBookCover(with id: UUID) throws -> BookCover? {
+        let bookCoverEntities = try storage.fetch()
+        let bookCoverEntity = bookCoverEntities.filter({ $0.id == id }).first
+        return bookCoverEntity?.convertToBookCover()
     }
     
-    public func fetchAllBookCovers() async -> Result<[BookCover], MHDataError> {
-        let result = await storage.fetch()
-        
-        switch result {
-        case .success(let bookCoverDTOs):
-            return .success(bookCoverDTOs.compactMap { $0.convertToBookCover() })
-        case .failure(let failure):
-            MHLogger.debug("\(failure.description)")
-            return .failure(failure)
-        }
+    public func fetchAllBookCovers() throws -> [BookCover] {
+        let bookCoverEntities = try storage.fetch()
+        return bookCoverEntities.compactMap { $0.convertToBookCover() }
     }
     
-    public func updateBookCover(id: UUID, with bookCover: BookCover) async -> Result<Void, MHDataError> {
+    public func updateBookCover(id: UUID, with bookCover: BookCover) throws {
         let bookCoverDTO = BookCoverDTO(
             id: bookCover.id,
             order: bookCover.order,
@@ -57,10 +43,10 @@ public struct LocalBookCoverRepository: BookCoverRepository {
             category: bookCover.category,
             favorite: bookCover.favorite
         )
-        return await storage.update(with: id, data: bookCoverDTO)
+        try storage.update(with: id, data: bookCoverDTO)
     }
     
-    public func deleteBookCover(id: UUID) async -> Result<Void, MHDataError> {
-        return await storage.delete(with: id)
+    public func deleteBookCover(id: UUID) throws {
+        try storage.delete(with: id)
     }
 }
