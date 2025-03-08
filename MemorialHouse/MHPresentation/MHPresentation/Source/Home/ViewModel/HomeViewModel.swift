@@ -6,6 +6,7 @@ import Foundation
 public final class HomeViewModel: ViewModelType {
     public enum Input {
         case loadAllBookCovers
+        case tapMakeBookCoverButton
         case selectedCategory(category: String)
         case dragAndDropBookCover(currentIndex: Int, destinationIndex: Int)
         case likeButtonTapped(bookId: UUID)
@@ -15,6 +16,7 @@ public final class HomeViewModel: ViewModelType {
     public enum Output: Equatable {
         case fetchedMemorialHouseName
         case reloadData
+        case processedThrottle
         case fetchedFailure(String)
     }
     
@@ -41,7 +43,16 @@ public final class HomeViewModel: ViewModelType {
     }
     
     func transform(input: AnyPublisher<Input, Never>) -> AnyPublisher<Output, Never> {
-        input.sink { [weak self] event in
+        let shared = input.share()
+        
+        shared
+            .filter { event in
+                if case .tapMakeBookCoverButton = event {
+                    return false
+                }
+                return true
+            }
+            .sink { [weak self] event in
             switch event {
             case .loadAllBookCovers:
                 Task {
@@ -56,8 +67,23 @@ public final class HomeViewModel: ViewModelType {
                 Task { await self?.likeButtonTapped(bookId: bookId) }
             case .deleteBookCover(let bookId):
                 Task { await self?.deleteBookCover(bookId: bookId) }
+            default:
+                break
             }
         }.store(in: &cancellables)
+        
+        shared
+            .filter { event in
+                if case .tapMakeBookCoverButton = event {
+                    return true
+                }
+                return false
+            }
+            .throttle(for: 2, scheduler: DispatchQueue.main, latest: false)
+            .sink { [weak self] _ in
+                self?.output.send(.processedThrottle)
+            }
+            .store(in: &cancellables)
         
         return output.eraseToAnyPublisher()
     }
