@@ -63,7 +63,16 @@ final class EditBookViewModel: ViewModelType {
     
     // MARK: - Binding Method
     func transform(input: AnyPublisher<Input, Never>) -> AnyPublisher<Output, Never> {
-        input.sink { [weak self] event in
+        let shared = input.share()
+        
+        shared
+            .filter { event in
+                if case .didSaveButtonTapped = event {
+                    return false
+                }
+                return true
+            }
+            .sink { [weak self] event in
             switch event {
             case .fetchBook:
                 Task { await self?.fetchBook() }
@@ -75,12 +84,25 @@ final class EditBookViewModel: ViewModelType {
                 Task { await self?.addMedia(type: type, attributes: attributes, in: url) }
             case .addPageButtonTapped:
                 self?.addEmptyPage()
-            case .didSaveButtonTapped:
-                Task { await self?.saveMediaAll() }
             case .didCancelButtonTapped:
                 Task { await self?.revokeMediaAll() }
+            default:
+                break
             }
         }.store(in: &cancellables)
+        
+        shared
+            .filter { event in
+                if case .didSaveButtonTapped = event {
+                    return true
+                }
+                return false
+            }
+            .throttle(for: 2, scheduler: DispatchQueue.main, latest: false)
+            .sink { [weak self] _ in
+                Task { await self?.saveMediaAll() }
+            }
+            .store(in: &cancellables)
         
         return output.eraseToAnyPublisher()
     }
