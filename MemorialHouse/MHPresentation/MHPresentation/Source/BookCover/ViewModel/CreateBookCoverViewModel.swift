@@ -97,6 +97,7 @@ final class CreateBookCoverViewModel: ViewModelType {
                 }
                 return false
             }
+            .throttle(for: 2, scheduler: DispatchQueue.main, latest: false)
             .sink { [weak self] _ in
                 Task { try await self?.saveBookCover() }
             }

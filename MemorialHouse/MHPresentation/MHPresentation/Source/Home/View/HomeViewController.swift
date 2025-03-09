@@ -92,14 +92,15 @@ public final class HomeViewController: UIViewController {
         output
             .receive(on: DispatchQueue.main)
             .sink { [weak self] event in
-                guard let self else { return }
                 switch event {
                 case .fetchedMemorialHouseName:
-                    self.updateMemorialHouse()
+                    self?.updateMemorialHouse()
                 case .reloadData:
-                    self.collectionView.reloadData()
+                    self?.collectionView.reloadData()
+                case .processedThrottle:
+                    Task { await self?.moveBookCoverViewController() }
                 case .fetchedFailure(let errorMessage):
-                    self.showErrorAlert(with: errorMessage)
+                    self?.showErrorAlert(with: errorMessage)
                 }
             }.store(in: &cancellables)
     }
@@ -126,7 +127,7 @@ public final class HomeViewController: UIViewController {
         }, for: .touchUpInside)
         
         makingBookFloatingButton.addAction(UIAction { [weak self] _ in
-            Task { await self?.moveBookCoverViewController() }
+            self?.input.send(.tapMakeBookCoverButton)
         }, for: .touchUpInside)
         
         navigationBar.configureSettingAction(action: UIAction { [weak self] _ in

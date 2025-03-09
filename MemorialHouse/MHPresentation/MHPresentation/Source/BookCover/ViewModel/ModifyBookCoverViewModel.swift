@@ -51,7 +51,16 @@ final class ModifyBookCoverViewModel: ViewModelType {
     }
     
     func transform(input: AnyPublisher<Input, Never>) -> AnyPublisher<Output, Never> {
-        input.sink { [weak self] event in
+        let shared = input.share()
+        
+        shared
+            .filter { event in
+                if case .saveBookCover = event {
+                    return false
+                }
+                return true
+            }
+            .sink { [weak self] event in
             switch event {
             case .loadBookCover:
                 Task { try await self?.fetchMemorialHouseName() }
@@ -64,12 +73,25 @@ final class ModifyBookCoverViewModel: ViewModelType {
                 self?.setBookImageData(imageData: bookImage)
             case .changedBookCategory(let category):
                 self?.setBookCategory(category: category)
-            case .saveBookCover:
-                Task { try await self?.saveBookCover() }
             case .cancelModifyBookCover:
                 self?.output.send(.moveToHome)
+            default:
+                break
             }
         }.store(in: &cancellables)
+        
+        shared
+            .filter { event in
+                if case .saveBookCover = event {
+                    return true
+                }
+                return false
+            }
+            .throttle(for: 2, scheduler: DispatchQueue.main, latest: false)
+            .sink { [weak self] _ in
+                Task { try await self?.saveBookCover() }
+            }
+            .store(in: &cancellables)
         
         return output.eraseToAnyPublisher()
     }
