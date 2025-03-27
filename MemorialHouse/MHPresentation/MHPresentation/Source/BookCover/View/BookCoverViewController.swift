@@ -9,6 +9,16 @@ final class BookCoverViewController: UIViewController {
     }
     
     // MARK: - UI Components
+    private let scrollView = UIScrollView()
+    private let contentView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.spacing = 10
+        stackView.alignment = .fill
+        stackView.distribution = .equalSpacing
+        
+        return stackView
+    }()
     private let bookCoverView: MHBookCover = MHBookCover()
     private let bookTitleTextField: UITextField = {
         let textField = UITextField()
@@ -306,7 +316,6 @@ extension BookCoverViewController {
             normal: normalAttributes,
             selected: selectedAttributes
         ) { [weak self] in
-            // TODO: - Alert 띄우기
             self?.modifyInput.send(.cancelModifyBookCover)
         }
         navigationItem.rightBarButtonItem = UIBarButtonItem(
@@ -319,44 +328,29 @@ extension BookCoverViewController {
     }
     
     private func configureAddSubviews() {
-        view.addSubview(bookPreviewViewBackground)
-        view.addSubview(bookTitleTextFieldBackground)
-        view.addSubview(bookColorSelectionBackground)
-        view.addSubview(categorySelectionButtonBackground)
-        view.addSubview(imageSelectionButtonBackground)
+        view.addSubview(scrollView)
+        scrollView.addSubview(contentView)
+        contentView.addArrangedSubview(bookPreviewViewBackground)
+        contentView.addArrangedSubview(bookTitleTextFieldBackground)
+        contentView.addArrangedSubview(bookColorSelectionBackground)
+        contentView.addArrangedSubview(categorySelectionButtonBackground)
+        contentView.addArrangedSubview(imageSelectionButtonBackground)
     }
     
     private func configureConstraints() {
-        bookPreviewViewBackground.setAnchor(
-            top: view.safeAreaLayoutGuide.topAnchor,
-            leading: view.safeAreaLayoutGuide.leadingAnchor, constantLeading: 16,
-            trailing: view.safeAreaLayoutGuide.trailingAnchor, constantTrailing: 16,
-            height: 344
+        scrollView.fillSuperview()
+        contentView.setAnchor(
+            top: scrollView.topAnchor,
+            leading: view.leadingAnchor, constantLeading: 8,
+            bottom: scrollView.bottomAnchor,
+            trailing: view.trailingAnchor, constantTrailing: 8
         )
-        bookTitleTextFieldBackground.setAnchor(
-            top: bookPreviewViewBackground.bottomAnchor, constantTop: 12,
-            leading: bookPreviewViewBackground.leadingAnchor,
-            trailing: bookPreviewViewBackground.trailingAnchor,
-            height: 63
-        )
-        bookColorSelectionBackground.setAnchor(
-            top: bookTitleTextFieldBackground.bottomAnchor, constantTop: 8,
-            leading: bookTitleTextFieldBackground.leadingAnchor,
-            trailing: bookTitleTextFieldBackground.trailingAnchor,
-            height: 113
-        )
-        categorySelectionButtonBackground.setAnchor(
-            top: bookColorSelectionBackground.bottomAnchor, constantTop: 8,
-            leading: bookColorSelectionBackground.leadingAnchor,
-            trailing: bookColorSelectionBackground.trailingAnchor,
-            height: 63
-        )
-        imageSelectionButtonBackground.setAnchor(
-            top: categorySelectionButtonBackground.bottomAnchor, constantTop: 8,
-            leading: categorySelectionButtonBackground.leadingAnchor,
-            trailing: categorySelectionButtonBackground.trailingAnchor,
-            height: 63
-        )
+        
+        bookPreviewViewBackground.setHeight(344)
+        bookTitleTextFieldBackground.setHeight(63)
+        bookColorSelectionBackground.setHeight(113)
+        categorySelectionButtonBackground.setHeight(63)
+        imageSelectionButtonBackground.setHeight(63)
     }
     
     private func configureAction() {
