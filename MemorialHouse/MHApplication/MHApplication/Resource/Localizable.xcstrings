@@ -415,7 +415,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Create Book"
+            "value" : "Create"
           }
         }
       }
@@ -470,7 +470,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Cretae Book Cover"
+            "value" : "Create Book Cover"
           }
         }
       }
